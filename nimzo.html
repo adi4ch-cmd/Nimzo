@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nimzo — App UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-950:#04211a;
+  --green-900:#07331f;
+  --green-800:#0b4a30;
+  --green-700:#12684a;
+  --green-600:#178a5c;
+  --accent:#1cae6f;
+  --accent-2:#3fd693;
+  --gold:#f3ba3e;
+  --gold-2:#f7d16b;
+  --red:#ea4457;
+  --pink:#ff7aa8;
+  --purple:#8b6bf2;
+  --blue:#4f8cf7;
+  --card:#ffffff;
+  --ink:#132620;
+  --ink-soft:#5c716b;
+  --line:#e7ede9;
+  --bg-page:#eef2ef;
+  --radius-xl:26px;
+  --radius-lg:18px;
+  --radius-md:14px;
+  --radius-sm:10px;
+  --shadow:0 10px 30px rgba(6,40,26,.12);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg-page:#0e1512; }
+}
+:root[data-theme="dark"]{ --bg-page:#0e1512; }
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:var(--bg-page);
+  color:var(--ink);
+  min-height:100vh;
+  padding:28px 14px 60px;
+}
+h1,h2,h3,.brand{font-family:'Poppins',sans-serif;}
+
+/* ---------- top chrome ---------- */
+.page-head{max-width:960px;margin:0 auto 18px;text-align:center;}
+.page-head h1{font-size:20px;margin:0 0 4px;color:var(--green-800);}
+.page-head p{margin:0;color:var(--ink-soft);font-size:13px;}
+
+.quicknav{
+  max-width:960px;margin:18px auto 26px;display:flex;gap:8px;overflow-x:auto;
+  padding:4px 2px 10px; scrollbar-width:thin;
+}
+.quicknav button{
+  flex:0 0 auto; border:1px solid var(--line); background:#fff; color:var(--ink);
+  font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600; padding:9px 14px;
+  border-radius:999px; cursor:pointer; transition:.15s; white-space:nowrap;
+}
+.quicknav button:hover{border-color:var(--accent);color:var(--green-800);}
+.quicknav button.active{background:var(--green-800);border-color:var(--green-800);color:#fff;}
+
+/* ---------- phone shell ---------- */
+.stage{display:flex;justify-content:center;}
+.phone{
+  position:relative;
+  width:340px; max-width:94vw;
+  height:718px; max-height:86vh;
+  background:#000;
+  border-radius:44px;
+  padding:12px;
+  box-shadow:var(--shadow), 0 0 0 1px rgba(0,0,0,.04);
+}
+.phone::before{
+  content:"";position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:110px;height:22px;background:#000;border-radius:0 0 16px 16px;z-index:30;
+}
+.screen-viewport{
+  position:relative; width:100%; height:100%; background:#fff;
+  border-radius:32px; overflow:hidden;
+}
+.screen{
+  position:absolute; inset:0; display:none; flex-direction:column;
+  overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none;
+}
+.screen::-webkit-scrollbar{display:none;}
+.screen.active{display:flex;}
+
+/* ---------- status bar ---------- */
+.status-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 22px 4px;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;flex:0 0 auto;}
+.status-bar.dark{color:#fff;}
+.status-bar.light{color:#16241f;}
+.status-icons{display:flex;gap:5px;align-items:center;}
+
+/* ---------- shared bits ---------- */
+.grad-dark{background:radial-gradient(120% 90% at 20% 0%,#0f5c3f 0%,#07331f 55%,#04211a 100%);}
+.px{padding-left:20px;padding-right:20px;}
+.row{display:flex;align-items:center;}
+.between{justify-content:space-between;}
+.center{justify-content:center;text-align:center;}
+.col{display:flex;flex-direction:column;}
+.gap-6{gap:6px;}.gap-8{gap:8px;}.gap-10{gap:10px;}.gap-14{gap:14px;}
+.grow{flex:1;min-width:0;}
+.muted{color:var(--ink-soft);}
+.muted-light{color:rgba(255,255,255,.65);}
+.small{font-size:12px;}
+.tiny{font-size:11px;}
+.bold{font-weight:700;}
+.semibold{font-weight:600;}
+.ellipsis{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+.avatar{border-radius:50%;object-fit:cover;background:#d7e4dd;flex:0 0 auto;}
+.badge-live{
+  background:var(--red);color:#fff;font-size:10px;font-weight:800;letter-spacing:.03em;
+  padding:3px 8px;border-radius:999px;flex:0 0 auto;
+}
+.badge-crown{color:var(--gold);}
+.chip{
+  border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;
+  font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;flex:0 0 auto;
+}
+.chip.on{background:var(--green-800);color:#fff;border-color:var(--green-800);}
+
+.btn{
+  border:none;border-radius:999px;font-family:'Inter',sans-serif;font-weight:700;
+  cursor:pointer;transition:.15s;
+}
+.btn:active{transform:scale(.98);}
+.btn-primary{
+  width:100%;padding:15px;font-size:15px;color:#fff;
+  background:linear-gradient(90deg,var(--green-700),var(--accent-2));
+  box-shadow:0 10px 22px rgba(23,138,92,.35);
+}
+.btn-soft{padding:11px 18px;font-size:13px;background:#eef6f1;color:var(--green-800);}
+.btn-pill-sm{padding:7px 16px;font-size:12px;color:#fff;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);}
+
+.section-title{font-size:15px;font-weight:700;margin:0;}
+.link-see{font-size:12px;color:var(--green-700);font-weight:700;cursor:pointer;}
+
+.list-item{
+  display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--line);
+  cursor:pointer;background:#fff;
+}
+.list-item:hover{background:#f7faf8;}
+.list-item .ic{
+  width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;background:#eef6f1;color:var(--green-700);flex:0 0 auto;
+}
+.chev{color:#c3ccc8;font-size:16px;}
+
+.bottom-nav{
+  flex:0 0 auto; display:flex; align-items:center; justify-content:space-around;
+  padding:9px 8px 14px; border-top:1px solid var(--line); background:#fff;
+}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:#9aa8a2;font-size:10px;font-weight:600;flex:1;}
+.nav-item.on{color:var(--green-800);}
+.nav-item .nav-ic{font-size:18px;}
+.nav-item.mic .nav-ic{
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--green-700),var(--accent-2));color:#fff;font-size:19px;
+  margin-top:-24px;box-shadow:0 8px 18px rgba(23,138,92,.45);border:4px solid #fff;
+}
+
+/* header w/ back */
+.topbar{display:flex;align-items:center;gap:12px;padding:6px 18px 4px;flex:0 0 auto;}
+.topbar .back{width:32px;height:32px;border-radius:50%;background:#f1f5f2;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--ink);}
+.topbar h2{margin:0;font-size:16px;}
+
+.field{
+  display:flex;align-items:center;gap:10px;border:1.4px solid var(--line);border-radius:14px;
+  padding:14px 15px;background:#fbfcfb;
+}
+.field input{border:none;background:transparent;outline:none;flex:1;font-size:14px;font-family:'Inter',sans-serif;color:var(--ink);}
+.field .ic{color:#98a6a0;font-size:15px;}
+
+.toast{
+  position:absolute;left:50%;bottom:88px;transform:translateX(-50%) translateY(12px);
+  background:rgba(15,30,24,.92);color:#fff;font-size:12px;font-weight:600;padding:9px 16px;
+  border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:80;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ---------- SPLASH ---------- */
+#screen-splash{color:#fff;}
+.splash-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.splash-logo{width:96px;height:96px;border-radius:26px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 30px rgba(0,0,0,.25);}
+.splash-logo span{font-family:'Poppins';font-weight:800;font-size:42px;color:var(--green-800);}
+.splash-body .brandname{font-size:30px;font-weight:800;letter-spacing:.01em;}
+.splash-body .tagline{font-size:13px;color:rgba(255,255,255,.75);letter-spacing:.06em;}
+.splash-foot{padding:0 40px 34px;text-align:center;}
+.splash-foot p{font-size:12px;color:rgba(255,255,255,.6);margin:0 0 10px;}
+.progress{height:5px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;}
+.progress i{display:block;height:100%;width:55%;background:linear-gradient(90deg,var(--accent),var(--gold-2));border-radius:99px;}
+
+/* ---------- LOGIN ---------- */
+#screen-login{background:#fff;}
+.login-wave{position:absolute;left:0;right:0;bottom:0;height:230px;z-index:0;pointer-events:none;}
+.login-content{position:relative;z-index:1;padding:8px 26px 26px;display:flex;flex-direction:column;gap:16px;flex:1;}
+.login-brand{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:6px;}
+.login-brand .mark{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--green-700),var(--accent));display:flex;align-items:center;justify-content:center;}
+.login-brand .mark span{color:#fff;font-weight:800;font-size:24px;}
+.login-brand b{font-size:20px;color:var(--green-900);}
+.login-head{text-align:center;margin-top:4px;}
+.login-head h2{margin:0 0 2px;font-size:20px;}
+.login-head p{margin:0;color:var(--ink-soft);font-size:13px;}
+.divider{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:11px;font-weight:700;margin:2px 0;}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line);}
+.social-row{display:flex;gap:10px;}
+.social-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:1.4px solid var(--line);border-radius:14px;padding:12px;font-weight:700;font-size:13px;background:#fff;cursor:pointer;color:var(--ink);}
+.login-foot{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:auto;}
+.login-foot a{color:var(--green-700);font-weight:700;cursor:pointer;}
+
+/* ---------- HOME ---------- */
+#screen-home{background:var(--bg-page-screen,#f6f8f7);}
+.home-top{padding:14px 20px 10px;}
+.home-logo{display:flex;align-items:center;gap:8px;}
+.home-logo .mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--green-700),var(--accent));display:flex;align-items:center;justify-content:center;}
+.home-logo .mark span{color:#fff;font-weight:800;font-size:13px;}
+.home-logo b{font-size:15px;color:var(--green-900);}
+.icon-btn{width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;position:relative;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+.icon-btn .dot{position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--red);}
+.hero-card{
+  margin:8px 20px 18px;border-radius:20px;padding:20px;color:#fff;position:relative;overflow:hidden;cursor:pointer;
+  background:linear-gradient(120deg,#0c3f2b,#12684a 60%,#1a8a5c);
+}
+.hero-card::after{content:"";position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.08);}
+.hero-card h3{margin:0 0 4px;font-size:17px;}
+.hero-card p{margin:0;font-size:12px;color:rgba(255,255,255,.75);}
+.quad{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 20px 18px;}
+.quad-item{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;}
+.quad-item .ic{width:48px;height:48px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:21px;color:#fff;}
+.quad-item span{font-size:11.5px;font-weight:600;color:var(--ink);}
+.ic-purple{background:linear-gradient(135deg,#8b6bf2,#b49bff);}
+.ic-blue{background:linear-gradient(135deg,#4f8cf7,#7db0ff);}
+.ic-gold{background:linear-gradient(135deg,#f3ba3e,#ffd479);}
+.ic-teal{background:linear-gradient(135deg,#14a37d,#4fd6ac);}
+
+.section{padding:2px 20px 18px;}
+.hscroll{display:flex;gap:12px;overflow-x:auto;padding:12px 20px 4px;margin:0 -20px;scrollbar-width:none;}
+.hscroll::-webkit-scrollbar{display:none;}
+.room-card{
+  flex:0 0 150px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 4px 14px rgba(10,40,26,.08);cursor:pointer;
+}
+.room-card .cover{
+  height:88px;position:relative;display:flex;align-items:flex-start;justify-content:space-between;padding:8px;
+  background-size:cover;background-position:center;
+}
+.room-card .cover .tag{background:rgba(0,0,0,.35);color:#fff;font-size:9.5px;font-weight:800;padding:3px 7px;border-radius:6px;}
+.room-card .cover .cnt{background:rgba(0,0,0,.4);color:#fff;font-size:9.5px;font-weight:700;padding:3px 7px;border-radius:999px;}
+.room-card .info{padding:9px 10px 11px;}
+.room-card .info b{font-size:12.5px;display:block;margin-bottom:2px;}
+.room-card .info span{font-size:10.5px;color:var(--ink-soft);}
+
+/* ---------- ROOMS LIST ---------- */
+#screen-roomslist .search-wrap{padding:6px 20px 12px;}
+.search-bar{display:flex;align-items:center;gap:9px;background:#f1f5f2;border-radius:13px;padding:11px 14px;}
+.search-bar input{border:none;background:transparent;outline:none;flex:1;font-size:13.5px;font-family:'Inter';}
+.filter-row{display:flex;gap:9px;padding:0 20px 12px;overflow-x:auto;scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.room-row{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);cursor:pointer;}
+.room-row:hover{background:#f7faf8;}
+.room-row .cover{width:52px;height:52px;border-radius:14px;background-size:cover;background-position:center;flex:0 0 auto;}
+.room-row .mid{flex:1;min-width:0;}
+.room-row .mid b{font-size:14px;display:block;}
+.room-row .mid span{font-size:11.5px;color:var(--ink-soft);}
+
+/* ---------- VOICE ROOM ---------- */
+#screen-voiceroom{color:#fff;}
+.vr-top{padding:12px 18px 8px;}
+.vr-top .who{display:flex;align-items:center;gap:9px;}
+.vr-top .who img{width:34px;height:34px;border:2px solid var(--gold);}
+.vr-top .who b{font-size:14px;}
+.vr-top .who .idline{font-size:10.5px;color:rgba(255,255,255,.6);}
+.follow-btn{margin-left:auto;background:var(--accent);color:#0b2e20;font-weight:800;font-size:11.5px;padding:7px 14px;border-radius:999px;cursor:pointer;}
+.close-x{margin-left:auto;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;}
+.vr-stats{display:flex;align-items:center;gap:14px;padding:8px 18px 12px;font-size:11.5px;color:rgba(255,255,255,.75);}
+.mic-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px 8px;padding:4px 18px 14px;}
+.mic-seat{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;}
+.mic-seat .ring{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;background:rgba(255,255,255,.08);border:2px dashed rgba(255,255,255,.25);}
+.mic-seat .ring img{width:100%;height:100%;border-radius:50%;}
+.mic-seat.filled .ring{border:2px solid var(--accent-2);background:transparent;}
+.mic-seat.host .ring{border:2px solid var(--gold);width:52px;height:52px;}
+.mic-seat .crown{position:absolute;top:-11px;font-size:13px;}
+.mic-seat span{font-size:9.5px;color:rgba(255,255,255,.55);font-weight:700;}
+.mic-seat .num{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:13px;border:2px dashed rgba(255,255,255,.25);}
+.chat-feed{flex:1;padding:6px 18px 10px;display:flex;flex-direction:column;gap:7px;min-height:60px;}
+.chat-line{font-size:12px;line-height:1.4;}
+.chat-line b{margin-right:5px;}
+.vr-bottom{display:flex;align-items:center;gap:10px;padding:10px 18px 20px;flex:0 0 auto;}
+.coin-pod{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);padding:9px 14px;border-radius:999px;font-size:12.5px;font-weight:700;flex:1;}
+.round-ic{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
+.round-ic.pink{background:linear-gradient(135deg,#ff7aa8,#ff9fc2);}
+.round-ic.gold{background:linear-gradient(135deg,var(--gold),var(--gold-2));}
+
+/* ---------- ROOM CHAT / GIFTS ---------- */
+.gift-sheet{background:#fff;color:var(--ink);border-radius:22px 22px 0 0;padding:14px 18px 18px;flex:0 0 auto;box-shadow:0 -8px 24px rgba(0,0,0,.18);}
+.gift-tabs{display:flex;align-items:center;gap:18px;margin-bottom:12px;}
+.gift-tabs .t{font-size:13px;font-weight:700;color:var(--ink-soft);cursor:pointer;padding-bottom:5px;}
+.gift-tabs .t.on{color:var(--green-800);border-bottom:2.5px solid var(--green-800);}
+.gift-tabs .xclose{margin-left:auto;color:#9aa8a2;cursor:pointer;}
+.gift-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.gift-item{display:flex;flex-direction:column;align-items:center;gap:5px;border-radius:14px;padding:10px 4px;background:#f6f8f7;cursor:pointer;}
+.gift-item .em{font-size:22px;}
+.gift-item .pr{display:flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;color:var(--ink-soft);}
+.gift-foot{display:flex;align-items:center;gap:10px;}
+.gift-foot .bal{display:flex;align-items:center;gap:6px;font-weight:800;font-size:14px;color:var(--ink);}
+.gift-foot .btn-primary{width:auto;padding:11px 22px;font-size:13px;}
+
+/* ---------- GAMES MODAL ---------- */
+#screen-games{background:#131c2b;color:#fff;}
+.games-top{display:flex;align-items:center;padding:16px 20px 6px;}
+.games-top h2{margin:0;font-size:17px;}
+.games-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 20px;}
+.game-card{border-radius:18px;padding:16px 10px;text-align:center;cursor:pointer;position:relative;overflow:hidden;}
+.game-card .em{font-size:34px;display:block;margin-bottom:8px;}
+.game-card b{font-size:12.5px;}
+.gc-1{background:linear-gradient(150deg,#232734,#3a3f52);}
+.gc-2{background:linear-gradient(150deg,#e2793a,#f2a659);}
+.gc-3{background:linear-gradient(150deg,#8a5a2c,#c98a3e);}
+.gc-4{background:linear-gradient(150deg,#1c7a4a,#37b06b);}
+.gc-5{background:linear-gradient(150deg,#6a3fb5,#9a6ee0);}
+.gc-6{background:linear-gradient(150deg,#7a1f2b,#b5333f);}
+.games-foot{margin-top:auto;padding:18px 22px 26px;text-align:center;}
+.games-foot p{color:rgba(255,255,255,.55);font-size:12.5px;margin:0 0 12px;}
+
+/* ---------- WALLET ---------- */
+.wallet-card{
+  margin:8px 20px 18px;border-radius:20px;padding:20px;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(125deg,#0c3f2b,#12684a 70%,#1a8a5c);display:flex;align-items:center;justify-content:space-between;
+}
+.wallet-card .lbl{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:4px;}
+.wallet-card .amt{font-size:24px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.promo-card{
+  margin:6px 20px 20px;border-radius:18px;padding:18px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:linear-gradient(120deg,#f3ba3e,#ef8a3f);
+}
+.promo-card b{font-size:14px;display:block;}
+.promo-card span{font-size:11.5px;color:rgba(255,255,255,.85);}
+
+/* ---------- PROFILE ---------- */
+.profile-hero{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 20px 18px;}
+.profile-hero img{width:78px;height:78px;border:3px solid var(--gold);}
+.profile-hero .namerow{display:flex;align-items:center;gap:6px;font-size:17px;font-weight:800;}
+.profile-hero .idl{font-size:11.5px;color:var(--ink-soft);}
+.badges-row{display:flex;gap:8px;margin-top:4px;}
+.pill-badge{font-size:11px;font-weight:800;padding:5px 12px;border-radius:999px;display:flex;align-items:center;gap:4px;}
+.pill-badge.vip{background:#fff3d9;color:#b8790b;}
+.pill-badge.lvl{background:#e9f6ef;color:var(--green-800);}
+.stat-row{display:flex;justify-content:space-around;padding:14px 20px 18px;border-bottom:8px solid var(--bg-page);}
+.stat-row .st{text-align:center;}
+.stat-row .st b{display:block;font-size:16px;}
+.stat-row .st span{font-size:11px;color:var(--ink-soft);}
+
+/* ---------- MESSAGES ---------- */
+.tab-row{display:flex;gap:22px;padding:4px 20px 14px;border-bottom:1px solid var(--line);}
+.tab-row .t{font-size:13.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;padding-bottom:8px;}
+.tab-row .t.on{color:var(--green-800);border-bottom:2.5px solid var(--green-800);}
+.msg-row{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--line);cursor:pointer;}
+.msg-row:hover{background:#f7faf8;}
+.msg-row .av-wrap{position:relative;flex:0 0 auto;}
+.msg-row .online{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:#2bc36b;border:2px solid #fff;}
+.msg-row .mid{flex:1;min-width:0;}
+.msg-row .mid .top{display:flex;justify-content:space-between;}
+.msg-row .mid b{font-size:13.5px;}
+.msg-row .mid .time{font-size:10.5px;color:var(--ink-soft);}
+.msg-row .mid p{margin:2px 0 0;font-size:12px;color:var(--ink-soft);}
+.unread{background:var(--red);color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 5px;}
+
+/* ---------- AGENCY / SETTINGS style detail pages ---------- */
+.hero-role{
+  margin:10px 20px 16px;border-radius:20px;padding:20px;color:#fff;display:flex;align-items:center;gap:14px;
+  background:linear-gradient(120deg,#0c3f2b,#12684a 70%,#1a8a5c);
+}
+.hero-role .em{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:24px;flex:0 0 auto;}
+.hero-role b{font-size:16px;display:block;}
+.hero-role span{font-size:11.5px;color:rgba(255,255,255,.75);}
+.role-stat-row{display:flex;gap:10px;padding:0 20px 16px;}
+.role-stat{flex:1;background:#f6f8f7;border-radius:14px;padding:12px;text-align:center;}
+.role-stat b{display:block;font-size:15px;}
+.role-stat span{font-size:10.5px;color:var(--ink-soft);}
+
+.role-center{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:30px 30px 10px;}
+.role-center .em-big{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,var(--green-700),var(--accent));display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;}
+.role-center h3{margin:4px 0 0;font-size:17px;}
+.role-center p{margin:0;font-size:12.5px;color:var(--ink-soft);max-width:230px;}
+.role-center .btn-primary{margin-top:8px;width:auto;padding:12px 30px;}
+.benefits-box{margin:6px 20px 20px;background:#f6f8f7;border-radius:16px;padding:6px 4px;}
+.benefits-box .h{font-size:11.5px;font-weight:800;color:var(--ink-soft);letter-spacing:.02em;padding:10px 14px 4px;}
+.role-perm-row{display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;}
+.role-perm-row .ic{font-size:15px;width:22px;text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>🎙️ Nimzo — App UI</h1>
+  <p>Neeche pills se koi bhi screen dekhein, ya phone ke andar tap kar ke navigate karein</p>
+</div>
+
+<div class="quicknav" id="quicknav"></div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen-viewport">
+
+      <!-- SPLASH -->
+      <div class="screen grad-dark active" id="screen-splash" data-theme="dark">
+        <div class="statusbar-slot" data-theme="dark"></div>
+        <div class="splash-body">
+          <div class="splash-logo"><span>N</span></div>
+          <div class="brandname">Nimzo</div>
+          <div class="tagline">VOICE &nbsp;•&nbsp; FRIENDS &nbsp;•&nbsp; FUN</div>
+        </div>
+        <div class="splash-foot">
+          <p>Connecting people…</p>
+          <div class="progress"><i></i></div>
+        </div>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="screen" id="screen-login">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <svg class="login-wave" viewBox="0 0 340 230" preserveAspectRatio="none">
+          <path d="M0,90 C80,140 140,50 220,90 C280,118 320,80 340,60 L340,230 L0,230 Z" fill="#c8ecd7" opacity="0.55"/>
+          <path d="M0,130 C90,80 150,180 230,130 C290,95 320,150 340,120 L340,230 L0,230 Z" fill="#1a8a5c"/>
+        </svg>
+        <div class="login-content">
+          <div class="login-brand">
+            <div class="mark"><span>N</span></div>
+            <b>Nimzo</b>
+          </div>
+          <div class="login-head">
+            <h2>Welcome Back</h2>
+            <p>Login to continue</p>
+          </div>
+          <div class="col gap-10">
+            <div class="field"><span class="ic">📞</span><input placeholder="Phone Number"></div>
+            <div class="field"><span class="ic">🔒</span><input type="password" placeholder="Password"><span class="ic">👁️</span></div>
+          </div>
+          <button class="btn btn-primary" onclick="go('home');toast('Login successful')">Login</button>
+          <div class="divider">OR</div>
+          <div class="social-row">
+            <button class="social-btn" onclick="toast('Demo only')">🔴 Google</button>
+            <button class="social-btn" onclick="toast('Demo only')">🔵 Facebook</button>
+          </div>
+          <div class="login-foot">Don't have an account? <a onclick="toast('Register form — demo')">Register</a></div>
+        </div>
+      </div>
+
+      <!-- HOME -->
+      <div class="screen" id="screen-home">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="home-top row between">
+          <div class="home-logo"><div class="mark"><span>N</span></div><b>Nimzo</b></div>
+          <div class="row gap-8">
+            <div class="icon-btn" onclick="toast('Search')">🔍</div>
+            <div class="icon-btn" onclick="toast('3 new notifications')">🔔<span class="dot"></span></div>
+          </div>
+        </div>
+
+        <div class="hero-card" onclick="go('roomslist')">
+          <h3>Join Voice Rooms</h3>
+          <p>Make new friends<br>Share your voice</p>
+        </div>
+
+        <div class="quad">
+          <div class="quad-item" onclick="go('roomslist')"><div class="ic ic-purple">🚪</div><span>Rooms</span></div>
+          <div class="quad-item" onclick="go('games')"><div class="ic ic-blue">🎮</div><span>Games</span></div>
+          <div class="quad-item" onclick="toast('Ranking — coming soon')"><div class="ic ic-gold">🏆</div><span>Ranking</span></div>
+          <div class="quad-item" onclick="go('wallet')"><div class="ic ic-teal">💰</div><span>Wallet</span></div>
+        </div>
+
+        <div class="section" style="padding-bottom:0;">
+          <div class="row between"><h3 class="section-title">Hot Rooms</h3><span class="link-see" onclick="go('roomslist')">See All ›</span></div>
+        </div>
+        <div class="hscroll" id="hotRooms"></div>
+
+        <div class="section" style="padding-bottom:0;margin-top:6px;">
+          <div class="row between"><h3 class="section-title">Popular Rooms</h3><span class="link-see" onclick="go('roomslist')">See All ›</span></div>
+        </div>
+        <div class="hscroll" id="popRooms" style="padding-bottom:18px;"></div>
+
+        <div class="bottomnav-slot" data-active="home"></div>
+      </div>
+
+      <!-- ROOMS LIST -->
+      <div class="screen" id="screen-roomslist">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="topbar"><h2>Rooms</h2></div>
+        <div class="search-wrap"><div class="search-bar">🔍<input placeholder="Search rooms..."></div></div>
+        <div class="filter-row" id="filterRow"></div>
+        <div id="roomRows" style="flex:1;"></div>
+        <div class="bottomnav-slot" data-active="rooms"></div>
+      </div>
+
+      <!-- VOICE ROOM -->
+      <div class="screen grad-dark" id="screen-voiceroom" data-theme="dark">
+        <div class="statusbar-slot" data-theme="dark"></div>
+        <div class="vr-top">
+          <div class="row">
+            <div class="close-x" style="margin-left:0;margin-right:9px;" onclick="go('roomslist')">‹</div>
+            <div class="who row gap-8">
+              <img class="avatar" src="https://i.pravatar.cc/80?img=32" width="34" height="34">
+              <div>
+                <b>Music Vibes 👑</b>
+                <div class="idline">ID: 123456</div>
+              </div>
+            </div>
+            <div class="follow-btn" onclick="toast('Following Music Vibes')">Follow</div>
+          </div>
+        </div>
+        <div class="vr-stats"><span>👥 25.6K</span><span>🎵 Music</span><span>⚔️ PK</span></div>
+        <div class="mic-grid" id="micGrid"></div>
+        <div class="chat-feed" id="vrChat"></div>
+        <div class="vr-bottom">
+          <div class="coin-pod">🪙 2,560</div>
+          <div class="round-ic pink" onclick="go('roomchat')">🎁</div>
+          <div class="round-ic gold" onclick="go('games')">🎮</div>
+        </div>
+      </div>
+
+      <!-- ROOM CHAT & GIFTS -->
+      <div class="screen grad-dark" id="screen-roomchat" data-theme="dark">
+        <div class="statusbar-slot" data-theme="dark"></div>
+        <div class="vr-top">
+          <div class="row">
+            <div class="who row gap-8">
+              <img class="avatar" src="https://i.pravatar.cc/80?img=32" width="30" height="30">
+              <div><b style="font-size:13px;">Music Vibes 👑</b><div class="idline">ID: 123456</div></div>
+            </div>
+            <div class="close-x" onclick="go('voiceroom')">✕</div>
+          </div>
+        </div>
+        <div class="vr-stats"><span>👥 25.6K</span><span>🎵 Music</span><span>⚔️ PK</span></div>
+        <div class="chat-feed" id="rcChat" style="flex:1;"></div>
+        <div class="gift-sheet">
+          <div class="gift-tabs">
+            <div class="t on">Gift</div>
+            <div class="t">Emoji</div>
+            <div class="t">Special</div>
+            <div class="xclose" onclick="go('voiceroom')">✕</div>
+          </div>
+          <div class="gift-grid" id="giftGrid"></div>
+          <div class="gift-foot">
+            <div class="bal">🪙 2,560</div>
+            <button class="btn btn-primary" style="margin-left:auto;" onclick="toast('Recharge — demo')">Recharge</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GAMES MODAL -->
+      <div class="screen" id="screen-games">
+        <div class="statusbar-slot" data-theme="dark"></div>
+        <div class="games-top between row">
+          <h2>Gamm Games</h2>
+          <div class="close-x" style="margin-left:auto;" onclick="go('voiceroom')">✕</div>
+        </div>
+        <div class="games-grid" id="gamesGrid"></div>
+        <div class="games-foot">
+          <p>Play games and win coins</p>
+          <button class="btn btn-primary" onclick="toast('Loading game…')">Start Playing</button>
+        </div>
+      </div>
+
+      <!-- WALLET -->
+      <div class="screen" id="screen-wallet">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="topbar"><h2>Wallet</h2></div>
+        <div class="wallet-card">
+          <div><div class="lbl">My Coins</div><div class="amt">🪙 2,560</div></div>
+          <button class="btn btn-pill-sm" onclick="toast('Recharge — demo')">Recharge</button>
+        </div>
+        <div>
+          <div class="list-item" onclick="toast('Buy Coins')"><div class="ic">🪙</div><div class="grow">Buy Coins</div><span class="chev">›</span></div>
+          <div class="list-item" onclick="toast('Transaction History')"><div class="ic">🧾</div><div class="grow">Transaction History</div><span class="chev">›</span></div>
+          <div class="list-item" onclick="toast('Withdrawal')"><div class="ic">🏦</div><div class="grow">Withdrawal</div><span class="chev">›</span></div>
+          <div class="list-item" onclick="toast('My Wallet')"><div class="ic">👛</div><div class="grow">My Wallet</div><span class="chev">›</span></div>
+          <div class="list-item" onclick="toast('VIP Center')" style="border-bottom:none;"><div class="ic">💎</div><div class="grow">VIP Center</div><span class="chev">›</span></div>
+        </div>
+        <div class="promo-card" onclick="toast('Special offers')">
+          <div><b>Get More Coins</b><span>with Special Offers</span></div>
+          <div style="font-size:26px;">🎁</div>
+        </div>
+        <div class="bottomnav-slot" data-active="wallet"></div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="screen" id="screen-profile">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="topbar between">
+          <div></div>
+          <div class="icon-btn" style="margin-left:auto;" onclick="go('settings')">⚙️</div>
+        </div>
+        <div class="profile-hero">
+          <img class="avatar" src="https://i.pravatar.cc/120?img=12" width="78" height="78">
+          <div class="namerow">Asdil <span style="color:#2bc36b;">✔️</span></div>
+          <div class="idl">ID: 789456</div>
+          <div class="badges-row">
+            <div class="pill-badge vip">👑 VIP 3</div>
+            <div class="pill-badge lvl">⭐ Lv. 18</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="st"><b>256</b><span>Followers</span></div>
+          <div class="st"><b>120</b><span>Following</span></div>
+          <div class="st"><b>3.5K</b><span>Beans</span></div>
+        </div>
+        <div>
+          <div class="list-item" onclick="toast('My Room')"><div class="ic">🏠</div><div class="grow">My Room</div><span class="chev">›</span></div>
+          <div class="list-item" onclick="toast('My Gifts')"><div class="ic">🎁</div><div class="grow">My Gifts</div><span class="chev">›</span></div>
+          <div class="list-item" onclick="go('wallet')"><div class="ic">👛</div><div class="grow">My Wallet</div><span class="chev">›</span></div>
+          <div class="list-item" onclick="go('settings')" style="border-bottom:none;"><div class="ic">⚙️</div><div class="grow">Settings</div><span class="chev">›</span></div>
+        </div>
+        <div class="bottomnav-slot" data-active="profile" style="margin-top:auto;"></div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="screen" id="screen-messages">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="topbar"><h2>Messages</h2></div>
+        <div class="tab-row">
+          <div class="t on">Chats</div>
+          <div class="t">Friends</div>
+          <div class="t">New Friends</div>
+        </div>
+        <div id="msgRows" style="flex:1;"></div>
+        <div class="bottomnav-slot" data-active="messages"></div>
+      </div>
+
+      <!-- AGENCY -->
+      <div class="screen" id="screen-agency">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="topbar"><h2>Agency</h2></div>
+        <div class="hero-role">
+          <div class="em">👑</div>
+          <div><span>My Agency</span><b>Nimzo Royal</b></div>
+          <div class="pill-badge lvl" style="margin-left:auto;">Lv.4</div>
+        </div>
+        <div class="role-stat-row">
+          <div class="role-stat"><b>248</b><span>Members</span></div>
+          <div class="role-stat"><b>12,450</b><span>Income</span></div>
+          <div class="role-stat"><b>12</b><span>Rank</span></div>
+        </div>
+        <div>
+          <div class="list-item" onclick="toast('Agency List')"><div class="ic">📋</div><div class="grow">Agency List</div><span class="chev">›</span></div>
+          <div class="list-item" onclick="toast('Apply for Agency')"><div class="ic">📝</div><div class="grow">Apply for Agency</div><span class="chev">›</span></div>
+          <div class="list-item" onclick="toast('Agency Rules')"><div class="ic">📖</div><div class="grow">Agency Rules</div><span class="chev">›</span></div>
+          <div class="list-item" onclick="toast('My Team')" style="border-bottom:none;"><div class="ic">👥</div><div class="grow">My Team</div><span class="chev">›</span></div>
+        </div>
+        <div class="benefits-box" style="margin-top:16px;">
+          <div class="h">ROLE CENTERS</div>
+          <div class="role-perm-row" onclick="go('host')"><span class="ic">🎤</span><span class="grow">Host</span><span class="chev">›</span></div>
+          <div class="role-perm-row" onclick="go('bd')"><span class="ic">📈</span><span class="grow">BD</span><span class="chev">›</span></div>
+          <div class="role-perm-row" onclick="go('manager')"><span class="ic">🗂️</span><span class="grow">Manager</span><span class="chev">›</span></div>
+          <div class="role-perm-row" onclick="go('superadmin')"><span class="ic">🛡️</span><span class="grow">Super Admin</span><span class="chev">›</span></div>
+        </div>
+        <div class="bottomnav-slot" data-active="agency" style="margin-top:auto;"></div>
+      </div>
+
+      <!-- HOST -->
+      <div class="screen" id="screen-host">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="topbar"><div class="back" onclick="go('agency')">‹</div><h2>Host</h2></div>
+        <div class="role-center" style="padding-top:22px;">
+          <div class="em-big">👑</div>
+          <h3>Become a Host</h3>
+          <p>Show your talent, earn coins, make friends.</p>
+          <button class="btn btn-primary" onclick="toast('Application sent')">Apply Now</button>
+        </div>
+        <div class="benefits-box">
+          <div class="h">HOST BENEFITS</div>
+          <div class="role-perm-row"><span class="ic">🪙</span><span>Earn Coins</span></div>
+          <div class="role-perm-row"><span class="ic">🎧</span><span>Get Support</span></div>
+          <div class="role-perm-row"><span class="ic">📣</span><span>Grow Your Audience</span></div>
+          <div class="role-perm-row"><span class="ic">🏅</span><span>Special Badge</span></div>
+        </div>
+      </div>
+
+      <!-- BD -->
+      <div class="screen" id="screen-bd">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="topbar"><div class="back" onclick="go('agency')">‹</div><h2>BD</h2></div>
+        <div class="role-center" style="padding-top:22px;">
+          <div class="em-big">📈</div>
+          <h3>BD Center</h3>
+          <p>Manage agencies, grow network, get higher commission.</p>
+          <button class="btn btn-primary" onclick="toast('Opening BD details')">View Details</button>
+        </div>
+        <div class="benefits-box">
+          <div class="h">BD BENEFITS</div>
+          <div class="role-perm-row"><span class="ic">💵</span><span>Higher Commission</span></div>
+          <div class="role-perm-row"><span class="ic">🏢</span><span>Manage Agencies</span></div>
+          <div class="role-perm-row"><span class="ic">🎧</span><span>VIP Support</span></div>
+          <div class="role-perm-row"><span class="ic">🎁</span><span>Special Rewards</span></div>
+        </div>
+      </div>
+
+      <!-- MANAGER -->
+      <div class="screen" id="screen-manager">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="topbar"><div class="back" onclick="go('agency')">‹</div><h2>Manager</h2></div>
+        <div class="role-center" style="padding-top:22px;">
+          <div class="em-big">🗂️</div>
+          <h3>Manager Panel</h3>
+          <p>Handle hosts, rooms and team performance.</p>
+          <button class="btn btn-primary" onclick="toast('Opening Manager panel')">Go to Manager</button>
+        </div>
+        <div class="benefits-box">
+          <div class="h">MANAGER RIGHTS</div>
+          <div class="role-perm-row"><span class="ic">👥</span><span>Manage Hosts</span></div>
+          <div class="role-perm-row"><span class="ic">🎙️</span><span>Room Monitoring</span></div>
+          <div class="role-perm-row"><span class="ic">📊</span><span>Report System</span></div>
+          <div class="role-perm-row"><span class="ic">🏆</span><span>Team Performance</span></div>
+        </div>
+      </div>
+
+      <!-- SUPER ADMIN -->
+      <div class="screen" id="screen-superadmin">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="topbar"><div class="back" onclick="go('agency')">‹</div><h2>Super Admin</h2></div>
+        <div class="role-center" style="padding-top:22px;">
+          <div class="em-big">🛡️</div>
+          <h3>Super Admin</h3>
+          <p>Full control of the platform.</p>
+          <button class="btn btn-primary" onclick="toast('Opening Admin panel')">Admin Panel</button>
+        </div>
+        <div class="benefits-box">
+          <div class="h">PERMISSIONS</div>
+          <div class="role-perm-row"><span class="ic">👤</span><span>User Management</span></div>
+          <div class="role-perm-row"><span class="ic">🏢</span><span>Agency Management</span></div>
+          <div class="role-perm-row"><span class="ic">💰</span><span>Financial Control</span></div>
+          <div class="role-perm-row"><span class="ic">🛠️</span><span>System Settings</span></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="screen" id="screen-settings">
+        <div class="statusbar-slot" data-theme="light"></div>
+        <div class="topbar"><h2>Settings</h2></div>
+        <div class="list-item" onclick="go('profile')">
+          <img class="avatar" src="https://i.pravatar.cc/80?img=12" width="40" height="40">
+          <div class="grow"><b>Asdil</b><div class="tiny muted">ID: 789456</div></div>
+          <span class="chev">›</span>
+        </div>
+        <div class="list-item" onclick="toast('Account & Security')"><div class="ic">🔐</div><div class="grow">Account &amp; Security</div><span class="chev">›</span></div>
+        <div class="list-item" onclick="toast('Notifications')"><div class="ic">🔔</div><div class="grow">Notifications</div><span class="chev">›</span></div>
+        <div class="list-item" onclick="toast('Language')"><div class="ic">🌐</div><div class="grow">Language</div><span class="small muted">English</span><span class="chev">›</span></div>
+        <div class="list-item" onclick="toast('Privacy')"><div class="ic">🛡️</div><div class="grow">Privacy</div><span class="chev">›</span></div>
+        <div class="list-item" onclick="toast('Help & Support')"><div class="ic">❓</div><div class="grow">Help &amp; Support</div><span class="chev">›</span></div>
+        <div class="list-item" onclick="toast('About Nimzo')" style="border-bottom:none;"><div class="ic">ℹ️</div><div class="grow">About Nimzo</div><span class="chev">›</span></div>
+        <div class="bottomnav-slot" data-active="settings" style="margin-top:auto;"></div>
+      </div>
+
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- data ---------------- */
+const covers = [
+  "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=300&q=60",
+  "https://images.unsplash.com/photo-1520512202100-9a6784cd4a28?w=300&q=60",
+  "https://images.unsplash.com/photo-1483412033650-1015ddeb83d1?w=300&q=60",
+  "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=300&q=60",
+  "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=300&q=60",
+  "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&q=60"
+];
+const rooms = [
+  {name:"Music Vibes", tag:"HOT", cnt:"25.6K", cat:"Music · Chat", live:true},
+  {name:"Friends Forever", tag:"", cnt:"25.6K", cat:"Music · Chat", live:false},
+  {name:"PK Room", tag:"LIVE", cnt:"19.9K", cat:"Fun · Chat", live:true},
+  {name:"Royal Family", tag:"", cnt:"", cat:"Chat · Friends", live:true},
+  {name:"Desi Masti", tag:"", cnt:"", cat:"Fun · Chat", live:true},
+  {name:"Love & Life", tag:"", cnt:"", cat:"Chat · Friends", live:true},
+  {name:"Game Zone", tag:"", cnt:"", cat:"Games · Chat", live:true},
+  {name:"Night Vibes", tag:"", cnt:"", cat:"Music · Chat", live:true}
+];
+const chatLines = [
+  ["Sara","#ea4457","Beautiful voice 💚"],
+  ["King","#4f8cf7","Joined the room"],
+  ["Ayesha","#8b6bf2","Nice song"],
+  ["Zain","#f3ba3e","Sent Rose 🌹 x1"],
+  ["Maya","#3fd693","This room is amazing!"]
+];
+const gifts = [
+  ["🌹","Rose",1],["🚗","Car",10],["👑","Crown",20],["💎","Diamond",30],
+  ["💖","Heart",50],["🐼","Panda",100],["🚀","Rocket",500],["🏰","Castle",1000]
+];
+const gamesList = [
+  ["🎰","Slot","gc-1"],["🍓","Fruit Party","gc-2"],["🦁","Grady Lion","gc-3"],
+  ["⚽","Bounty Football","gc-4"],["🎡","Lucky Wheel","gc-5"],["🃏","Teen Patti","gc-6"]
+];
+const messages = [
+  ["Maria","https://i.pravatar.cc/80?img=5","Hi! How are you? 😊","08:32","3",true],
+  ["Zain","https://i.pravatar.cc/80?img=14","🎤 Voice message (0:12)","08:45","1",false],
+  ["Ayesha","https://i.pravatar.cc/80?img=25","Great! See you soon ❤️","Yesterday","",true],
+  ["Rana","https://i.pravatar.cc/80?img=33","Joined the room","Yesterday","",false],
+  ["Hina","https://i.pravatar.cc/80?img=44","Sent a gift 🎁","Yesterday","",false]
+];
+const navItems = [
+  {key:'home',icon:'🏠',label:'Home',screen:'home'},
+  {key:'rooms',icon:'▦',label:'Rooms',screen:'roomslist'},
+  {key:'mic',icon:'🎙️',label:'',screen:'voiceroom'},
+  {key:'messages',icon:'💬',label:'Messages',screen:'messages'},
+  {key:'profile',icon:'👤',label:'Profile',screen:'profile'}
+];
+const screenList = [
+  ["splash","Splash"],["login","Login"],["home","Home"],["roomslist","Rooms List"],
+  ["voiceroom","Voice Room"],["roomchat","Room Chat"],["games","Games"],["wallet","Wallet"],
+  ["profile","Profile"],["messages","Messages"],["agency","Agency"],["host","Host"],
+  ["bd","BD"],["manager","Manager"],["superadmin","Super Admin"],["settings","Settings"]
+];
+
+/* ---------------- icons ---------------- */
+const signalSVG = `<svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="6" width="3" height="5" rx="0.6" fill="currentColor"/><rect x="4.6" y="4" width="3" height="7" rx="0.6" fill="currentColor"/><rect x="9.2" y="2" width="3" height="9" rx="0.6" fill="currentColor"/><rect x="13.8" y="0" width="3" height="11" rx="0.6" fill="currentColor"/></svg>`;
+const wifiSVG = `<svg width="15" height="11" viewBox="0 0 15 11" fill="none"><circle cx="7.5" cy="9.3" r="1.15" fill="currentColor"/><path d="M4.3 6.6a4.6 4.6 0 016.4 0" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M1.8 4a8.2 8.2 0 0111.4 0" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>`;
+const batterySVG = `<svg width="23" height="11" viewBox="0 0 23 11" fill="none"><rect x="0.6" y="0.6" width="19" height="9.8" rx="2.6" stroke="currentColor"/><rect x="2" y="2" width="16.2" height="7" rx="1.3" fill="currentColor"/><rect x="20.3" y="3.3" width="2" height="4.4" rx="1" fill="currentColor"/></svg>`;
+
+/* ---------------- render helpers ---------------- */
+function renderChrome(){
+  document.querySelectorAll('.statusbar-slot').forEach(el=>{
+    const theme = el.dataset.theme || 'light';
+    el.classList.add('status-bar', theme);
+    el.innerHTML = `<span>9:41</span><span class="status-icons">${signalSVG}${wifiSVG}${batterySVG}</span>`;
+  });
+  document.querySelectorAll('.bottomnav-slot').forEach(el=>{
+    const active = el.dataset.active;
+    el.classList.add('bottom-nav');
+    el.innerHTML = navItems.map(n=>{
+      const on = n.key===active ? 'on':'';
+      if(n.key==='mic'){
+        return `<div class="nav-item mic ${on}" onclick="go('${n.screen}')"><div class="nav-ic">${n.icon}</div></div>`;
+      }
+      return `<div class="nav-item ${on}" onclick="go('${n.screen}')"><div class="nav-ic">${n.icon}</div><div>${n.label}</div></div>`;
+    }).join('');
+  });
+}
+
+function renderHome(){
+  const hot = rooms.slice(0,3), pop = rooms.slice(3,6);
+  const card = (r,i)=>`
+    <div class="room-card" onclick="go('voiceroom')">
+      <div class="cover" style="background-image:url('${covers[i%covers.length]}')">
+        <span class="tag">${r.tag||'LIVE'}</span>
+        <span class="cnt">👥 ${r.cnt||'12.3K'}</span>
+      </div>
+      <div class="info"><b>${r.name}</b><span>${r.cat}</span></div>
+    </div>`;
+  document.getElementById('hotRooms').innerHTML = hot.map(card).join('');
+  document.getElementById('popRooms').innerHTML = pop.map(card).join('');
+}
+
+function renderRoomsList(){
+  const filters = ["All","Hot","Music","PK","Chat"];
+  document.getElementById('filterRow').innerHTML = filters.map((f,i)=>
+    `<div class="chip ${i===0?'on':''}" onclick="setFilter(this)">${f}</div>`).join('');
+  document.getElementById('roomRows').innerHTML = rooms.map((r,i)=>`
+    <div class="room-row" onclick="go('voiceroom')">
+      <div class="cover" style="background-image:url('${covers[i%covers.length]}')"></div>
+      <div class="mid"><b>${r.name}</b><span>👥 ${r.cnt||'8.4K'} · ${r.cat}</span></div>
+      <span class="badge-live">${r.live? 'Live':'—'}</span>
+    </div>`).join('');
+}
+function setFilter(el){
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function renderMicGrid(){
+  let html = `<div class="mic-seat host"><div class="ring"><span class="crown">👑</span><img src="https://i.pravatar.cc/80?img=32"></div><span>Host</span></div>`;
+  for(let i=2;i<=10;i++){
+    const filled = i<=4;
+    html += filled
+      ? `<div class="mic-seat filled" onclick="toast('Seat '+${i})"><div class="ring"><img src="https://i.pravatar.cc/80?img=${i+10}"></div><span>${i}</span></div>`
+      : `<div class="mic-seat" onclick="toast('Requesting seat '+${i})"><div class="num">🎤</div><span>${i}</span></div>`;
+  }
+  document.getElementById('micGrid').innerHTML = html;
+}
+function renderChatFeeds(){
+  const html = chatLines.map(c=>`<div class="chat-line"><b style="color:${c[1]}">${c[0]}:</b><span class="muted-light">${c[2]}</span></div>`).join('');
+  document.getElementById('vrChat').innerHTML = html;
+  document.getElementById('rcChat').innerHTML = html;
+}
+function renderGifts(){
+  document.getElementById('giftGrid').innerHTML = gifts.map(g=>`
+    <div class="gift-item" onclick="toast('Sent ${g[1]}')">
+      <div class="em">${g[0]}</div><div>${g[1]}</div>
+      <div class="pr">🪙 ${g[2]}</div>
+    </div>`).join('');
+}
+function renderGames(){
+  document.getElementById('gamesGrid').innerHTML = gamesList.map(g=>`
+    <div class="game-card ${g[2]}" onclick="toast('Opening ${g[1]}…')">
+      <span class="em">${g[0]}</span><b>${g[1]}</b>
+    </div>`).join('');
+}
+function renderMessages(){
+  document.getElementById('msgRows').innerHTML = messages.map(m=>`
+    <div class="msg-row" onclick="toast('Opening chat with ${m[0]}')">
+      <div class="av-wrap"><img class="avatar" src="${m[1]}" width="46" height="46">${m[5]?'<span class="online"></span>':''}</div>
+      <div class="mid">
+        <div class="top"><b>${m[0]}</b><span class="time">${m[3]}</span></div>
+        <p class="ellipsis">${m[2]}</p>
+      </div>
+      ${m[4]? `<span class="unread">${m[4]}</span>`:''}
+    </div>`).join('');
+}
+function renderQuickNav(){
+  document.getElementById('quicknav').innerHTML = screenList.map(s=>
+    `<button data-s="${s[0]}" onclick="go('${s[0]}')">${s[1]}</button>`).join('');
+}
+
+/* ---------------- nav ---------------- */
+function go(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('.quicknav button').forEach(b=>b.classList.toggle('active', b.dataset.s===name));
+  document.getElementById('screen-'+name).scrollTop = 0;
+}
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+/* ---------------- init ---------------- */
+renderQuickNav();
+renderChrome();
+renderHome();
+renderRoomsList();
+renderMicGrid();
+renderChatFeeds();
+renderGifts();
+renderGames();
+renderMessages();
+go('splash');
+document.querySelector('#screen-splash').addEventListener('click', ()=>go('login'));
+setTimeout(()=>{ if(document.getElementById('screen-splash').classList.contains('active')) go('login'); }, 2800);
+</script>
+</body>
+</html>
