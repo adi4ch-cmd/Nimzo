@@ -1,8 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show FileOptions;
 import '../../../core/widgets/error_view.dart';
 import '../../../core/widgets/loading_view.dart';
 import '../../../core/widgets/nimzo_button.dart';
+import '../../../core/providers/supabase_provider.dart';
+import '../../../core/utils/helpers.dart';
 import '../data/room_settings_repository.dart';
 import '../domain/room_theme.dart';
 import 'room_controller.dart';
@@ -23,13 +28,13 @@ class _S extends ConsumerState<RoomSettingsScreen> {
   @override
   void dispose() { _pw.dispose(); super.dispose(); }
 
-  RoomSettings _copy(RoomSettings o, {String? theme, bool? isPrivate, bool? mic, bool? chat, bool? guest, bool? gift, bool? music, bool? game, bool? visitor}) =>
-      RoomSettings(name: o.name, theme: theme ?? o.theme, isPrivate: isPrivate ?? o.isPrivate, mic: mic ?? o.mic, chat: chat ?? o.chat,
+  RoomSettings _copy(RoomSettings o, {String? theme, String? avatarPath, bool? isPrivate, bool? mic, bool? chat, bool? guest, bool? gift, bool? music, bool? game, bool? visitor}) =>
+      RoomSettings(name: o.name, theme: theme ?? o.theme, avatarPath: avatarPath ?? o.avatarPath, isPrivate: isPrivate ?? o.isPrivate, mic: mic ?? o.mic, chat: chat ?? o.chat,
           guest: guest ?? o.guest, gift: gift ?? o.gift, music: music ?? o.music, game: game ?? o.game, visitor: visitor ?? o.visitor);
 
   @override
   Widget build(BuildContext context) {
-    final async = ref.watch(roomSettingsProvider(widget.roomId));
+    final async = ref.watch(roomSettingsProvider(widget.roomId));\n    final db = ref.watch(supabaseProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Room settings')),
       body: async.when(
@@ -39,7 +44,7 @@ class _S extends ConsumerState<RoomSettingsScreen> {
           final cur = s ?? loaded;
           final on = widget.isOwner;
           Widget sw(String t, bool v, void Function(bool) f) => SwitchListTile(title: Text(t), value: v, onChanged: on ? (x) => setState(() => f(x)) : null);
-          return ListView(padding: const EdgeInsets.all(16), children: [
+          final imageUrl = cur.avatarPath == null ? null : storageUrl(db, 'room-images', cur.avatarPath!);\n          return ListView(padding: const EdgeInsets.all(16), children: [\n            Card(clipBehavior: Clip.antiAlias, child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [\n              Container(width: 76, height: 76, clipBehavior: Clip.antiAlias, decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Theme.of(context).colorScheme.surfaceContainerHighest), child: imageUrl == null ? const Icon(Icons.meeting_room_outlined, size: 32) : Image.network(imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined))),\n              const SizedBox(width: 14),\n              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [\n                Text('Room picture', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),\n                const SizedBox(height: 4),\n                const Text('Choose a professional room picture from your phone.'),\n                const SizedBox(height: 8),\n                OutlinedButton.icon(onPressed: on ? _pickRoomImage : null, icon: const Icon(Icons.photo_library_outlined), label: const Text('Choose from phone')),\n              ])),\n            ]))),\n            const SizedBox(height: 12),
             Text('Theme', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             Wrap(spacing: 8, runSpacing: 8, children: [
