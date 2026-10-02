@@ -9,6 +9,13 @@ class Gift {
 }
 
 class GiftRepository {
+  Stream<List<Map<String, dynamic>>> watchRoomGiftEvents(String roomId) => _db
+      .from('gift_events')
+      .stream(primaryKey: ['id'])
+      .eq('room_id', roomId)
+      .order('created_at', ascending: false)
+      .limit(20)
+      .map((rows) => rows.map((row) => Map<String, dynamic>.from(row)).toList());
   final SupabaseClient _db;
   GiftRepository(this._db);
 
@@ -32,3 +39,6 @@ class GiftRepository {
 
 final giftRepositoryProvider = Provider((ref) => GiftRepository(Supabase.instance.client));
 final giftCatalogProvider = FutureProvider((ref) => ref.watch(giftRepositoryProvider).catalog());
+final roomGiftEventProvider = StreamProvider.family<List<Map<String, dynamic>>, String>(
+  (ref, roomId) => ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
+);
