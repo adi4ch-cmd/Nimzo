@@ -19,6 +19,7 @@ class _S extends ConsumerState<ProfileSetupScreen> {
   bool busy = false;
   String? _avatarPath, _coverPath, _countryCode, _countryName, _language, _gender;
   DateTime? _dob;
+  final _name = TextEditingController();
   final _bio = TextEditingController();
 
   @override
@@ -29,6 +30,7 @@ class _S extends ConsumerState<ProfileSetupScreen> {
       ref.read(profileProvider(id).future).then((p) {
         if (!mounted) return;
         setState(() {
+          _name.text = p.displayName ?? '';
           _avatarPath = p.avatarPath;
           _coverPath = p.coverPath;
           _countryCode = p.countryCode;
@@ -43,7 +45,7 @@ class _S extends ConsumerState<ProfileSetupScreen> {
   }
 
   @override
-  void dispose() { _bio.dispose(); super.dispose(); }
+  void dispose() { _name.dispose(); _bio.dispose(); super.dispose(); }
 
   Future<void> _pickImage({required bool cover, required ImageSource source}) async {
     final x = await ImagePicker().pickImage(source: source, maxWidth: 1600, imageQuality: 88);
@@ -57,6 +59,11 @@ class _S extends ConsumerState<ProfileSetupScreen> {
   }
 
   Future<void> _save() async {
+    final name = _name.text.trim();
+    if (name.length < 2) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter your name.')));
+      return;
+    }
     if (_countryCode == null || _dob == null || _language == null || _gender == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please complete country, language, date of birth and gender.')));
       return;
@@ -64,7 +71,7 @@ class _S extends ConsumerState<ProfileSetupScreen> {
     setState(() => busy = true);
     try {
       await ref.read(profileRepositoryProvider).update(
-        bio: _bio.text.trim(), avatarPath: _avatarPath, coverPath: _coverPath,
+        displayName: name, bio: _bio.text.trim(), avatarPath: _avatarPath, coverPath: _coverPath,
         countryCode: _countryCode, countryName: _countryName, language: _language,
         dateOfBirth: _dob, gender: _gender,
       );
@@ -81,8 +88,11 @@ class _S extends ConsumerState<ProfileSetupScreen> {
     body: SafeArea(child: ListView(padding: const EdgeInsets.all(20), children: [
       Text('Profile Identity', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 6),
-      const Text('Your Nimzo ID is permanent. Nickname is not used.'),
+      const Text('Your Nimzo ID is permanent. You can change your display name anytime.'),
       const SizedBox(height: 18),
+      TextField(controller: _name, maxLength: 30, textCapitalization: TextCapitalization.words,
+        decoration: const InputDecoration(labelText: 'Name', hintText: 'Enter your name', prefixIcon: Icon(Icons.person_outline))),
+      const SizedBox(height: 10),
       _ImageCard(title: 'Profile Picture', path: _avatarPath, bucket: 'avatars', onGallery: () => _pickImage(cover: false, source: ImageSource.gallery), onCamera: () => _pickImage(cover: false, source: ImageSource.camera)),
       const SizedBox(height: 14),
       _ImageCard(title: 'Profile Cover', path: _coverPath, bucket: 'covers', cover: true, onGallery: () => _pickImage(cover: true, source: ImageSource.gallery), onCamera: () => _pickImage(cover: true, source: ImageSource.camera)),
@@ -117,7 +127,7 @@ class _ImageCard extends StatelessWidget {
   const _ImageCard({required this.title, required this.bucket, required this.path, required this.onGallery, required this.onCamera, this.cover = false});
   @override
   Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [
-    Container(width: cover ? 110 : 64, height: cover ? 64 : 64, decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.surfaceContainerHighest), child: path == null ? const Icon(Icons.image_outlined) : const Icon(Icons.check_circle_outline)),
+    Container(width: cover ? 110 : 64, height: 64, clipBehavior: Clip.antiAlias, decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.surfaceContainerHighest), child: path == null ? const Icon(Icons.image_outlined) : Image.network(storageUrl(context.readSupabase(), bucket, path!), fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined))),
     const SizedBox(width: 14), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 4), const Text('Choose directly from your phone or camera.') ])),
     PopupMenuButton<String>(onSelected: (v) => v == 'camera' ? onCamera() : onGallery(), itemBuilder: (_) => const [PopupMenuItem(value: 'gallery', child: Text('Phone Gallery')), PopupMenuItem(value: 'camera', child: Text('Camera'))]),
   ])));
