@@ -9,7 +9,6 @@ import '../features/discover/discover_screen.dart';
 import '../features/admin/admin_screen.dart';
 import '../features/games/game_screen.dart';
 import '../features/games/games_catalog_screen.dart';
-import '../features/gifts/gift_history_screen.dart';
 import '../features/rooms/presentation/create_room_screen.dart';
 import '../features/rooms/presentation/room_settings_screen.dart';
 import '../features/home/home_screen.dart';
@@ -55,7 +54,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/create-room', builder: (_, __) => const CreateRoomScreen()),
       GoRoute(path: '/room/:id/settings', builder: (_, s) => RoomSettingsScreen(roomId: s.pathParameters['id']!, isOwner: s.uri.queryParameters['owner'] == 'true')),
       GoRoute(path: '/games-play', builder: (_, __) => const GameScreen()),
-      GoRoute(path: '/gift-history', builder: (_, __) => const GiftHistoryScreen()),
       GoRoute(path: '/admin', builder: (_, __) => const AdminScreen()),
       GoRoute(path: '/room/:id', builder: (_, s) => RoomScreen(roomId: s.pathParameters['id']!)),
       GoRoute(path: Routes.wallet, builder: (_, __) => const WalletScreen()),
