@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/widgets/empty_view.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/shimmer_view.dart';
 import 'gift_repository.dart';
 
-const giftCategories = ['Popular', 'New', 'Luxury', 'Love', 'Celebration', 'Special', 'VIP', 'SVIP'];
+const giftCategories = ['All', 'Classic', 'Premium', 'VIP', 'SVIP'];
 
 void showGiftSheet(BuildContext c, String roomId, String receiverId) => showModalBottomSheet(
     context: c, isScrollControlled: true, builder: (_) => GiftSheet(roomId: roomId, receiverId: receiverId));
@@ -19,7 +20,7 @@ class GiftSheet extends ConsumerStatefulWidget {
 
 class _S extends ConsumerState<GiftSheet> {
   int qty = 1;
-  String cat = 'Popular';
+  String cat = 'All';
   Gift? selected;
   bool busy = false;
   final _custom = TextEditingController();
@@ -29,6 +30,11 @@ class _S extends ConsumerState<GiftSheet> {
   Future<void> _send() async {
     final g = selected;
     if (g == null) return;
+    final currentUser = Supabase.instance.client.auth.currentUser?.id;
+    if (currentUser != null && currentUser == widget.receiverId) {
+      _snack('You cannot send a gift to yourself');
+      return;
+    }
     final n = _custom.text.isNotEmpty ? int.tryParse(_custom.text) ?? 0 : qty;
     if (n < 1 || n > 9999) { _snack('Enter a quantity from 1 to 9999'); return; }
     // Confirm step, then the server validates balance and applies the split.
@@ -68,7 +74,7 @@ class _S extends ConsumerState<GiftSheet> {
               loading: () => const ShimmerView(rows: 4),
               error: (e, _) => ErrorView(message: '$e', onRetry: () => ref.invalidate(giftCatalogProvider)),
               data: (all) {
-                final list = all.where((g) => g.category.toLowerCase() == cat.toLowerCase()).toList();
+                final list = cat == 'All' ? all : all.where((g) => g.category.toLowerCase() == cat.toLowerCase()).toList();
                 if (list.isEmpty) return const EmptyView(title: 'No gifts in this category');
                 return GridView.count(crossAxisCount: 3, padding: const EdgeInsets.all(8), children: [
                   for (final g in list)
@@ -78,7 +84,16 @@ class _S extends ConsumerState<GiftSheet> {
                         margin: const EdgeInsets.all(4),
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: selected?.id == g.id ? const Color(0xFF22C55E) : const Color(0xFFE2E8F0), width: selected?.id == g.id ? 2 : 1)),
                         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          const Icon(Icons.card_giftcard, size: 30), const SizedBox(height: 4),
+                          Icon(
+                            switch (g.category.toLowerCase()) {
+                              'classic' => Icons.favorite_rounded,
+                              'premium' => Icons.diamond_rounded,
+                              'vip' => Icons.workspace_premium_rounded,
+                              'svip' => Icons.auto_awesome_rounded,
+                              _ => Icons.card_giftcard_rounded,
+                            },
+                            size: 30,
+                          ), const SizedBox(height: 4),
                           Text(g.name, maxLines: 1, overflow: TextOverflow.ellipsis), Text('${g.price} coins', style: Theme.of(context).textTheme.bodySmall)]),
                       ),
                     )
