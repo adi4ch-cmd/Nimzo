@@ -26,9 +26,22 @@ class MomentRepository {
     catch (e) { throw mapError(e); }
   }
 
+  Future<Moment> get(String id) async {
+    try {
+      final row = await _db.from('moments').select().eq('id', id).single();
+      return Moment.fromJson({...row, 'liked': false, 'like_count': 0, 'comment_count': 0});
+    } catch (e) { throw mapError(e); }
+  }
+
   Future<void> create({String? text, String? imagePath}) async {
     try { await _db.from('moments').insert({'author_id': _db.auth.currentUser!.id, 'body': text, 'image_path': imagePath}); }
     catch (e) { throw mapError(e); }
+  }
+
+  Future<void> update(String id, {String? text, String? imagePath}) async {
+    try {
+      await _db.from('moments').update({'body': text, 'image_path': imagePath}).eq('id', id).eq('author_id', _db.auth.currentUser!.id);
+    } catch (e) { throw mapError(e); }
   }
 
   Future<void> toggleLike(String id) => _db.rpc('toggle_like', params: {'p_moment': id});
