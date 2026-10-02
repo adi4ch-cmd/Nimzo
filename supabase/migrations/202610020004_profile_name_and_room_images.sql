@@ -53,17 +53,17 @@ drop policy if exists room_image_upload on storage.objects;
 create policy room_image_upload on storage.objects for insert to authenticated
 with check (
   bucket_id='room-images'
-  and exists (select 1 from public.rooms r where r.id=(storage.foldername(name))[1]::uuid and r.owner_id=auth.uid())
+  and exists (select 1 from public.rooms r where r.id=(storage.foldername(storage.objects.name))[1]::uuid and r.owner_id=auth.uid())
 );
 
 drop policy if exists room_image_update on storage.objects;
 create policy room_image_update on storage.objects for update to authenticated
 using (
   bucket_id='room-images'
-  and exists (select 1 from public.rooms r where r.id=(storage.foldername(name))[1]::uuid and r.owner_id=auth.uid())
+  and exists (select 1 from public.rooms r where r.id=(storage.foldername(storage.objects.name))[1]::uuid and r.owner_id=auth.uid())
 )
 with check (
   bucket_id='room-images'
-  and exists (select 1 from public.rooms r where r.id=(storage.foldername(name))[1]::uuid and r.owner_id=auth.uid())
+  and exists (select 1 from public.rooms r where r.id=(storage.foldername(storage.objects.name))[1]::uuid and r.owner_id=auth.uid())
 );
 commit;
