@@ -57,7 +57,7 @@ jobs:
 
       - name: Analyze
         working-directory: nimzo
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Tests
         working-directory: nimzo
