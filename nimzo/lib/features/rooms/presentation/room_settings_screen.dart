@@ -32,9 +32,23 @@ class _S extends ConsumerState<RoomSettingsScreen> {
       RoomSettings(name: o.name, theme: theme ?? o.theme, avatarPath: avatarPath ?? o.avatarPath, isPrivate: isPrivate ?? o.isPrivate, mic: mic ?? o.mic, chat: chat ?? o.chat,
           guest: guest ?? o.guest, gift: gift ?? o.gift, music: music ?? o.music, game: game ?? o.game, visitor: visitor ?? o.visitor);
 
+  Future<void> _pickRoomImage() async {
+    final x = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1600, maxHeight: 1600, imageQuality: 88);
+    if (x == null) return;
+    try {
+      final db = ref.read(supabaseProvider);
+      final path = '${widget.roomId}/avatar.jpg';
+      await db.storage.from('room-images').upload(path, File(x.path), fileOptions: const FileOptions(upsert: true));
+      if (mounted) setState(() => s = _copy(s ?? const RoomSettings(name: '', theme: 'nimzo_white', isPrivate: false), avatarPath: path));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final async = ref.watch(roomSettingsProvider(widget.roomId));\n    final db = ref.watch(supabaseProvider);
+    final async = ref.watch(roomSettingsProvider(widget.roomId));
+    final db = ref.watch(supabaseProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Room settings')),
       body: async.when(
@@ -44,7 +58,20 @@ class _S extends ConsumerState<RoomSettingsScreen> {
           final cur = s ?? loaded;
           final on = widget.isOwner;
           Widget sw(String t, bool v, void Function(bool) f) => SwitchListTile(title: Text(t), value: v, onChanged: on ? (x) => setState(() => f(x)) : null);
-          final imageUrl = cur.avatarPath == null ? null : storageUrl(db, 'room-images', cur.avatarPath!);\n          return ListView(padding: const EdgeInsets.all(16), children: [\n            Card(clipBehavior: Clip.antiAlias, child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [\n              Container(width: 76, height: 76, clipBehavior: Clip.antiAlias, decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Theme.of(context).colorScheme.surfaceContainerHighest), child: imageUrl == null ? const Icon(Icons.meeting_room_outlined, size: 32) : Image.network(imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined))),\n              const SizedBox(width: 14),\n              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [\n                Text('Room picture', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),\n                const SizedBox(height: 4),\n                const Text('Choose a professional room picture from your phone.'),\n                const SizedBox(height: 8),\n                OutlinedButton.icon(onPressed: on ? _pickRoomImage : null, icon: const Icon(Icons.photo_library_outlined), label: const Text('Choose from phone')),\n              ])),\n            ]))),\n            const SizedBox(height: 12),
+          final imageUrl = cur.avatarPath == null ? null : storageUrl(db, 'room-images', cur.avatarPath!);
+          return ListView(padding: const EdgeInsets.all(16), children: [
+            Card(clipBehavior: Clip.antiAlias, child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
+              Container(width: 76, height: 76, clipBehavior: Clip.antiAlias, decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Theme.of(context).colorScheme.surfaceContainerHighest), child: imageUrl == null ? const Icon(Icons.meeting_room_outlined, size: 32) : Image.network(imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined))),
+              const SizedBox(width: 14),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Room picture', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 4),
+                const Text('Choose a professional room picture from your phone.'),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(onPressed: on ? _pickRoomImage : null, icon: const Icon(Icons.photo_library_outlined), label: const Text('Choose from phone')),
+              ])),
+            ]))),
+            const SizedBox(height: 12),
             Text('Theme', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             Wrap(spacing: 8, runSpacing: 8, children: [
