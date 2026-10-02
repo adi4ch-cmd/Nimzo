@@ -18,6 +18,10 @@ class AuthController extends AsyncNotifier<void> {
   AuthRepository get _repo => ref.read(authRepositoryProvider);
 
   Future<void> _run(Future<void> Function() f) async {
+    // OAuth is a single-flight operation. Starting Google/Facebook twice
+    // before the first callback completes can invalidate the PKCE state and
+    // produce "State has already been used".
+    if (state.isLoading) return;
     state = const AsyncLoading();
     state = await AsyncValue.guard(f);
   }
