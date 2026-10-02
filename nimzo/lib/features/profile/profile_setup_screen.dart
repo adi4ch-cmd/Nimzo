@@ -93,9 +93,9 @@ class _S extends ConsumerState<ProfileSetupScreen> {
       TextField(controller: _name, maxLength: 30, textCapitalization: TextCapitalization.words,
         decoration: const InputDecoration(labelText: 'Name', hintText: 'Enter your name', prefixIcon: Icon(Icons.person_outline))),
       const SizedBox(height: 10),
-      _ImageCard(title: 'Profile Picture', path: _avatarPath, bucket: 'avatars', onGallery: () => _pickImage(cover: false, source: ImageSource.gallery), onCamera: () => _pickImage(cover: false, source: ImageSource.camera)),
+      _ImageCard(title: 'Profile Picture', path: _avatarPath, bucket: 'avatars', imageUrl: storageUrl(ref.read(supabaseProvider), 'avatars', _avatarPath), onGallery: () => _pickImage(cover: false, source: ImageSource.gallery), onCamera: () => _pickImage(cover: false, source: ImageSource.camera)),
       const SizedBox(height: 14),
-      _ImageCard(title: 'Profile Cover', path: _coverPath, bucket: 'covers', cover: true, onGallery: () => _pickImage(cover: true, source: ImageSource.gallery), onCamera: () => _pickImage(cover: true, source: ImageSource.camera)),
+      _ImageCard(title: 'Profile Cover', path: _coverPath, bucket: 'covers', imageUrl: storageUrl(ref.read(supabaseProvider), 'covers', _coverPath), cover: true, onGallery: () => _pickImage(cover: true, source: ImageSource.gallery), onCamera: () => _pickImage(cover: true, source: ImageSource.camera)),
       const SizedBox(height: 20),
       _selectTile(context, 'Country', _countryName ?? 'Select country', () => showCountryPicker(context: context, showPhoneCode: false, onSelect: (c) => setState(() { _countryCode = c.countryCode; _countryName = c.name; }))),
       _selectTile(context, 'Language', _language ?? 'Select language', () => _choice('Language', ['English', 'Arabic'], _language, (v) => setState(() => _language = v))),
@@ -121,13 +121,13 @@ class _S extends ConsumerState<ProfileSetupScreen> {
 
 class _ImageCard extends StatelessWidget {
   final String title, bucket;
-  final String? path;
+  final String? path, imageUrl;
   final bool cover;
   final VoidCallback onGallery, onCamera;
-  const _ImageCard({required this.title, required this.bucket, required this.path, required this.onGallery, required this.onCamera, this.cover = false});
+  const _ImageCard({required this.title, required this.bucket, required this.path, required this.imageUrl, required this.onGallery, required this.onCamera, this.cover = false});
   @override
   Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [
-    Container(width: cover ? 110 : 64, height: 64, clipBehavior: Clip.antiAlias, decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.surfaceContainerHighest), child: path == null ? const Icon(Icons.image_outlined) : Image.network(storageUrl(context.readSupabase(), bucket, path!), fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined))),
+    Container(width: cover ? 110 : 64, height: 64, clipBehavior: Clip.antiAlias, decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.surfaceContainerHighest), child: imageUrl == null ? const Icon(Icons.image_outlined) : Image.network(imageUrl!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined))),
     const SizedBox(width: 14), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 4), const Text('Choose directly from your phone or camera.') ])),
     PopupMenuButton<String>(onSelected: (v) => v == 'camera' ? onCamera() : onGallery(), itemBuilder: (_) => const [PopupMenuItem(value: 'gallery', child: Text('Phone Gallery')), PopupMenuItem(value: 'camera', child: Text('Camera'))]),
   ])));
