@@ -53,7 +53,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.profileSetup, builder: (_, __) => const ProfileSetupScreen()),
       GoRoute(path: '/create-room', builder: (_, __) => const CreateRoomScreen()),
       GoRoute(path: '/room/:id/settings', builder: (_, s) => RoomSettingsScreen(roomId: s.pathParameters['id']!, isOwner: s.uri.queryParameters['owner'] == 'true')),
-      GoRoute(path: '/games-play', builder: (_, __) => const GameScreen()),
+      GoRoute(path: '/games-play', builder: (_, s) => GameScreen(roomId: s.uri.queryParameters['room'])),
       GoRoute(path: '/admin', builder: (_, __) => const AdminScreen()),
       GoRoute(path: '/room/:id', builder: (_, s) => RoomScreen(roomId: s.pathParameters['id']!)),
       GoRoute(path: Routes.wallet, builder: (_, __) => const WalletScreen()),
