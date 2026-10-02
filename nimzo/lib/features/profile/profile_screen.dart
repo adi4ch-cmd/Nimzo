@@ -45,8 +45,6 @@ class ProfileScreen extends ConsumerWidget {
               Transform.translate(offset: const Offset(0, -38), child: Column(children: [
                 NimzoAvatar(radius: 46, url: storageUrl(db, 'avatars', u.avatarPath)),
                 const SizedBox(height: 8),
-                Text('Nimzo ID ${u.nimzoId}', style: Theme.of(context).textTheme.bodySmall),
-                const SizedBox(height: 8),
                 Text((u.displayName?.trim().isNotEmpty == true) ? u.displayName! : 'Nimzo User', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 4),
                 Text('Nimzo ID ${u.nimzoId}', style: Theme.of(context).textTheme.bodySmall),
