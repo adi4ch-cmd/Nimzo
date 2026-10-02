@@ -24,12 +24,13 @@ class RoomSettingsScreen extends ConsumerStatefulWidget {
 class _S extends ConsumerState<RoomSettingsScreen> {
   RoomSettings? s;
   final _pw = TextEditingController();
+  final _name = TextEditingController();
   bool busy = false;
   @override
-  void dispose() { _pw.dispose(); super.dispose(); }
+  void dispose() { _pw.dispose(); _name.dispose(); super.dispose(); }
 
-  RoomSettings _copy(RoomSettings o, {String? theme, String? avatarPath, bool? isPrivate, bool? mic, bool? chat, bool? guest, bool? gift, bool? music, bool? game, bool? visitor}) =>
-      RoomSettings(name: o.name, theme: theme ?? o.theme, avatarPath: avatarPath ?? o.avatarPath, isPrivate: isPrivate ?? o.isPrivate, mic: mic ?? o.mic, chat: chat ?? o.chat,
+  RoomSettings _copy(RoomSettings o, {String? name, String? theme, String? avatarPath, bool? isPrivate, bool? mic, bool? chat, bool? guest, bool? gift, bool? music, bool? game, bool? visitor}) =>
+      RoomSettings(name: name ?? o.name, theme: theme ?? o.theme, avatarPath: avatarPath ?? o.avatarPath, isPrivate: isPrivate ?? o.isPrivate, mic: mic ?? o.mic, chat: chat ?? o.chat,
           guest: guest ?? o.guest, gift: gift ?? o.gift, music: music ?? o.music, game: game ?? o.game, visitor: visitor ?? o.visitor);
 
   Future<void> _pickRoomImage() async {
@@ -55,11 +56,14 @@ class _S extends ConsumerState<RoomSettingsScreen> {
         loading: () => const LoadingView(),
         error: (e, _) => ErrorView(message: '$e', onRetry: () => ref.invalidate(roomSettingsProvider(widget.roomId))),
         data: (loaded) {
+          if (s == null) _name.text = loaded.name;
           final cur = s ?? loaded;
           final on = widget.isOwner;
           Widget sw(String t, bool v, void Function(bool) f) => SwitchListTile(title: Text(t), value: v, onChanged: on ? (x) => setState(() => f(x)) : null);
           final imageUrl = cur.avatarPath == null ? null : storageUrl(db, 'room-images', cur.avatarPath!);
           return ListView(padding: const EdgeInsets.all(16), children: [
+            TextField(controller: _name, maxLength: 40, textCapitalization: TextCapitalization.sentences, decoration: const InputDecoration(labelText: 'Room name', prefixIcon: Icon(Icons.meeting_room_outlined)), enabled: on),
+            const SizedBox(height: 10),
             Card(clipBehavior: Clip.antiAlias, child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
               Container(width: 76, height: 76, clipBehavior: Clip.antiAlias, decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Theme.of(context).colorScheme.surfaceContainerHighest), child: imageUrl == null ? const Icon(Icons.meeting_room_outlined, size: 32) : Image.network(imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined))),
               const SizedBox(width: 14),
@@ -92,7 +96,8 @@ class _S extends ConsumerState<RoomSettingsScreen> {
             if (on) NimzoButton(label: 'Save', loading: busy, onPressed: () async {
               setState(() => busy = true);
               try {
-                await ref.read(roomSettingsRepositoryProvider).save(widget.roomId, cur, password: _pw.text.isEmpty ? null : _pw.text);
+                final updated = _copy(cur, name: _name.text.trim().isEmpty ? cur.name : _name.text.trim());
+                await ref.read(roomSettingsRepositoryProvider).save(widget.roomId, updated, password: _pw.text.isEmpty ? null : _pw.text);
                 ref.invalidate(roomProvider(widget.roomId));
                 ref.invalidate(roomSettingsProvider(widget.roomId));
                 if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Saved')));
