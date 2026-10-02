@@ -124,6 +124,8 @@ class _S extends ConsumerState<RoomScreen> {
                       );
                     },
                   ),
+                  const SizedBox(height: 4),
+                  _RoomGiftFeed(roomId: widget.roomId),
                   Expanded(child: _ChatList(roomId: widget.roomId)),
                   Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: Row(children: [
                     Expanded(child: TextField(controller: _chat, style: TextStyle(color: theme.text), decoration: const InputDecoration(hintText: 'Say something', isDense: true))),
@@ -197,6 +199,40 @@ class _Seat extends StatelessWidget {
         Text(seat.userId == null ? '${seat.seatNo}' : 'User', style: const TextStyle(fontSize: 11), maxLines: 1),
         if (seat.muted) const Icon(Icons.mic_off, size: 12, color: Color(0xFFEF4444)),
       ]),
+    );
+  }
+}
+
+
+class _RoomGiftFeed extends ConsumerWidget {
+  final String roomId;
+  const _RoomGiftFeed({required this.roomId});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(roomGiftEventProvider(roomId)).when(
+      loading: () => const SizedBox(height: 42),
+      error: (_, __) => const SizedBox(height: 42),
+      data: (events) {
+        if (events.isEmpty) return const SizedBox(height: 42);
+        final e = events.first;
+        return Container(
+          height: 42,
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: .86),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(children: [
+            const Icon(Icons.card_giftcard_rounded, size: 20),
+            const SizedBox(width: 8),
+            Expanded(child: Text(
+              'Gift sent  •  x${e['quantity'] ?? 1}  •  ${e['total_coins'] ?? 0} coins',
+              maxLines: 1, overflow: TextOverflow.ellipsis,
+            )),
+          ]),
+        );
+      },
     );
   }
 }
