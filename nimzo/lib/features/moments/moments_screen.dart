@@ -154,7 +154,7 @@ class _C extends ConsumerState<CreateMomentScreen> {
           borderRadius: BorderRadius.circular(16),
           child: _localImage != null
               ? Image.file(_localImage!, height: 260, fit: BoxFit.cover)
-              : Image.network(storageUrl(ref.read(supabaseProvider), 'moment-images', _imagePath), height: 260, fit: BoxFit.cover),
+              : Image.network(storageUrl(ref.read(supabaseProvider), 'moment-images', _imagePath)!, height: 260, fit: BoxFit.cover),
         ),
       const SizedBox(height: 10),
       OutlinedButton.icon(onPressed: busy ? null : _pickImage, icon: const Icon(Icons.photo_library_outlined), label: const Text('Choose photo from phone')),
