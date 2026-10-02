@@ -144,9 +144,9 @@ class _S extends ConsumerState<RoomScreen> {
                       await ref.read(voiceServiceProvider).setMicEnabled(_micOn);
                     }),
                     IconButton(tooltip: 'Leave seat', icon: const Icon(Icons.event_seat_outlined), onPressed: () => _actions.unseat(widget.roomId)),
-                    IconButton(tooltip: 'Game', icon: const Icon(Icons.sports_esports_outlined), onPressed: () => context.push('/games-play')),
-                    IconButton(tooltip: 'Music', icon: const Icon(Icons.music_note_outlined), onPressed: () => _snack('Music is coming soon')),
-                    IconButton(tooltip: 'Gift box', icon: const Icon(Icons.inventory_2_outlined), onPressed: () => context.push('/gift-history')),
+                    IconButton(tooltip: 'Game', icon: const Icon(Icons.sports_esports_outlined), onPressed: () => context.push('/games-play?room=${rm.id}')),
+
+
                     IconButton(tooltip: 'More', icon: const Icon(Icons.more_horiz), onPressed: () => showModalBottomSheet(context: context, builder: (_) => SafeArea(child: Wrap(children: [
                       ListTile(leading: const Icon(Icons.favorite_border), title: const Text('Follow room'), onTap: () async { Navigator.pop(context); try { await ref.read(roomRepositoryProvider).followRoom(rm.id, true); _snack('Room followed'); } catch (e) { _snack('$e'); } }),
                       ListTile(leading: const Icon(Icons.flag_outlined), title: const Text('Report room'), onTap: () async { Navigator.pop(context); try { await ref.read(roomSettingsRepositoryProvider).report(rm.id, 'user_report'); _snack('Report sent'); } catch (e) { _snack('$e'); } }),
