@@ -1,4 +1,4 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
 import '../../../core/errors/error_handler.dart';
 import '../domain/auth_user.dart';
 import 'auth_service.dart';
@@ -34,7 +34,6 @@ class AuthRepository {
   Future<void> signOut() => _guard(_s.signOut);
   Future<void> resetPassword(String e) => _guard(() => _s.resetPassword(e));
 
-  /// Optionally resends the link, then returns whether the email is verified.
   Future<bool> verifyEmail({String? resendTo}) => _guard(() async {
         if (resendTo != null) await _s.resendVerification(resendTo);
         final r = await _s.refreshUser();
