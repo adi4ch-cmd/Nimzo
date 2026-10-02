@@ -49,14 +49,31 @@ class _S extends ConsumerState<ProfileSetupScreen> {
   void dispose() { _name.dispose(); _bio.dispose(); super.dispose(); }
 
   Future<void> _pickImage({required bool cover, required ImageSource source}) async {
-    final x = await ImagePicker().pickImage(source: source, maxWidth: 1600, imageQuality: 88);
-    if (x == null) return;
-    final db = ref.read(supabaseProvider);
-    final uid = db.auth.currentUser!.id;
-    final bucket = cover ? 'covers' : 'avatars';
-    final path = '$uid/${cover ? 'cover' : 'avatar'}.jpg';
-    await db.storage.from(bucket).upload(path, File(x.path), fileOptions: const FileOptions(upsert: true));
-    setState(() { if (cover) { _coverPath = path; } else { _avatarPath = path; } });
+    try {
+      final x = await ImagePicker().pickImage(source: source, maxWidth: 1600, imageQuality: 88);
+      if (x == null) return;
+      final db = ref.read(supabaseProvider);
+      final uid = db.auth.currentUser?.id;
+      if (uid == null) throw const AuthException('Please sign in again.');
+      final bucket = cover ? 'covers' : 'avatars';
+      final path = uid + '/' + (cover ? 'cover' : 'avatar') + '.jpg';
+      await db.storage.from(bucket).upload(
+        path,
+        File(x.path),
+        fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'),
+      );
+      if (!mounted) return;
+      setState(() { if (cover) { _coverPath = path; } else { _avatarPath = path; } });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(cover ? 'Cover photo uploaded.' : 'Profile photo uploaded.')),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Photo upload failed: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _save() async {
