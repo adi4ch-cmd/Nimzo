@@ -63,6 +63,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/profile/:id', builder: (_, s) => ProfileScreen(userId: s.pathParameters['id'])),
       GoRoute(path: '/chat/:id', builder: (_, s) => ConversationScreen(otherId: s.pathParameters['id']!)),
       GoRoute(path: '/moments/create', builder: (_, __) => const CreateMomentScreen()),
+      GoRoute(path: '/moments/:id/edit', builder: (_, s) => CreateMomentScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/moments/:id', builder: (_, s) => MomentDetailScreen(id: s.pathParameters['id']!)),
       StatefulShellRoute.indexedStack(
         builder: (_, __, shell) => MainShell(shell: shell),
