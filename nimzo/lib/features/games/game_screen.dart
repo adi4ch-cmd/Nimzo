@@ -67,9 +67,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(children: [
             Text(payout > 0 ? 'WIN' : 'RESULT', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
             const SizedBox(height: 6),
-            Text('Bet ${r['bet'] ?? 0} • Payout $payout coins'),
+            Text("Bet ${r['bet'] ?? 0} • Payout $payout coins"),
             const SizedBox(height: 10),
-            if (game == 'fruit_wheel') Text('${r['result']?['symbol'] ?? '—'} • ${r['result']?['multiplier'] ?? 0}×', style: Theme.of(context).textTheme.headlineSmall),
+            if (game == 'fruit_wheel') Text("${r['result']?['symbol'] ?? '—'} • ${r['result']?['multiplier'] ?? 0}×", style: Theme.of(context).textTheme.headlineSmall),
             if (game == 'fruit_party') Text('Server result settled', style: Theme.of(context).textTheme.bodyLarge),
           ])),
         ],
