@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show FileOptions;
 import '../../core/providers/supabase_provider.dart';
+import '../../core/utils/helpers.dart';
 import '../../core/widgets/nimzo_button.dart';
 import 'profile_repository.dart';
 
