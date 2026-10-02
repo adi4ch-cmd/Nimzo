@@ -39,7 +39,8 @@ jobs:
           p=Path("android/app/src/main/AndroidManifest.xml")
           s=p.read_text()
           marker='<action android:name="android.intent.action.MAIN" />'
-          block='''<intent-filter>
+          block='''<meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
+            <intent-filter>
               <action android:name="android.intent.action.VIEW" />
               <category android:name="android.intent.category.DEFAULT" />
               <category android:name="android.intent.category.BROWSABLE" />
@@ -47,7 +48,9 @@ jobs:
             </intent-filter>
             '''
           if 'android:scheme="io.nimzo.app"' not in s:
-              s=s.replace(marker, marker+"\n            "+block.strip())
+              if marker not in s:
+                  raise SystemExit("Flutter Android manifest MAIN activity marker not found")
+              s=s.replace(marker, marker+"\n            "+block.strip(), 1)
           p.write_text(s)
           PY
 
