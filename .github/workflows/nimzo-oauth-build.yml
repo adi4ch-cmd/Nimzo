@@ -96,15 +96,15 @@ jobs:
           # already-running Nimzo process. Preserve/replace existing activity attributes
           # rather than creating duplicate XML attributes.
           main_activity = re.search(
-              r'<activity\\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>',
+              r'<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>',
               s,
               re.DOTALL,
           )
           if not main_activity:
               raise SystemExit("MainActivity block not found while configuring launch mode")
           tag = main_activity.group(0)
-          tag = re.sub(r'\\sandroid:exported="[^"]*"', '', tag)
-          tag = re.sub(r'\\sandroid:launchMode="[^"]*"', '', tag)
+          tag = re.sub(r'\sandroid:exported="[^"]*"', '', tag)
+          tag = re.sub(r'\sandroid:launchMode="[^"]*"', '', tag)
           tag = tag[:-1] + ' android:exported="true" android:launchMode="singleTask">'
           s = s[:main_activity.start()] + tag + s[main_activity.end():]
 
