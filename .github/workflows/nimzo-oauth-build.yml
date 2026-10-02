@@ -39,7 +39,7 @@ jobs:
           p=Path("android/app/src/main/AndroidManifest.xml")
           s=p.read_text()
           marker='<action android:name="android.intent.action.MAIN" />'
-          block='''<meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
+          block='''<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
             <intent-filter>
               <action android:name="android.intent.action.VIEW" />
               <category android:name="android.intent.category.DEFAULT" />
@@ -51,6 +51,13 @@ jobs:
               if marker not in s:
                   raise SystemExit("Flutter Android manifest MAIN activity marker not found")
               s=s.replace(marker, marker+"\n            "+block.strip(), 1)
+          else:
+              # Keep Flutter's default deep-link handler disabled because
+              # supabase_flutter owns OAuth deep-link handling through app_links.
+              s=s.replace(
+                  '<meta-data android:name="flutter_deeplinking_enabled" android:value="true" />',
+                  '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />'
+              )
           p.write_text(s)
           PY
 
@@ -69,9 +76,6 @@ jobs:
       - name: Build APK
         working-directory: nimzo
         run: |
-          # The client publishable key has a safe source fallback in AppConstants.
-          # Do not pass an empty/missing GitHub secret, which overrides that fallback
-          # and causes Supabase Auth to fail with "No API key found".
           flutter build apk --release \
             --dart-define=SUPABASE_URL=https://kvqvlpozqokwarovwmwv.supabase.co
 
@@ -79,5 +83,3 @@ jobs:
         with:
           name: nimzo-oauth-fixed-apk
           path: nimzo/build/app/outputs/flutter-apk/app-release.apk
-
-# Verification build trigger after Supabase key fallback fix.
