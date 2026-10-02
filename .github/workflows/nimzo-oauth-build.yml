@@ -93,17 +93,20 @@ jobs:
               s = s[:main_activity.start()] + replacement + s[main_activity.end():]
 
           # Make OAuth callback delivery deterministic when the browser returns to an
-          # already-running Nimzo process. The exported Activity is the native entry
-          # point for the custom scheme and singleTask routes callbacks through onNewIntent.
-          s = re.sub(
-              r'(<activity\\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*)>',
-              lambda m: (
-                  m.group(1)
-                  + ' android:exported="true" android:launchMode="singleTask">'
-              ),
+          # already-running Nimzo process. Preserve/replace existing activity attributes
+          # rather than creating duplicate XML attributes.
+          main_activity = re.search(
+              r'<activity\\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>',
               s,
-              count=1,
+              re.DOTALL,
           )
+          if not main_activity:
+              raise SystemExit("MainActivity block not found while configuring launch mode")
+          tag = main_activity.group(0)
+          tag = re.sub(r'\\sandroid:exported="[^"]*"', '', tag)
+          tag = re.sub(r'\\sandroid:launchMode="[^"]*"', '', tag)
+          tag = tag[:-1] + ' android:exported="true" android:launchMode="singleTask">'
+          s = s[:main_activity.start()] + tag + s[main_activity.end():]
 
           p.write_text(s)
           PY
