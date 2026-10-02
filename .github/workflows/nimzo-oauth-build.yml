@@ -1,0 +1,75 @@
+name: Nimzo Android OAuth build check
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: ${{ !contains(github.event.head_commit.message, '[skip-build]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Generate Android platform if missing
+        working-directory: nimzo
+        run: |
+          if [ ! -f android/app/src/main/AndroidManifest.xml ]; then
+            flutter create --platforms=android --org io.nimzo .
+          fi
+
+      - name: Configure Nimzo deep link
+        working-directory: nimzo
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("android/app/src/main/AndroidManifest.xml")
+          s=p.read_text()
+          marker='<action android:name="android.intent.action.MAIN" />'
+          block='''<intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <data android:scheme="io.nimzo.app" android:host="login-callback" />
+            </intent-filter>
+            '''
+          if 'android:scheme="io.nimzo.app"' not in s:
+              s=s.replace(marker, marker+"\n            "+block.strip())
+          p.write_text(s)
+          PY
+
+      - name: Dependencies
+        working-directory: nimzo
+        run: flutter pub get
+
+      - name: Analyze
+        working-directory: nimzo
+        run: flutter analyze
+
+      - name: Tests
+        working-directory: nimzo
+        run: flutter test
+
+      - name: Build APK
+        working-directory: nimzo
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          flutter build apk --release             --dart-define=SUPABASE_URL=https://kvqvlpozqokwarovwmwv.supabase.co             --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-oauth-fixed-apk
+          path: nimzo/build/app/outputs/flutter-apk/app-release.apk
