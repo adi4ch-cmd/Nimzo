@@ -36,28 +36,60 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p=Path("android/app/src/main/AndroidManifest.xml")
-          s=p.read_text()
-          marker='<action android:name="android.intent.action.MAIN" />'
-          block='''<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
-            <intent-filter>
+          import re
+
+          p = Path("android/app/src/main/AndroidManifest.xml")
+          s = p.read_text()
+
+          meta = '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />'
+          s = re.sub(
+              r'<meta-data\s+android:name="flutter_deeplinking_enabled"\s+android:value="(?:true|false)"\s*/>',
+              meta,
+              s,
+          )
+
+          deep_link = '''<intent-filter>
               <action android:name="android.intent.action.VIEW" />
               <category android:name="android.intent.category.DEFAULT" />
               <category android:name="android.intent.category.BROWSABLE" />
               <data android:scheme="io.nimzo.app" android:host="login-callback" />
-            </intent-filter>
-            '''
+            </intent-filter>'''
+
           if 'android:scheme="io.nimzo.app"' not in s:
-              if marker not in s:
-                  raise SystemExit("Flutter Android manifest MAIN activity marker not found")
-              s=s.replace(marker, marker+"\n            "+block.strip(), 1)
-          else:
-              # Keep Flutter's default deep-link handler disabled because
-              # supabase_flutter owns OAuth deep-link handling through app_links.
-              s=s.replace(
-                  '<meta-data android:name="flutter_deeplinking_enabled" android:value="true" />',
-                  '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />'
+              main_activity = re.search(
+                  r'(<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>)(.*?)(</activity>)',
+                  s,
+                  re.DOTALL,
               )
+              if not main_activity:
+                  raise SystemExit("MainActivity block not found in generated AndroidManifest.xml")
+              replacement = (
+                  main_activity.group(1)
+                  + main_activity.group(2).rstrip()
+                  + "\n            "
+                  + deep_link
+                  + "\n        "
+                  + main_activity.group(3)
+              )
+              s = s[:main_activity.start()] + replacement + s[main_activity.end():]
+
+          if meta not in s:
+              main_activity = re.search(
+                  r'(<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>)(.*?)(</activity>)',
+                  s,
+                  re.DOTALL,
+              )
+              if not main_activity:
+                  raise SystemExit("MainActivity block not found while adding deep-link flag")
+              replacement = (
+                  main_activity.group(1)
+                  + "\n            "
+                  + meta
+                  + main_activity.group(2)
+                  + main_activity.group(3)
+              )
+              s = s[:main_activity.start()] + replacement + s[main_activity.end():]
+
           p.write_text(s)
           PY
 
