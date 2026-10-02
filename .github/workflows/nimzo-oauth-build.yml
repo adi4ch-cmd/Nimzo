@@ -65,6 +65,8 @@ jobs:
                   raise SystemExit("MainActivity block not found in generated AndroidManifest.xml")
               replacement = (
                   main_activity.group(1)
+                  .replace('android:launchMode="standard"', '')
+                  .replace('android:exported="false"', '')
                   + main_activity.group(2).rstrip()
                   + "\n            "
                   + deep_link
@@ -89,6 +91,19 @@ jobs:
                   + main_activity.group(3)
               )
               s = s[:main_activity.start()] + replacement + s[main_activity.end():]
+
+          # Make OAuth callback delivery deterministic when the browser returns to an
+          # already-running Nimzo process. The exported Activity is the native entry
+          # point for the custom scheme and singleTask routes callbacks through onNewIntent.
+          s = re.sub(
+              r'(<activity\\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*)>',
+              lambda m: (
+                  m.group(1)
+                  + ' android:exported="true" android:launchMode="singleTask">'
+              ),
+              s,
+              count=1,
+          )
 
           p.write_text(s)
           PY
