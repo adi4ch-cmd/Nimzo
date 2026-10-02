@@ -29,6 +29,7 @@ jobs:
           if [ ! -f android/app/src/main/AndroidManifest.xml ]; then
             flutter create --platforms=android --org io.nimzo .
           fi
+          rm -f test/widget_test.dart
 
       - name: Configure Nimzo deep link
         working-directory: nimzo
