@@ -19,7 +19,6 @@ import '../features/onboarding/onboarding_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/profile/profile_setup_screen.dart';
 import '../features/recharge/recharge_screen.dart';
-import '../features/reseller/reseller_screen.dart';
 import '../features/rooms/presentation/room_screen.dart';
 import '../features/vip/vip_screen.dart';
 import '../features/wallet/wallet_screen.dart';
@@ -59,7 +58,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.wallet, builder: (_, __) => const WalletScreen()),
       GoRoute(path: Routes.discover, builder: (_, __) => const DiscoverScreen()),
       GoRoute(path: Routes.notifications, builder: (_, __) => const NotificationsScreen()),
-      GoRoute(path: Routes.reseller, builder: (_, __) => const ResellerScreen()),
       GoRoute(path: Routes.recharge, builder: (_, __) => const RechargeScreen()),
       GoRoute(path: Routes.vip, builder: (_, __) => const VipScreen()),
       GoRoute(path: '/profile/:id', builder: (_, s) => ProfileScreen(userId: s.pathParameters['id'])),
