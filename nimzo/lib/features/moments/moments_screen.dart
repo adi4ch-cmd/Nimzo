@@ -40,7 +40,7 @@ class MomentsScreen extends ConsumerWidget {
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Image.network(
-                                storageUrl(ref.read(supabaseProvider), 'moment-images', m.imagePath),
+                                storageUrl(ref.read(supabaseProvider), 'moment-images', m.imagePath)!,
                                 width: 58, height: 58, fit: BoxFit.cover,
                                 errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined),
                               ),
@@ -103,7 +103,8 @@ class _C extends ConsumerState<CreateMomentScreen> {
     }
   }
 
-  @override void dispose() { _t.dispose(); super.dispose(); }
+  @override
+  void dispose() { _t.dispose(); super.dispose(); }
 
   Future<void> _pickImage() async {
     try {
@@ -196,7 +197,6 @@ class _D extends ConsumerState<MomentDetailScreen> {
         ]),
       );
 }
-
 
 class _MomentGiftSheet extends ConsumerStatefulWidget {
   final String momentId, receiverId;
