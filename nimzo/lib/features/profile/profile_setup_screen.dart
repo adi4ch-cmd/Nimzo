@@ -54,7 +54,7 @@ class _S extends ConsumerState<ProfileSetupScreen> {
       if (x == null) return;
       final db = ref.read(supabaseProvider);
       final uid = db.auth.currentUser?.id;
-      if (uid == null) throw const AuthException('Please sign in again.');
+      if (uid == null) throw Exception('Please sign in again.');
       final bucket = cover ? 'covers' : 'avatars';
       final path = uid + '/' + (cover ? 'cover' : 'avatar') + '.jpg';
       await db.storage.from(bucket).upload(
