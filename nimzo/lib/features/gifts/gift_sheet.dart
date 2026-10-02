@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/widgets/empty_view.dart';
 import '../../core/widgets/error_view.dart';
@@ -36,14 +35,8 @@ class _S extends ConsumerState<GiftSheet> {
       _snack('You cannot send a gift to yourself');
       return;
     }
-    final currentUser = Supabase.instance.client.auth.currentUser?.id;
-    if (currentUser != null && currentUser == widget.receiverId) {
-      _snack('You cannot send a gift to yourself');
-      return;
-    }
     final n = _custom.text.isNotEmpty ? int.tryParse(_custom.text) ?? 0 : qty;
     if (n < 1 || n > 9999) { _snack('Enter a quantity from 1 to 9999'); return; }
-    // Confirm step, then the server validates balance and applies the split.
     final ok = await showDialog<bool>(
         context: context,
         builder: (d) => AlertDialog(
