@@ -22,7 +22,7 @@ class GamesCatalogScreen extends ConsumerWidget {
       ])),
       body: ref.watch(gamesCatalogProvider).when(
         loading: () => const ShimmerView(),
-        error: (e, _) => ErrorView(message: '\$e', onRetry: () => ref.invalidate(gamesCatalogProvider)),
+        error: (e, _) => ErrorView(message: '$e', onRetry: () => ref.invalidate(gamesCatalogProvider)),
         data: (games) => games.isEmpty ? const EmptyView(title: 'No games available') : TabBarView(
           children: List.generate(4, (_) => ListView.separated(
             padding: const EdgeInsets.all(16), itemCount: games.length, separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -31,7 +31,7 @@ class GamesCatalogScreen extends ConsumerWidget {
               return Card(child: ListTile(
                 leading: const Icon(Icons.sports_esports_outlined),
                 title: Text(g['name']?.toString() ?? g['slug'].toString()),
-                subtitle: Text('Server-settled • v\${g['version'] ?? 1}'),
+                subtitle: Text('Server-settled • v${g['version'] ?? 1}'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.push('/games-play'),
               ));
