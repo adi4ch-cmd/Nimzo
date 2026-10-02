@@ -1,0 +1,14 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../core/providers/supabase_provider.dart';
+
+/// Levels, expiry and rewards are all decided in Postgres. The app only reads and requests claims.
+class VipRepository {
+  final SupabaseClient _db;
+  VipRepository(this._db);
+  Future<Map<String, dynamic>> status() async => Map<String, dynamic>.from(await _db.rpc('vip_status'));
+  Future<void> claimDaily() => _db.rpc('claim_vip_daily');
+  Future<void> claimSvipFriday() => _db.rpc('claim_svip_friday');
+}
+final vipRepositoryProvider = Provider((ref) => VipRepository(ref.watch(supabaseProvider)));
+final vipStatusProvider = FutureProvider((ref) => ref.watch(vipRepositoryProvider).status());

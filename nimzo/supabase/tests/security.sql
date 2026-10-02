@@ -1,0 +1,14 @@
+-- Run as an ordinary authenticated user (set role authenticated; set request.jwt.claims ...).
+-- Each statement below MUST fail (permission denied / RLS violation / exception):
+--   update wallets set coins = 999999999;
+--   update profiles set vip_level = 10, svip_level = 8, level = 99 where id = auth.uid();
+--   update profiles set status = 'active' where id = auth.uid();
+--   update rooms set owner_id = auth.uid() where id = '<someone else room>';
+--   insert into admins values (auth.uid());
+--   insert into ledger(user_id,kind,coin_delta,idempotency_key) values (auth.uid(),'x',100,'k');
+--   insert into room_members(room_id,user_id,role) values ('<room>', auth.uid(), 'moderator');
+--   select apply_recharge(auth.uid(),'play','t1','p1');       -- not executable by clients
+--   select activate_vip(auth.uid(), 10);                       -- not executable by clients
+--   select admin_set_status('<uid>','banned');                 -- not admin
+-- Economy: sender has 100000 coins, gift price 100000 x1 ->
+--   receiver.diamonds +45000, room owner coins +5000, sender coins -100000; replay with same key changes nothing.
