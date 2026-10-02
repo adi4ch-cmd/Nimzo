@@ -3,15 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/app.dart';
 import 'core/constants/app_constants.dart';
-import 'core/services/firebase_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FirebaseService.init();
-  // Anon key only. Never ship service_role. Pass via --dart-define.
+
+  // Supabase Auth uses PKCE for mobile deep-link OAuth. The SDK owns the
+  // callback/code exchange; do not manually exchange the callback code.
   await Supabase.initialize(
     url: AppConstants.supabaseUrl,
-    anonKey: AppConstants.supabaseAnonKey,
+    publishableKey: AppConstants.supabaseAnonKey,
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
   );
+
   runApp(const ProviderScope(child: NimzoApp()));
 }
