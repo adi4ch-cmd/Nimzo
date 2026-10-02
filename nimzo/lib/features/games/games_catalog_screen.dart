@@ -33,7 +33,7 @@ class GamesCatalogScreen extends ConsumerWidget {
                 title: Text(g['name']?.toString() ?? g['slug'].toString()),
                 subtitle: Text('Server-settled • v${g['version'] ?? 1}'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push('/games-play'),
+                onTap: () => showDialog<void>(context: context, builder: (c) => AlertDialog(title: Text(g['name']?.toString() ?? 'Game'), content: const Text('Games can be played inside a voice room. Open a room first, then launch the game from the room.'), actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('OK'))])),
               ));
             },
           )),
