@@ -33,8 +33,8 @@ class _S extends ConsumerState<RoomSettingsScreen> {
       RoomSettings(name: name ?? o.name, theme: theme ?? o.theme, avatarPath: avatarPath ?? o.avatarPath, isPrivate: isPrivate ?? o.isPrivate, mic: mic ?? o.mic, chat: chat ?? o.chat,
           guest: guest ?? o.guest, gift: gift ?? o.gift, music: music ?? o.music, game: game ?? o.game, visitor: visitor ?? o.visitor);
 
-  Future<void> _pickRoomImage() async {
-    final x = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1600, maxHeight: 1600, imageQuality: 88);
+  Future<void> _pickRoomImage({required ImageSource source}) async {
+    final x = await ImagePicker().pickImage(source: source, maxWidth: 1600, maxHeight: 1600, imageQuality: 88);
     if (x == null) return;
     try {
       final db = ref.read(supabaseProvider);
@@ -44,6 +44,17 @@ class _S extends ConsumerState<RoomSettingsScreen> {
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
     }
+  }
+
+  Future<void> _chooseRoomImage(BuildContext context) async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (c) => SafeArea(child: Wrap(children: [
+        ListTile(leading: const Icon(Icons.photo_library_outlined), title: const Text('Phone Gallery'), onTap: () => Navigator.pop(c, ImageSource.gallery)),
+        ListTile(leading: const Icon(Icons.camera_alt_outlined), title: const Text('Camera'), onTap: () => Navigator.pop(c, ImageSource.camera)),
+      ])),
+    );
+    if (source != null) await _pickRoomImage(source: source);
   }
 
   @override
@@ -72,7 +83,7 @@ class _S extends ConsumerState<RoomSettingsScreen> {
                 const SizedBox(height: 4),
                 const Text('Choose a professional room picture from your phone.'),
                 const SizedBox(height: 8),
-                OutlinedButton.icon(onPressed: on ? _pickRoomImage : null, icon: const Icon(Icons.photo_library_outlined), label: const Text('Choose from phone')),
+                OutlinedButton.icon(onPressed: on ? () => _chooseRoomImage(context) : null, icon: const Icon(Icons.photo_library_outlined), label: const Text('Choose picture')),
               ])),
             ]))),
             const SizedBox(height: 12),
