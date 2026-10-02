@@ -65,10 +65,12 @@ jobs:
 
       - name: Build APK
         working-directory: nimzo
-        env:
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          flutter build apk --release             --dart-define=SUPABASE_URL=https://kvqvlpozqokwarovwmwv.supabase.co             --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"
+          # The client publishable key has a safe source fallback in AppConstants.
+          # Do not pass an empty/missing GitHub secret, which overrides that fallback
+          # and causes Supabase Auth to fail with "No API key found".
+          flutter build apk --release \
+            --dart-define=SUPABASE_URL=https://kvqvlpozqokwarovwmwv.supabase.co
 
       - uses: actions/upload-artifact@v4
         with:
