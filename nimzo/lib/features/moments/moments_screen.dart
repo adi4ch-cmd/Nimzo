@@ -1,8 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show FileOptions;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/utils/helpers.dart';
 import '../../core/widgets/empty_view.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/shimmer_view.dart';
@@ -31,7 +35,17 @@ class MomentsScreen extends ConsumerWidget {
                     final repo = ref.read(momentRepositoryProvider);
                     return ListTile(
                       onTap: () => context.push('/moments/${m.id}'),
-                      title: Text(m.text ?? ''),
+                      leading: m.imagePath == null
+                          ? null
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                storageUrl(ref.read(supabaseProvider), 'moment-images', m.imagePath),
+                                width: 58, height: 58, fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined),
+                              ),
+                            ),
+                      title: Text(m.text ?? (m.imagePath != null ? 'Photo' : '')),
                       subtitle: Row(children: [
                         IconButton(icon: Icon(m.liked ? Icons.favorite : Icons.favorite_border, size: 18),
                             onPressed: () async { await repo.toggleLike(m.id); ref.invalidate(momentsFeedProvider); }),
@@ -42,10 +56,16 @@ class MomentsScreen extends ConsumerWidget {
                       ]),
                       trailing: PopupMenuButton<String>(
                         onSelected: (v) async {
-                          if (v == 'delete') await repo.delete(m.id); else await repo.report(m.id, 'user_report');
-                          ref.invalidate(momentsFeedProvider);
+                          if (v == 'edit') {
+                            await context.push('/moments/' + m.id + '/edit');
+                            ref.invalidate(momentsFeedProvider);
+                          } else {
+                            if (v == 'delete') await repo.delete(m.id); else await repo.report(m.id, 'user_report');
+                            ref.invalidate(momentsFeedProvider);
+                          }
                         },
                         itemBuilder: (_) => [
+                          if (m.authorId == me) const PopupMenuItem(value: 'edit', child: Text('Edit')),
                           if (m.authorId == me) const PopupMenuItem(value: 'delete', child: Text('Delete')),
                           const PopupMenuItem(value: 'report', child: Text('Report')),
                         ],
@@ -60,35 +80,88 @@ class MomentsScreen extends ConsumerWidget {
 }
 
 class CreateMomentScreen extends ConsumerStatefulWidget {
-  const CreateMomentScreen({super.key});
-  @override
-  ConsumerState<CreateMomentScreen> createState() => _C();
+  final String? id;
+  const CreateMomentScreen({super.key, this.id});
+  @override ConsumerState<CreateMomentScreen> createState() => _C();
 }
 
 class _C extends ConsumerState<CreateMomentScreen> {
   final _t = TextEditingController();
   bool busy = false;
-  @override
-  void dispose() { _t.dispose(); super.dispose(); }
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('New moment'), actions: [
-          TextButton(
-            onPressed: busy || _t.text.trim().isEmpty ? null : () async {
-              setState(() => busy = true);
-              try {
-                await ref.read(momentRepositoryProvider).create(text: _t.text.trim());
-                ref.invalidate(momentsFeedProvider);
-                if (context.mounted) context.pop();
-              } catch (e) {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
-              } finally { if (mounted) setState(() => busy = false); }
-            },
-            child: const Text('Post'),
-          ),
-        ]),
-        body: Padding(padding: const EdgeInsets.all(16), child: TextField(controller: _t, maxLines: null, maxLength: 500, onChanged: (_) => setState(() {}), decoration: const InputDecoration(hintText: 'What is on your mind?'))),
-      );
+  String? _imagePath;
+  File? _localImage;
+
+  @override void initState() {
+    super.initState();
+    if (widget.id != null) {
+      ref.read(momentRepositoryProvider).get(widget.id!).then((m) {
+        if (!mounted) return;
+        setState(() { _t.text = m.text ?? ''; _imagePath = m.imagePath; });
+      }).catchError((e) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      });
+    }
+  }
+
+  @override void dispose() { _t.dispose(); super.dispose(); }
+
+  Future<void> _pickImage() async {
+    try {
+      final x = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1800, imageQuality: 88);
+      if (x == null) return;
+      setState(() => _localImage = File(x.path));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Photo selection failed: $e')));
+    }
+  }
+
+  Future<void> _save() async {
+    final text = _t.text.trim();
+    if (text.isEmpty && _localImage == null && _imagePath == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Add text or a photo.')));
+      return;
+    }
+    setState(() => busy = true);
+    try {
+      String? path = _imagePath;
+      if (_localImage != null) {
+        final db = ref.read(supabaseProvider);
+        final uid = db.auth.currentUser!.id;
+        path = uid + '/' + DateTime.now().microsecondsSinceEpoch.toString() + '.jpg';
+        await db.storage.from('moment-images').upload(path, _localImage!, fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'));
+      }
+      final repo = ref.read(momentRepositoryProvider);
+      if (widget.id == null) {
+        await repo.create(text: text.isEmpty ? null : text, imagePath: path);
+      } else {
+        await repo.update(widget.id!, text: text.isEmpty ? null : text, imagePath: path);
+      }
+      ref.invalidate(momentsFeedProvider);
+      if (mounted) context.pop();
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not save moment: $e')));
+    } finally { if (mounted) setState(() => busy = false); }
+  }
+
+  @override Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text(widget.id == null ? 'New moment' : 'Edit moment'),
+      actions: [TextButton(onPressed: busy ? null : _save, child: Text(widget.id == null ? 'Post' : 'Save'))],
+    ),
+    body: ListView(padding: const EdgeInsets.all(16), children: [
+      if (_localImage != null || _imagePath != null)
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: _localImage != null
+              ? Image.file(_localImage!, height: 260, fit: BoxFit.cover)
+              : Image.network(storageUrl(ref.read(supabaseProvider), 'moment-images', _imagePath), height: 260, fit: BoxFit.cover),
+        ),
+      const SizedBox(height: 10),
+      OutlinedButton.icon(onPressed: busy ? null : _pickImage, icon: const Icon(Icons.photo_library_outlined), label: const Text('Choose photo from phone')),
+      const SizedBox(height: 10),
+      TextField(controller: _t, maxLines: null, maxLength: 500, decoration: const InputDecoration(hintText: 'What is on your mind?')),
+    ]),
+  );
 }
 
 class MomentDetailScreen extends ConsumerStatefulWidget {
