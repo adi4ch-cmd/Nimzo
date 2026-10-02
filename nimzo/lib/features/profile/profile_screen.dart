@@ -33,6 +33,26 @@ class ProfileScreen extends ConsumerWidget {
         if (isMe) IconButton(icon: const Icon(Icons.account_balance_wallet_outlined), onPressed: () => context.push('/wallet')),
         if (isMe) IconButton(icon: const Icon(Icons.workspace_premium_outlined), onPressed: () => context.push('/vip')),
         if (isMe) IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () => context.push('/profile-setup')),
+        if (isMe) IconButton(
+          icon: const Icon(Icons.logout_outlined),
+          tooltip: 'Sign out',
+          onPressed: () async {
+            final ok = await showDialog<bool>(
+              context: context,
+              builder: (c) => AlertDialog(
+                title: const Text('Sign out?'),
+                content: const Text('Your Nimzo account and data will remain محفوظ.'),
+                actions: [
+                  TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+                  FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Sign out')),
+                ],
+              ),
+            );
+            if (ok == true) {
+              await ref.read(supabaseProvider).auth.signOut();
+            }
+          },
+        ),
       ]),
       body: p.when(
         loading: () => const LoadingView(),
