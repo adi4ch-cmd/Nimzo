@@ -5,11 +5,12 @@ import '../../../core/providers/supabase_provider.dart';
 
 class RoomSettings {
   final String name, theme;
+  final String? avatarPath;
   final bool isPrivate, mic, chat, guest, gift, music, game, visitor;
-  const RoomSettings({required this.name, required this.theme, required this.isPrivate, this.mic = true, this.chat = true,
+  const RoomSettings({required this.name, required this.theme, this.avatarPath, required this.isPrivate, this.mic = true, this.chat = true,
       this.guest = true, this.gift = true, this.music = true, this.game = true, this.visitor = true});
   factory RoomSettings.fromJson(Map<String, dynamic> j) => RoomSettings(
-      name: j['name'], theme: j['theme'], isPrivate: j['is_private'], mic: j['perm_mic'] ?? true, chat: j['perm_chat'] ?? true,
+      name: j['name'], theme: j['theme'], avatarPath: j['avatar_path'] as String?, isPrivate: j['is_private'], mic: j['perm_mic'] ?? true, chat: j['perm_chat'] ?? true,
       guest: j['perm_guest'] ?? true, gift: j['perm_gift'] ?? true, music: j['perm_music'] ?? true, game: j['perm_game'] ?? true, visitor: j['perm_visitor'] ?? true);
 }
 
@@ -25,6 +26,9 @@ class RoomSettingsRepository {
       await _db.rpc('update_room_settings', params: {
         'p_room': id, 'p_name': s.name, 'p_theme': s.theme, 'p_private': s.isPrivate, 'p_password': password,
         'p_mic': s.mic, 'p_chat': s.chat, 'p_guest': s.guest, 'p_gift': s.gift, 'p_music': s.music, 'p_game': s.game, 'p_visitor': s.visitor});
+      if (s.avatarPath != null) {
+        await _db.rpc('update_room_settings', params: {'p_room': id, 'p_settings': {'avatar_path': s.avatarPath}});
+      }
     } catch (e) { throw mapError(e); }
   }
 
