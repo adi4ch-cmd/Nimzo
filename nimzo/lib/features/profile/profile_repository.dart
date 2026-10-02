@@ -13,10 +13,11 @@ class ProfileRepository {
     catch (e) { throw mapError(e); }
   }
 
-  Future<void> update({String? bio, String? avatarPath, String? coverPath, String? countryCode,
+  Future<void> update({String? displayName, String? bio, String? avatarPath, String? coverPath, String? countryCode,
       String? countryName, String? language, DateTime? dateOfBirth, String? gender}) async {
     try {
       final m = <String, dynamic>{
+        if (displayName != null) 'display_name': displayName.trim(),
         if (bio != null) 'bio': bio,
         if (avatarPath != null) 'avatar_path': avatarPath,
         if (coverPath != null) 'cover_path': coverPath,
