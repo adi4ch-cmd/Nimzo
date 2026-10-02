@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/widgets/empty_view.dart';
 import '../../core/widgets/error_view.dart';
@@ -30,6 +31,11 @@ class _S extends ConsumerState<GiftSheet> {
   Future<void> _send() async {
     final g = selected;
     if (g == null) return;
+    final currentUser = Supabase.instance.client.auth.currentUser?.id;
+    if (currentUser != null && currentUser == widget.receiverId) {
+      _snack('You cannot send a gift to yourself');
+      return;
+    }
     final currentUser = Supabase.instance.client.auth.currentUser?.id;
     if (currentUser != null && currentUser == widget.receiverId) {
       _snack('You cannot send a gift to yourself');
