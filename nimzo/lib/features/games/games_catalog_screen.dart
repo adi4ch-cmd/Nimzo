@@ -28,13 +28,39 @@ class GamesCatalogScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16), itemCount: games.length, separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (_, i) {
               final g = games[i];
-              return Card(child: ListTile(
-                leading: const Icon(Icons.sports_esports_outlined),
-                title: Text(g['name']?.toString() ?? g['slug'].toString()),
-                subtitle: Text('Server-settled • v${g['version'] ?? 1}'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => showDialog<void>(context: context, builder: (c) => AlertDialog(title: Text(g['name']?.toString() ?? 'Game'), content: const Text('Games can be played inside a voice room. Open a room first, then launch the game from the room.'), actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('OK'))])),
-              ));
+              return Material(
+                color: NimzoColors.surface,
+                borderRadius: BorderRadius.circular(18),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(18),
+                  onTap: () => showDialog<void>(
+                    context: context,
+                    builder: (c) => AlertDialog(
+                      title: Text(g['name']?.toString() ?? g['slug'].toString()),
+                      content: const Text('Games can be played inside a voice room. Open a room first, then launch the game from the room.'),
+                      actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('OK'))],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(children: [
+                      Container(
+                        width: 58,
+                        height: 58,
+                        decoration: BoxDecoration(color: NimzoColors.primaryFaint, borderRadius: BorderRadius.circular(15)),
+                        child: const Icon(Icons.sports_esports_rounded, size: 30, color: NimzoColors.primaryDark),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(g['name']?.toString() ?? g['slug'].toString(), maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 4),
+                        Text('Server-settled', style: Theme.of(context).textTheme.bodySmall),
+                      ])),
+                      const Icon(Icons.chevron_right),
+                    ]),
+                  ),
+                ),
+              );;
             },
           )),
         ),
