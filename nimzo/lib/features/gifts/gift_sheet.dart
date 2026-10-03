@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/widgets/empty_view.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/shimmer_view.dart';
@@ -124,6 +125,23 @@ class _GiftVisual extends StatelessWidget {
   final Gift gift;
   final bool selected;
   const _GiftVisual({required this.gift, required this.selected});
+
+  static const _local = <String, String>{
+    'Rose': 'assets/gifts/rose.svg',
+    'Heart': 'assets/gifts/heart.svg',
+    'Kiss': 'assets/gifts/kiss.svg',
+    'Coffee': 'assets/gifts/coffee.svg',
+    'Crown': 'assets/gifts/crown.svg',
+    'Diamond': 'assets/gifts/diamond.svg',
+    'Rocket': 'assets/gifts/rocket.svg',
+    'Sports Car': 'assets/gifts/car.svg',
+    'Luxury Yacht': 'assets/gifts/yacht.svg',
+    'Private Jet': 'assets/gifts/jet.svg',
+    'Golden Palace': 'assets/gifts/palace.svg',
+    'Royal Dragon': 'assets/gifts/dragon.svg',
+    'Phoenix': 'assets/gifts/phoenix.svg',
+  };
+
   @override
   Widget build(BuildContext context) {
     final fallback = switch (gift.category.toLowerCase()) {
@@ -134,10 +152,31 @@ class _GiftVisual extends StatelessWidget {
       _ => Icons.card_giftcard_rounded,
     };
     final color = selected ? const Color(0xFF16A34A) : const Color(0xFF64748B);
-    if (gift.assetPath == null || gift.assetPath!.trim().isEmpty) return Icon(fallback, size: 30, color: color);
-    final url = storageUrl(Supabase.instance.client, 'gifts', gift.assetPath);
-    if (url == null) return Icon(fallback, size: 30, color: color);
-    return SizedBox(width: 42, height: 42, child: Image.network(url, fit: BoxFit.contain, errorBuilder: (_, __, ___) => Icon(fallback, size: 30, color: color)));
+    final local = _local[gift.name];
+
+    if (local != null) {
+      return AnimatedScale(
+        scale: selected ? 1.08 : 1,
+        duration: const Duration(milliseconds: 160),
+        child: SvgPicture.asset(local, width: 46, height: 46, fit: BoxFit.contain),
+      );
+    }
+
+    if (gift.assetPath != null && gift.assetPath!.trim().isNotEmpty) {
+      final url = storageUrl(Supabase.instance.client, 'gifts', gift.assetPath);
+      if (url != null) {
+        return SizedBox(
+          width: 46,
+          height: 46,
+          child: Image.network(
+            url,
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => Icon(fallback, size: 30, color: color),
+          ),
+        );
+      }
+    }
+    return Icon(fallback, size: 30, color: color);
   }
 }
 
