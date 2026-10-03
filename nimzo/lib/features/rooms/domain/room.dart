@@ -5,6 +5,7 @@ class Room {
   final String ownerId;
   final String? country;
   final String theme;
+  final String? avatarPath;
   final bool isPrivate;
   final String status;
   final int lifetimeGiftCoins;
@@ -17,6 +18,7 @@ class Room {
   factory Room.fromJson(Map<String, dynamic> j) => Room(
         id: j['id'], roomNo: j['room_no'], name: j['name'], ownerId: j['owner_id'],
         country: j['country'], theme: j['theme'] ?? 'nimzo_white',
+        avatarPath: j['avatar_path'] as String?,
         isPrivate: j['is_private'] ?? false, status: j['status'] ?? 'open', lifetimeGiftCoins: (j['lifetime_gift_coins'] ?? 0) as int,
         createdAt: DateTime.parse(j['created_at']),
         rules: j['rules'],
