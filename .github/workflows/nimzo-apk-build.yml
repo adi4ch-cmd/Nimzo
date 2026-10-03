@@ -24,4 +24,4 @@ jobs:
           name: nimzo-pro-polish-release
           path: nimzo/build/app/outputs/flutter-apk/app-release.apk
 
-# APK build workflow
+# APK build workflow - syntax-fix retrigger
