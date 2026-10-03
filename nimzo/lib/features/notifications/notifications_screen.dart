@@ -7,13 +7,13 @@ import 'notification_repository.dart';
 
 IconData _iconForNotification(String category) => switch (category.toLowerCase()) { 'messages' => Icons.chat_bubble_outline_rounded, 'gifts' => Icons.card_giftcard_rounded, 'followers' => Icons.person_add_alt_1_rounded, 'friends' => Icons.people_outline_rounded, 'rooms' => Icons.mic_external_on_rounded, 'vip' => Icons.workspace_premium_rounded, 'svip' => Icons.diamond_rounded, _ => Icons.notifications_none_rounded };
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
   @override
-  Widget build(BuildContext context) => DefaultTabController(
+  Widget build(BuildContext context, WidgetRef ref) => DefaultTabController(
         length: notificationCategories.length,
         child: Scaffold(
-          appBar: AppBar(title: const Text('Notifications'), actions: [IconButton(tooltip: 'Mark all read', icon: const Icon(Icons.done_all_rounded), onPressed: () { context; })], bottom: TabBar(isScrollable: true, tabs: [for (final c in notificationCategories) Tab(text: c)])),
+          appBar: AppBar(title: const Text('Notifications'), actions: [IconButton(tooltip: 'Mark all read', icon: const Icon(Icons.done_all_rounded), onPressed: () async { try { await ref.read(notificationRepositoryProvider).markAllRead(); for (final c in notificationCategories) { ref.invalidate(notificationsProvider(c)); } if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('All notifications marked as read'))); } catch (e) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not mark notifications as read: $e'))); } })], bottom: TabBar(isScrollable: true, tabs: [for (final c in notificationCategories) Tab(text: c)])),
           body: TabBarView(children: [for (final c in notificationCategories) _List(c)]),
         ),
       );
