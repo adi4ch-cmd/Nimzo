@@ -13,7 +13,7 @@ class Room {
   final Map<String, String> permissions;
   final String? rules;
   const Room({required this.id, required this.roomNo, required this.name, required this.ownerId,
-      this.country, required this.theme, required this.isPrivate, required this.status, this.lifetimeGiftCoins = 0, required this.createdAt, this.permissions = const {}, this.rules});
+      this.country, required this.theme, this.avatarPath, required this.isPrivate, required this.status, this.lifetimeGiftCoins = 0, required this.createdAt, this.permissions = const {}, this.rules});
 
   factory Room.fromJson(Map<String, dynamic> j) => Room(
         id: j['id'], roomNo: j['room_no'], name: j['name'], ownerId: j['owner_id'],
