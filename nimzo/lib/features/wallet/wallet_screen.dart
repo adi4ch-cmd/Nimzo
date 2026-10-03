@@ -23,17 +23,13 @@ class WalletScreen extends ConsumerWidget {
               loading: () => const LoadingView(),
               error: (e, _) => ErrorView(message: '$e', onRetry: () => ref.invalidate(walletProvider)),
               data: (w) => ListView(padding: const EdgeInsets.all(16), children: [
-                Text('Coins: ${w.coins}', style: Theme.of(context).textTheme.headlineMedium),
-                Text('Diamonds: ${w.diamonds}'),
+                Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: const Color(0xFFF0FDF4), borderRadius: BorderRadius.circular(22), border: Border.all(color: const Color(0xFFDCFCE7))), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('Your balance', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))), const SizedBox(height: 4), Text('${w.coins}', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800)), const SizedBox(height: 2), Text('${w.diamonds} diamonds', style: Theme.of(context).textTheme.bodySmall)]),
                 Row(children: [
                   TextButton(onPressed: () => context.push('/recharge'), child: const Text('Recharge')),
                   TextButton(onPressed: () => context.push('/vip'), child: const Text('VIP')),
-                  TextButton(onPressed: () => context.push('/reseller'), child: const Text('Reseller')),
-                ]),
-                const Divider(height: 32),
-                if (w.ledger.isEmpty) const EmptyView(title: 'No transactions yet'),
-                for (final e in w.ledger)
-                  ListTile(title: Text('${e['kind']}'), trailing: Text('${e['coin_delta']} / ${e['diamond_delta']}')),
+                                  ]),
+                const SizedBox(height: 18),
+                Row(children: [Expanded(child: FilledButton.icon(onPressed: () => context.push('/recharge'), icon: const Icon(Icons.add_rounded), label: const Text('Recharge'))), const SizedBox(width: 8), Expanded(child: OutlinedButton.icon(onPressed: () => context.push('/vip'), icon: const Icon(Icons.workspace_premium_outlined), label: const Text('VIP')))]),
               ]),
             ),
       );
