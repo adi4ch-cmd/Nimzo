@@ -1,7 +1,7 @@
 name: Nimzo APK Build
 on:
   push:
-    branches: ["ui/pro-polish-2026-10"]
+    branches: ["main"]
   workflow_dispatch:
 jobs:
   build:
