@@ -218,7 +218,7 @@ class _MomentGiftSheetState extends ConsumerState<_MomentGiftSheet> {
       const Padding(padding: EdgeInsets.all(16), child: Text('Send Gift to Moment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
       Expanded(child: gifts.when(loading: () => const Center(child: CircularProgressIndicator()), error: (e, _) => Center(child: Text('$e')), data: (list) => GridView.count(crossAxisCount: 3, children: [
         for (final g in list) InkWell(onTap: () => setState(() => selected = g), child: Card(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(Icons.card_giftcard, size: 30, color: selected?.id == g.id ? Theme.of(context).colorScheme.primary : null),
+          Container(width: 54, height: 54, decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .08), borderRadius: BorderRadius.circular(16)), child: Icon(Icons.card_giftcard_rounded, size: 30, color: selected?.id == g.id ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant)),
           Text(g.name), Text('${g.price} coins', style: Theme.of(context).textTheme.bodySmall),
         ]))),
       ]))),
