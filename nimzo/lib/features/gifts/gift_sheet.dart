@@ -38,11 +38,6 @@ class _S extends ConsumerState<GiftSheet> {
   Future<void> _send() async {
     final g = selected;
     if (g == null) return;
-    final currentUser = Supabase.instance.client.auth.currentUser?.id;
-    if (currentUser != null && currentUser == widget.receiverId) {
-      _snack('You cannot send a gift to yourself');
-      return;
-    }
     final n = _custom.text.isNotEmpty ? int.tryParse(_custom.text) ?? 0 : qty;
     if (n < 1 || n > 9999) { _snack('Enter a quantity from 1 to 9999'); return; }
     final ok = await showDialog<bool>(
