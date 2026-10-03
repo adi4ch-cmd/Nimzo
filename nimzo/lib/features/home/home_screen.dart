@@ -60,18 +60,18 @@ class _PopularTab extends ConsumerStatefulWidget {
 }
 
 class _P extends ConsumerState<_PopularTab> {
-  String? country = 'Pakistan';
-  static const quick = ['Pakistan', 'India', 'Bangladesh', 'Saudi Arabia', 'Philippines'];
+  String? country;
+  static const quick = ['All', 'Pakistan', 'India', 'Bangladesh', 'Saudi Arabia', 'Philippines'];
   @override
   Widget build(BuildContext context) => Column(children: [
         SizedBox(height: 48, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 16), children: [
-          for (final c in quick) Padding(padding: const EdgeInsets.only(right: 8), child: ChoiceChip(label: Text(c), selected: country == c, onSelected: (_) => setState(() => country = c))),
+          for (final c in quick) Padding(padding: const EdgeInsets.only(right: 8), child: ChoiceChip(label: Text(c), selected: (c == 'All' && country == null) || country == c, onSelected: (_) => setState(() => country = c == 'All' ? null : c))),
           ActionChip(label: const Text('More'), onPressed: () => showCountryPicker(context: context, onSelect: (c) => setState(() => country = c.name))),
         ])),
         Expanded(child: ref.watch(popularRoomsProvider(country)).when(
           loading: () => const ShimmerView(rows: 5),
           error: (e, _) => ErrorView(message: '$e', onRetry: () => ref.invalidate(popularRoomsProvider(country))),
-          data: (rooms) => rooms.isEmpty ? EmptyView(title: 'No rooms in ${country ?? 'this country'}') : RefreshIndicator(
+          data: (rooms) => rooms.isEmpty ? EmptyView(title: country == null ? 'No popular rooms' : 'No rooms in $country') : RefreshIndicator(
             onRefresh: () async => ref.invalidate(popularRoomsProvider(country)),
             child: ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 24), children: [
               // Top 2 are highlighted; the rest follow in rank order (server orders by popularity).
