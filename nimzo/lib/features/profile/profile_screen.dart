@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/utils/helpers.dart';
 import '../../core/widgets/error_view.dart';
@@ -62,7 +61,7 @@ class ProfileScreen extends ConsumerWidget {
           child: NestedScrollView(
             headerSliverBuilder: (_, __) => [SliverToBoxAdapter(child: Column(children: [
               Container(height: 128, width: double.infinity, decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24))),
-              Transform.translate(offset: const Offset(0, -38), child: Column(children: [
+              Padding(padding: const EdgeInsets.only(top: 0), child: Column(children: [
                 Container(padding: const EdgeInsets.all(4), decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).scaffoldBackgroundColor, boxShadow: const [BoxShadow(blurRadius: 14, offset: Offset(0, 5), color: Color(0x18000000))]), child: NimzoAvatar(radius: 46, url: storageUrl(db, 'avatars', u.avatarPath))),
                 const SizedBox(height: 8),
                 Text((u.displayName?.trim().isNotEmpty == true) ? u.displayName! : 'Nimzo User', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
