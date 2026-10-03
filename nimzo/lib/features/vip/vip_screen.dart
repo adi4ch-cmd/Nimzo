@@ -17,10 +17,11 @@ class VipScreen extends ConsumerWidget {
         final vip = (s['vip_level'] as num?)?.toInt() ?? 0;
         final svip = (s['svip_level'] as num?)?.toInt() ?? 0;
         final expiry = s['vip_expires_at']?.toString();
+        final vipProgress = (vip / 10).clamp(0.0, 1.0); final svipProgress = (svip / 10).clamp(0.0, 1.0);
         return RefreshIndicator(onRefresh: () async { ref.invalidate(vipStatusProvider); await ref.read(vipStatusProvider.future); }, child: ListView(padding: const EdgeInsets.all(16), children: [
-          _TierCard(icon: Icons.workspace_premium_rounded, title: 'VIP', level: vip, detail: expiry == null ? 'Not active' : 'Expires $expiry'),
+          _TierCard(icon: Icons.workspace_premium_rounded, title: 'VIP', level: vip, detail: expiry == null ? 'Not active' : 'Expires $expiry', progress: vipProgress),
           const SizedBox(height: 12),
-          _TierCard(icon: Icons.auto_awesome_rounded, title: 'SVIP', level: svip, detail: svip == 0 ? 'Not active' : '90-day cycle'),
+          _TierCard(icon: Icons.auto_awesome_rounded, title: 'SVIP', level: svip, detail: svip == 0 ? 'Not active' : '90-day cycle', progress: svipProgress),
           const SizedBox(height: 20),
           Text('VIP daily rewards', style: Theme.of(context).textTheme.titleMedium),
           ref.watch(vipDailyRewardsProvider).when(loading: () => const LinearProgressIndicator(), error: (e, _) => Text('$e'), data: (rows) => Column(children: [for (final row in rows) _RewardRow(level: row['level'], coins: row['coins'])])),
@@ -38,10 +39,10 @@ class VipScreen extends ConsumerWidget {
 }
 
 class _TierCard extends StatelessWidget {
-  final IconData icon; final String title, detail; final int level;
-  const _TierCard({required this.icon, required this.title, required this.level, required this.detail});
+  final IconData icon; final String title, detail; final int level; final double progress;
+  const _TierCard({required this.icon, required this.title, required this.level, required this.detail, required this.progress});
   @override
-  Widget build(BuildContext context) => Card(child: ListTile(leading: CircleAvatar(child: Icon(icon)), title: Text('$title Level $level', style: const TextStyle(fontWeight: FontWeight.w700)), subtitle: Text(detail), trailing: level > 0 ? const Icon(Icons.check_circle_rounded) : const Icon(Icons.lock_outline_rounded)));
+  Widget build(BuildContext context) => Card(child: ListTile(leading: CircleAvatar(child: Icon(icon)), title: Text('$title Level $level', style: const TextStyle(fontWeight: FontWeight.w700)), subtitle: Text(detail), trailing: level > 0 ? const Icon(Icons.check_circle_rounded) : const Icon(Icons.lock_outline_rounded)), const SizedBox(height: 8), LinearProgressIndicator(value: progress, minHeight: 6), const SizedBox(height: 4), Text(level > 0 ? 'Level $level / 10' : 'Unlock VIP benefits', style: Theme.of(context).textTheme.bodySmall)])));
 }
 
 class _RewardRow extends StatelessWidget {
