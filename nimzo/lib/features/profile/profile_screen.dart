@@ -10,6 +10,8 @@ import '../../core/widgets/nimzo_badge.dart';
 import '../social/social_repositories.dart';
 import 'profile_repository.dart';
 
+String _flagForCountry(String? country) => const {'Pakistan': '🇵🇰', 'India': '🇮🇳', 'Bangladesh': '🇧🇩', 'Saudi Arabia': '🇸🇦', 'Philippines': '🇵🇭', 'United States': '🇺🇸', 'United Kingdom': '🇬🇧', 'Canada': '🇨🇦', 'Australia': '🇦🇺', 'United Arab Emirates': '🇦🇪' }[country] ?? '🌐';
+
 class ProfileScreen extends ConsumerWidget {
   final String? userId;
   const ProfileScreen({super.key, this.userId});
@@ -92,7 +94,7 @@ class ProfileScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 4),
                           Text('Nimzo ID ${u.nimzoId}', style: Theme.of(context).textTheme.bodySmall),
-                          if (u.countryName != null) Text('${u.countryName} · ${u.language ?? ''}', style: Theme.of(context).textTheme.bodySmall),
+                          if (u.countryName != null) Text('${_flagForCountry(u.countryName)} ${u.countryName} · ${u.language ?? ''}', style: Theme.of(context).textTheme.bodySmall),
                           const SizedBox(height: 10),
                           tags.maybeWhen(
                             data: (t) => Wrap(
@@ -103,9 +105,17 @@ class ProfileScreen extends ConsumerWidget {
                             orElse: () => const SizedBox.shrink(),
                           ),
                           const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [_Level('Wealth', u.wealthLevel), _Level('Charm', u.charmLevel), _Level('Active', u.activeLevel)],
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 8,
+                            children: [
+                              _Level('Wealth', u.wealthLevel),
+                              _Level('Charm', u.charmLevel),
+                              _Level('Active', u.activeLevel),
+                              if (u.vipLevel > 0) _Level('VIP', u.vipLevel),
+                              if (u.svipLevel > 0) _Level('SVIP', u.svipLevel),
+                            ],
+                          ),
                           ),
                           const SizedBox(height: 14),
                           stats.maybeWhen(
