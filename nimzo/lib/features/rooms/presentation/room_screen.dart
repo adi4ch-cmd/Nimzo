@@ -68,7 +68,7 @@ class _S extends ConsumerState<RoomScreen> {
   @override
   void dispose() {
     _chat.dispose();
-    if (_joined) _actions.exit(widget.roomId);
+    if (_joined) {\n      // Room chat is ephemeral: clear it when the current room session ends.\n      ref.read(roomChatRepositoryProvider).clear(widget.roomId).catchError((_) {});\n      _actions.exit(widget.roomId);\n    }
     super.dispose();
   }
 
