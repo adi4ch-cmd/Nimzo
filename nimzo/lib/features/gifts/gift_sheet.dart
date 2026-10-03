@@ -17,8 +17,20 @@ final myCoinBalanceProvider = FutureProvider<int>((ref) async {
   return (row?['coins'] as num?)?.toInt() ?? 0;
 });
 
-void showGiftSheet(BuildContext c, String roomId, String receiverId) => showModalBottomSheet(
-    context: c, isScrollControlled: true, builder: (_) => GiftSheet(roomId: roomId, receiverId: receiverId));
+void showGiftSheet(BuildContext c, String roomId, String receiverId) {
+  final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+  if (currentUserId != null && currentUserId == receiverId) {
+    ScaffoldMessenger.of(c).showSnackBar(
+      const SnackBar(content: Text('You cannot send a gift to yourself. Select another user.')),
+    );
+    return;
+  }
+  showModalBottomSheet(
+    context: c,
+    isScrollControlled: true,
+    builder: (_) => GiftSheet(roomId: roomId, receiverId: receiverId),
+  );
+}
 
 class GiftSheet extends ConsumerStatefulWidget {
   final String roomId, receiverId;
