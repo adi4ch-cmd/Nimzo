@@ -18,13 +18,6 @@ final myCoinBalanceProvider = FutureProvider<int>((ref) async {
 });
 
 void showGiftSheet(BuildContext c, String roomId, String receiverId) {
-  final currentUserId = Supabase.instance.client.auth.currentUser?.id;
-  if (currentUserId != null && currentUserId == receiverId) {
-    ScaffoldMessenger.of(c).showSnackBar(
-      const SnackBar(content: Text('You cannot send a gift to yourself. Select another user.')),
-    );
-    return;
-  }
   showModalBottomSheet(
     context: c,
     isScrollControlled: true,
