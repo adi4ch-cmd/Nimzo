@@ -23,6 +23,11 @@ class RoomChatRepository {
     catch (e) { throw mapError(e); }
   }
 
+  Future<void> clear(String roomId) async {
+    try { await _db.rpc('clear_room_chat', params: {'p_room': roomId}); }
+    catch (e) { throw mapError(e); }
+  }
+
   Stream<int> watchOnline(String roomId) => _db
       .from('room_members').stream(primaryKey: ['room_id', 'user_id']).eq('room_id', roomId).map((r) => r.length);
 
