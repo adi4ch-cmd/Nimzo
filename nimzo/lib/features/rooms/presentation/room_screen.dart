@@ -86,7 +86,7 @@ class _S extends ConsumerState<RoomScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(gradient: LinearGradient(colors: theme.gradient, begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+        decoration: BoxDecoration(color: theme.gradient.first),
         child: SafeArea(
           child: room.when(
             loading: () => const LoadingView(),
@@ -96,7 +96,7 @@ class _S extends ConsumerState<RoomScreen> {
               child: IconTheme(
                 data: IconThemeData(color: theme.text),
                 child: Column(children: [
-                  Row(children: [
+                  Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: Colors.white.withValues(alpha: .72), borderRadius: BorderRadius.circular(18)), child: Row(children: [
                     IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(rm.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16), overflow: TextOverflow.ellipsis),
@@ -105,7 +105,7 @@ class _S extends ConsumerState<RoomScreen> {
                     ])),
                     IconButton(icon: const Icon(Icons.share_outlined), onPressed: () { Clipboard.setData(ClipboardData(text: 'nimzo://room/${rm.id}')); _snack('Room link copied'); }),
                     IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () => context.push('/room/${rm.id}/settings?owner=$isOwner')),
-                  ]),
+                  ])),
                   seats.when(
                     loading: () => const SizedBox(height: 180, child: LoadingView()),
                     error: (e, _) => SizedBox(height: 180, child: ErrorView(message: '$e', onRetry: () => ref.invalidate(seatsProvider(widget.roomId)))),
@@ -113,7 +113,7 @@ class _S extends ConsumerState<RoomScreen> {
                       final byNo = {for (final s in list) s.seatNo: s};
                       return GridView.count(
                         shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: 5,
-                        padding: const EdgeInsets.all(12), mainAxisSpacing: 12, crossAxisSpacing: 6, childAspectRatio: .75,
+                        padding: const EdgeInsets.fromLTRB(14, 8, 14, 4), mainAxisSpacing: 10, crossAxisSpacing: 6, childAspectRatio: .78,
                         children: [for (var i = 1; i <= 10; i++) _Seat(
                           seat: byNo[i] ?? MicSeat(seatNo: i), speaking: speaking, selected: byNo[i]?.userId == _receiver && _receiver != null,
                           onTap: () {
@@ -171,7 +171,7 @@ class _ChatList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => ref.watch(roomChatProvider(roomId)).when(
         loading: () => const SizedBox.shrink(),
         error: (e, _) => Center(child: Text('Chat unavailable', style: Theme.of(context).textTheme.bodySmall)),
-        data: (l) => ListView(reverse: true, padding: const EdgeInsets.symmetric(horizontal: 12), children: [
+        data: (l) => ListView(reverse: true, padding: const EdgeInsets.symmetric(horizontal: 14), children: [
           for (final m in l) Padding(padding: const EdgeInsets.symmetric(vertical: 2), child: Text(m.body)),
         ]),
       );
@@ -192,7 +192,7 @@ class _Seat extends StatelessWidget {
         AnimatedContainer(
           duration: const Duration(milliseconds: 200), padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: active || selected ? const Color(0xFF22C55E) : const Color(0x40808080), width: active ? 3 : selected ? 2 : 1)),
-          child: CircleAvatar(radius: 22, backgroundColor: const Color(0x22808080),
+          child: CircleAvatar(radius: 22, backgroundColor: const Color(0x1A808080),
               child: Icon(seat.locked ? Icons.lock_outline : seat.userId == null ? Icons.add : Icons.person)),
         ),
         const SizedBox(height: 2),
@@ -220,8 +220,9 @@ class _RoomGiftFeed extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: .86),
-            borderRadius: BorderRadius.circular(12),
+            color: Colors.white.withValues(alpha: .90),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white.withValues(alpha: .65)),
           ),
           child: Row(children: [
             const Icon(Icons.card_giftcard_rounded, size: 20),
