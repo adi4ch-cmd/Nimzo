@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/room_repository.dart';
 import '../domain/room.dart';
+import '../../profile/profile.dart';
 
 final roomRepositoryProvider = Provider((ref) => RoomRepository(Supabase.instance.client));
 
@@ -23,3 +24,18 @@ class RoomActions {
 }
 
 final roomActionsProvider = Provider((ref) => RoomActions(ref));
+
+
+final roomSeatProfilesProvider = FutureProvider.family<Map<String, Profile>, String>((ref, roomId) async {
+  final seats = ref.watch(seatsProvider(roomId)).valueOrNull ?? const <MicSeat>[];
+  final ids = seats.map((s) => s.userId).whereType<String>().toSet().toList();
+  if (ids.isEmpty) return const {};
+  final rows = await ref.read(roomRepositoryProvider).profilesForUsers(ids);
+  return {for (final p in rows) p.id: p};
+});
+
+final roomOwnerProfileProvider = FutureProvider.family<Profile?, String>((ref, roomId) async {
+  final room = await ref.watch(roomProvider(roomId).future);
+  final rows = await ref.read(roomRepositoryProvider).profilesForUsers([room.ownerId]);
+  return rows.isEmpty ? null : rows.first;
+});

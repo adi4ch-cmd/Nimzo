@@ -61,9 +61,9 @@ class ProfileScreen extends ConsumerWidget {
           length: 4,
           child: NestedScrollView(
             headerSliverBuilder: (_, __) => [SliverToBoxAdapter(child: Column(children: [
-              Container(height: 110, width: double.infinity, color: Theme.of(context).colorScheme.surfaceContainerHighest),
+              Container(height: 128, width: double.infinity, decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24))),
               Transform.translate(offset: const Offset(0, -38), child: Column(children: [
-                NimzoAvatar(radius: 46, url: storageUrl(db, 'avatars', u.avatarPath)),
+                Container(padding: const EdgeInsets.all(4), decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).scaffoldBackgroundColor, boxShadow: const [BoxShadow(blurRadius: 14, offset: Offset(0, 5), color: Color(0x18000000))]), child: NimzoAvatar(radius: 46, url: storageUrl(db, 'avatars', u.avatarPath))),
                 const SizedBox(height: 8),
                 Text((u.displayName?.trim().isNotEmpty == true) ? u.displayName! : 'Nimzo User', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 4),
@@ -83,7 +83,7 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 8),
                 couple.maybeWhen(data: (c) => _SectionPreview(title: 'CP / Couple', child: c == null ? const Text('No couple linked') : const Text('Couple linked')), orElse: () => const SizedBox.shrink()),
                 models.maybeWhen(data: (m) => _SectionPreview(title: 'Models', child: m.isEmpty ? const Text('No model profile yet') : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final x in m) Text(x['title']?.toString() ?? 'Model', style: const TextStyle(fontWeight: FontWeight.w600))])), orElse: () => const SizedBox.shrink()),
-                const TabBar(tabs: [Tab(text: 'About'), Tab(text: 'Moments'), Tab(text: 'Gifts'), Tab(text: 'Achievements')]),
+                const TabBar(dividerHeight: 0, tabs: [Tab(text: 'About'), Tab(text: 'Moments'), Tab(text: 'Gifts'), Tab(text: 'Achievements')]),
               ])),
             ]))],
             body: TabBarView(children: [
