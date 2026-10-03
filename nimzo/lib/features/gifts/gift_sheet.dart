@@ -63,8 +63,9 @@ class _S extends ConsumerState<GiftSheet> {
       child: Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
         child: SizedBox(
-          height: 480,
+          height: 520,
           child: Column(children: [
+            Padding(padding: const EdgeInsets.fromLTRB(16, 10, 16, 4), child: Row(children: [const Expanded(child: Text('Send a gift', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800))), Text('${selected?.name ?? 'Choose one'}', style: Theme.of(context).textTheme.bodySmall)])),
             SizedBox(height: 48, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 8), children: [
               for (final c in giftCategories)
                 Padding(padding: const EdgeInsets.all(4), child: ChoiceChip(label: Text(c), selected: cat == c, onSelected: (_) => setState(() => cat = c)))
@@ -75,13 +76,13 @@ class _S extends ConsumerState<GiftSheet> {
               data: (all) {
                 final list = cat == 'All' ? all : all.where((g) => g.category.toLowerCase() == cat.toLowerCase()).toList();
                 if (list.isEmpty) return const EmptyView(title: 'No gifts in this category');
-                return GridView.count(crossAxisCount: 3, padding: const EdgeInsets.all(8), children: [
+                return GridView.count(crossAxisCount: 4, padding: const EdgeInsets.fromLTRB(12, 8, 12, 4), children: [
                   for (final g in list)
                     InkWell(
                       onTap: () => setState(() => selected = g),
                       child: Container(
                         margin: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: selected?.id == g.id ? const Color(0xFF22C55E) : const Color(0xFFE2E8F0), width: selected?.id == g.id ? 2 : 1)),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: selected?.id == g.id ? const Color(0xFF22C55E) : const Color(0xFFE2E8F0), width: selected?.id == g.id ? 2 : 1)),
                         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                           Icon(
                             switch (g.category.toLowerCase()) {
@@ -91,9 +92,9 @@ class _S extends ConsumerState<GiftSheet> {
                               'svip' => Icons.auto_awesome_rounded,
                               _ => Icons.card_giftcard_rounded,
                             },
-                            size: 30,
+                            size: 28, color: selected?.id == g.id ? const Color(0xFF16A34A) : const Color(0xFF64748B),
                           ), const SizedBox(height: 4),
-                          Text(g.name, maxLines: 1, overflow: TextOverflow.ellipsis), Text('${g.price} coins', style: Theme.of(context).textTheme.bodySmall)]),
+                          Text(g.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)), Text('${g.price} coins', style: Theme.of(context).textTheme.bodySmall)]),
                       ),
                     )
                 ]);
