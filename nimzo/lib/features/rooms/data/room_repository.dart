@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/errors/error_handler.dart';
 import '../domain/room.dart';
+import '../../profile/profile.dart';
 
 class RoomRepository {
   final SupabaseClient _db;
@@ -73,6 +74,14 @@ class RoomRepository {
 
   Future<void> _rpc(String fn, Map<String, dynamic> args) async {
     try { await _db.rpc(fn, params: args); } catch (e) { throw mapError(e); }
+  }
+
+  Future<List<Profile>> profilesForUsers(List<String> ids) async {
+    if (ids.isEmpty) return const [];
+    try {
+      final rows = await _db.from('profiles').select().inFilter('id', ids);
+      return rows.map((r) => Profile.fromJson(Map<String, dynamic>.from(r))).toList();
+    } catch (e) { throw mapError(e); }
   }
 
   Stream<List<MicSeat>> watchSeats(String roomId) => _db
