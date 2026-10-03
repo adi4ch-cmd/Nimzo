@@ -11,6 +11,10 @@ import '../../voice/voice_controller.dart';
 import '../data/room_chat_repository.dart';
 import '../data/room_settings_repository.dart';
 import '../domain/room.dart';
+import '../../profile/profile.dart';
+import '../../social/social_repositories.dart';
+import '../../../core/widgets/nimzo_avatar.dart';
+import '../../../core/utils/helpers.dart';
 import '../domain/room_theme.dart';
 import 'room_controller.dart';
 
@@ -96,30 +100,43 @@ class _S extends ConsumerState<RoomScreen> {
               child: IconTheme(
                 data: IconThemeData(color: theme.text),
                 child: Column(children: [
-                  Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: Colors.white.withValues(alpha: .72), borderRadius: BorderRadius.circular(18)), child: Row(children: [
-                    IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(rm.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16), overflow: TextOverflow.ellipsis),
-                      Text('ID ${rm.roomNo}  ·  $online online', style: const TextStyle(fontSize: 12)),
-                      Text('Lifetime Gifting: ${rm.lifetimeGiftCoins} coins', style: const TextStyle(fontSize: 11)),
-                    ])),
-                    IconButton(icon: const Icon(Icons.share_outlined), onPressed: () { Clipboard.setData(ClipboardData(text: 'nimzo://room/${rm.id}')); _snack('Room link copied'); }),
-                    IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () => context.push('/room/${rm.id}/settings?owner=$isOwner')),
-                  ])),
+                  Consumer(builder: (context, ref, _) {
+                    final owner = ref.watch(roomOwnerProfileProvider(rm.id)).valueOrNull;
+                    final db = ref.watch(supabaseProvider);
+                    final roomAvatar = storageUrl(db, 'avatars', rm.avatarPath) ?? storageUrl(db, 'avatars', owner?.avatarPath);
+                    return Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: Colors.white.withValues(alpha: .86), borderRadius: BorderRadius.circular(18)), child: Row(children: [
+                      IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+                      NimzoAvatar(radius: 24, url: roomAvatar, online: true),
+                      const SizedBox(width: 10),
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(rm.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16), overflow: TextOverflow.ellipsis),
+                        Text('ID ${rm.roomNo}  ·  $online online', style: const TextStyle(fontSize: 12)),
+                        Row(children: [const Icon(Icons.card_giftcard_rounded, size: 13), const SizedBox(width: 4), Expanded(child: Text('Lifetime Gifting: ${rm.lifetimeGiftCoins} coins', style: const TextStyle(fontSize: 11), overflow: TextOverflow.ellipsis))]),
+                      ])),
+                      IconButton(icon: const Icon(Icons.share_outlined), onPressed: () { Clipboard.setData(ClipboardData(text: 'nimzo://room/${rm.id}')); _snack('Room link copied'); }),
+                      IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () => context.push('/room/${rm.id}/settings?owner=$isOwner')),
+                    ]));
+                  }),
                   seats.when(
                     loading: () => const SizedBox(height: 180, child: LoadingView()),
                     error: (e, _) => SizedBox(height: 180, child: ErrorView(message: '$e', onRetry: () => ref.invalidate(seatsProvider(widget.roomId)))),
                     data: (list) {
                       final byNo = {for (final s in list) s.seatNo: s};
+                      final profiles = ref.watch(roomSeatProfilesProvider(widget.roomId)).valueOrNull ?? const <String, Profile>{};
                       return GridView.count(
                         shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: 5,
                         padding: const EdgeInsets.fromLTRB(14, 8, 14, 4), mainAxisSpacing: 10, crossAxisSpacing: 6, childAspectRatio: .78,
                         children: [for (var i = 1; i <= 10; i++) _Seat(
-                          seat: byNo[i] ?? MicSeat(seatNo: i), speaking: speaking, selected: byNo[i]?.userId == _receiver && _receiver != null,
+                          seat: byNo[i] ?? MicSeat(seatNo: i), profile: byNo[i]?.userId == null ? null : profiles[byNo[i]!.userId],
+                          speaking: speaking, selected: byNo[i]?.userId == _receiver && _receiver != null,
                           onTap: () {
                             final s = byNo[i] ?? MicSeat(seatNo: i);
                             if (s.userId == null) { if (!s.locked) _actions.seat(widget.roomId, i).catchError((e) => _snack('$e')); }
-                            else setState(() => _receiver = s.userId);
+                            else {
+                              setState(() => _receiver = s.userId);
+                              final profile = profiles[s.userId];
+                              if (profile != null) _openUserSheet(context, rm, s, profile, isOwner);
+                            }
                           })],
                       );
                     },
@@ -179,28 +196,97 @@ class _ChatList extends ConsumerWidget {
 
 class _Seat extends StatelessWidget {
   final MicSeat seat;
+  final Profile? profile;
   final Set<String> speaking;
   final bool selected;
   final VoidCallback onTap;
-  const _Seat({required this.seat, required this.speaking, required this.selected, required this.onTap});
+  const _Seat({required this.seat, required this.profile, required this.speaking, required this.selected, required this.onTap});
+
   @override
   Widget build(BuildContext context) {
     final active = seat.userId != null && speaking.contains(seat.userId);
+    final db = Supabase.instance.client;
+    final avatar = storageUrl(db, 'avatars', profile?.avatarPath);
+    final name = profile?.displayName?.trim().isNotEmpty == true ? profile!.displayName! : (profile?.nimzoId.toString() ?? 'User');
     return GestureDetector(
       onTap: onTap,
       child: Column(children: [
         AnimatedContainer(
           duration: const Duration(milliseconds: 200), padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: active || selected ? const Color(0xFF22C55E) : const Color(0x40808080), width: active ? 3 : selected ? 2 : 1)),
-          child: CircleAvatar(radius: 22, backgroundColor: const Color(0x1A808080),
-              child: Icon(seat.locked ? Icons.lock_outline : seat.userId == null ? Icons.add : Icons.person)),
+          child: NimzoAvatar(radius: 22, url: avatar, online: seat.userId != null),
         ),
         const SizedBox(height: 2),
-        Text(seat.userId == null ? '${seat.seatNo}' : 'User', style: const TextStyle(fontSize: 11), maxLines: 1),
+        Text(seat.userId == null ? '${seat.seatNo}' : name, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
         if (seat.muted) const Icon(Icons.mic_off, size: 12, color: Color(0xFFEF4444)),
       ]),
     );
   }
+}
+
+Future<void> _openUserSheet(BuildContext context, Room room, MicSeat seat, Profile profile, bool isOwner) async {
+  final db = Supabase.instance.client;
+  final avatar = storageUrl(db, 'avatars', profile.avatarPath);
+  await showModalBottomSheet(
+    context: context, showDragHandle: true,
+    builder: (sheetContext) => SafeArea(child: Padding(
+      padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Row(children: [
+          NimzoAvatar(radius: 30, url: avatar, online: true),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(profile.displayName?.trim().isNotEmpty == true ? profile.displayName! : 'Nimzo User', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+            Text('Nimzo ID ${profile.nimzoId}  ·  Lv ${profile.level}', style: Theme.of(context).textTheme.bodySmall),
+            if (profile.vipLevel > 0 || profile.svipLevel > 0) Text(profile.svipLevel > 0 ? 'SVIP' : 'VIP', style: const TextStyle(fontWeight: FontWeight.w700)),
+          ])),
+        ]),
+        const SizedBox(height: 16),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          FilledButton.icon(
+            onPressed: () async {
+              Navigator.pop(sheetContext);
+              try {
+                final container = ProviderScope.containerOf(context, listen: false);
+                final following = container.read(isFollowingProvider(profile.id)).valueOrNull ?? false;
+                final fr = container.read(followRepositoryProvider);
+                following ? await fr.unfollow(profile.id) : await fr.follow(profile.id);
+              } catch (e) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e'))); }
+            },
+            icon: const Icon(Icons.person_add_alt_1), label: const Text('Follow'),
+          ),
+          OutlinedButton.icon(
+            onPressed: () async {
+              Navigator.pop(sheetContext);
+              try { await ProviderScope.containerOf(context, listen: false).read(friendRepositoryProvider).request(profile.id); }
+              catch (e) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e'))); }
+            },
+            icon: const Icon(Icons.group_add_outlined), label: const Text('Add'),
+          ),
+          OutlinedButton.icon(
+            onPressed: () { Navigator.pop(sheetContext); showGiftSheet(context, room.id, profile.id); },
+            icon: const Icon(Icons.card_giftcard_outlined), label: const Text('Gift'),
+          ),
+          OutlinedButton.icon(
+            onPressed: () async {
+              Navigator.pop(sheetContext);
+              try { await ProviderScope.containerOf(context, listen: false).read(roomRepositoryProvider).modMuteSeat(room.id, seat.seatNo, !seat.muted); }
+              catch (e) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e'))); }
+            },
+            icon: Icon(seat.muted ? Icons.mic : Icons.mic_off_outlined), label: Text(seat.muted ? 'Unmute' : 'Mute'),
+          ),
+          if (isOwner) OutlinedButton.icon(
+            onPressed: () async {
+              Navigator.pop(sheetContext);
+              try { await ProviderScope.containerOf(context, listen: false).read(roomRepositoryProvider).kick(room.id, profile.id); }
+              catch (e) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e'))); }
+            },
+            icon: const Icon(Icons.person_remove_outlined), label: const Text('Kick'),
+          ),
+        ]),
+      ]),
+    )),
+  );
 }
 
 
