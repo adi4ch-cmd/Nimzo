@@ -42,8 +42,6 @@ class _S extends ConsumerState<RoomScreen> {
   Future<void> _enter({String? password}) async {
     try {
       await _actions.enter(widget.roomId, password: password);
-      // Room chat is ephemeral: every new room session starts clean.
-      try { await ref.read(roomChatRepositoryProvider).clear(widget.roomId); } catch (_) {}
       if (mounted) setState(() => _joined = true);
     } catch (e) {
       if (!mounted) return;
