@@ -24,24 +24,22 @@ jobs:
           import re
           p = Path("android/app/src/main/AndroidManifest.xml")
           s = p.read_text()
-          s = re.sub(r'<meta-data\\s+android:name="flutter_deeplinking_enabled"\\s+android:value="(?:true|false)"\\s*/>', '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />', s)
           deep = '''<intent-filter>
               <action android:name="android.intent.action.VIEW" />
               <category android:name="android.intent.category.DEFAULT" />
               <category android:name="android.intent.category.BROWSABLE" />
               <data android:scheme="io.nimzo.app" android:host="login-callback" />
             </intent-filter>'''
-          main = re.search(r'<activity\\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>(.*?)</activity>', s, re.DOTALL)
-          if not main: raise SystemExit("MainActivity not found")
-          block = main.group(0)
-          if 'android:scheme="io.nimzo.app"' not in block:
-              block = block.replace('</activity>', '\\n            ' + deep + '\\n        </activity>')
-          block = re.sub(r'\\sandroid:exported="[^"]*"', '', block)
-          block = re.sub(r'\\sandroid:launchMode="[^"]*"', '', block)
-          block = re.sub(r'<activity\\b', '<activity android:exported="true" android:launchMode="singleTask"', block, count=1)
-          if 'flutter_deeplinking_enabled' not in block:
-              block = block.replace('>', '>\\n            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />', 1)
-          s = s[:main.start()] + block + s[main.end():]
+          pattern = r'<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*/?>'
+          m = re.search(pattern, s, re.DOTALL)
+          if not m:
+              raise SystemExit("MainActivity declaration not found")
+          block = m.group(0)
+          block = re.sub(r'\sandroid:exported="[^"]*"', '', block)
+          block = re.sub(r'\sandroid:launchMode="[^"]*"', '', block)
+          block = block[:-2] + ' android:exported="true" android:launchMode="singleTask">' if block.endswith('/>') else block
+          block += '\n            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />\n            ' + deep + '\n        </activity>'
+          s = s[:m.start()] + block + s[m.end():]
           p.write_text(s)
           PY
       - run: flutter pub get
@@ -51,5 +49,3 @@ jobs:
         with:
           name: nimzo-pro-polish-release
           path: nimzo/build/app/outputs/flutter-apk/app-release.apk
-
-# APK build workflow - analyze lib only
