@@ -5,7 +5,8 @@ import '../../core/errors/error_handler.dart';
 class Gift {
   final String id, name, category;
   final int price;
-  const Gift(this.id, this.name, this.category, this.price);
+  final String? assetPath;
+  const Gift(this.id, this.name, this.category, this.price, this.assetPath);
 }
 
 class GiftRepository {
@@ -22,7 +23,7 @@ class GiftRepository {
   Future<List<Gift>> catalog() async {
     try {
       final r = await _db.from('gifts').select().order('coin_price');
-      return r.map((j) => Gift(j['id'], j['name'], j['category'], (j['coin_price'] as num).toInt())).toList();
+      return r.map((j) => Gift(j['id'], j['name'], j['category'], (j['coin_price'] as num).toInt(), j['asset_path'] as String?)).toList();
     } catch (e) { throw mapError(e); }
   }
 
