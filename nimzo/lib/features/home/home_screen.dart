@@ -62,11 +62,12 @@ class _PopularTab extends ConsumerStatefulWidget {
 class _P extends ConsumerState<_PopularTab> {
   String? country;
   static const quick = ['All', 'Pakistan', 'India', 'Bangladesh', 'Saudi Arabia', 'Philippines'];
+  static const flagCodes = {'Pakistan': '🇵🇰', 'India': '🇮🇳', 'Bangladesh': '🇧🇩', 'Saudi Arabia': '🇸🇦', 'Philippines': '🇵🇭'};
   @override
   Widget build(BuildContext context) => Column(children: [
         SizedBox(height: 48, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 16), children: [
-          for (final c in quick) Padding(padding: const EdgeInsets.only(right: 8), child: ChoiceChip(label: Text(c), selected: (c == 'All' && country == null) || country == c, onSelected: (_) => setState(() => country = c == 'All' ? null : c))),
-          ActionChip(label: const Text('More'), onPressed: () => showCountryPicker(context: context, onSelect: (c) => setState(() => country = c.name))),
+          for (final c in quick) Padding(padding: const EdgeInsets.only(right: 8), child: ChoiceChip(label: Text('${flagCodes[c] ?? '🌐'}  $c'), selected: (c == 'All' && country == null) || country == c, onSelected: (_) => setState(() => country = c == 'All' ? null : c))),
+          ActionChip(label: const Text('🌍  More'), onPressed: () => showCountryPicker(context: context, onSelect: (c) => setState(() => country = c.name))),
         ])),
         Expanded(child: ref.watch(popularRoomsProvider(country)).when(
           loading: () => const ShimmerView(rows: 5),
@@ -100,6 +101,8 @@ List<Widget> _cards(BuildContext c, List<Room> rooms, {bool top = false}) => [
       for (final r in rooms) Padding(padding: const EdgeInsets.only(bottom: 12), child: NimzoRoomCard(room: r, highlight: top, onTap: () => c.push('/room/${r.id}'))),
     ];
 
+String _countryFlag(String? country) => const {'Pakistan': '🇵🇰', 'India': '🇮🇳', 'Bangladesh': '🇧🇩', 'Saudi Arabia': '🇸🇦', 'Philippines': '🇵🇭' }[country] ?? '🌐';
+
 class NimzoRoomCard extends StatelessWidget {
   final Room room;
   final VoidCallback onTap;
@@ -116,7 +119,7 @@ class NimzoRoomCard extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(room.name, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-              Text('ID ${room.roomNo}  ·  ${room.country ?? 'Global'}', style: Theme.of(context).textTheme.bodySmall),
+              Text('${_countryFlag(room.country)} ${room.roomNo}  ·  ${room.country ?? 'Global}', style: Theme.of(context).textTheme.bodySmall),
             ])),
             if (room.isPrivate) const Icon(Icons.lock_outline, size: 18),
           ]),
