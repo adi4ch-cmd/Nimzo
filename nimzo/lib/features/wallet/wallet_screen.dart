@@ -14,6 +14,8 @@ final walletProvider = FutureProvider((ref) async {
   return (coins: w['coins'] as int, diamonds: w['diamonds'] as int, ledger: l);
 });
 
+class _BalanceTile extends StatelessWidget { final IconData icon; final String label, value; const _BalanceTile({required this.icon, required this.label, required this.value}); @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [CircleAvatar(radius: 18, child: Icon(icon, size: 19)), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: Theme.of(context).textTheme.bodySmall), Text(value, style: const TextStyle(fontWeight: FontWeight.w800))]))]))); }
+
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
   @override
@@ -37,6 +39,12 @@ class WalletScreen extends ConsumerWidget {
                 Text('${w.diamonds} diamonds', style: Theme.of(context).textTheme.bodySmall),
               ]),
             ),
+            const SizedBox(height: 18),
+            Row(children: [
+              Expanded(child: _BalanceTile(icon: Icons.monetization_on_rounded, label: 'Coins', value: '${w.coins}')),
+              const SizedBox(width: 10),
+              Expanded(child: _BalanceTile(icon: Icons.diamond_rounded, label: 'Diamonds', value: '${w.diamonds}')),
+            ]),
             const SizedBox(height: 18),
             Row(children: [
               Expanded(child: FilledButton.icon(onPressed: () => context.push('/recharge'), icon: const Icon(Icons.add_rounded), label: const Text('Recharge'))),
