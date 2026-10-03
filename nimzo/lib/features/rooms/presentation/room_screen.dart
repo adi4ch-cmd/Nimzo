@@ -84,7 +84,7 @@ class _S extends ConsumerState<RoomScreen> {
 
     ref.listen(roomGiftEventProvider(widget.roomId), (_, n) {
       final l = n.valueOrNull;
-      if (l != null && l.isNotEmpty) GiftAnimationService.play(context, 'Gift x${l.first['quantity']}');
+      if (l != null && l.isNotEmpty) GiftAnimationService.play(context, 'Gift x${l.first['quantity']}', giftId: l.first['gift_id']?.toString(), quantity: (l.first['quantity'] as num?)?.toInt() ?? 1);
     });
 
     final r = room.valueOrNull;
