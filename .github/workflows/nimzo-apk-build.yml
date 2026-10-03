@@ -23,3 +23,5 @@ jobs:
         with:
           name: nimzo-pro-polish-release
           path: nimzo/build/app/outputs/flutter-apk/app-release.apk
+
+# APK build workflow
