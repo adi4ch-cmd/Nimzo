@@ -24,21 +24,17 @@ jobs:
           import re
           p = Path("android/app/src/main/AndroidManifest.xml")
           s = p.read_text()
-          deep = '''<intent-filter>
-              <action android:name="android.intent.action.VIEW" />
-              <category android:name="android.intent.category.DEFAULT" />
-              <category android:name="android.intent.category.BROWSABLE" />
-              <data android:scheme="io.nimzo.app" android:host="login-callback" />
-            </intent-filter>'''
-          pattern = r'<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*/?>'
+          pattern = r'<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>.*?</activity>'
           m = re.search(pattern, s, re.DOTALL)
           if not m:
-              raise SystemExit("MainActivity declaration not found")
+              raise SystemExit("MainActivity block not found")
           block = m.group(0)
           block = re.sub(r'\sandroid:exported="[^"]*"', '', block)
           block = re.sub(r'\sandroid:launchMode="[^"]*"', '', block)
-          block = block[:-2] + ' android:exported="true" android:launchMode="singleTask">' if block.endswith('/>') else block
-          block += '\n            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />\n            ' + deep + '\n        </activity>'
+          block = re.sub(r'<activity\b', '<activity android:exported="true" android:launchMode="singleTask"', block, count=1)
+          block = re.sub(r'\s*<meta-data\s+android:name="flutter_deeplinking_enabled"\s+android:value="[^"]*"\s*/>\s*', '\n', block)
+          deep = '''\n            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />\n            <intent-filter>\n                <action android:name="android.intent.action.VIEW" />\n                <category android:name="android.intent.category.DEFAULT" />\n                <category android:name="android.intent.category.BROWSABLE" />\n                <data android:scheme="io.nimzo.app" android:host="login-callback" />\n            </intent-filter>'''
+          block = block.replace('</activity>', deep + '\n        </activity>')
           s = s[:m.start()] + block + s[m.end():]
           p.write_text(s)
           PY
