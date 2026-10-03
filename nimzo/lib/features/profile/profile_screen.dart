@@ -60,32 +60,102 @@ class ProfileScreen extends ConsumerWidget {
         data: (u) => DefaultTabController(
           length: 4,
           child: NestedScrollView(
-            headerSliverBuilder: (_, __) => [SliverToBoxAdapter(child: Column(children: [
-              Container(height: 128, width: double.infinity, decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24))),
-              Column(children: [
-                Container(padding: const EdgeInsets.all(4), decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).scaffoldBackgroundColor, boxShadow: const [BoxShadow(blurRadius: 14, offset: Offset(0, 5), color: Color(0x18000000))]), child: NimzoAvatar(radius: 46, url: storageUrl(db, 'avatars', u.avatarPath))),
-                const SizedBox(height: 8),
-                Text((u.displayName?.trim().isNotEmpty == true) ? u.displayName! : 'Nimzo User', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 4),
-                Text('Nimzo ID ${u.nimzoId}', style: Theme.of(context).textTheme.bodySmall),
-                if (u.countryName != null) Text('${u.countryName} · ${u.language ?? ''}', style: Theme.of(context).textTheme.bodySmall),
-                const SizedBox(height: 10),
-                tags.maybeWhen(data: (t) => Wrap(spacing: 6, runSpacing: 6, children: [for (final x in t) NimzoBadge(x, gold: x.startsWith('TOP') || x.contains('VIP'))]), orElse: () => const SizedBox.shrink()),
-                const SizedBox(height: 12),
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  _Level('Wealth', u.wealthLevel), _Level('Charm', u.charmLevel), _Level('Active', u.activeLevel),
-                ]),
-                const SizedBox(height: 14),
-                stats.maybeWhen(data: (s) => Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                  _Stat('Following', s['following'] ?? 0), _Stat('Followers', s['followers'] ?? 0), _Stat('Visitors', s['visitors'] ?? 0),
-                ]), orElse: () => const SizedBox(height: 42)),
-                if (!isMe) _Actions(targetId: id),
-                const SizedBox(height: 8),
-                couple.maybeWhen(data: (c) => _SectionPreview(title: 'CP / Couple', child: c == null ? const Text('No couple linked') : const Text('Couple linked')), orElse: () => const SizedBox.shrink()),
-                models.maybeWhen(data: (m) => _SectionPreview(title: 'Models', child: m.isEmpty ? const Text('No model profile yet') : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final x in m) Text(x['title']?.toString() ?? 'Model', style: const TextStyle(fontWeight: FontWeight.w600))])), orElse: () => const SizedBox.shrink()),
-                const TabBar(dividerHeight: 0, tabs: [Tab(text: 'About'), Tab(text: 'Moments'), Tab(text: 'Gifts'), Tab(text: 'Achievements')]),
-              ]),
-            ]))],
+            headerSliverBuilder: (_, __) => [
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    Container(
+                      height: 128,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              boxShadow: const [BoxShadow(blurRadius: 14, offset: Offset(0, 5), color: Color(0x18000000))],
+                            ),
+                            child: NimzoAvatar(radius: 46, url: storageUrl(db, 'avatars', u.avatarPath)),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            (u.displayName?.trim().isNotEmpty == true) ? u.displayName! : 'Nimzo User',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 4),
+                          Text('Nimzo ID ${u.nimzoId}', style: Theme.of(context).textTheme.bodySmall),
+                          if (u.countryName != null) Text('${u.countryName} · ${u.language ?? ''}', style: Theme.of(context).textTheme.bodySmall),
+                          const SizedBox(height: 10),
+                          tags.maybeWhen(
+                            data: (t) => Wrap(
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: [for (final x in t) NimzoBadge(x, gold: x.startsWith('TOP') || x.contains('VIP'))],
+                            ),
+                            orElse: () => const SizedBox.shrink(),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [_Level('Wealth', u.wealthLevel), _Level('Charm', u.charmLevel), _Level('Active', u.activeLevel)],
+                          ),
+                          const SizedBox(height: 14),
+                          stats.maybeWhen(
+                            data: (s) => Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                _Stat('Following', s['following'] ?? 0),
+                                _Stat('Followers', s['followers'] ?? 0),
+                                _Stat('Visitors', s['visitors'] ?? 0),
+                              ],
+                            ),
+                            orElse: () => const SizedBox(height: 42),
+                          ),
+                          if (!isMe) _Actions(targetId: id),
+                          const SizedBox(height: 8),
+                          couple.maybeWhen(
+                            data: (c) => _SectionPreview(title: 'CP / Couple', child: c == null ? const Text('No couple linked') : const Text('Couple linked')),
+                            orElse: () => const SizedBox.shrink(),
+                          ),
+                          models.maybeWhen(
+                            data: (m) => _SectionPreview(
+                              title: 'Models',
+                              child: m.isEmpty
+                                  ? const Text('No model profile yet')
+                                  : Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        for (final x in m)
+                                          Text(x['title']?.toString() ?? 'Model', style: const TextStyle(fontWeight: FontWeight.w600)),
+                                      ],
+                                    ),
+                            ),
+                            orElse: () => const SizedBox.shrink(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const TabBar(
+                      dividerHeight: 0,
+                      tabs: [
+                        Tab(text: 'About'),
+                        Tab(text: 'Moments'),
+                        Tab(text: 'Gifts'),
+                        Tab(text: 'Achievements'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
             body: TabBarView(children: [
               Padding(padding: const EdgeInsets.all(20), child: Text(u.bio?.isNotEmpty == true ? u.bio! : 'No bio yet.')),
               const Center(child: Text('No moments yet')),
