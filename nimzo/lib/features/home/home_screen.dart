@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.fromLTRB(16, 12, 16, 10), padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                 decoration: BoxDecoration(color: NimzoColors.primaryFaint, borderRadius: BorderRadius.circular(18), border: Border.all(color: NimzoColors.primaryLight)),
-                child: const Row(children: [Icon(Icons.add_circle_outline, color: NimzoColors.primaryDark), SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Create your room', style: TextStyle(fontWeight: FontWeight.w700)), SizedBox(height: 2), Text('Start a live voice room and meet people', style: TextStyle(fontSize: 12, color: NimzoColors.secondary))])), Icon(Icons.chevron_right_rounded, color: NimzoColors.secondary)]),
+                child: const Row(children: [Icon(Icons.add_circle_outline, color: NimzoColors.primaryDark), SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Create your room', style: TextStyle(fontWeight: FontWeight.w700)), SizedBox(height: 2), Text('Start a live voice room and meet people', style: TextStyle(fontSize: 12, color: Color(0xFF64748B)))])), Icon(Icons.chevron_right_rounded, color: Color(0xFF64748B))]),
               ),
             ),
             const Expanded(child: TabBarView(children: [_MeTab(), _PopularTab(), _NewTab()])),
