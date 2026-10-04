@@ -1,5 +1,6 @@
 name: Nimzo Android OAuth build check
 # Release verification build triggered from main; UI/source remains unchanged.
+# Latest full APK build trigger.
 
 on:
   push:
