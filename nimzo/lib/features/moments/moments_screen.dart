@@ -11,6 +11,7 @@ import '../../core/widgets/empty_view.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/shimmer_view.dart';
 import 'moment_repository.dart';
+import '../../core/widgets/nimzo_icon.dart';
 import '../gifts/gift_repository.dart';
 
 class MomentsScreen extends ConsumerWidget {
@@ -20,7 +21,7 @@ class MomentsScreen extends ConsumerWidget {
     final me = ref.watch(currentUserIdProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Moments')),
-      floatingActionButton: FloatingActionButton(onPressed: () => context.push('/moments/create'), child: const Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(onPressed: () => context.push('/moments/create'), child: const NimzoIcon(Icons.add_rounded, color: Colors.white)),
       body: ref.watch(momentsFeedProvider).when(
         loading: () => const ShimmerView(),
         error: (e, _) => ErrorView(message: '$e', onRetry: () => ref.invalidate(momentsFeedProvider)),
@@ -42,16 +43,16 @@ class MomentsScreen extends ConsumerWidget {
                               child: Image.network(
                                 storageUrl(ref.read(supabaseProvider), 'moment-images', m.imagePath)!,
                                 width: 58, height: 58, fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined),
+                                errorBuilder: (_, __, ___) => const NimzoIcon(Icons.broken_image_outlined, color: Color(0xFFEF4444)),
                               ),
                             ),
                       title: Text(m.text ?? (m.imagePath != null ? 'Photo' : '')),
                       subtitle: Row(children: [
-                        IconButton(icon: Icon(m.liked ? Icons.favorite : Icons.favorite_border, size: 18),
+                        IconButton(icon: NimzoIcon(m.liked ? Icons.favorite : Icons.favorite_border, size: 18, color: m.liked ? const Color(0xFFE25555) : const Color(0xFF64748B)),
                             onPressed: () async { await repo.toggleLike(m.id); ref.invalidate(momentsFeedProvider); }),
                         Text('${m.likes}'), const SizedBox(width: 12),
-                        const Icon(Icons.chat_bubble_outline, size: 16), const SizedBox(width: 4), Text('${m.comments}'),
-                        IconButton(icon: const Icon(Icons.card_giftcard_outlined, size: 19), tooltip: 'Send gift', onPressed: () => showMomentGiftSheet(context, m.id, m.authorId)),
+                        const NimzoIcon(Icons.chat_bubble_outline, size: 16, color: Color(0xFF64748B)), const SizedBox(width: 4), Text('${m.comments}'),
+                        IconButton(icon: const NimzoIcon(Icons.card_giftcard_rounded, size: 19, color: Color(0xFFE0A72E)), tooltip: 'Send gift', onPressed: () => showMomentGiftSheet(context, m.id, m.authorId)),
                         const Spacer(), Text(timeAgo(m.createdAt)),
                       ]),
                       trailing: PopupMenuButton<String>(
@@ -158,7 +159,7 @@ class _C extends ConsumerState<CreateMomentScreen> {
               : Image.network(storageUrl(ref.read(supabaseProvider), 'moment-images', _imagePath)!, height: 260, fit: BoxFit.cover),
         ),
       const SizedBox(height: 10),
-      OutlinedButton.icon(onPressed: busy ? null : _pickImage, icon: const Icon(Icons.photo_library_outlined), label: const Text('Choose photo from phone')),
+      OutlinedButton.icon(onPressed: busy ? null : _pickImage, icon: const NimzoIcon(Icons.photo_library_outlined, color: Color(0xFF2E9B73)), label: const Text('Choose photo from phone')),
       const SizedBox(height: 10),
       TextField(controller: _t, maxLines: null, maxLength: 500, decoration: const InputDecoration(hintText: 'What is on your mind?')),
     ]),
@@ -187,7 +188,7 @@ class _D extends ConsumerState<MomentDetailScreen> {
           )),
           SafeArea(child: Padding(padding: const EdgeInsets.all(8), child: Row(children: [
             Expanded(child: TextField(controller: _c, decoration: const InputDecoration(hintText: 'Add a comment'))),
-            IconButton(icon: const Icon(Icons.send), onPressed: () async {
+            IconButton(icon: const NimzoIcon(Icons.send_rounded, color: Color(0xFF2E9B73)), onPressed: () async {
               if (_c.text.trim().isEmpty) return;
               await ref.read(momentRepositoryProvider).addComment(widget.id, _c.text.trim());
               _c.clear();
@@ -218,7 +219,7 @@ class _MomentGiftSheetState extends ConsumerState<_MomentGiftSheet> {
       const Padding(padding: EdgeInsets.all(16), child: Text('Send Gift to Moment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
       Expanded(child: gifts.when(loading: () => const Center(child: CircularProgressIndicator()), error: (e, _) => Center(child: Text('$e')), data: (list) => GridView.count(crossAxisCount: 3, children: [
         for (final g in list) InkWell(onTap: () => setState(() => selected = g), child: Card(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Container(width: 54, height: 54, decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .08), borderRadius: BorderRadius.circular(16)), child: Icon(Icons.card_giftcard_rounded, size: 30, color: selected?.id == g.id ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant)),
+          Container(width: 54, height: 54, decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .08), borderRadius: BorderRadius.circular(16)), child: NimzoIcon(Icons.card_giftcard_rounded, size: 30, color: selected?.id == g.id ? Theme.of(context).colorScheme.primary : const Color(0xFFE0A72E))),
           Text(g.name), Text('${g.price} coins', style: Theme.of(context).textTheme.bodySmall),
         ]))),
       ]))),
