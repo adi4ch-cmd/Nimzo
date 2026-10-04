@@ -7,6 +7,7 @@ import '../../core/widgets/error_view.dart';
 import '../../core/widgets/loading_view.dart';
 import '../../core/widgets/nimzo_avatar.dart';
 import '../../core/widgets/nimzo_badge.dart';
+import '../../core/widgets/nimzo_icon.dart';
 import '../social/social_repositories.dart';
 import 'profile_repository.dart';
 
@@ -32,11 +33,11 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(isMe ? 'Profile' : ''), actions: [
-        if (isMe) IconButton(icon: const Icon(Icons.account_balance_wallet_outlined), onPressed: () => context.push('/wallet')),
-        if (isMe) IconButton(icon: const Icon(Icons.workspace_premium_outlined), onPressed: () => context.push('/vip')),
-        if (isMe) IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () => context.push('/profile-setup')),
+        if (isMe) IconButton(icon: const NimzoIcon(Icons.account_balance_wallet_rounded, color: Color(0xFF2E9B73)), onPressed: () => context.push('/wallet')),
+        if (isMe) IconButton(icon: const NimzoIcon(Icons.workspace_premium_rounded, color: Color(0xFFE0A72E)), onPressed: () => context.push('/vip')),
+        if (isMe) IconButton(icon: const NimzoIcon(Icons.settings_rounded, color: Color(0xFF64748B)), onPressed: () => context.push('/profile-setup')),
         if (isMe) IconButton(
-          icon: const Icon(Icons.logout_outlined),
+          icon: const NimzoIcon(Icons.logout_rounded, color: Color(0xFFD85C5C)),
           tooltip: 'Sign out',
           onPressed: () async {
             final ok = await showDialog<bool>(
@@ -93,7 +94,7 @@ class ProfileScreen extends ConsumerWidget {
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                           ),
                           const SizedBox(height: 4),
-                          Text('Nimzo ID ${u.nimzoId}', style: Theme.of(context).textTheme.bodySmall),
+                          Row(mainAxisSize: MainAxisSize.min, children: [const NimzoIcon(Icons.verified_rounded, size: 15, color: Color(0xFF2E9B73)), const SizedBox(width: 4), Text('Nimzo ID ${u.nimzoId}', style: Theme.of(context).textTheme.bodySmall)]) ,
                           if (u.countryName != null) Text('${_flagForCountry(u.countryName)} ${u.countryName} · ${u.language ?? ''}', style: Theme.of(context).textTheme.bodySmall),
                           const SizedBox(height: 10),
                           tags.maybeWhen(
