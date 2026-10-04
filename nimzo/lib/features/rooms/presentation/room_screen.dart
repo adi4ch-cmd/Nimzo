@@ -1,3 +1,4 @@
+import '../../core/widgets/nimzo_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,7 +120,7 @@ class _S extends ConsumerState<RoomScreen> {
                         Row(children: [const Icon(Icons.card_giftcard_rounded, size: 13), const SizedBox(width: 4), Expanded(child: Text('Lifetime Gifting: ${rm.lifetimeGiftCoins} coins', style: const TextStyle(fontSize: 11), overflow: TextOverflow.ellipsis))]),
                       ])),
                       IconButton(icon: const Icon(Icons.share_outlined), onPressed: () { Clipboard.setData(ClipboardData(text: 'nimzo://room/${rm.id}')); _snack('Room link copied'); }),
-                      IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () => context.push('/room/${rm.id}/settings?owner=$isOwner')),
+                      IconButton(icon: const NimzoIcon(Icons.settings_outlined), onPressed: () => context.push('/room/${rm.id}/settings?owner=$isOwner')),
                     ]));
                   }),
                   seats.when(
@@ -151,7 +152,7 @@ class _S extends ConsumerState<RoomScreen> {
                   Expanded(child: _ChatList(roomId: widget.roomId)),
                   Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: Row(children: [
                     Expanded(child: TextField(controller: _chat, style: TextStyle(color: theme.text), decoration: const InputDecoration(hintText: 'Say something', isDense: true))),
-                    IconButton(icon: const Icon(Icons.send), onPressed: () async {
+                    IconButton(icon: const NimzoIcon(Icons.send), onPressed: () async {
                       final t = _chat.text.trim();
                       if (t.isEmpty) return;
                       _chat.clear();
@@ -223,7 +224,7 @@ class _Seat extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(seat.userId == null ? '${seat.seatNo}' : name, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
-        if (seat.muted) const Icon(Icons.mic_off, size: 12, color: Color(0xFFEF4444)),
+        if (seat.muted) const NimzoIcon(Icons.mic_off, size: 12, color: Color(0xFFEF4444)),
       ]),
     );
   }
