@@ -27,17 +27,20 @@ jobs:
           cache: true
 
       - name: Flutter pub get
+        working-directory: nimzo
         run: flutter pub get
 
       - name: Flutter analyze
+        working-directory: nimzo
         run: flutter analyze
 
       - name: Build release APK
+        working-directory: nimzo
         run: flutter build apk --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: nimzo-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: nimzo/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
