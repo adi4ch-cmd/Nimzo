@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
+import 'nimzo_icon.dart';
 
 class NimzoBottomNav extends StatelessWidget {
   final int index;
@@ -13,16 +14,47 @@ class NimzoBottomNav extends StatelessWidget {
           backgroundColor: NimzoColors.background,
           indicatorColor: NimzoColors.primaryLight,
           indicatorShape: const StadiumBorder(),
+          labelTextStyle: WidgetStateProperty.resolveWith(
+            (states) => TextStyle(
+              fontSize: 11,
+              fontWeight: states.contains(WidgetState.selected)
+                  ? FontWeight.w700
+                  : FontWeight.w500,
+              color: states.contains(WidgetState.selected)
+                  ? NimzoColors.primary
+                  : NimzoColors.textSecondary,
+            ),
+          ),
         ),
         child: NavigationBar(
           selectedIndex: index,
           onDestinationSelected: onTap,
-          destinations: const [
-            NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'Home'),
-            NavigationDestination(icon: Icon(Icons.sports_esports_outlined), selectedIcon: Icon(Icons.sports_esports_rounded), label: 'Games'),
-            NavigationDestination(icon: Icon(Icons.auto_awesome_outlined), selectedIcon: Icon(Icons.auto_awesome_rounded), label: 'Moments'),
-            NavigationDestination(icon: Icon(Icons.chat_bubble_outline), selectedIcon: Icon(Icons.chat_bubble_rounded), label: 'Messages'),
-            NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person_rounded), label: 'Profile'),
+          destinations: [
+            NavigationDestination(
+              icon: NimzoNavIcon(Icons.home_outlined, active: false),
+              selectedIcon: NimzoNavIcon(Icons.home_rounded, active: true),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: NimzoNavIcon(Icons.sports_esports_outlined, active: false),
+              selectedIcon: NimzoNavIcon(Icons.sports_esports_rounded, active: true),
+              label: 'Games',
+            ),
+            NavigationDestination(
+              icon: NimzoNavIcon(Icons.auto_awesome_outlined, active: false),
+              selectedIcon: NimzoNavIcon(Icons.auto_awesome_rounded, active: true),
+              label: 'Moments',
+            ),
+            NavigationDestination(
+              icon: NimzoNavIcon(Icons.chat_bubble_outline_rounded, active: false),
+              selectedIcon: NimzoNavIcon(Icons.chat_bubble_rounded, active: true),
+              label: 'Messages',
+            ),
+            NavigationDestination(
+              icon: NimzoNavIcon(Icons.person_outline_rounded, active: false),
+              selectedIcon: NimzoNavIcon(Icons.person_rounded, active: true),
+              label: 'Profile',
+            ),
           ],
         ),
       );
