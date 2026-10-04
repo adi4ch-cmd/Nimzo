@@ -1,3 +1,4 @@
+import '../../core/widgets/nimzo_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/supabase_provider.dart';
@@ -48,7 +49,7 @@ class GamesCatalogScreen extends ConsumerWidget {
                         width: 58,
                         height: 58,
                         decoration: BoxDecoration(color: NimzoColors.primaryFaint, borderRadius: BorderRadius.circular(15)),
-                        child: const Icon(Icons.sports_esports_rounded, size: 30, color: NimzoColors.primaryDark),
+                        child: const NimzoIcon(Icons.sports_esports_rounded, size: 30, color: NimzoColors.primaryDark),
                       ),
                       const SizedBox(width: 12),
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
