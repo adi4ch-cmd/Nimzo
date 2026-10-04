@@ -1,3 +1,4 @@
+import '../../core/widgets/nimzo_icon.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,8 +51,8 @@ class _S extends ConsumerState<RoomSettingsScreen> {
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
       builder: (c) => SafeArea(child: Wrap(children: [
-        ListTile(leading: const Icon(Icons.photo_library_outlined), title: const Text('Phone Gallery'), onTap: () => Navigator.pop(c, ImageSource.gallery)),
-        ListTile(leading: const Icon(Icons.camera_alt_outlined), title: const Text('Camera'), onTap: () => Navigator.pop(c, ImageSource.camera)),
+        ListTile(leading: const NimzoIcon(Icons.photo_library_outlined), title: const Text('Phone Gallery'), onTap: () => Navigator.pop(c, ImageSource.gallery)),
+        ListTile(leading: const NimzoIcon(Icons.camera_alt_outlined), title: const Text('Camera'), onTap: () => Navigator.pop(c, ImageSource.camera)),
       ])),
     );
     if (source != null) await _pickRoomImage(source: source);
@@ -83,7 +84,7 @@ class _S extends ConsumerState<RoomSettingsScreen> {
                 const SizedBox(height: 4),
                 const Text('Choose a professional room picture from your phone.'),
                 const SizedBox(height: 8),
-                OutlinedButton.icon(onPressed: on ? () => _chooseRoomImage(context) : null, icon: const Icon(Icons.photo_library_outlined), label: const Text('Choose picture')),
+                OutlinedButton.icon(onPressed: on ? () => _chooseRoomImage(context) : null, icon: const NimzoIcon(Icons.photo_library_outlined), label: const Text('Choose picture')),
               ])),
             ]))),
             const SizedBox(height: 12),
