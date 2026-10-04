@@ -116,7 +116,6 @@ class ProfileScreen extends ConsumerWidget {
                               if (u.svipLevel > 0) _Level('SVIP', u.svipLevel),
                             ],
                           ),
-                          ),
                           const SizedBox(height: 14),
                           stats.maybeWhen(
                             data: (s) => Row(
