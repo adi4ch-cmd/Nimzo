@@ -119,7 +119,7 @@ class NimzoRoomCard extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(room.name, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-              Text('${_countryFlag(room.country)} ${room.roomNo}  ·  ${room.country ?? 'Global}', style: Theme.of(context).textTheme.bodySmall),
+              Text('${_countryFlag(room.country)} ${room.roomNo}  ·  ${room.country ?? 'Global'}', style: Theme.of(context).textTheme.bodySmall),
             ])),
             if (room.isPrivate) const Icon(Icons.lock_outline, size: 18),
           ]),
