@@ -6,6 +6,7 @@ import '../../core/widgets/empty_view.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/shimmer_view.dart';
 import 'recharge_repository.dart';
+import '../../core/widgets/nimzo_icon.dart';
 
 class RechargeScreen extends ConsumerStatefulWidget {
   const RechargeScreen({super.key});
@@ -126,7 +127,7 @@ class _RechargeState extends ConsumerState<RechargeScreen> {
               return Card(
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: const CircleAvatar(child: Icon(Icons.monetization_on_rounded)),
+                  leading: const CircleAvatar(backgroundColor: Color(0xFFFFF8E7), child: NimzoIcon(Icons.monetization_on_rounded, color: Color(0xFFE0A72E))),
                   title: Text('${package['coins']} coins'),
                   subtitle: const Text('Nimzo coins • 1 USD = 500,000 coins'),
                   trailing: Column(
