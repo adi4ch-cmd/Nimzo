@@ -128,7 +128,7 @@ class _RechargeState extends ConsumerState<RechargeScreen> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   leading: const CircleAvatar(child: Icon(Icons.monetization_on_rounded)),
                   title: Text('${package['coins']} coins'),
-                  subtitle: const Text('Nimzo coins • \\$1 = 500,000 coins'),
+                  subtitle: const Text('Nimzo coins • 1 USD = 500,000 coins'),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
