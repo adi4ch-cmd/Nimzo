@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/loading_view.dart';
 import '../../core/widgets/nimzo_button.dart';
+import '../../core/widgets/nimzo_icon.dart';
 import 'vip_repository.dart';
 
 class VipScreen extends ConsumerWidget {
@@ -42,12 +43,12 @@ class _TierCard extends StatelessWidget {
   final IconData icon; final String title, detail; final int level; final double progress;
   const _TierCard({required this.icon, required this.title, required this.level, required this.detail, required this.progress});
   @override
-  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ListTile(contentPadding: EdgeInsets.zero, leading: CircleAvatar(child: Icon(icon)), title: Text('$title Level $level', style: const TextStyle(fontWeight: FontWeight.w700)), subtitle: Text(detail), trailing: level > 0 ? const Icon(Icons.check_circle_rounded) : const Icon(Icons.lock_outline_rounded)), const SizedBox(height: 8), LinearProgressIndicator(value: progress, minHeight: 6), const SizedBox(height: 4), Text(level > 0 ? 'Level $level / 10' : 'Unlock VIP benefits', style: Theme.of(context).textTheme.bodySmall)])));
+  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ListTile(contentPadding: EdgeInsets.zero, leading: CircleAvatar(backgroundColor: const Color(0xFFFFF8E7), child: NimzoIcon(icon, color: const Color(0xFFE0A72E))), title: Text('$title Level $level', style: const TextStyle(fontWeight: FontWeight.w700)), subtitle: Text(detail), trailing: level > 0 ? const NimzoIcon(Icons.check_circle_rounded, color: Color(0xFF2E9B73)) : const NimzoIcon(Icons.lock_rounded, color: Color(0xFF94A3B8))), const SizedBox(height: 8), LinearProgressIndicator(value: progress, minHeight: 6), const SizedBox(height: 4), Text(level > 0 ? 'Level $level / 10' : 'Unlock VIP benefits', style: Theme.of(context).textTheme.bodySmall)])));
 }
 
 class _RewardRow extends StatelessWidget {
   final dynamic level, coins;
   const _RewardRow({required this.level, required this.coins});
   @override
-  Widget build(BuildContext context) => ListTile(dense: true, leading: const Icon(Icons.monetization_on_rounded), title: Text('Level $level'), trailing: Text('${coins ?? 0} coins', style: const TextStyle(fontWeight: FontWeight.w600)));
+  Widget build(BuildContext context) => ListTile(dense: true, leading: const NimzoIcon(Icons.monetization_on_rounded, color: Color(0xFFE0A72E)), title: Text('Level $level'), trailing: Text('${coins ?? 0} coins', style: const TextStyle(fontWeight: FontWeight.w600)));
 }
