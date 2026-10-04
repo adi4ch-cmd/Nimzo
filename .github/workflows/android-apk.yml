@@ -30,6 +30,10 @@ jobs:
         working-directory: nimzo
         run: flutter create --platforms=android --project-name nimzo .
 
+      - name: Remove generated sample test
+        working-directory: nimzo
+        run: rm -f test/widget_test.dart
+
       - name: Flutter pub get
         working-directory: nimzo
         run: flutter pub get
