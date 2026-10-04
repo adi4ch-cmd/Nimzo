@@ -1,3 +1,4 @@
+import '../../core/widgets/nimzo_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/widgets/nimzo_button.dart';
