@@ -83,7 +83,7 @@ class _RechargeState extends ConsumerState<RechargeScreen> {
             leading: CircleAvatar(child: const Icon(Icons.monetization_on_rounded)),
             title: Text('${p['coins']} coins'),
             subtitle: Text('Nimzo coins • $1 = 500,000 coins'),
-            trailing: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.end, children: [Text('\${(p['usd_cents'] / 100).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w800)), const Text('Buy', style: TextStyle(fontSize: 12))]),
+            trailing: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.end, children: [Text('\${((p['usd_cents'] as num) / 100).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w800)), const Text('Buy', style: TextStyle(fontSize: 12))]),
             onTap: _busy ? null : () => _buy(p),
           ));
         },
