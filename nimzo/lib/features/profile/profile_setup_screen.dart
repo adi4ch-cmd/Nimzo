@@ -6,8 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show FileOptions;
 import '../../core/providers/supabase_provider.dart';
+import '../../core/theme/colors.dart';
 import '../../core/utils/helpers.dart';
 import '../../core/widgets/nimzo_button.dart';
+import '../../core/widgets/nimzo_icon.dart';
 import 'profile_repository.dart';
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
@@ -109,7 +111,7 @@ class _S extends ConsumerState<ProfileSetupScreen> {
       const Text('Your Nimzo ID is permanent. You can change your display name anytime.'),
       const SizedBox(height: 18),
       TextField(controller: _name, maxLength: 30, textCapitalization: TextCapitalization.words,
-        decoration: const InputDecoration(labelText: 'Name', hintText: 'Enter your name', prefixIcon: Icon(Icons.person_outline))),
+        decoration: const InputDecoration(labelText: 'Name', hintText: 'Enter your name', prefixIcon: NimzoIcon(Icons.person_rounded, color: NimzoColors.primary))),
       const SizedBox(height: 10),
       _ImageCard(title: 'Profile Picture', path: _avatarPath, bucket: 'avatars', imageUrl: storageUrl(ref.read(supabaseProvider), 'avatars', _avatarPath), onGallery: () => _pickImage(cover: false, source: ImageSource.gallery), onCamera: () => _pickImage(cover: false, source: ImageSource.camera)),
       const SizedBox(height: 14),
@@ -130,11 +132,11 @@ class _S extends ConsumerState<ProfileSetupScreen> {
   );
 
   Future<void> _choice(String title, List<String> options, String? current, ValueChanged<String> set) async {
-    final v = await showModalBottomSheet<String>(context: context, builder: (_) => SafeArea(child: ListView(shrinkWrap: true, children: [Padding(padding: const EdgeInsets.all(20), child: Text(title, style: Theme.of(context).textTheme.titleLarge)), ...options.map((x) => ListTile(title: Text(x), trailing: x == current ? const Icon(Icons.check) : null, onTap: () => Navigator.pop(context, x)))])));
+    final v = await showModalBottomSheet<String>(context: context, builder: (_) => SafeArea(child: ListView(shrinkWrap: true, children: [Padding(padding: const EdgeInsets.all(20), child: Text(title, style: Theme.of(context).textTheme.titleLarge)), ...options.map((x) => ListTile(title: Text(x), trailing: x == current ? const NimzoIcon(Icons.check_circle_rounded, size: 20, color: Color(0xFF2E9B73)) : null, onTap: () => Navigator.pop(context, x)))])));
     if (v != null) set(v);
   }
 
-  Widget _selectTile(BuildContext c, String title, String value, VoidCallback onTap) => Card(margin: const EdgeInsets.only(bottom: 8), child: ListTile(title: Text(title), subtitle: Text(value), trailing: const Icon(Icons.chevron_right), onTap: onTap));
+  Widget _selectTile(BuildContext c, String title, String value, VoidCallback onTap) => Card(margin: const EdgeInsets.only(bottom: 8), child: ListTile(title: Text(title), subtitle: Text(value), trailing: const NimzoIcon(Icons.chevron_right_rounded, color: Color(0xFF64748B)), onTap: onTap));
 }
 
 class _ImageCard extends StatelessWidget {
@@ -145,8 +147,8 @@ class _ImageCard extends StatelessWidget {
   const _ImageCard({required this.title, required this.bucket, required this.path, required this.imageUrl, required this.onGallery, required this.onCamera, this.cover = false});
   @override
   Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [
-    Container(width: cover ? 110 : 64, height: 64, clipBehavior: Clip.antiAlias, decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.surfaceContainerHighest), child: imageUrl == null ? const Icon(Icons.image_outlined) : Image.network(imageUrl!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined))),
+    Container(width: cover ? 110 : 64, height: 64, clipBehavior: Clip.antiAlias, decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.surfaceContainerHighest), child: imageUrl == null ? const NimzoIcon(Icons.add_photo_alternate_rounded, size: 26, color: Color(0xFF2E9B73)) : Image.network(imageUrl!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const NimzoIcon(Icons.broken_image_rounded, color: Color(0xFFD85C5C)))),
     const SizedBox(width: 14), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 4), const Text('Choose directly from your phone or camera.') ])),
-    PopupMenuButton<String>(onSelected: (v) => v == 'camera' ? onCamera() : onGallery(), itemBuilder: (_) => const [PopupMenuItem(value: 'gallery', child: Text('Phone Gallery')), PopupMenuItem(value: 'camera', child: Text('Camera'))]),
+    PopupMenuButton<String>(icon: const NimzoIcon(Icons.more_horiz_rounded, color: Color(0xFF64748B)), onSelected: (v) => v == 'camera' ? onCamera() : onGallery(), itemBuilder: (_) => const [PopupMenuItem(value: 'gallery', child: Text('Phone Gallery')), PopupMenuItem(value: 'camera', child: Text('Camera'))]),
   ])));
 }
