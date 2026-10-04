@@ -42,7 +42,7 @@ class _TierCard extends StatelessWidget {
   final IconData icon; final String title, detail; final int level; final double progress;
   const _TierCard({required this.icon, required this.title, required this.level, required this.detail, required this.progress});
   @override
-  Widget build(BuildContext context) => Card(child: ListTile(leading: CircleAvatar(child: Icon(icon)), title: Text('$title Level $level', style: const TextStyle(fontWeight: FontWeight.w700)), subtitle: Text(detail), trailing: level > 0 ? const Icon(Icons.check_circle_rounded) : const Icon(Icons.lock_outline_rounded)), const SizedBox(height: 8), LinearProgressIndicator(value: progress, minHeight: 6), const SizedBox(height: 4), Text(level > 0 ? 'Level $level / 10' : 'Unlock VIP benefits', style: Theme.of(context).textTheme.bodySmall)])));
+  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ListTile(contentPadding: EdgeInsets.zero, leading: CircleAvatar(child: Icon(icon)), title: Text('$title Level $level', style: const TextStyle(fontWeight: FontWeight.w700)), subtitle: Text(detail), trailing: level > 0 ? const Icon(Icons.check_circle_rounded) : const Icon(Icons.lock_outline_rounded)), const SizedBox(height: 8), LinearProgressIndicator(value: progress, minHeight: 6), const SizedBox(height: 4), Text(level > 0 ? 'Level $level / 10' : 'Unlock VIP benefits', style: Theme.of(context).textTheme.bodySmall)])));
 }
 
 class _RewardRow extends StatelessWidget {
