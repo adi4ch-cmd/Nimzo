@@ -7,6 +7,7 @@ import '../../core/utils/formatters.dart';
 import '../../core/widgets/empty_view.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/nimzo_avatar.dart';
+import '../../core/widgets/nimzo_icon.dart';
 import '../../core/widgets/shimmer_view.dart';
 import '../profile/profile_repository.dart';
 import 'message_repository.dart';
@@ -22,7 +23,7 @@ class _M extends ConsumerState<MessagesScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(title: const Text('Messages'), actions: [
-          IconButton(icon: const Icon(Icons.notifications_none), onPressed: () => context.push('/notifications')),
+          IconButton(icon: const NimzoIcon(Icons.notifications_none_rounded, color: Color(0xFF64748B)), onPressed: () => context.push('/notifications')),
         ]),
         body: Column(children: [
           Padding(padding: const EdgeInsets.all(12), child: TextField(
@@ -117,7 +118,7 @@ class _C extends ConsumerState<ConversationScreen> {
         )),
         SafeArea(child: Padding(padding: const EdgeInsets.all(8), child: Row(children: [
           Expanded(child: TextField(controller: _t, onChanged: (_) => _typing?.sendBroadcastMessage(event: 'typing', payload: {'from': me}), decoration: const InputDecoration(hintText: 'Message'))),
-          IconButton(icon: const Icon(Icons.send), onPressed: () async {
+          IconButton(icon: const NimzoIcon(Icons.send_rounded, color: Color(0xFF2E9B73)), onPressed: () async {
             final s = _t.text.trim();
             if (s.isEmpty) return;
             _t.clear();
