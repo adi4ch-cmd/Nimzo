@@ -6,6 +6,7 @@ import '../../core/theme/colors.dart';
 import '../../core/widgets/empty_view.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/shimmer_view.dart';
+import '../../core/widgets/nimzo_icon.dart';
 import '../rooms/domain/room.dart';
 import '../rooms/presentation/room_controller.dart';
 
@@ -18,8 +19,8 @@ class HomeScreen extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Nimzo', style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.4)),
             actions: [
-              IconButton(icon: const Icon(Icons.emoji_events_outlined), onPressed: () => context.push('/discover')),
-              IconButton(icon: const Icon(Icons.search), onPressed: () => context.go('/messages')),
+              IconButton(icon: const NimzoIcon(Icons.emoji_events_outlined, color: NimzoColors.gold), onPressed: () => context.push('/discover')),
+              IconButton(icon: const NimzoIcon(Icons.search_rounded, color: NimzoColors.primary), onPressed: () => context.go('/messages')),
             ],
             bottom: const TabBar(isScrollable: false, dividerHeight: 0, tabs: [Tab(text: 'Me'), Tab(text: 'Popular'), Tab(text: 'New Rooms')]),
           ),
@@ -29,7 +30,7 @@ class HomeScreen extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.fromLTRB(16, 12, 16, 10), padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                 decoration: BoxDecoration(color: NimzoColors.primaryFaint, borderRadius: BorderRadius.circular(18), border: Border.all(color: NimzoColors.primaryLight)),
-                child: const Row(children: [Icon(Icons.add_circle_outline, color: NimzoColors.primaryDark), SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Create your room', style: TextStyle(fontWeight: FontWeight.w700)), SizedBox(height: 2), Text('Start a live voice room and meet people', style: TextStyle(fontSize: 12, color: Color(0xFF64748B)))])), Icon(Icons.chevron_right_rounded, color: Color(0xFF64748B))]),
+                child: const Row(children: [NimzoIcon(Icons.add_circle_rounded, color: NimzoColors.primaryDark), SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Create your room', style: TextStyle(fontWeight: FontWeight.w700)), SizedBox(height: 2), Text('Start a live voice room and meet people', style: TextStyle(fontSize: 12, color: Color(0xFF64748B)))])), NimzoIcon(Icons.chevron_right_rounded, color: Color(0xFF64748B))]),
               ),
             ),
             const Expanded(child: TabBarView(children: [_MeTab(), _PopularTab(), _NewTab()])),
@@ -66,8 +67,8 @@ class _P extends ConsumerState<_PopularTab> {
   @override
   Widget build(BuildContext context) => Column(children: [
         SizedBox(height: 48, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 16), children: [
-          for (final c in quick) Padding(padding: const EdgeInsets.only(right: 8), child: ChoiceChip(label: Text('${flagCodes[c] ?? '🌐'}  $c'), selected: (c == 'All' && country == null) || country == c, onSelected: (_) => setState(() => country = c == 'All' ? null : c))),
-          ActionChip(label: const Text('🌍  More'), onPressed: () => showCountryPicker(context: context, onSelect: (c) => setState(() => country = c.name))),
+          for (final c in quick) Padding(padding: const EdgeInsets.only(right: 8), child: ChoiceChip(label: Row(mainAxisSize: MainAxisSize.min, children: [NimzoIcon(c == 'All' ? Icons.public_rounded : Icons.flag_rounded, size: 17, color: NimzoColors.primary), const SizedBox(width: 6), Text(c)]), selected: (c == 'All' && country == null) || country == c, onSelected: (_) => setState(() => country = c == 'All' ? null : c))),
+          ActionChip(label: const Row(mainAxisSize: MainAxisSize.min, children: [NimzoIcon(Icons.public_rounded, size: 17, color: NimzoColors.primary), SizedBox(width: 6), Text('More')]), onPressed: () => showCountryPicker(context: context, onSelect: (c) => setState(() => country = c.name))),
         ])),
         Expanded(child: ref.watch(popularRoomsProvider(country)).when(
           loading: () => const ShimmerView(rows: 5),
@@ -115,13 +116,13 @@ class NimzoRoomCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
           decoration: BoxDecoration(color: NimzoColors.surface, borderRadius: BorderRadius.circular(18), border: Border.all(color: highlight ? NimzoColors.gold : NimzoColors.border)),
           child: Row(children: [
-            Container(width: 52, height: 52, decoration: BoxDecoration(color: NimzoColors.primaryFaint, borderRadius: BorderRadius.circular(16)), child: const Icon(Icons.mic_none_rounded, color: NimzoColors.primaryDark)),
+            Container(width: 52, height: 52, decoration: BoxDecoration(color: NimzoColors.primaryFaint, borderRadius: BorderRadius.circular(16)), child: const NimzoIcon(Icons.mic_rounded, color: NimzoColors.primaryDark, size: 26)),
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(room.name, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
               Text('${_countryFlag(room.country)} ${room.roomNo}  ·  ${room.country ?? 'Global'}', style: Theme.of(context).textTheme.bodySmall),
             ])),
-            if (room.isPrivate) const Icon(Icons.lock_outline, size: 18),
+            if (room.isPrivate) const NimzoIcon(Icons.lock_rounded, size: 18, color: NimzoColors.gold),
           ]),
         ),
       );
