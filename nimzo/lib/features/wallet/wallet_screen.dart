@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/loading_view.dart';
+import '../../core/widgets/nimzo_icon.dart';
 
 final walletProvider = FutureProvider((ref) async {
   final db = Supabase.instance.client;
@@ -14,7 +15,7 @@ final walletProvider = FutureProvider((ref) async {
   return (coins: w['coins'] as int, diamonds: w['diamonds'] as int, ledger: l);
 });
 
-class _BalanceTile extends StatelessWidget { final IconData icon; final String label, value; const _BalanceTile({required this.icon, required this.label, required this.value}); @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [CircleAvatar(radius: 18, child: Icon(icon, size: 19)), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: Theme.of(context).textTheme.bodySmall), Text(value, style: const TextStyle(fontWeight: FontWeight.w800))]))]))); }
+class _BalanceTile extends StatelessWidget { final IconData icon; final String label, value; const _BalanceTile({required this.icon, required this.label, required this.value}); @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [CircleAvatar(radius: 18, backgroundColor: const Color(0xFFEFFAF4), child: NimzoIcon(icon, size: 19, color: const Color(0xFF2E9B73))), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: Theme.of(context).textTheme.bodySmall), Text(value, style: const TextStyle(fontWeight: FontWeight.w800))]))]))); }
 
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
@@ -47,9 +48,9 @@ class WalletScreen extends ConsumerWidget {
             ]),
             const SizedBox(height: 18),
             Row(children: [
-              Expanded(child: FilledButton.icon(onPressed: () => context.push('/recharge'), icon: const Icon(Icons.add_rounded), label: const Text('Recharge'))),
+              Expanded(child: FilledButton.icon(onPressed: () => context.push('/recharge'), icon: const NimzoIcon(Icons.add_circle_rounded, color: Colors.white), label: const Text('Recharge'))),
               const SizedBox(width: 8),
-              Expanded(child: OutlinedButton.icon(onPressed: () => context.push('/vip'), icon: const Icon(Icons.workspace_premium_outlined), label: const Text('VIP'))),
+              Expanded(child: OutlinedButton.icon(onPressed: () => context.push('/vip'), icon: const NimzoIcon(Icons.workspace_premium_rounded, color: Color(0xFFE0A72E)), label: const Text('VIP'))),
             ]),
           ],
         ),
