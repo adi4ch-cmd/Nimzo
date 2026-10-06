@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - feat/vivox-5.28-android-ci
+      - fix/nimzo-premium-test
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -193,6 +194,13 @@ jobs:
         working-directory: nimzo
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
+      - name: Regression tests
+        working-directory: nimzo
+        run: flutter test
+
+      - name: Native contract tests
+        run: python3 -m unittest discover -s nimzo/test/voice -p "*_test.py"
+
       - name: Build release APK
         working-directory: nimzo
         run: flutter build apk --release
@@ -209,3 +217,13 @@ jobs:
           name: nimzo-vivox-5.28.0-release-apk
           path: nimzo/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
+
+      - name: Publish shareable test APK
+        if: github.ref == 'refs/heads/fix/nimzo-premium-test'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp nimzo/build/app/outputs/flutter-apk/app-release.apk nimzo-premium-test.apk
+          tag="premium-test-${GITHUB_RUN_NUMBER}"
+          sha256sum nimzo-premium-test.apk > nimzo-premium-test.sha256
+          gh release create "$tag" nimzo-premium-test.apk nimzo-premium-test.sha256 --target "$GITHUB_SHA" --prerelease --title "Nimzo premium test ${GITHUB_RUN_NUMBER}" --notes "Premium UI and security, payment, data and voice repairs. Automated Flutter tests and release build passed. Please test microphone permissions, two-device room audio and store purchases on Android."

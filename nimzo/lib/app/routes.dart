@@ -4,6 +4,7 @@ class Routes {
   static const login = '/login';
   static const register = '/register';
   static const forgot = '/forgot';
+  static const updatePassword = '/update-password';
   static const verify = '/verify';
   static const profileSetup = '/profile-setup';
   static const home = '/home';

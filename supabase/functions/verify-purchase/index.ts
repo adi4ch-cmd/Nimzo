@@ -17,19 +17,22 @@ async function googleAccessToken(serviceAccountJson: string) {
 async function verifyGoogle(productId: string, token: string) {
   const service = Deno.env.get("GOOGLE_PLAY_SERVICE_ACCOUNT"); if (!service) throw new Error("Google Play verification is not configured");
   const access = await googleAccessToken(service);
-  const url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/io.nimzo.nimzo/purchases/products/" + encodeURIComponent(productId) + "/tokens/" + encodeURIComponent(token);
+  const packageName = Deno.env.get("GOOGLE_PLAY_PACKAGE_NAME")?.trim() || "io.nimzo.app";
+  const url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/" + encodeURIComponent(packageName) + "/purchases/products/" + encodeURIComponent(productId) + "/tokens/" + encodeURIComponent(token);
   const r = await fetch(url, { headers: { Authorization: "Bearer " + access } }); const data = await r.json();
   if (!r.ok) throw new Error("Google purchase verification failed"); if (Number(data.purchaseState) !== 0) throw new Error("Google purchase is not completed");
   return { transactionId: String(token), ok: true };
 }
-async function verifyApple(productId: string, receipt: string) {
+async function verifyApple(productId: string, receipt: string, transactionId: string) {
   const secret = Deno.env.get("APP_STORE_SHARED_SECRET"); if (!secret) throw new Error("Apple App Store verification is not configured");
   const body = JSON.stringify({ "receipt-data": receipt, password: secret, "exclude-old-transactions": false });
   let r = await fetch("https://buy.itunes.apple.com/verifyReceipt", { method: "POST", headers: { "Content-Type": "application/json" }, body }); let data = await r.json();
   if (data.status === 21007) { r = await fetch("https://sandbox.itunes.apple.com/verifyReceipt", { method: "POST", headers: { "Content-Type": "application/json" }, body }); data = await r.json(); }
   if (!r.ok || data.status !== 0) throw new Error("Apple purchase verification failed");
+  const bundleId = Deno.env.get("APP_STORE_BUNDLE_ID")?.trim() || "io.nimzo.app";
+  if (String(data.receipt?.bundle_id ?? "") !== bundleId) throw new Error("Apple bundle/receipt mismatch");
   const entries = [...(Array.isArray(data.latest_receipt_info) ? data.latest_receipt_info : []), ...(Array.isArray(data.receipt?.in_app) ? data.receipt.in_app : [])];
-  const match = entries.filter((x: any) => String(x.product_id) === productId).sort((a: any, b: any) => Number(b.purchase_date_ms ?? 0) - Number(a.purchase_date_ms ?? 0))[0];
+  const match = entries.filter((x: any) => String(x.product_id) === productId && !x.cancellation_date && !x.cancellation_date_ms && (!transactionId || String(x.transaction_id) === transactionId)).sort((a: any, b: any) => Number(b.purchase_date_ms ?? 0) - Number(a.purchase_date_ms ?? 0))[0];
   if (!match?.transaction_id) throw new Error("Apple product/receipt mismatch"); return { transactionId: String(match.transaction_id), ok: true };
 }
 Deno.serve(async (req) => {
@@ -43,7 +46,7 @@ Deno.serve(async (req) => {
   const productId = String(body.product_id ?? ""); const receipt = String(body.receipt ?? "");
   if (!store || !productId || !receipt) return json({ error: "Invalid purchase request" }, 400);
   try {
-    const verified = store === "google_play" ? await verifyGoogle(productId, receipt) : await verifyApple(productId, receipt);
+    const verified = store === "google_play" ? await verifyGoogle(productId, receipt) : await verifyApple(productId, receipt, String(body.transaction_id ?? ""));
     const { error } = await admin.rpc("apply_recharge", { p_user: userData.user.id, p_store: store, p_txn: verified.transactionId, p_product: productId });
     if (error) { console.error("apply_recharge failed", error); return json({ error: "Purchase verified but settlement failed; retry is safe" }, 502); }
     return json({ ok: true, store, product_id: productId, transaction_id: verified.transactionId });

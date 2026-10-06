@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/colors.dart';
 import '../theme/radius.dart';
 
@@ -21,7 +22,8 @@ class NimzoButton extends StatelessWidget {
         ? const SizedBox(
             width: 20,
             height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2))
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
         : Text(label);
     const shape = RoundedRectangleBorder(borderRadius: Rad.md);
     const size = Size.fromHeight(50);
@@ -30,17 +32,21 @@ class NimzoButton extends StatelessWidget {
         ? OutlinedButton(
             onPressed: action,
             style: OutlinedButton.styleFrom(
-                minimumSize: size,
-                shape: shape,
-                foregroundColor: NimzoColors.text,
-                side: const BorderSide(color: NimzoColors.border)),
-            child: child)
+              minimumSize: size,
+              shape: shape,
+              foregroundColor: NimzoColors.text,
+              side: const BorderSide(color: NimzoColors.border),
+            ),
+            child: child,
+          )
         : FilledButton(
             onPressed: action,
             style: FilledButton.styleFrom(
-                minimumSize: size,
-                shape: shape,
-                backgroundColor: NimzoColors.primary),
-            child: child);
+              minimumSize: size,
+              shape: shape,
+              backgroundColor: NimzoColors.primary,
+            ),
+            child: child,
+          );
   }
 }
