@@ -33,46 +33,86 @@ jobs:
         working-directory: nimzo
         run: flutter create --platforms=android --project-name nimzo .
 
-      - name: Resolve Vivox application manifest conflict
+      - name: Install Nimzo Vivox Android host and native bridge
         working-directory: nimzo
         shell: bash
         run: |
           set -euo pipefail
-          MANIFEST=android/app/src/main/AndroidManifest.xml
-          test -f "$MANIFEST"
+          mkdir -p android/app/src/main/java/io/nimzo/app
+          mkdir -p android/app/src/main/java/io/nimzo/vivox
+          mkdir -p android/app/src/main/cpp
+          cp native/vivox/android/MainActivity.java android/app/src/main/java/io/nimzo/app/MainActivity.java
+          cp native/vivox/android/NimzoVivox.java android/app/src/main/java/io/nimzo/vivox/NimzoVivox.java
+          cp native/vivox/android/vivox_bridge.cpp android/app/src/main/cpp/vivox_bridge.cpp
+          cp native/vivox/android/CMakeLists.txt android/app/src/main/cpp/CMakeLists.txt
+
+      - name: Configure Android application id, permissions, and native build
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           import re
 
-          p = Path("android/app/src/main/AndroidManifest.xml")
-          s = p.read_text()
+          gradle = Path("android/app/build.gradle.kts")
+          if not gradle.exists():
+              gradle = Path("android/app/build.gradle")
+          if not gradle.exists():
+              raise SystemExit("Generated Android app Gradle file not found")
 
-          if 'xmlns:tools=' not in s:
-              s, n = re.subn(
-                  r'<manifest\b',
-                  '<manifest xmlns:tools="http://schemas.android.com/tools"',
-                  s,
-                  count=1,
-              )
-              if n != 1:
-                  raise SystemExit("Could not locate <manifest> in generated AndroidManifest.xml")
+          s = gradle.read_text()
+          if gradle.suffix == ".kts":
+              s = re.sub(r'namespace\s*=\s*"[^"]+"', 'namespace = "io.nimzo.app"', s, count=1)
+              s = re.sub(r'applicationId\s*=\s*"[^"]+"', 'applicationId = "io.nimzo.app"', s, count=1)
+              s += '''
+\n// Nimzo Vivox Core 5.28.0 native bridge
+android {
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+            arguments += listOf("-DVIVOX_SDK_ROOT=/tmp/vivox/android")
+        }
+    }
+}
+'''
+          else:
+              s = re.sub(r'namespace\s+["\'][^"\']+["\']', 'namespace "io.nimzo.app"', s, count=1)
+              s = re.sub(r'applicationId\s+["\'][^"\']+["\']', 'applicationId "io.nimzo.app"', s, count=1)
+              s += '''
+\n// Nimzo Vivox Core 5.28.0 native bridge
+android {
+    externalNativeBuild {
+        cmake {
+            path file("src/main/cpp/CMakeLists.txt")
+            version "3.22.1"
+            arguments "-DVIVOX_SDK_ROOT=/tmp/vivox/android"
+        }
+    }
+}
+'''
+          gradle.write_text(s)
 
-          if 'tools:replace="android:name"' not in s:
-              s, n = re.subn(
-                  r'<application\b',
-                  '<application tools:replace="android:name"',
-                  s,
-                  count=1,
-              )
-              if n != 1:
-                  raise SystemExit("Could not locate <application> in generated AndroidManifest.xml")
-
-          p.write_text(s)
-
-          if 'tools:replace="android:name"' not in s:
-              raise SystemExit("Vivox manifest override was not applied")
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          m = manifest.read_text()
+          if 'xmlns:tools=' not in m:
+              m = m.replace('<manifest', '<manifest xmlns:tools="http://schemas.android.com/tools"', 1)
+          if 'tools:replace="android:name"' not in m:
+              m = m.replace('<application', '<application tools:replace="android:name"', 1)
+          permissions = [
+              'android.permission.RECORD_AUDIO',
+              'android.permission.MODIFY_AUDIO_SETTINGS',
+              'android.permission.BLUETOOTH',
+              'android.permission.BLUETOOTH_CONNECT',
+              'android.permission.BLUETOOTH_SCAN',
+          ]
+          for p in permissions:
+              tag = f'<uses-permission android:name="{p}" />'
+              if p not in m:
+                  m = m.replace('<application', tag + '\n        <application', 1)
+          manifest.write_text(m)
           PY
-          grep -q 'tools:replace="android:name"' "$MANIFEST"
 
       - name: Download Vivox Android SDK 5.28.0
         working-directory: nimzo
@@ -86,8 +126,14 @@ jobs:
           test -n "$AAR"
           mkdir -p android/app/libs
           cp "$AAR" android/app/libs/vivox-sdk-5.28.0.aar
+          HEADER="$(find /tmp/vivox/android -type f -name 'Vxc.h' -print -quit)"
+          test -n "$HEADER"
+          VIVOX_LIB="$(find /tmp/vivox/android -type f \( -name 'libvivox-sdk.so' -o -name 'libvivoxsdk.so' \) -print -quit)"
+          test -n "$VIVOX_LIB"
+          echo "Vivox header: $HEADER"
+          echo "Vivox native library: $VIVOX_LIB"
 
-      - name: Wire Vivox AAR into generated Android app
+      - name: Wire Vivox AAR dependency
         working-directory: nimzo
         shell: bash
         run: |
@@ -98,10 +144,8 @@ jobs:
           elif [ -f android/app/build.gradle.kts ]; then
             APP_GRADLE=android/app/build.gradle.kts
           else
-            echo "Android app Gradle file not found"
             exit 1
           fi
-
           if ! grep -q "vivox-sdk-5.28.0.aar" "$APP_GRADLE"; then
             if [[ "$APP_GRADLE" == *.kts ]]; then
               printf '\n// Vivox Core SDK 5.28.0\ndependencies {\n    implementation(files("libs/vivox-sdk-5.28.0.aar"))\n}\n' >> "$APP_GRADLE"
@@ -122,7 +166,7 @@ jobs:
         working-directory: nimzo
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
-      - name: Build release APK with Vivox SDK
+      - name: Build release APK with Vivox native bridge
         working-directory: nimzo
         run: flutter build apk --release
 
