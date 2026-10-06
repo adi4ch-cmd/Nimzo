@@ -287,6 +287,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                     ),
                     const TabBar(
+                      isScrollable: true,
+                      tabAlignment: TabAlignment.start,
                       dividerHeight: 0,
                       tabs: [
                         Tab(text: 'About'),

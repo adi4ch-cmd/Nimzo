@@ -13,7 +13,7 @@ void main() {
     WidgetTester tester, {
     bool giftError = false,
   }) async {
-    tester.view.physicalSize = const Size(1000, 2200);
+    tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -76,6 +76,10 @@ void main() {
       expect(find.text('Rose'), findsOneWidget);
       expect(find.text('× 12'), findsOneWidget);
       expect(find.text('No gifts received yet'), findsNothing);
+      await tester.tap(find.text('Achievements'));
+      await tester.pumpAndSettle();
+      expect(find.text('No achievements yet'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     },
   );
 
@@ -88,6 +92,7 @@ void main() {
       expect(find.text('Gifts could not be loaded.'), findsOneWidget);
       expect(find.text('Retry'), findsOneWidget);
       expect(find.text('No gifts received yet'), findsNothing);
+      expect(tester.takeException(), isNull);
     },
   );
 }
