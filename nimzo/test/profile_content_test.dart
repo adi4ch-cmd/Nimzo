@@ -18,6 +18,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     final db = SupabaseClient('https://example.supabase.co', 'test-key');
+    db.auth.stopAutoRefresh();
+    addTearDown(db.dispose);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
