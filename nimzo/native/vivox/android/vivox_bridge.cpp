@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <android/log.h>
 #include <Vxc.h>
+#include <VxcErrors.h>
 #include <VxcRequests.h>
 #include <VxcResponses.h>
 #include <VxcEvents.h>
@@ -18,6 +19,7 @@ static std::mutex g_mu;
 static VX_HANDLE g_connector = nullptr;
 static VX_HANDLE g_account = nullptr;
 static VX_HANDLE g_session_group = nullptr;
+static const char* kSessionGroupHandle = "nimzo_room_group";
 static VX_HANDLE g_session = nullptr;
 static std::atomic<bool> g_initialized{false};
 static std::atomic<bool> g_pump{false};
@@ -41,27 +43,29 @@ static void emit(const char* event, int status, const char* detail) {
 
 static void handle_message(vx_message_base_t* msg) {
   if (!msg) return;
-  if (msg->type == msg_evt_media_stream_updated) {
+  if (msg->type != msg_event) return;
+  vx_evt_base_t* evt = reinterpret_cast<vx_evt_base_t*>(msg);
+  if (evt->type == evt_media_stream_updated) {
     auto* e = reinterpret_cast<vx_evt_media_stream_updated_t*>(msg);
     emit(e->state == session_media_connected ? "audioConnected" : "audioState",
          e->status_code, e->status_string ? e->status_string : "");
-  } else if (msg->type == msg_evt_participant_updated) {
+  } else if (evt->type == evt_participant_updated) {
     auto* e = reinterpret_cast<vx_evt_participant_updated_t*>(msg);
     emit(e->is_speaking ? "speaking" : "stoppedSpeaking",
          0, e->participant_uri ? e->participant_uri : "");
-  } else if (msg->type == msg_evt_account_login_state_change) {
+  } else if (evt->type == evt_account_login_state_change) {
     auto* e = reinterpret_cast<vx_evt_account_login_state_change_t*>(msg);
     emit("loginState", e->status_code, e->status_string ? e->status_string : "");
   }
 }
 
-static int wait_for_response(vx_message_type wanted, int timeout_ms, vx_message_base_t** out) {
+static int wait_for_response(vx_response_type wanted, int timeout_ms, vx_message_base_t** out) {
   const int slice = 100;
   int elapsed = 0;
   while (elapsed < timeout_ms) {
     vx_message_base_t* msg = vx_wait_for_message(slice);
     if (!msg) { elapsed += slice; continue; }
-    if (msg->type == wanted) {
+    if (msg->type == msg_response && reinterpret_cast<vx_resp_base_t*>(msg)->type == wanted) {
       *out = msg;
       return 0;
     }
@@ -209,7 +213,7 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
     vx_destroy_message(join_msg);
     return status;
   }
-  g_session_group = join_resp->sessiongroup_handle;
+  g_session_group = vx_strdup(kSessionGroupHandle);
   g_session = join_resp->session_handle;
   vx_destroy_message(join_msg);
 
