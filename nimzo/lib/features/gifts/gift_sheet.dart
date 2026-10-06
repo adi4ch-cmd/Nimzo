@@ -1,18 +1,16 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-
 import 'package:flutter/material.dart';
 
 import '../wallet/wallet_screen.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/widgets/empty_view.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/shimmer_view.dart';
-import '../../core/utils/helpers.dart';
+import 'gift_artwork.dart';
 import 'gift_repository.dart';
+import '../../core/providers/supabase_provider.dart';
+import '../profile/profile_repository.dart';
 
 const giftCategories = ['All', 'Classic', 'Premium', 'VIP', 'SVIP'];
 
@@ -28,9 +26,16 @@ void showGiftSheet(BuildContext c, String roomId, String receiverId) {
   );
 }
 
+Future<void> showProfileGiftSheet(BuildContext context, String receiverId) =>
+    showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        builder: (_) => GiftSheet(receiverId: receiverId));
+
 class GiftSheet extends ConsumerStatefulWidget {
-  final String roomId, receiverId;
-  const GiftSheet({super.key, required this.roomId, required this.receiverId});
+  final String? roomId;
+  final String receiverId;
+  const GiftSheet({super.key, this.roomId, required this.receiverId});
   @override
   ConsumerState<GiftSheet> createState() => _S();
 }
@@ -82,17 +87,28 @@ class _S extends ConsumerState<GiftSheet> {
     }
     setState(() => busy = true);
     try {
-      await ref
-          .read(giftRepositoryProvider)
-          .send(
-            roomId: widget.roomId,
+      if (widget.roomId == null) {
+        await ref.read(giftRepositoryProvider).sendProfile(
             receiverId: widget.receiverId,
             giftId: g.id,
             qty: n,
-            key: _pendingKey!,
-          );
+            key: _pendingKey!);
+      } else {
+        await ref.read(giftRepositoryProvider).send(
+              roomId: widget.roomId!,
+              receiverId: widget.receiverId,
+              giftId: g.id,
+              qty: n,
+              key: _pendingKey!,
+            );
+      }
       ref.invalidate(walletProvider);
       ref.invalidate(myCoinBalanceProvider);
+      ref.invalidate(profileGiftsProvider(widget.receiverId));
+      ref.invalidate(profileProvider(widget.receiverId));
+      // Refresh profile counters for both sides after server settlement.
+      final senderId = ref.read(currentUserIdProvider);
+      if (senderId != null) ref.invalidate(profileProvider(senderId));
       if (mounted) Navigator.pop(context);
     } catch (e) {
       _snack('$e');
@@ -129,9 +145,7 @@ class _S extends ConsumerState<GiftSheet> {
                         ),
                       ),
                     ),
-                    ref
-                        .watch(myCoinBalanceProvider)
-                        .when(
+                    ref.watch(myCoinBalanceProvider).when(
                           loading: () => const SizedBox(
                             width: 54,
                             height: 28,
@@ -180,20 +194,18 @@ class _S extends ConsumerState<GiftSheet> {
                     final list = cat == 'All'
                         ? all
                         : all
-                              .where(
-                                (g) =>
-                                    g.category.toLowerCase() ==
-                                    cat.toLowerCase(),
-                              )
-                              .toList();
+                            .where(
+                              (g) =>
+                                  g.category.toLowerCase() == cat.toLowerCase(),
+                            )
+                            .toList();
                     if (list.isEmpty)
                       return const EmptyView(
                         title: 'No gifts in this category',
                       );
                     return GridView.count(
-                      crossAxisCount: MediaQuery.sizeOf(context).width < 360
-                          ? 3
-                          : 4,
+                      crossAxisCount:
+                          MediaQuery.sizeOf(context).width < 360 ? 3 : 4,
                       mainAxisExtent: 118,
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
                       children: [
@@ -289,64 +301,12 @@ class _GiftVisual extends StatelessWidget {
   final bool selected;
   const _GiftVisual({required this.gift, required this.selected});
 
-  static const _local = <String, String>{
-    'Rose': 'assets/gifts/rose.svg',
-    'Heart': 'assets/gifts/heart.svg',
-    'Kiss': 'assets/gifts/kiss.svg',
-    'Coffee': 'assets/gifts/coffee.svg',
-    'Crown': 'assets/gifts/crown.svg',
-    'Diamond': 'assets/gifts/diamond.svg',
-    'Rocket': 'assets/gifts/rocket.svg',
-    'Sports Car': 'assets/gifts/car.svg',
-    'Luxury Yacht': 'assets/gifts/yacht.svg',
-    'Private Jet': 'assets/gifts/jet.svg',
-    'Golden Palace': 'assets/gifts/palace.svg',
-    'Royal Dragon': 'assets/gifts/dragon.svg',
-    'Phoenix': 'assets/gifts/phoenix.svg',
-  };
-
   @override
-  Widget build(BuildContext context) {
-    final fallback = switch (gift.category.toLowerCase()) {
-      'classic' => Icons.favorite_rounded,
-      'premium' => Icons.diamond_rounded,
-      'vip' => Icons.workspace_premium_rounded,
-      'svip' => Icons.auto_awesome_rounded,
-      _ => Icons.card_giftcard_rounded,
-    };
-    final color = selected ? const Color(0xFF16A34A) : const Color(0xFF64748B);
-    final local = _local[gift.name];
-
-    if (local != null) {
-      return AnimatedScale(
+  Widget build(BuildContext context) => AnimatedScale(
         scale: selected ? 1.08 : 1,
         duration: const Duration(milliseconds: 160),
-        child: SvgPicture.asset(
-          local,
-          width: 46,
-          height: 46,
-          fit: BoxFit.contain,
-        ),
+        child: GiftArtwork(path: gift.assetPath),
       );
-    }
-
-    if (gift.assetPath != null && gift.assetPath!.trim().isNotEmpty) {
-      final url = storageUrl(Supabase.instance.client, 'gifts', gift.assetPath);
-      if (url != null) {
-        return SizedBox(
-          width: 46,
-          height: 46,
-          child: Image.network(
-            url,
-            fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) =>
-                Icon(fallback, size: 30, color: color),
-          ),
-        );
-      }
-    }
-    return Icon(fallback, size: 30, color: color);
-  }
 }
 
 class _CoinPill extends StatelessWidget {
@@ -354,28 +314,28 @@ class _CoinPill extends StatelessWidget {
   const _CoinPill({required this.value});
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-    decoration: BoxDecoration(
-      color: const Color(0xFFFFF7D6),
-      borderRadius: BorderRadius.circular(999),
-      border: Border.all(color: const Color(0xFFF1D77A)),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(
-          Icons.monetization_on_rounded,
-          size: 17,
-          color: Color(0xFFD59B00),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF7D6),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: const Color(0xFFF1D77A)),
         ),
-        const SizedBox(width: 5),
-        Text(
-          value.toString(),
-          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.monetization_on_rounded,
+              size: 17,
+              color: Color(0xFFD59B00),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              value.toString(),
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }
 
 class _CoinPrice extends StatelessWidget {
@@ -383,20 +343,20 @@ class _CoinPrice extends StatelessWidget {
   const _CoinPrice({required this.value});
   @override
   Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      const Icon(
-        Icons.monetization_on_rounded,
-        size: 13,
-        color: Color(0xFFD59B00),
-      ),
-      const SizedBox(width: 2),
-      Flexible(
-        child: Text(
-          value.toString(),
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ),
-    ],
-  );
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.monetization_on_rounded,
+            size: 13,
+            color: Color(0xFFD59B00),
+          ),
+          const SizedBox(width: 2),
+          Flexible(
+            child: Text(
+              value.toString(),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        ],
+      );
 }

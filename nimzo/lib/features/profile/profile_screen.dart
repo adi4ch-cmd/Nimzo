@@ -15,7 +15,12 @@ import '../../core/widgets/nimzo_avatar.dart';
 import '../../core/widgets/nimzo_badge.dart';
 import '../../core/widgets/nimzo_icon.dart';
 import '../social/social_repositories.dart';
+import '../gifts/gift_artwork.dart';
 import 'profile_repository.dart';
+import 'profile_social_screen.dart';
+import 'profile_collections.dart';
+import 'profile_couple_section.dart';
+import '../gifts/gift_sheet.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -27,6 +32,12 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   String? _visitedId;
+  void _openSocial(String id, ProfileSocialList kind) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => ProfileSocialScreen(userId: id, kind: kind),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final me = ref.watch(currentUserIdProvider);
@@ -42,11 +53,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final p = ref.watch(profileProvider(id));
     final stats = ref.watch(profileStatsProvider(id));
     final tags = ref.watch(profileTagsProvider(id));
-    final couple = ref.watch(profileCoupleProvider(id));
     final models = ref.watch(profileModelsProvider(id));
     final db = ref.watch(supabaseProvider);
 
     return Scaffold(
+      bottomNavigationBar:
+          !isMe ? SafeArea(child: _Actions(targetId: id)) : null,
       appBar: AppBar(
         title: Text(isMe ? 'Profile' : ''),
         actions: [
@@ -173,7 +185,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             (u.displayName?.trim().isNotEmpty == true)
                                 ? u.displayName!
                                 : 'Nimzo User',
-                            style: Theme.of(context).textTheme.titleMedium
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
                                 ?.copyWith(fontWeight: FontWeight.w700),
                           ),
                           const SizedBox(height: 4),
@@ -214,8 +228,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 for (final x in t)
                                   NimzoBadge(
                                     x,
-                                    gold:
-                                        x.startsWith('TOP') ||
+                                    gold: x.startsWith('TOP') ||
                                         x.contains('VIP'),
                                   ),
                               ],
@@ -252,9 +265,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             data: (s) => Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                _Stat('Following', s['following'] ?? 0),
-                                _Stat('Followers', s['followers'] ?? 0),
-                                _Stat('Visitors', s['visitors'] ?? 0),
+                                _Stat('Following', s['following'] ?? 0,
+                                    onTap: () => _openSocial(
+                                        id, ProfileSocialList.following)),
+                                _Stat('Followers', s['followers'] ?? 0,
+                                    onTap: () => _openSocial(
+                                        id, ProfileSocialList.followers)),
+                                _Stat('Visitors', s['visitors'] ?? 0,
+                                    onTap: isMe
+                                        ? () => _openSocial(
+                                            id, ProfileSocialList.visitors)
+                                        : null),
                               ],
                             ),
                             loading: () => const SizedBox(
@@ -274,20 +295,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ),
-                          if (!isMe) _Actions(targetId: id),
                           const SizedBox(height: 8),
-                          couple.maybeWhen(
-                            data: (c) => _SectionPreview(
-                              title: 'CP / Couple',
-                              child: c == null
-                                  ? const Text('No couple linked')
-                                  : Text(
-                                      c['display_name']?.toString() ??
-                                          'Linked couple',
-                                    ),
-                            ),
-                            orElse: () => const SizedBox.shrink(),
-                          ),
+                          ProfileCoupleSection(userId: id),
+                          for (final kind in ProfileCollection.values)
+                            ProfileCollectionSection(userId: id, kind: kind),
                           _GiftWallPreview(userId: id),
                           models.maybeWhen(
                             data: (m) => _SectionPreview(
@@ -370,15 +381,24 @@ int _ageInYears(DateTime birthday) {
 class _Stat extends StatelessWidget {
   final String label;
   final int value;
-  const _Stat(this.label, this.value);
+  final VoidCallback? onTap;
+  const _Stat(this.label, this.value, {this.onTap});
   @override
-  Widget build(BuildContext c) => Column(
-    children: [
-      Text('$value', style: Theme.of(c).textTheme.titleMedium
-          ?.copyWith(fontWeight: FontWeight.w700)),
-      Text(label, style: Theme.of(c).textTheme.bodySmall),
-    ],
-  );
+  Widget build(BuildContext c) => Expanded(child: InkWell(
+        onTap: onTap,
+        child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              children: [
+                Text('$value',
+                    style: Theme.of(c)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w700)),
+                Text(label, style: Theme.of(c).textTheme.bodySmall),
+              ],
+            )),
+      ));
 }
 
 /// LOCKED: wealth/charm/active colors approved by product owner.
@@ -390,16 +410,28 @@ class _Level extends StatelessWidget {
 
   static const Map<String, List<Color>> palettes = {
     'Wealth': [
-      Color(0xFF79503B), Color(0xFF228A4A), Color(0xFF2563C8),
-      Color(0xFFDB56A4), Color(0xFFD33B45), Color(0xFFD4A32A),
+      Color(0xFF79503B),
+      Color(0xFF228A4A),
+      Color(0xFF2563C8),
+      Color(0xFFDB56A4),
+      Color(0xFFD33B45),
+      Color(0xFFD4A32A),
     ],
     'Charm': [
-      Color(0xFFDB56A4), Color(0xFFD4A32A), Color(0xFF228A4A),
-      Color(0xFF2563C8), Color(0xFF864DB5), Color(0xFFD33B45),
+      Color(0xFFDB56A4),
+      Color(0xFFD4A32A),
+      Color(0xFF228A4A),
+      Color(0xFF2563C8),
+      Color(0xFF864DB5),
+      Color(0xFFD33B45),
     ],
     'Active': [
-      Color(0xFF2563C8), Color(0xFFD33B45), Color(0xFF864DB5),
-      Color(0xFF228A4A), Color(0xFFD4A32A), Color(0xFFDB56A4),
+      Color(0xFF2563C8),
+      Color(0xFFD33B45),
+      Color(0xFF864DB5),
+      Color(0xFF228A4A),
+      Color(0xFFD4A32A),
+      Color(0xFFDB56A4),
     ],
   };
 
@@ -415,9 +447,7 @@ class _Level extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = palettes[label];
-    final color = palette == null
-        ? NimzoColors.primary
-        : palette[tier(value)];
+    final color = palette == null ? NimzoColors.primary : palette[tier(value)];
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -428,12 +458,17 @@ class _Level extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label, style: const TextStyle(
-            fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600,
-          )),
-          Text('Level $value', style: const TextStyle(
-            color: Colors.white, fontWeight: FontWeight.w700,
-          )),
+          Text(label,
+              style: const TextStyle(
+                fontSize: 11,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              )),
+          Text('Level $value',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              )),
         ],
       ),
     );
@@ -446,109 +481,116 @@ class _SectionPreview extends StatelessWidget {
   const _SectionPreview({required this.title, required this.child});
   @override
   Widget build(BuildContext c) => Container(
-    width: double.infinity,
-    margin: const EdgeInsets.fromLTRB(16, 6, 16, 6),
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: Theme.of(c).dividerColor),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(c).textTheme.titleSmall
-              ?.copyWith(fontWeight: FontWeight.w700),
+        width: double.infinity,
+        margin: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Theme.of(c).dividerColor),
         ),
-        const SizedBox(height: 8),
-        child,
-      ],
-    ),
-  );
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(c)
+                  .textTheme
+                  .titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            child,
+          ],
+        ),
+      );
 }
 
-class _Actions extends ConsumerWidget {
+class _Actions extends ConsumerStatefulWidget {
   final String targetId;
   const _Actions({required this.targetId});
+  @override
+  ConsumerState<_Actions> createState() => _ActionsState();
+}
+
+class _ActionsState extends ConsumerState<_Actions> {
+  bool busy = false;
+  Future<void> _change(Future<void> Function() action) async {
+    if (busy) return;
+    setState(() => busy = true);
+    try {
+      await action();
+      ref.invalidate(isFollowingProvider(widget.targetId));
+      ref.invalidate(friendStateProvider(widget.targetId));
+      ref.invalidate(profileStatsProvider(widget.targetId));
+      final me = ref.read(currentUserIdProvider);
+      if (me != null) ref.invalidate(profileStatsProvider(me));
+    } catch (e) {
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Action failed: $e')));
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final follow = ref.watch(isFollowingProvider(targetId)).valueOrNull ?? false;
-    final fs = ref.watch(friendStateProvider(targetId)).valueOrNull ??
-        FriendState.none;
-    final fr = ref.read(friendRepositoryProvider);
-
-    Future<void> changeFollow() async {
-      final repo = ref.read(followRepositoryProvider);
-      try {
-        if (follow) {
-          await repo.unfollow(targetId);
-        } else {
-          await repo.follow(targetId);
-        }
-        ref.invalidate(isFollowingProvider(targetId));
-      } catch (error) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Follow action failed: $error')),
-          );
-        }
-      }
-    }
-
-    Future<void> changeFriend() async {
-      try {
-        if (fs == FriendState.none) {
-          await fr.request(targetId);
-        } else if (fs == FriendState.received) {
-          await fr.accept(targetId);
-        }
-        ref.invalidate(friendStateProvider(targetId));
-      } catch (error) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Friend action failed: $error')),
-          );
-        }
-      }
-    }
-
+  Widget build(BuildContext context) {
+    final id = widget.targetId;
+    final following = ref.watch(isFollowingProvider(id));
+    final friend = ref.watch(friendStateProvider(id));
+    final follow = following.valueOrNull;
+    final state = friend.valueOrNull;
+    final ready = !busy && ref.watch(currentUserIdProvider) != null;
     return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-          Expanded(
-            child: FilledButton.icon(
-              onPressed: changeFollow,
-              icon: Icon(follow ? Icons.check : Icons.person_add_alt_1),
-              label: Text(follow ? 'Following' : 'Follow'),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: OutlinedButton.icon(
-              onPressed: fs == FriendState.friends
-                  ? () => context.push('/chat/$targetId')
-                  : (fs == FriendState.none || fs == FriendState.received)
-                      ? changeFriend
-                      : null,
-              icon: Icon(fs == FriendState.friends
-                  ? Icons.chat_bubble_outline
-                  : Icons.person_add_alt_1),
-              label: Text(switch (fs) {
+        padding: const EdgeInsets.all(12),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          if (following.hasError || friend.hasError)
+            TextButton(
+                onPressed: () {
+                  ref.invalidate(isFollowingProvider(id));
+                  ref.invalidate(friendStateProvider(id));
+                },
+                child: const Text('Retry social actions')),
+          Row(children: [
+            Expanded(
+                child: FilledButton(
+              onPressed: !ready || follow == null
+                  ? null
+                  : () => _change(() => follow
+                      ? ref.read(followRepositoryProvider).unfollow(id)
+                      : ref.read(followRepositoryProvider).follow(id)),
+              child: Text(follow == null
+                  ? 'Loading…'
+                  : follow
+                      ? 'Following'
+                      : 'Follow'),
+            )),
+            const SizedBox(width: 6),
+            Expanded(
+                child: OutlinedButton(
+              onPressed: !ready || state == null || state == FriendState.sent
+                  ? null
+                  : state == FriendState.friends
+                      ? () => context.push('/chat/$id')
+                      : () => _change(() => state == FriendState.received
+                          ? ref.read(friendRepositoryProvider).accept(id)
+                          : ref.read(friendRepositoryProvider).request(id)),
+              child: Text(switch (state) {
+                null => 'Loading…',
                 FriendState.none => 'Add Friend',
                 FriendState.sent => 'Requested',
                 FriendState.received => 'Accept',
                 FriendState.friends => 'Chat',
               }),
-            ),
-          ),
-          // Gift button is intentionally not wired until the existing
-          // gift-sending route and recipient contract are verified.
-        ],
-      ),
-    );
+            )),
+            const SizedBox(width: 6),
+            Expanded(
+                child: OutlinedButton(
+                    onPressed:
+                        ready ? () => showProfileGiftSheet(context, id) : null,
+                    child: const Text('Gift'))),
+          ]),
+        ]));
   }
 }
 
@@ -574,65 +616,65 @@ class _ProfileMoments extends ConsumerWidget {
   final String userId;
   const _ProfileMoments({required this.userId});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => ref
-      .watch(profileMomentsProvider(userId))
-      .when(
-        loading: () => const LoadingView(),
-        error: (_, __) => ErrorView(
-          message: 'Moments could not be loaded.',
-          onRetry: () => ref.invalidate(profileMomentsProvider(userId)),
-        ),
-        data: (moments) => moments.isEmpty
-            ? const EmptyView(
-                title: 'No moments yet',
-                hint: 'Shared moments appear here.',
-                icon: Icons.photo_library_outlined,
-              )
-            : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: moments.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, i) {
-                  final m = moments[i];
-                  return _SectionPreview(
-                    title: timeAgo(m.createdAt),
-                    child: InkWell(
-                      onTap: () => context.push('/moments/${m.id}'),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (m.imagePath != null) ...[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                storageUrl(
-                                  ref.watch(supabaseProvider),
-                                  'moment-images',
-                                  m.imagePath,
-                                )!,
-                                width: double.infinity,
-                                height: 180,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const SizedBox(
-                                  height: 72,
-                                  child: Center(
-                                    child: NimzoIcon(
-                                      Icons.broken_image_outlined,
+  Widget build(BuildContext context, WidgetRef ref) =>
+      ref.watch(profileMomentsProvider(userId)).when(
+            loading: () => const LoadingView(),
+            error: (_, __) => ErrorView(
+              message: 'Moments could not be loaded.',
+              onRetry: () => ref.invalidate(profileMomentsProvider(userId)),
+            ),
+            data: (moments) => moments.isEmpty
+                ? const EmptyView(
+                    title: 'No moments yet',
+                    hint: 'Shared moments appear here.',
+                    icon: Icons.photo_library_outlined,
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: moments.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, i) {
+                      final m = moments[i];
+                      return _SectionPreview(
+                        title: timeAgo(m.createdAt),
+                        child: InkWell(
+                          onTap: () => context.push('/moments/${m.id}'),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (m.imagePath != null) ...[
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.network(
+                                    storageUrl(
+                                      ref.watch(supabaseProvider),
+                                      'moment-images',
+                                      m.imagePath,
+                                    )!,
+                                    width: double.infinity,
+                                    height: 180,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) =>
+                                        const SizedBox(
+                                      height: 72,
+                                      child: Center(
+                                        child: NimzoIcon(
+                                          Icons.broken_image_outlined,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                          if (m.text?.isNotEmpty == true) Text(m.text!),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-      );
+                                const SizedBox(height: 10),
+                              ],
+                              if (m.text?.isNotEmpty == true) Text(m.text!),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          );
 }
 
 class _GiftWallPreview extends ConsumerWidget {
@@ -643,7 +685,7 @@ class _GiftWallPreview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gifts = ref.watch(profileGiftsProvider(userId));
     return _SectionPreview(
-      title: 'Gifts',
+      title: 'Top 15 Gifts',
       child: gifts.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => TextButton(
@@ -653,45 +695,35 @@ class _GiftWallPreview extends ConsumerWidget {
         data: (items) {
           if (items.isEmpty) return const Text('No gifts received yet');
           final sorted = [...items]..sort((a, b) {
-            final left = (a['quantity'] as num?)?.toInt() ?? 0;
-            final right = (b['quantity'] as num?)?.toInt() ?? 0;
-            return right.compareTo(left);
-          });
+              final left = (a['quantity'] as num?)?.toInt() ?? 0;
+              final right = (b['quantity'] as num?)?.toInt() ?? 0;
+              return right.compareTo(left);
+            });
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final gift in sorted.take(15))
-                    Container(
-                      width: 94,
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: NimzoColors.border),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            gift['name']?.toString() ?? 'Gift',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                          ),
-                          Text(
-                            '×${gift['quantity'] ?? 0}',
-                            style: const TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
+              LayoutBuilder(builder: (context, constraints) {
+                final columns = (constraints.maxWidth / 66).floor().clamp(2, 5);
+                final width = (constraints.maxWidth - 8 * (columns - 1)) / columns;
+                return Wrap(spacing: 8, runSpacing: 8, children: [
+                  for (final gift in sorted.take(15)) SizedBox(width: width,
+                    child: Column(children: [
+                      GiftArtwork(path: gift['image_path'] as String?),
+                      Text(gift['name']?.toString() ?? 'Gift', maxLines: 2,
+                        overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
+                      FittedBox(child: Text('×${gift['quantity'] ?? 0}',
+                        style: const TextStyle(fontWeight: FontWeight.w700))),
+                    ])),
+                ]);
+              }),
+              TextButton(
+                  onPressed: () =>
+                      Navigator.of(context).push(MaterialPageRoute<void>(
+                    builder: (_) => Scaffold(
+                      appBar: AppBar(title: const Text('All received gifts')),
+                      body: _ProfileGifts(userId: userId),
                     ),
-                ],
-              ),
-              if (sorted.length > 15)
-                TextButton(
-                  onPressed: () => DefaultTabController.of(context).animateTo(2),
+                  )),
                   child: const Text('View All'),
                 ),
             ],
@@ -706,79 +738,76 @@ class _ProfileGifts extends ConsumerWidget {
   final String userId;
   const _ProfileGifts({required this.userId});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => ref
-      .watch(profileGiftsProvider(userId))
-      .when(
-        loading: () => const LoadingView(),
-        error: (_, __) => ErrorView(
-          message: 'Gifts could not be loaded.',
-          onRetry: () => ref.invalidate(profileGiftsProvider(userId)),
-        ),
-        data: (gifts) => gifts.isEmpty
-            ? const EmptyView(
-                title: 'No gifts received yet',
-                hint: 'Gifts from your community appear here.',
-                icon: Icons.card_giftcard_rounded,
-              )
-            : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: gifts.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
-                itemBuilder: (context, i) {
-                  final gift = gifts[i];
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: NimzoColors.surface,
-                      border: Border.all(color: NimzoColors.border),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: ListTile(
-                      leading: const NimzoIcon(
-                        Icons.card_giftcard_rounded,
-                        color: NimzoColors.primary,
-                      ),
-                      title: Text(gift['name']?.toString() ?? 'Gift'),
-                      trailing: Text(
-                        '× ${gift['quantity'] ?? 0}',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                    ),
-                  );
-                },
-              ),
-      );
+  Widget build(BuildContext context, WidgetRef ref) =>
+      ref.watch(profileGiftsProvider(userId)).when(
+            loading: () => const LoadingView(),
+            error: (_, __) => ErrorView(
+              message: 'Gifts could not be loaded.',
+              onRetry: () => ref.invalidate(profileGiftsProvider(userId)),
+            ),
+            data: (gifts) => gifts.isEmpty
+                ? const EmptyView(
+                    title: 'No gifts received yet',
+                    hint: 'Gifts from your community appear here.',
+                    icon: Icons.card_giftcard_rounded,
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: gifts.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    itemBuilder: (context, i) {
+                      final gift = gifts[i];
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: NimzoColors.surface,
+                          border: Border.all(color: NimzoColors.border),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: ListTile(
+                          leading:
+                              GiftArtwork(path: gift['image_path'] as String?),
+                          title: Text(gift['name']?.toString() ?? 'Gift'),
+                          trailing: Text(
+                            '× ${gift['quantity'] ?? 0}',
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          );
 }
 
 class _ProfileAchievements extends ConsumerWidget {
   final String userId;
   const _ProfileAchievements({required this.userId});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => ref
-      .watch(profileAchievementsProvider(userId))
-      .when(
-        loading: () => const LoadingView(),
-        error: (_, __) => ErrorView(
-          message: 'Achievements could not be loaded.',
-          onRetry: () => ref.invalidate(profileAchievementsProvider(userId)),
-        ),
-        data: (achievements) => achievements.isEmpty
-            ? const EmptyView(
-                title: 'No achievements yet',
-                hint: 'Your earned achievements appear here.',
-                icon: Icons.emoji_events_outlined,
-              )
-            : ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  for (final achievement in achievements)
-                    _SectionPreview(
-                      title: achievement,
-                      child: const NimzoIcon(
-                        Icons.emoji_events_outlined,
-                        color: NimzoColors.primary,
-                      ),
-                    ),
-                ],
-              ),
-      );
+  Widget build(BuildContext context, WidgetRef ref) =>
+      ref.watch(profileAchievementsProvider(userId)).when(
+            loading: () => const LoadingView(),
+            error: (_, __) => ErrorView(
+              message: 'Achievements could not be loaded.',
+              onRetry: () =>
+                  ref.invalidate(profileAchievementsProvider(userId)),
+            ),
+            data: (achievements) => achievements.isEmpty
+                ? const EmptyView(
+                    title: 'No achievements yet',
+                    hint: 'Your earned achievements appear here.',
+                    icon: Icons.emoji_events_outlined,
+                  )
+                : ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      for (final achievement in achievements)
+                        _SectionPreview(
+                          title: achievement,
+                          child: const NimzoIcon(
+                            Icons.emoji_events_outlined,
+                            color: NimzoColors.primary,
+                          ),
+                        ),
+                    ],
+                  ),
+          );
 }

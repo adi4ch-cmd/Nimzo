@@ -8,19 +8,20 @@ class ErrorView extends StatelessWidget {
   const ErrorView({super.key, required this.message, required this.onRetry});
   @override
   Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(message, textAlign: TextAlign.center),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: 160,
-            child: NimzoButton(label: 'Retry', onPressed: onRetry),
+        child: SingleChildScrollView(
+            child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(message, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: 160,
+                child: NimzoButton(label: 'Retry', onPressed: onRetry),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        )),
+      );
 }

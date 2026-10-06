@@ -45,7 +45,16 @@ class ProfileRepository {
         if (gender != null) 'gender': gender,
       };
       if (m.isEmpty) return;
-      await _db.from('profiles').update(m).eq('id', _db.auth.currentUser!.id);
+      final id = _db.auth.currentUser?.id;
+      if (id == null) throw StateError('Please sign in again.');
+      final saved = await _db
+          .from('profiles')
+          .update(m)
+          .eq('id', id)
+          .select('id')
+          .maybeSingle();
+      if (saved == null)
+        throw StateError('Profile was not saved. Please retry.');
     } catch (e) {
       throw mapError(e);
     }
@@ -86,10 +95,10 @@ class ProfileRepository {
       final rows = id != null
           ? await _db.from('profiles').select().eq('nimzo_id', id).limit(20)
           : await _db
-                .from('profiles')
-                .select()
-                .ilike('country_name', '%$q%')
-                .limit(20);
+              .from('profiles')
+              .select()
+              .ilike('country_name', '%$q%')
+              .limit(20);
       return rows.map(Profile.fromJson).toList();
     } catch (e) {
       throw mapError(e);
@@ -138,20 +147,20 @@ final profileTagsProvider = FutureProvider.family<List<String>, String>(
 );
 final profileCoupleProvider =
     FutureProvider.family<Map<String, dynamic>?, String>(
-      (ref, id) => ref.watch(profileRepositoryProvider).couple(id),
-    );
+  (ref, id) => ref.watch(profileRepositoryProvider).couple(id),
+);
 final profileModelsProvider =
     FutureProvider.family<List<Map<String, dynamic>>, String>(
-      (ref, id) => ref.watch(profileRepositoryProvider).models(id),
-    );
+  (ref, id) => ref.watch(profileRepositoryProvider).models(id),
+);
 
 final profileMomentsProvider = FutureProvider.family<List<Moment>, String>(
   (ref, id) => ref.watch(momentRepositoryProvider).byAuthor(id),
 );
 final profileGiftsProvider =
     FutureProvider.family<List<Map<String, dynamic>>, String>(
-      (ref, id) => ref.watch(profileRepositoryProvider).gifts(id),
-    );
+  (ref, id) => ref.watch(profileRepositoryProvider).gifts(id),
+);
 final profileAchievementsProvider = FutureProvider.family<List<String>, String>(
   (ref, id) => ref.watch(profileRepositoryProvider).achievements(id),
 );
