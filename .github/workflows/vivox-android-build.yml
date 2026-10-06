@@ -60,8 +60,8 @@ jobs:
           s = gradle.read_text()
 
           if gradle.suffix == ".kts":
-              s = re.sub(r'namespace\\s*=\\s*"[^"]+"', 'namespace = "io.nimzo.app"', s, count=1)
-              s = re.sub(r'applicationId\\s*=\\s*"[^"]+"', 'applicationId = "io.nimzo.app"', s, count=1)
+              s = re.sub(r'namespace\s*=\s*"[^"]+"', 'namespace = "io.nimzo.app"', s, count=1)
+              s = re.sub(r'applicationId\s*=\s*"[^"]+"', 'applicationId = "io.nimzo.app"', s, count=1)
               s += '''
           // Nimzo Vivox native bridge
           android {
@@ -75,8 +75,8 @@ jobs:
           }
           '''
           else:
-              s = re.sub(r'namespace\\s+["\\'][^"\\']+["\\']', 'namespace "io.nimzo.app"', s, count=1)
-              s = re.sub(r'applicationId\\s+["\\'][^"\\']+["\\']', 'applicationId "io.nimzo.app"', s, count=1)
+              s = re.sub(r'namespace\s+["\\'][^"\\']+["\\']', 'namespace "io.nimzo.app"', s, count=1)
+              s = re.sub(r'applicationId\s+["\\'][^"\\']+["\\']', 'applicationId "io.nimzo.app"', s, count=1)
               s += '''
           // Nimzo Vivox native bridge
           android {
@@ -108,13 +108,13 @@ jobs:
                   m = m.replace("<application", tag + "\n    <application", 1)
 
           m = re.sub(
-              r'<meta-data\\s+android:name="flutter_deeplinking_enabled"\\s+android:value="(?:true|false)"\\s*/>',
+              r'<meta-data\s+android:name="flutter_deeplinking_enabled"\s+android:value="(?:true|false)"\s*/>',
               '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />',
               m,
           )
 
           activity = re.search(
-              r'<activity\\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>(.*?)</activity>',
+              r'<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>(.*?)</activity>',
               m,
               re.DOTALL,
           )
@@ -122,11 +122,11 @@ jobs:
               raise SystemExit("MainActivity block not found")
 
           block = activity.group(0)
-          opening = re.match(r'<activity\\b[^>]*>', block).group(0)
-          opening = re.sub(r'\\sandroid:exported="[^"]*"', '', opening)
-          opening = re.sub(r'\\sandroid:launchMode="[^"]*"', '', opening)
+          opening = re.match(r'<activity\b[^>]*>', block).group(0)
+          opening = re.sub(r'\sandroid:exported="[^"]*"', '', opening)
+          opening = re.sub(r'\sandroid:launchMode="[^"]*"', '', opening)
           opening = opening[:-1] + ' android:exported="true" android:launchMode="singleTask">'
-          body = block[len(re.match(r'<activity\\b[^>]*>', block).group(0)):]
+          body = block[len(re.match(r'<activity\b[^>]*>', block).group(0)):]
           if 'android:scheme="io.nimzo.app"' not in body:
               body = body.replace("</activity>", '''<intent-filter>
               <action android:name="android.intent.action.VIEW" />
