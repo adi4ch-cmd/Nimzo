@@ -222,6 +222,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ],
                           ),
                           const SizedBox(height: 14),
+                          if (u.bio?.trim().isNotEmpty == true) ...[
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                u.bio!,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
                           stats.when(
                             data: (s) => Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -393,50 +403,81 @@ class _SectionPreview extends StatelessWidget {
 class _Actions extends ConsumerWidget {
   final String targetId;
   const _Actions({required this.targetId});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final follow =
-        ref.watch(isFollowingProvider(targetId)).valueOrNull ?? false;
-    final fs =
-        ref.watch(friendStateProvider(targetId)).valueOrNull ??
+    final follow = ref.watch(isFollowingProvider(targetId)).valueOrNull ?? false;
+    final fs = ref.watch(friendStateProvider(targetId)).valueOrNull ??
         FriendState.none;
     final fr = ref.read(friendRepositoryProvider);
+
+    Future<void> changeFollow() async {
+      final repo = ref.read(followRepositoryProvider);
+      try {
+        if (follow) {
+          await repo.unfollow(targetId);
+        } else {
+          await repo.follow(targetId);
+        }
+        ref.invalidate(isFollowingProvider(targetId));
+      } catch (error) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Follow action failed: $error')),
+          );
+        }
+      }
+    }
+
+    Future<void> changeFriend() async {
+      try {
+        if (fs == FriendState.none) {
+          await fr.request(targetId);
+        } else if (fs == FriendState.received) {
+          await fr.accept(targetId);
+        }
+        ref.invalidate(friendStateProvider(targetId));
+      } catch (error) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Friend action failed: $error')),
+          );
+        }
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: Wrap(
-        spacing: 8,
+      child: Row(
         children: [
-          FilledButton(
-            onPressed: () async {
-              final r = ref.read(followRepositoryProvider);
-              follow ? await r.unfollow(targetId) : await r.follow(targetId);
-              ref.invalidate(isFollowingProvider(targetId));
-            },
-            child: Text(follow ? 'Following' : 'Follow'),
+          Expanded(
+            child: FilledButton.icon(
+              onPressed: changeFollow,
+              icon: Icon(follow ? Icons.check : Icons.person_add_alt_1),
+              label: Text(follow ? 'Following' : 'Follow'),
+            ),
           ),
-          OutlinedButton(
-            onPressed: () => context.push('/chat/$targetId'),
-            child: const Text('Message'),
+          const SizedBox(width: 8),
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: fs == FriendState.friends
+                  ? () => context.push('/chat/$targetId')
+                  : (fs == FriendState.none || fs == FriendState.received)
+                      ? changeFriend
+                      : null,
+              icon: Icon(fs == FriendState.friends
+                  ? Icons.chat_bubble_outline
+                  : Icons.person_add_alt_1),
+              label: Text(switch (fs) {
+                FriendState.none => 'Add Friend',
+                FriendState.sent => 'Requested',
+                FriendState.received => 'Accept',
+                FriendState.friends => 'Chat',
+              }),
+            ),
           ),
-          OutlinedButton(
-            onPressed: switch (fs) {
-              FriendState.none => () async {
-                await fr.request(targetId);
-                ref.invalidate(friendStateProvider(targetId));
-              },
-              FriendState.received => () async {
-                await fr.accept(targetId);
-                ref.invalidate(friendStateProvider(targetId));
-              },
-              _ => null,
-            },
-            child: Text(switch (fs) {
-              FriendState.none => 'Add Friend',
-              FriendState.sent => 'Request Sent',
-              FriendState.received => 'Accept',
-              FriendState.friends => 'Friends',
-            }),
-          ),
+          // Gift button is intentionally not wired until the existing
+          // gift-sending route and recipient contract are verified.
         ],
       ),
     );
