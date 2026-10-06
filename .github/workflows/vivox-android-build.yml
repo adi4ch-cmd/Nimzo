@@ -42,13 +42,35 @@ jobs:
           test -f "$MANIFEST"
           python3 - <<'PY'
           from pathlib import Path
+          import re
+
           p = Path("android/app/src/main/AndroidManifest.xml")
           s = p.read_text()
+
           if 'xmlns:tools=' not in s:
-              s = s.replace('<manifest ', '<manifest xmlns:tools="http://schemas.android.com/tools" ', 1)
+              s, n = re.subn(
+                  r'<manifest\b',
+                  '<manifest xmlns:tools="http://schemas.android.com/tools"',
+                  s,
+                  count=1,
+              )
+              if n != 1:
+                  raise SystemExit("Could not locate <manifest> in generated AndroidManifest.xml")
+
           if 'tools:replace="android:name"' not in s:
-              s = s.replace('<application ', '<application tools:replace="android:name" ', 1)
+              s, n = re.subn(
+                  r'<application\b',
+                  '<application tools:replace="android:name"',
+                  s,
+                  count=1,
+              )
+              if n != 1:
+                  raise SystemExit("Could not locate <application> in generated AndroidManifest.xml")
+
           p.write_text(s)
+
+          if 'tools:replace="android:name"' not in s:
+              raise SystemExit("Vivox manifest override was not applied")
           PY
           grep -q 'tools:replace="android:name"' "$MANIFEST"
 
@@ -57,7 +79,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/vivox
-          curl -fL --retry 3             -o /tmp/vivox/android.zip             "https://github.com/adi4ch-cmd/Nimzo/releases/download/vivox-5.28.0/com.custom.android.vivox.vivoxCoreAndroidSdk-5.28.0.zip"
+          curl -fL --retry 3 -o /tmp/vivox/android.zip "https://github.com/adi4ch-cmd/Nimzo/releases/download/vivox-5.28.0/com.custom.android.vivox.vivoxCoreAndroidSdk-5.28.0.zip"
           echo "c30f6caf08184874a7daecc2f9c670df099fa504265dc08b51859e287a38d75f  /tmp/vivox/android.zip" | sha256sum -c -
           unzip -q /tmp/vivox/android.zip -d /tmp/vivox/android
           AAR="$(find /tmp/vivox/android -type f -name 'sdk-release.aar' -print -quit)"
