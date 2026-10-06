@@ -47,8 +47,14 @@ Deno.serve(async (req) => {
   if (!store || !productId || !receipt) return json({ error: "Invalid purchase request" }, 400);
   try {
     const verified = store === "google_play" ? await verifyGoogle(productId, receipt) : await verifyApple(productId, receipt, String(body.transaction_id ?? ""));
-    const { error } = await admin.rpc("apply_recharge", { p_user: userData.user.id, p_store: store, p_txn: verified.transactionId, p_product: productId });
+    const { data: settlement, error } = await admin.rpc("apply_recharge", { p_user: userData.user.id, p_store: store, p_txn: verified.transactionId, p_product: productId });
     if (error) { console.error("apply_recharge failed", error); return json({ error: "Purchase verified but settlement failed; retry is safe" }, 502); }
-    return json({ ok: true, store, product_id: productId, transaction_id: verified.transactionId });
+    if (!settlement || !["credited", "replayed"].includes(settlement.status)
+      || settlement.product_id !== productId || settlement.transaction_id !== verified.transactionId
+      || !Number.isSafeInteger(settlement.coins) || settlement.coins <= 0) {
+      console.error("apply_recharge returned an unconfirmed settlement");
+      return json({ error: "Purchase settlement was not confirmed; retry is safe" }, 502);
+    }
+    return json({ ok: true, status: settlement.status, coins: settlement.coins, store, product_id: productId, transaction_id: verified.transactionId });
   } catch (e) { console.error(e); return json({ error: e instanceof Error ? e.message : "Purchase verification failed" }, 400); }
 });

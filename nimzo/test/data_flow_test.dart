@@ -17,6 +17,7 @@ SupabaseClient client(http.Response Function(http.Request) reply) =>
         return http.Response(
           response.body,
           response.statusCode,
+          request: r,
           headers: {...response.headers, 'content-type': 'application/json'},
         );
       }),

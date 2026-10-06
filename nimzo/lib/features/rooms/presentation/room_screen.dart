@@ -37,7 +37,7 @@ class _S extends ConsumerState<RoomScreen> {
   late final VoiceService _voice;
   late final RoomChatRepository _chatRepository;
   StreamSubscription<List<Map<String, dynamic>>>? _membership;
-  bool _voiceReady = false, _voiceJoining = false;
+  bool _voiceReady = false, _voiceJoining = false, _micUpdating = false;
   String? _voiceError;
   String? _memberRole;
   RealtimeChannel? _roomChanges;
@@ -168,10 +168,12 @@ class _S extends ConsumerState<RoomScreen> {
   }
 
   Future<void> _mute() async {
-    if (!_voiceReady) return;
+    if (!_voiceReady && !_micOn) return;
     try {
       await _voice.setMicEnabled(false);
     } catch (e) {
+      // If the transport cannot confirm mute, disconnect instead.
+      await _voice.leave().catchError((_) {});
       if (mounted) _snack('$e');
     }
     if (mounted) setState(() => _micOn = false);
@@ -231,7 +233,7 @@ class _S extends ConsumerState<RoomScreen> {
         setState(() {
           _voiceReady = false;
           _micOn = false;
-          _voiceError = 'Audio disconnected';
+          _voiceError = _micUpdating || _voiceJoining ? null : 'Audio disconnected';
         });
       }
     });
@@ -523,7 +525,7 @@ class _S extends ConsumerState<RoomScreen> {
                         IconButton(
                           tooltip: 'Mic',
                           icon: NimzoIcon(_micOn ? Icons.mic : Icons.mic_off),
-                          onPressed: !_voiceReady
+                          onPressed: !_voiceReady || _micUpdating
                               ? null
                               : () async {
                                   if (!_micOn &&
@@ -536,6 +538,7 @@ class _S extends ConsumerState<RoomScreen> {
                                       'Take an available, unmuted seat to speak.',
                                     );
                                   final enabled = !_micOn;
+                                  setState(() => _micUpdating = true);
                                   try {
                                     await _voice.setMicEnabled(enabled);
                                     if (!mounted) return;
@@ -544,6 +547,8 @@ class _S extends ConsumerState<RoomScreen> {
                                       else { setState(() => _micOn = enabled); }
                                   } catch (e) {
                                     if (mounted) _snack('$e');
+                                  } finally {
+                                    if (mounted) setState(() => _micUpdating = false);
                                   }
                                 },
                         ),

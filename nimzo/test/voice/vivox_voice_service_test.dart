@@ -23,7 +23,7 @@ void main() {
           'nimzo/vivox',
           const StandardMethodCodec().encodeMethodCall(
             const MethodCall('speaking', {
-              'detail': 'sip:.issuer.$id@voice.example',
+              'detail': 'sip:.issuer.$id.@voice.example',
               'status': 0,
             }),
           ),
@@ -123,6 +123,8 @@ void main() {
     var issued = 0;
     final voice = VivoxVoiceService(tokenIssuer: (_) async => {...credentials, 'canTransmit': ++issued > 1});
     var joins = 0;
+    final states = <bool>[];
+    final subscription = voice.connected.listen(states.add);
     final mic = <bool>[];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
       if (call.method == 'join') { joins++; await emit('audioConnected'); }
@@ -133,6 +135,12 @@ void main() {
     await voice.setMicEnabled(true);
     expect(joins, 2);
     expect(mic, [false, false, true]);
+    await Future<void>.delayed(Duration.zero);
+    expect(states, [true, false, true]);
+    // Reconnection restores microphone controls; a moderator can still mute.
+    await voice.setMicEnabled(false);
+    expect(mic.last, false);
+    await subscription.cancel();
     await voice.dispose();
   });
   test('server-denied transmission disconnects without enabling the microphone', () async {
