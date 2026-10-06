@@ -74,21 +74,6 @@ jobs:
               }
           }
           '''
-          else:
-              s = re.sub(r'namespace\s+["\\'][^"\\']+["\\']', 'namespace "io.nimzo.app"', s, count=1)
-              s = re.sub(r'applicationId\s+["\\'][^"\\']+["\\']', 'applicationId "io.nimzo.app"', s, count=1)
-              s += '''
-          // Nimzo Vivox native bridge
-          android {
-              externalNativeBuild {
-                  cmake {
-                      path file("src/main/cpp/CMakeLists.txt")
-                      version "3.22.1"
-                      arguments "-DVIVOX_SDK_ROOT=/tmp/vivox/android"
-                  }
-              }
-          }
-          '''
           gradle.write_text(s)
 
           manifest = Path("android/app/src/main/AndroidManifest.xml")
