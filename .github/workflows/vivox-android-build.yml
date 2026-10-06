@@ -161,11 +161,15 @@ android {
           tag = tag[:-1] + ' android:exported="true" android:launchMode="singleTask">'
           if 'android:scheme="io.nimzo.app"' not in body:
               body = body.rstrip() + "\n            " + deep_link
-          if meta not in body:
-              body = "\n            " + meta + body
-
           new_block = tag + body
           s = s[:activity.start()] + new_block + s[activity.end():]
+
+          # Flutter's deep-linking flag belongs on <application>.
+          app_match = re.search(r'<application\\b[^>]*>', s)
+          if not app_match:
+              raise SystemExit("Application block not found")
+          if meta not in s:
+              s = s[:app_match.end()] + "\n        " + meta + s[app_match.end():]
           p.write_text(s)
           PY
 
