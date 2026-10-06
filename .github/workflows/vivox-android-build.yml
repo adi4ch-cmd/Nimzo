@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - feat/vivox-5.28-android-ci
+  pull_request:
 
 jobs:
   build-vivox-android:
