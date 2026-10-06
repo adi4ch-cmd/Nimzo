@@ -17,9 +17,16 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final db = SupabaseClient('https://example.supabase.co', 'test-key');
-    db.auth.stopAutoRefresh();
-    addTearDown(db.dispose);
+    // Supabase owns a JSON isolate. Create and dispose it in real async time;
+    // widget-test fake time cannot deliver isolate lifecycle messages.
+    final db = (await tester.runAsync(
+      () async => SupabaseClient(
+        'https://example.supabase.co',
+        'test-key',
+        authOptions: const AuthClientOptions(autoRefreshToken: false),
+      ),
+    ))!;
+    addTearDown(() => tester.runAsync(db.dispose));
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
