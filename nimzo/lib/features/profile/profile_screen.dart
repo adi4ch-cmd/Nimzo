@@ -348,28 +348,63 @@ class _Stat extends StatelessWidget {
   );
 }
 
+/// LOCKED: wealth/charm/active colors approved by product owner.
+/// Do not alter ranges, category ordering, or palette without explicit approval.
 class _Level extends StatelessWidget {
   final String label;
   final int value;
   const _Level(this.label, this.value);
+
+  static const Map<String, List<Color>> palettes = {
+    'Wealth': [
+      Color(0xFF79503B), Color(0xFF228A4A), Color(0xFF2563C8),
+      Color(0xFFDB56A4), Color(0xFFD33B45), Color(0xFFD4A32A),
+    ],
+    'Charm': [
+      Color(0xFFDB56A4), Color(0xFFD4A32A), Color(0xFF228A4A),
+      Color(0xFF2563C8), Color(0xFF864DB5), Color(0xFFD33B45),
+    ],
+    'Active': [
+      Color(0xFF2563C8), Color(0xFFD33B45), Color(0xFF864DB5),
+      Color(0xFF228A4A), Color(0xFFD4A32A), Color(0xFFDB56A4),
+    ],
+  };
+
+  static int tier(int level) {
+    if (level <= 20) return 0;
+    if (level <= 39) return 1;
+    if (level <= 59) return 2;
+    if (level <= 79) return 3;
+    if (level <= 99) return 4;
+    return 5;
+  }
+
   @override
-  Widget build(BuildContext c) => Container(
-    margin: const EdgeInsets.symmetric(horizontal: 4),
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(14),
-      color: NimzoColors.primaryFaint,
-    ),
-    child: Column(
-      children: [
-        Text(
-          'Level $value',
-          style: const TextStyle(fontWeight: FontWeight.w700),
-        ),
-        Text(label, style: Theme.of(c).textTheme.bodySmall),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final palette = palettes[label];
+    final color = palette == null
+        ? NimzoColors.primary
+        : palette[tier(value)];
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: color,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label, style: const TextStyle(
+            fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600,
+          )),
+          Text('Level $value', style: const TextStyle(
+            color: Colors.white, fontWeight: FontWeight.w700,
+          )),
+        ],
+      ),
+    );
+  }
 }
 
 class _SectionPreview extends StatelessWidget {
