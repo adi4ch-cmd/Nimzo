@@ -116,6 +116,58 @@ android {
           manifest.write_text(m)
           PY
 
+      - name: Configure Nimzo OAuth deep link
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("android/app/src/main/AndroidManifest.xml")
+          s = p.read_text()
+
+          meta = '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />'
+          s = re.sub(
+              r'<meta-data\s+android:name="flutter_deeplinking_enabled"\s+android:value="(?:true|false)"\s*/>',
+              meta,
+              s,
+          )
+
+          deep_link = '''<intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <data android:scheme="io.nimzo.app" android:host="login-callback" />
+            </intent-filter>'''
+
+          activity = re.search(
+              r'<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>.*?</activity>',
+              s,
+              re.DOTALL,
+          )
+          if not activity:
+              raise SystemExit("MainActivity block not found")
+
+          block = activity.group(0)
+          tag_match = re.match(r'<activity\b[^>]*>', block)
+          tag = tag_match.group(0)
+          body = block[len(tag):]
+
+          tag = re.sub(r'\sandroid:exported="[^"]*"', '', tag)
+          tag = re.sub(r'\sandroid:launchMode="[^"]*"', '', tag)
+          tag = tag[:-1] + ' android:exported="true" android:launchMode="singleTask">'
+          if 'android:scheme="io.nimzo.app"' not in body:
+              body = body.rstrip() + "\n            " + deep_link
+          if meta not in body:
+              body = "\n            " + meta + body
+
+          new_block = tag + body
+          s = s[:activity.start()] + new_block + s[activity.end():]
+          p.write_text(s)
+          PY
+
       - name: Download Vivox Android SDK 5.28.0
         working-directory: nimzo
         run: |
