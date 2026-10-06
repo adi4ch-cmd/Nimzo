@@ -1,0 +1,94 @@
+name: Nimzo Vivox Android Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/vivox-5.28-android-ci
+
+jobs:
+  build-vivox-android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Generate Android platform
+        working-directory: nimzo
+        run: flutter create --platforms=android --project-name nimzo .
+
+      - name: Download Vivox Android SDK 5.28.0
+        working-directory: nimzo
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/vivox
+          curl -fL --retry 3 \
+            -o /tmp/vivox/android.zip \
+            "https://github.com/adi4ch-cmd/Nimzo/releases/download/vivox-5.28.0/com.custom.android.vivox.vivoxCoreAndroidSdk-5.28.0.zip"
+          echo "c30f6caf08184874a7daecc2f9c670df099fa504265dc08b51859e287a38d75f  /tmp/vivox/android.zip" | sha256sum -c -
+          unzip -q /tmp/vivox/android.zip -d /tmp/vivox/android
+          AAR="$(find /tmp/vivox/android -type f -name 'sdk-release.aar' -print -quit)"
+          test -n "$AAR"
+          mkdir -p android/app/libs
+          cp "$AAR" android/app/libs/vivox-sdk-5.28.0.aar
+
+      - name: Wire Vivox AAR into generated Android app
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_GRADLE=""
+          if [ -f android/app/build.gradle ]; then
+            APP_GRADLE=android/app/build.gradle
+          elif [ -f android/app/build.gradle.kts ]; then
+            APP_GRADLE=android/app/build.gradle.kts
+          else
+            echo "Android app Gradle file not found"
+            exit 1
+          fi
+
+          if ! grep -q "vivox-sdk-5.28.0.aar" "$APP_GRADLE"; then
+            if [[ "$APP_GRADLE" == *.kts ]]; then
+              printf '\n// Vivox Core SDK 5.28.0\ndependencies {\n    implementation(files("libs/vivox-sdk-5.28.0.aar"))\n}\n' >> "$APP_GRADLE"
+            else
+              printf '\n// Vivox Core SDK 5.28.0\ndependencies {\n    implementation files("libs/vivox-sdk-5.28.0.aar")\n}\n' >> "$APP_GRADLE"
+            fi
+          fi
+
+      - name: Remove generated sample test
+        working-directory: nimzo
+        run: rm -f test/widget_test.dart
+
+      - name: Flutter pub get
+        working-directory: nimzo
+        run: flutter pub get
+
+      - name: Flutter analyze
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Build release APK with Vivox SDK
+        working-directory: nimzo
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-vivox-5.28.0-release-apk
+          path: nimzo/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
