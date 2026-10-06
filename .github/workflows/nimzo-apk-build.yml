@@ -1,7 +1,7 @@
 name: Nimzo APK Build
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "feature/profile-reference-redesign"]
   workflow_dispatch:
 jobs:
   build:
