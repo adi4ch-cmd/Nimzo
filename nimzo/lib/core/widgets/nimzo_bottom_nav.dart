@@ -1,3 +1,4 @@
+import 'nimzo_icon.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/colors.dart';
