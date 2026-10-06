@@ -6,6 +6,8 @@ on:
     branches:
       - feat/vivox-5.28-android-ci
   pull_request:
+    branches:
+      - main
 
 jobs:
   build-vivox-android:
