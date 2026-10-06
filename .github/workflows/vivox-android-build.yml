@@ -165,7 +165,7 @@ android {
           s = s[:activity.start()] + new_block + s[activity.end():]
 
           # Flutter's deep-linking flag belongs on <application>.
-          app_match = re.search(r'<application\\b[^>]*>', s)
+          app_match = re.search(r'<application\b[^>]*>', s)
           if not app_match:
               raise SystemExit("Application block not found")
           if meta not in s:
