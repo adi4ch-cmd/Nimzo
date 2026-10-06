@@ -1,42 +1,38 @@
-name: Nimzo Vivox Android Build
-# OAuth deep-link fix included for release APK
+name: Nimzo Vivox Android Release
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - feat/vivox-5.28-android-ci
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build-vivox-android:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
-      - name: Set up Flutter
+      - name: Flutter stable
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
-      - name: Generate Android platform
+      - name: Generate Android project
         working-directory: nimzo
         run: flutter create --platforms=android --project-name nimzo .
 
-      - name: Install Nimzo Vivox Android host and native bridge
+      - name: Install Vivox Android bridge
         working-directory: nimzo
         shell: bash
         run: |
@@ -49,7 +45,7 @@ jobs:
           cp native/vivox/android/vivox_bridge.cpp android/app/src/main/cpp/vivox_bridge.cpp
           cp native/vivox/android/CMakeLists.txt android/app/src/main/cpp/CMakeLists.txt
 
-      - name: Configure Android application id, permissions, and native build
+      - name: Configure Android ID permissions and OAuth callback
         working-directory: nimzo
         shell: bash
         run: |
@@ -61,173 +57,160 @@ jobs:
           gradle = Path("android/app/build.gradle.kts")
           if not gradle.exists():
               gradle = Path("android/app/build.gradle")
-          if not gradle.exists():
-              raise SystemExit("Generated Android app Gradle file not found")
-
           s = gradle.read_text()
+
           if gradle.suffix == ".kts":
-              s = re.sub(r'namespace\s*=\s*"[^"]+"', 'namespace = "io.nimzo.app"', s, count=1)
-              s = re.sub(r'applicationId\s*=\s*"[^"]+"', 'applicationId = "io.nimzo.app"', s, count=1)
+              s = re.sub(r'namespace\\s*=\\s*"[^"]+"', 'namespace = "io.nimzo.app"', s, count=1)
+              s = re.sub(r'applicationId\\s*=\\s*"[^"]+"', 'applicationId = "io.nimzo.app"', s, count=1)
               s += '''
-\n// Nimzo Vivox Core 5.28.0 native bridge
-android {
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-            arguments += listOf("-DVIVOX_SDK_ROOT=/tmp/vivox/android")
-        }
-    }
-}
-'''
+          // Nimzo Vivox native bridge
+          android {
+              externalNativeBuild {
+                  cmake {
+                      path = file("src/main/cpp/CMakeLists.txt")
+                      version = "3.22.1"
+                      arguments += listOf("-DVIVOX_SDK_ROOT=/tmp/vivox/android")
+                  }
+              }
+          }
+          '''
           else:
-              s = re.sub(r'namespace\s+["\'][^"\']+["\']', 'namespace "io.nimzo.app"', s, count=1)
-              s = re.sub(r'applicationId\s+["\'][^"\']+["\']', 'applicationId "io.nimzo.app"', s, count=1)
+              s = re.sub(r'namespace\\s+["\\'][^"\\']+["\\']', 'namespace "io.nimzo.app"', s, count=1)
+              s = re.sub(r'applicationId\\s+["\\'][^"\\']+["\\']', 'applicationId "io.nimzo.app"', s, count=1)
               s += '''
-\n// Nimzo Vivox Core 5.28.0 native bridge
-android {
-    externalNativeBuild {
-        cmake {
-            path file("src/main/cpp/CMakeLists.txt")
-            version "3.22.1"
-            arguments "-DVIVOX_SDK_ROOT=/tmp/vivox/android"
-        }
-    }
-}
-'''
+          // Nimzo Vivox native bridge
+          android {
+              externalNativeBuild {
+                  cmake {
+                      path file("src/main/cpp/CMakeLists.txt")
+                      version "3.22.1"
+                      arguments "-DVIVOX_SDK_ROOT=/tmp/vivox/android"
+                  }
+              }
+          }
+          '''
           gradle.write_text(s)
 
           manifest = Path("android/app/src/main/AndroidManifest.xml")
           m = manifest.read_text()
-          if 'xmlns:tools=' not in m:
-              m = m.replace('<manifest', '<manifest xmlns:tools="http://schemas.android.com/tools"', 1)
-          if 'tools:replace="android:name"' not in m:
-              m = m.replace('<application', '<application tools:replace="android:name"', 1)
-          permissions = [
-              'android.permission.RECORD_AUDIO',
-              'android.permission.MODIFY_AUDIO_SETTINGS',
-              'android.permission.BLUETOOTH',
-              'android.permission.BLUETOOTH_CONNECT',
-              'android.permission.BLUETOOTH_SCAN',
-          ]
-          for p in permissions:
-              tag = f'<uses-permission android:name="{p}" />'
-              if p not in m:
-                  m = m.replace('<application', tag + '\n        <application', 1)
-          manifest.write_text(m)
-          PY
+          if "xmlns:tools=" not in m:
+              m = m.replace("<manifest", '<manifest xmlns:tools="http://schemas.android.com/tools"', 1)
 
-      - name: Configure Nimzo OAuth deep link
-        working-directory: nimzo
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
+          for perm in [
+              "android.permission.RECORD_AUDIO",
+              "android.permission.MODIFY_AUDIO_SETTINGS",
+              "android.permission.BLUETOOTH",
+              "android.permission.BLUETOOTH_CONNECT",
+              "android.permission.BLUETOOTH_SCAN",
+          ]:
+              tag = f'<uses-permission android:name="{perm}" />'
+              if perm not in m:
+                  m = m.replace("<application", tag + "\n    <application", 1)
 
-          p = Path("android/app/src/main/AndroidManifest.xml")
-          s = p.read_text()
-
-          meta = '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />'
-          s = re.sub(
-              r'<meta-data\s+android:name="flutter_deeplinking_enabled"\s+android:value="(?:true|false)"\s*/>',
-              meta,
-              s,
+          m = re.sub(
+              r'<meta-data\\s+android:name="flutter_deeplinking_enabled"\\s+android:value="(?:true|false)"\\s*/>',
+              '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />',
+              m,
           )
 
-          deep_link = '''<intent-filter>
-              <action android:name="android.intent.action.VIEW" />
-              <category android:name="android.intent.category.DEFAULT" />
-              <category android:name="android.intent.category.BROWSABLE" />
-              <data android:scheme="io.nimzo.app" android:host="login-callback" />
-            </intent-filter>'''
-
           activity = re.search(
-              r'<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>.*?</activity>',
-              s,
+              r'<activity\\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>(.*?)</activity>',
+              m,
               re.DOTALL,
           )
           if not activity:
               raise SystemExit("MainActivity block not found")
 
           block = activity.group(0)
-          tag_match = re.match(r'<activity\b[^>]*>', block)
-          tag = tag_match.group(0)
-          body = block[len(tag):]
-
-          tag = re.sub(r'\sandroid:exported="[^"]*"', '', tag)
-          tag = re.sub(r'\sandroid:launchMode="[^"]*"', '', tag)
-          tag = tag[:-1] + ' android:exported="true" android:launchMode="singleTask">'
+          opening = re.match(r'<activity\\b[^>]*>', block).group(0)
+          opening = re.sub(r'\\sandroid:exported="[^"]*"', '', opening)
+          opening = re.sub(r'\\sandroid:launchMode="[^"]*"', '', opening)
+          opening = opening[:-1] + ' android:exported="true" android:launchMode="singleTask">'
+          body = block[len(re.match(r'<activity\\b[^>]*>', block).group(0)):]
           if 'android:scheme="io.nimzo.app"' not in body:
-              body = body.rstrip() + "\n            " + deep_link
-          new_block = tag + body
-          s = s[:activity.start()] + new_block + s[activity.end():]
+              body = body.replace("</activity>", '''<intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <data android:scheme="io.nimzo.app" android:host="login-callback" />
+          </intent-filter>
+          </activity>''')
+          m = m[:activity.start()] + opening + body + m[activity.end():]
 
-          # Flutter's deep-linking flag belongs on <application>.
-          app_match = re.search(r'<application\b[^>]*>', s)
-          if not app_match:
-              raise SystemExit("Application block not found")
-          if meta not in s:
-              s = s[:app_match.end()] + "\n        " + meta + s[app_match.end():]
-          p.write_text(s)
+          if 'tools:replace="android:name"' not in m:
+              m = m.replace("<application", '<application tools:replace="android:name"', 1)
+
+          if 'android:name="flutter_deeplinking_enabled"' not in m:
+              m = m.replace(
+                  "<application",
+                  '<application',
+                  1,
+              )
+              app_end = m.find(">", m.find("<application"))
+              m = m[:app_end+1] + '\n        <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />' + m[app_end+1:]
+
+          manifest.write_text(m)
+
+          # Fail fast: verify the exact OAuth contract that Supabase expects.
+          final = manifest.read_text()
+          assert 'application tools:replace="android:name"' in final
+          assert 'android:scheme="io.nimzo.app" android:host="login-callback"' in final
+          assert 'android:exported="true"' in final
+          assert 'android:launchMode="singleTask"' in final
+          print("OAuth manifest verification: PASS")
           PY
 
-      - name: Download Vivox Android SDK 5.28.0
+      - name: Download and verify Vivox 5.28.0
         working-directory: nimzo
+        shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/vivox
           curl -fL --retry 3 -o /tmp/vivox/android.zip "https://github.com/adi4ch-cmd/Nimzo/releases/download/vivox-5.28.0/com.custom.android.vivox.vivoxCoreAndroidSdk-5.28.0.zip"
           echo "c30f6caf08184874a7daecc2f9c670df099fa504265dc08b51859e287a38d75f  /tmp/vivox/android.zip" | sha256sum -c -
           unzip -q /tmp/vivox/android.zip -d /tmp/vivox/android
-          AAR="$(find /tmp/vivox/android -type f -name 'sdk-release.aar' -print -quit)"
-          test -n "$AAR"
+          aar="$(find /tmp/vivox/android -type f -name 'sdk-release.aar' -print -quit)"
+          header="$(find /tmp/vivox/android -type f -name 'Vxc.h' -print -quit)"
+          lib="$(find /tmp/vivox/android -type f \( -name 'libvivox-sdk.so' -o -name 'libvivoxsdk.so' \) -print -quit)"
+          test -n "$aar" && test -n "$header" && test -n "$lib"
           mkdir -p android/app/libs
-          cp "$AAR" android/app/libs/vivox-sdk-5.28.0.aar
-          HEADER="$(find /tmp/vivox/android -type f -name 'Vxc.h' -print -quit)"
-          test -n "$HEADER"
-          VIVOX_LIB="$(find /tmp/vivox/android -type f \( -name 'libvivox-sdk.so' -o -name 'libvivoxsdk.so' \) -print -quit)"
-          test -n "$VIVOX_LIB"
-          echo "Vivox header: $HEADER"
-          echo "Vivox native library: $VIVOX_LIB"
+          cp "$aar" android/app/libs/vivox-sdk-5.28.0.aar
+          echo "Vivox SDK verification: PASS"
 
-      - name: Wire Vivox AAR dependency
+      - name: Add Vivox AAR dependency
         working-directory: nimzo
         shell: bash
         run: |
           set -euo pipefail
-          APP_GRADLE=""
-          if [ -f android/app/build.gradle ]; then
-            APP_GRADLE=android/app/build.gradle
-          elif [ -f android/app/build.gradle.kts ]; then
-            APP_GRADLE=android/app/build.gradle.kts
-          else
-            exit 1
-          fi
-          if ! grep -q "vivox-sdk-5.28.0.aar" "$APP_GRADLE"; then
-            if [[ "$APP_GRADLE" == *.kts ]]; then
-              printf '\n// Vivox Core SDK 5.28.0\ndependencies {\n    implementation(files("libs/vivox-sdk-5.28.0.aar"))\n}\n' >> "$APP_GRADLE"
+          g="android/app/build.gradle.kts"
+          if [ ! -f "$g" ]; then g="android/app/build.gradle"; fi
+          if ! grep -q "vivox-sdk-5.28.0.aar" "$g"; then
+            if [[ "$g" == *.kts ]]; then
+              printf '\n// Vivox Core SDK 5.28.0\ndependencies { implementation(files("libs/vivox-sdk-5.28.0.aar")) }\n' >> "$g"
             else
-              printf '\n// Vivox Core SDK 5.28.0\ndependencies {\n    implementation files("libs/vivox-sdk-5.28.0.aar")\n}\n' >> "$APP_GRADLE"
+              printf '\n// Vivox Core SDK 5.28.0\ndependencies { implementation files("libs/vivox-sdk-5.28.0.aar") }\n' >> "$g"
             fi
           fi
 
-      - name: Remove generated sample test
+      - name: Dependencies
         working-directory: nimzo
-        run: rm -f test/widget_test.dart
+        run: |
+          rm -f test/widget_test.dart
+          flutter pub get
 
-      - name: Flutter pub get
-        working-directory: nimzo
-        run: flutter pub get
-
-      - name: Flutter analyze
+      - name: Analyze
         working-directory: nimzo
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
-      - name: Build release APK with Vivox native bridge
+      - name: Build release APK
         working-directory: nimzo
         run: flutter build apk --release
+
+      - name: Verify APK exists
+        run: |
+          set -euo pipefail
+          test -s nimzo/build/app/outputs/flutter-apk/app-release.apk
+          ls -lh nimzo/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
