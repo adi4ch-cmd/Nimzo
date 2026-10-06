@@ -105,7 +105,8 @@ Java_io_nimzo_vivox_NimzoVivox_nativeInit(JNIEnv* env, jclass, jobject callback,
     req->connector_handle = vx_strdup("nimzo_connector");
     req->acct_mgmt_server = vx_strdup(acctServer);
     req->log_level = 1;
-    rc = vx_issue_request3(&req->base, nullptr);
+    int request_count = 0;
+    rc = vx_issue_request3(&req->base, &request_count);
   }
   env->ReleaseStringUTFChars(server, acctServer);
   if (rc != VxErrorSuccess) { emit("error", rc, vx_get_error_string(rc)); return JNI_FALSE; }
@@ -148,7 +149,8 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
     login->enable_text = text_mode_disabled;
     login->enable_buddies_and_presence = 0;
     login->enable_presence_persistence = 0;
-    rc = vx_issue_request3(&login->base, nullptr);
+    int login_request_count = 0;
+    rc = vx_issue_request3(&login->base, &login_request_count);
   }
   if (rc != VxErrorSuccess) {
     env->ReleaseStringUTFChars(loginToken, lt);
@@ -187,12 +189,29 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
     join->connect_text = 0;
     join->access_token = vx_strdup(ct);
     join->account_handle = g_account;
-    rc = vx_issue_request3(&join->base, nullptr);
+    int join_request_count = 0;
+    rc = vx_issue_request3(&join->base, &join_request_count);
   }
   env->ReleaseStringUTFChars(loginToken, lt);
   env->ReleaseStringUTFChars(channelToken, ct);
   env->ReleaseStringUTFChars(channelUri, cu);
   if (rc != VxErrorSuccess) return rc;
+
+  vx_message_base_t* join_msg = nullptr;
+  if (wait_for_response(msg_resp_sessiongroup_add_session, 15000, &join_msg) != 0) {
+    emit("error", -102, "Vivox session join response timeout");
+    return -102;
+  }
+  auto* join_resp = reinterpret_cast<vx_resp_sessiongroup_add_session_t*>(join_msg);
+  if (join_resp->base.status_code != 0) {
+    const int status = join_resp->base.status_code;
+    emit("error", status, join_resp->base.status_string ? join_resp->base.status_string : "");
+    vx_destroy_message(join_msg);
+    return status;
+  }
+  g_session_group = join_resp->sessiongroup_handle;
+  g_session = join_resp->session_handle;
+  vx_destroy_message(join_msg);
 
   if (!g_pump.exchange(true)) g_thread = std::thread(pump_loop);
   emit("joined", 0, "join_requested");
