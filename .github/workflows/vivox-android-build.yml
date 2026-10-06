@@ -33,6 +33,19 @@ jobs:
         working-directory: nimzo
         run: flutter create --platforms=android --project-name nimzo .
 
+      - name: Configure Vivox application class
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          test -f "$MANIFEST"
+          # Vivox Core 5.28.0 declares VivoxSDKApplication in its AAR. Use that
+          # application class instead of Flutter's generated android.app.Application
+          # so the SDK's required application initialization is preserved.
+          sed -i 's#android:name="android.app.Application"#android:name="com.vivox.sdk.VivoxSDKApplication"#' "$MANIFEST"
+          grep -q 'android:name="com.vivox.sdk.VivoxSDKApplication"' "$MANIFEST"
+
       - name: Download Vivox Android SDK 5.28.0
         working-directory: nimzo
         run: |
