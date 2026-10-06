@@ -116,7 +116,7 @@ Java_io_nimzo_vivox_NimzoVivox_nativeInit(JNIEnv* env, jclass, jobject callback,
   if (rc != VxErrorSuccess) { emit("error", rc, vx_get_error_string(rc)); return JNI_FALSE; }
 
   vx_message_base_t* msg = nullptr;
-  if (wait_for_response(msg_resp_connector_create, 15000, &msg) != 0) {
+  if (wait_for_response(resp_connector_create, 15000, &msg) != 0) {
     emit("error", -2, "Vivox connector_create timeout");
     return JNI_FALSE;
   }
@@ -164,7 +164,7 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
   }
 
   vx_message_base_t* msg = nullptr;
-  if (wait_for_response(msg_resp_account_authtoken_login, 20000, &msg) != 0) {
+  if (wait_for_response(resp_account_authtoken_login, 20000, &msg) != 0) {
     env->ReleaseStringUTFChars(loginToken, lt);
     env->ReleaseStringUTFChars(channelToken, ct);
     env->ReleaseStringUTFChars(channelUri, cu);
@@ -202,7 +202,7 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
   if (rc != VxErrorSuccess) return rc;
 
   vx_message_base_t* join_msg = nullptr;
-  if (wait_for_response(msg_resp_sessiongroup_add_session, 15000, &join_msg) != 0) {
+  if (wait_for_response(resp_sessiongroup_add_session, 15000, &join_msg) != 0) {
     emit("error", -102, "Vivox session join response timeout");
     return -102;
   }
