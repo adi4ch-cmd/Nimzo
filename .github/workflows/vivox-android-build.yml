@@ -33,27 +33,31 @@ jobs:
         working-directory: nimzo
         run: flutter create --platforms=android --project-name nimzo .
 
-      - name: Configure Vivox application class
+      - name: Resolve Vivox application manifest conflict
         working-directory: nimzo
         shell: bash
         run: |
           set -euo pipefail
           MANIFEST=android/app/src/main/AndroidManifest.xml
           test -f "$MANIFEST"
-          # Vivox Core 5.28.0 declares VivoxSDKApplication in its AAR. Use that
-          # application class instead of Flutter's generated android.app.Application
-          # so the SDK's required application initialization is preserved.
-          sed -i 's#android:name="android.app.Application"#android:name="com.vivox.sdk.VivoxSDKApplication"#' "$MANIFEST"
-          grep -q 'android:name="com.vivox.sdk.VivoxSDKApplication"' "$MANIFEST"
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("android/app/src/main/AndroidManifest.xml")
+          s = p.read_text()
+          if 'xmlns:tools=' not in s:
+              s = s.replace('<manifest ', '<manifest xmlns:tools="http://schemas.android.com/tools" ', 1)
+          if 'tools:replace="android:name"' not in s:
+              s = s.replace('<application ', '<application tools:replace="android:name" ', 1)
+          p.write_text(s)
+          PY
+          grep -q 'tools:replace="android:name"' "$MANIFEST"
 
       - name: Download Vivox Android SDK 5.28.0
         working-directory: nimzo
         run: |
           set -euo pipefail
           mkdir -p /tmp/vivox
-          curl -fL --retry 3 \
-            -o /tmp/vivox/android.zip \
-            "https://github.com/adi4ch-cmd/Nimzo/releases/download/vivox-5.28.0/com.custom.android.vivox.vivoxCoreAndroidSdk-5.28.0.zip"
+          curl -fL --retry 3             -o /tmp/vivox/android.zip             "https://github.com/adi4ch-cmd/Nimzo/releases/download/vivox-5.28.0/com.custom.android.vivox.vivoxCoreAndroidSdk-5.28.0.zip"
           echo "c30f6caf08184874a7daecc2f9c670df099fa504265dc08b51859e287a38d75f  /tmp/vivox/android.zip" | sha256sum -c -
           unzip -q /tmp/vivox/android.zip -d /tmp/vivox/android
           AAR="$(find /tmp/vivox/android -type f -name 'sdk-release.aar' -print -quit)"
