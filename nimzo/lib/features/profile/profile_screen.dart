@@ -288,6 +288,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                             orElse: () => const SizedBox.shrink(),
                           ),
+                          _GiftWallPreview(userId: id),
                           models.maybeWhen(
                             data: (m) => _SectionPreview(
                               title: 'Models',
@@ -619,6 +620,73 @@ class _ProfileMoments extends ConsumerWidget {
                 },
               ),
       );
+}
+
+class _GiftWallPreview extends ConsumerWidget {
+  final String userId;
+  const _GiftWallPreview({required this.userId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gifts = ref.watch(profileGiftsProvider(userId));
+    return _SectionPreview(
+      title: 'Gifts',
+      child: gifts.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, __) => TextButton(
+          onPressed: () => ref.invalidate(profileGiftsProvider(userId)),
+          child: const Text('Retry loading gifts'),
+        ),
+        data: (items) {
+          if (items.isEmpty) return const Text('No gifts received yet');
+          final sorted = [...items]..sort((a, b) {
+            final left = (a['quantity'] as num?)?.toInt() ?? 0;
+            final right = (b['quantity'] as num?)?.toInt() ?? 0;
+            return right.compareTo(left);
+          });
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final gift in sorted.take(15))
+                    Container(
+                      width: 94,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: NimzoColors.border),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            gift['name']?.toString() ?? 'Gift',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            '×${gift['quantity'] ?? 0}',
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+              if (sorted.length > 15)
+                TextButton(
+                  onPressed: () => DefaultTabController.of(context).animateTo(2),
+                  child: const Text('View All'),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 }
 
 class _ProfileGifts extends ConsumerWidget {
