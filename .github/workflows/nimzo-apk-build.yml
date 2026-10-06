@@ -17,7 +17,6 @@ jobs:
           java-version: "21"
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.29.3"
           channel: stable
           cache: true
       - run: flutter create --platforms=android --org io.nimzo .
