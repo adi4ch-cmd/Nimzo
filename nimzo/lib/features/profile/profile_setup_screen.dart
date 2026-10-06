@@ -113,6 +113,12 @@ class _S extends ConsumerState<ProfileSetupScreen> {
 
   Future<void> _save() async {
     final name = _name.text.trim();
+    if (_avatarPath == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please add a profile photo.')),
+      );
+      return;
+    }
     if (_countryCode == null ||
         _dob == null ||
         _language == null ||
