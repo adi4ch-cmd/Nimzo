@@ -76,3 +76,24 @@ do $$ begin if not exists(select 1 from room_messages where body='Current sessio
 reset role;
 do $$ begin if not exists(select 1 from room_messages where body='Prior session retained') then raise exception 'Other member chat removed'; end if; end $$;
 select 'premium backend reentry/history behavior passed' result;
+-- Private-room listeners are authorized by membership; bans override listener/seat rights.
+update public.rooms set is_private=true where id='00000000-0000-4000-8000-000000000201';
+do $$ declare v jsonb; begin v:=voice_access('00000000-0000-4000-8000-000000000201','00000000-0000-4000-8000-000000000103'); if v->>'allowed'<>'true' or v->>'canTransmit'<>'false' then raise exception 'Private listener authorization mismatch'; end if; end $$;
+insert into public.room_bans(room_id,user_id) values('00000000-0000-4000-8000-000000000201','00000000-0000-4000-8000-000000000103');
+do $$ declare v jsonb; begin v:=voice_access('00000000-0000-4000-8000-000000000201','00000000-0000-4000-8000-000000000103'); if v->>'allowed'<>'false' then raise exception 'Banned listener authorization allowed'; end if; end $$;
+select 'premium backend complete rollback suite passed' result;
+-- Service-only purchase result/idempotency and cross-account/product replay controls.
+set local role service_role;
+do $$ declare a jsonb;b jsonb; begin
+ a:=apply_recharge('00000000-0000-4000-8000-000000000102','google_play','repair-receipt-transaction','nimzo_coins_1');
+ b:=apply_recharge('00000000-0000-4000-8000-000000000102','google_play','repair-receipt-transaction','nimzo_coins_1');
+ if a->>'status'<>'credited' or a->>'coins'<>'500000' or b->>'status'<>'replayed' then raise exception 'Purchase result/replay mismatch'; end if;
+ begin perform apply_recharge('00000000-0000-4000-8000-000000000103','google_play','repair-receipt-transaction','nimzo_coins_1'); raise exception 'Other-account receipt accepted'; exception when raise_exception then if sqlerrm<>'purchase belongs to another account' then raise; end if; end;
+ begin perform apply_recharge('00000000-0000-4000-8000-000000000102','google_play','repair-receipt-transaction','nimzo_coins_5'); raise exception 'Other-product receipt accepted'; exception when raise_exception then if sqlerrm<>'purchase product mismatch' then raise; end if; end;
+ end $$;
+reset role;
+do $$ begin if (select count(*) from ledger where user_id='00000000-0000-4000-8000-000000000102' and kind='recharge')<>1 then raise exception 'Duplicate recharge ledger'; end if; end $$;
+set local role authenticated;
+do $$ begin begin perform apply_recharge(auth.uid(),'google_play','repair-client-forgery','nimzo_coins_1'); raise exception 'Client recharge RPC allowed'; exception when insufficient_privilege then null; end; end $$;
+reset role;
+select 'premium backend purchase replay suite passed' result;

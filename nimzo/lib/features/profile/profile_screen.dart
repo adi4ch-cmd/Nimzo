@@ -1,3 +1,5 @@
+import '../auth/presentation/auth_controller.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -100,7 +102,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                 );
                 if (ok == true) {
-                  await ref.read(supabaseProvider).auth.signOut();
+                  await ref.read(authControllerProvider.notifier).signOut();
+                  final result = ref.read(authControllerProvider);
+                  if (result.hasError && context.mounted) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text('${result.error}')));
+                  }
                 }
               },
             ),

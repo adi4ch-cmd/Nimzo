@@ -30,7 +30,21 @@ class AuthService {
     emailRedirectTo: AppConstants.oauthRedirect,
   );
 
-  Future<void> signOut() => _auth.signOut();
+  Future<void> signOut() async {
+    final uid = _auth.currentUser?.id;
+    if (uid != null) {
+      final db = Supabase.instance.client;
+      final membership = await db
+          .from('room_members')
+          .select('room_id')
+          .eq('user_id', uid)
+          .maybeSingle();
+      if (membership != null)
+        await db.rpc('leave_room', params: {'p_room': membership['room_id']});
+    }
+    await _auth.signOut();
+  }
+
   Future<void> resetPassword(String email) => _auth.resetPasswordForEmail(
     email,
     redirectTo: AppConstants.oauthRedirect,

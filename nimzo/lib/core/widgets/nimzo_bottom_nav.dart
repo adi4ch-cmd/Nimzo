@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../theme/colors.dart';
-import 'nimzo_icon.dart';
 
 class NimzoBottomNav extends StatelessWidget {
   final int index;

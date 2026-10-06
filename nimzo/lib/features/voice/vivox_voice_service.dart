@@ -18,6 +18,9 @@ class VivoxVoiceService implements VoiceService {
   final Set<String> _speakingUsers = <String>{};
   bool _initialized = false, _connected = false, _disposed = false;
   Completer<void>? _connection;
+  String? _roomId;
+  bool _canTransmit = false;
+  int _sessionGeneration = 0;
   Future<void> _operations = Future.value();
 
   VivoxVoiceService({
@@ -52,7 +55,7 @@ class VivoxVoiceService implements VoiceService {
     } else if (call.method == 'speaking' || call.method == 'stoppedSpeaking') {
       // Vivox account URI: sip:.issuer.<Supabase UUID>@domain.
       final id = RegExp(
-        r'([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})(?=@|$)',
+        r'([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})(?=\.?@|$)',
       ).firstMatch(detail)?.group(1);
       if (id != null) {
         call.method == 'speaking'
@@ -91,14 +94,18 @@ class VivoxVoiceService implements VoiceService {
   }
 
   @override
-  Future<void> join(String roomId, String token) => _serialize(() async {
+  Future<void> join(String roomId, String token) => _serialize(() => _join(roomId));
+
+  Future<void> _join(String roomId, {Map<String, dynamic>? credentials}) async {
     if (_disposed) throw StateError('Voice service is closed.');
+    final generation = _sessionGeneration;
     if (_initialized) await _leave();
     // Vivox requires capture access before joining even when initially muted.
     if (await _channel.invokeMethod<bool>('requestMicPermission') != true) {
       throw StateError('Microphone permission is required for room audio.');
     }
-    final data = await _tokenIssuer(roomId);
+    final data = credentials ?? await _tokenIssuer(roomId);
+    if (generation != _sessionGeneration || _disposed) throw StateError('Voice join cancelled.');
     for (final key in ['loginToken', 'channelToken', 'server', 'channelUri']) {
       if (data[key] is! String || (data[key] as String).isEmpty) {
         throw StateError('Vivox voice-token response is incomplete.');
@@ -115,6 +122,7 @@ class VivoxVoiceService implements VoiceService {
       _initialized = true;
     }
     _connected = false;
+    if (generation != _sessionGeneration || _disposed) throw StateError('Voice join cancelled.');
     final pending = Completer<void>();
     _connection = pending;
     // Attach the timeout/error handler before native callbacks can arrive.
@@ -130,13 +138,15 @@ class VivoxVoiceService implements VoiceService {
       if (result != 0) throw StateError('Vivox join failed (code $result).');
       await connected;
       await _channel.invokeMethod<int>('setMic', {'enabled': false});
+      _roomId = roomId;
+      _canTransmit = data['canTransmit'] == true;
     } catch (_) {
       await _leave();
       rethrow;
     } finally {
       _connection = null;
     }
-  });
+  }
 
   Future<void> _leave() async {
     _connected = false;
@@ -148,6 +158,7 @@ class VivoxVoiceService implements VoiceService {
 
   @override
   Future<void> leave() {
+    _sessionGeneration++;
     _connected = false;
     if (_connection?.isCompleted == false)
       _connection!.completeError(StateError('Voice join cancelled.'));
@@ -161,6 +172,21 @@ class VivoxVoiceService implements VoiceService {
     if (enabled &&
         await _channel.invokeMethod<bool>('requestMicPermission') != true) {
       throw StateError('Microphone permission is required to speak.');
+    }
+    if (!_connected || _disposed) throw StateError('Voice audio is not connected.');
+    if (enabled) {
+      final roomId = _roomId;
+      if (roomId == null) throw StateError('Voice room is not joined.');
+      final credentials = await _tokenIssuer(roomId);
+      if (!_connected || _disposed) throw StateError('Voice audio is not connected.');
+      if (credentials['canTransmit'] != true) {
+        await _leave();
+        throw StateError('Your seat is not authorized to transmit room audio.');
+      }
+      // A listener's join_muted token cannot be unmuted locally. Upgrade by
+      // joining with a new server-authorized token after the seat was granted.
+      if (!_canTransmit) await _join(roomId, credentials: credentials);
+      if (!_connected || _disposed) throw StateError('Voice audio is not connected.');
     }
     final result = await _channel.invokeMethod<int>('setMic', {
       'enabled': enabled,

@@ -349,3 +349,35 @@ notify pgrst,'reload schema';
 create or replace function public.profile_gifts(p_user uuid) returns table(gift_id uuid,name text,image_path text,quantity bigint) language sql stable security definer set search_path=public,pg_temp as $$ select g.id,g.name,g.asset_path,sum(e.quantity)::bigint from gift_events e join gifts g on g.id=e.gift_id where e.receiver_id=p_user and auth.uid() is not null group by g.id,g.name,g.asset_path order by sum(e.quantity) desc $$;
 revoke all on function public.profile_gifts(uuid) from public,anon;
 grant execute on function public.profile_gifts(uuid) to authenticated,service_role;
+
+CREATE OR REPLACE FUNCTION public.send_room_chat(p_room uuid, p_body text)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$ declare r rooms;begin select * into r from rooms where id=p_room and status='open';if not found then raise exception'room unavailable';end if;if not exists(select 1 from room_members where room_id=p_room and user_id=auth.uid())then raise exception'join the room first';end if;if exists(select 1 from room_bans where room_id=p_room and user_id=auth.uid()) then raise exception 'banned from room'; end if; if not room_allows(p_room,auth.uid(),r.chat_permission) then raise exception 'chat permission required'; end if; if not r.perm_chat and not can_moderate(p_room,auth.uid())then raise exception'chat is turned off in this room';end if;if char_length(trim(p_body))=0 then raise exception'empty message';end if;insert into room_messages(room_id,user_id,body)values(p_room,auth.uid(),left(p_body,300));end $function$;
+create index room_moderators_user_id_idx on public.room_moderators(user_id);
+create index room_visit_history_user_id_idx on public.room_visit_history(user_id,last_joined_at desc);
+
+alter table public.purchases add column if not exists product_id text;
+drop function public.apply_recharge(uuid,text,text,text);
+CREATE OR REPLACE FUNCTION public.apply_recharge(p_user uuid, p_store text, p_txn text, p_product text)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'pg_temp'
+AS $function$ declare pk recharge_packages;p profiles;lvl int;existing public.purchases;begin if p_user is null or p_store not in('google_play','app_store') or nullif(trim(p_txn),'') is null or nullif(trim(p_product),'') is null then raise exception 'invalid purchase'; end if;
+perform pg_advisory_xact_lock(hashtextextended(p_store||':'||p_txn,0));
+select * into pk from recharge_packages where product_id=p_product; if not found then raise exception 'unknown product'; end if;
+select * into existing from purchases where store=p_store and txn_id=p_txn;
+if found then
+ if existing.user_id<>p_user then raise exception 'purchase belongs to another account'; end if;
+ if (existing.product_id is not null and existing.product_id<>p_product) or existing.usd_cents<>pk.usd_cents or existing.coins<>pk.coins then raise exception 'purchase product mismatch'; end if;
+ return jsonb_build_object('status','replayed','coins',existing.coins,'product_id',p_product,'transaction_id',p_txn);
+end if;
+if not pk.active then raise exception 'product unavailable'; end if;
+perform 1 from profiles where id=p_user and status='active' for update; if not found then raise exception 'account restricted'; end if;
+if not exists(select 1 from wallets where user_id=p_user) then raise exception 'wallet missing'; end if;
+insert into purchases(store,txn_id,user_id,usd_cents,coins,product_id) values(p_store,p_txn,p_user,pk.usd_cents,pk.coins,p_product);update wallets set coins=coins+pk.coins where user_id=p_user;insert into ledger(user_id,kind,coin_delta,ref,idempotency_key) values(p_user,'recharge',pk.coins,jsonb_build_object('store',p_store,'product',p_product,'transaction_id',p_txn),p_store||':'||p_txn);select * into p from profiles where id=p_user for update;if p.svip_cycle_start is not null and p.svip_cycle_start+interval'90 days'<=now() then update profiles set svip_cycle_start=null,svip_cycle_cents=0,svip_level=0 where id=p_user;p.svip_cycle_cents:=0;p.svip_cycle_start:=null;end if;p.svip_cycle_cents:=p.svip_cycle_cents+pk.usd_cents;if p.svip_cycle_start is null and p.svip_cycle_cents>=5000 then p.svip_cycle_start:=now();end if;select coalesce(max(level),0) into lvl from svip_thresholds where usd_cents<=p.svip_cycle_cents;update profiles set svip_cycle_cents=p.svip_cycle_cents,svip_cycle_start=p.svip_cycle_start,svip_level=case when p.svip_cycle_start is null then 0 else lvl end where id=p_user;return jsonb_build_object('status','credited','coins',pk.coins,'product_id',p_product,'transaction_id',p_txn);end $function$;
+revoke all on function public.apply_recharge(uuid,text,text,text) from public,anon,authenticated;
+grant execute on function public.apply_recharge(uuid,text,text,text) to service_role;

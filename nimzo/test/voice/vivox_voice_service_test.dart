@@ -48,6 +48,7 @@ void main() {
     'channelToken': 'join',
     'server': 'https://voice.example',
     'channelUri': 'sip:room@voice.example',
+    'canTransmit': true,
   };
   test(
     'join waits for media confirmation rather than native request acceptance',
@@ -118,4 +119,35 @@ void main() {
     expect(enabledRequests, [false]);
     await voice.dispose();
   });
+  test('listener upgrades to a fresh server-authorized join before transmitting', () async {
+    var issued = 0;
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => {...credentials, 'canTransmit': ++issued > 1});
+    var joins = 0;
+    final mic = <bool>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'join') { joins++; await emit('audioConnected'); }
+      if (call.method == 'setMic') mic.add((call.arguments as Map)['enabled'] as bool);
+      return call.method == 'initialize' || call.method == 'requestMicPermission' ? true : 0;
+    });
+    await voice.join('room', '');
+    await voice.setMicEnabled(true);
+    expect(joins, 2);
+    expect(mic, [false, false, true]);
+    await voice.dispose();
+  });
+  test('server-denied transmission disconnects without enabling the microphone', () async {
+    var issued = 0;
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => {...credentials, 'canTransmit': ++issued == 1});
+    final mic = <bool>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'join') await emit('audioConnected');
+      if (call.method == 'setMic') mic.add((call.arguments as Map)['enabled'] as bool);
+      return call.method == 'initialize' || call.method == 'requestMicPermission' ? true : 0;
+    });
+    await voice.join('room', '');
+    await expectLater(voice.setMicEnabled(true), throwsStateError);
+    expect(mic, [false]);
+    await voice.dispose();
+  });
+
 }

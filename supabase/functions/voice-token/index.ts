@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
 
   const user = await session.json();
   const body = await req.json().catch(() => ({}));
-  const room = String(body.room ?? "").trim();
+  const room = String(body.room ?? "").trim().toLowerCase();
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(room)) {
     return Response.json({ error: "Invalid room" }, { status: 400 });
   }
@@ -66,8 +66,8 @@ Deno.serve(async (req) => {
   if (access.allowed !== true) return Response.json({ error: "Join the room before connecting voice" }, { status: 403 });
 
   const accountName = safeName(String(user.id));
-  const accountUri = "sip:." + vivoxIssuer + "." + accountName + "@" + vivoxDomain;
-  const channelUri = "sip:confctl-g-" + room + "@" + vivoxDomain;
+  const accountUri = "sip:." + vivoxIssuer + "." + accountName + ".@" + vivoxDomain;
+  const channelUri = "sip:confctl-g-" + vivoxIssuer + "." + room + "@" + vivoxDomain;
   const now = Math.floor(Date.now() / 1000);
   const exp = now + 90;
   const vxi = Date.now();
@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
   const channelToken = await sign({
     iss: vivoxIssuer,
     exp,
-    vxa: "join",
+    vxa: access.canTransmit === true ? "join" : "join_muted",
     vxi: vxi + 1,
     f: accountUri,
     t: channelUri,

@@ -17,7 +17,7 @@ SupabaseClient client(http.Response Function(http.Request) reply) =>
         return http.Response(
           response.body,
           response.statusCode,
-          headers: {'content-type': 'application/json'},
+          headers: {...response.headers, 'content-type': 'application/json'},
         );
       }),
     );
@@ -85,9 +85,9 @@ void main() {
           200,
         );
       if (r.url.path.endsWith('/moment_likes'))
-        return http.Response('[{"user_id":"u"},{"user_id":"v"}]', 200);
+        return http.Response('', 200, headers: {'content-range': '0-1/2'});
       if (r.url.path.endsWith('/moment_comments'))
-        return http.Response('[{"id":"c"}]', 200);
+        return http.Response('', 200, headers: {'content-range': '0-0/1'});
       return http.Response('[]', 200);
     });
     final moment = await MomentRepository(db).get('m');

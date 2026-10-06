@@ -163,7 +163,8 @@ class _S extends ConsumerState<RoomScreen> {
         room.permissions['mic_permission'] != 'mods' ||
         room.ownerId == uid ||
         _memberRole == 'moderator';
-    return occupied && allowed;
+    final micSwitchAllowed = room.micEnabled || room.ownerId == uid || _memberRole == 'moderator';
+    return occupied && allowed && micSwitchAllowed;
   }
 
   Future<void> _mute() async {
@@ -223,6 +224,9 @@ class _S extends ConsumerState<RoomScreen> {
         ref.watch(onlineCountProvider(widget.roomId)).valueOrNull ?? 0;
     final me = ref.watch(currentUserIdProvider);
     ref.listen(voiceConnectedProvider, (_, next) {
+      if (next.valueOrNull == true && mounted) {
+        setState(() { _voiceReady = true; _voiceError = null; });
+      }
       if (next.valueOrNull == false && _voiceReady && mounted) {
         setState(() {
           _voiceReady = false;
@@ -534,8 +538,8 @@ class _S extends ConsumerState<RoomScreen> {
                                   final enabled = !_micOn;
                                   try {
                                     await _voice.setMicEnabled(enabled);
-                                    if (mounted)
-                                      final stillAllowed = _maySpeak(ref.read(seatsProvider(widget.roomId)).valueOrNull ?? [], ref.read(roomProvider(widget.roomId)).valueOrNull, me);
+                                    if (!mounted) return;
+                                    final stillAllowed = _maySpeak(ref.read(seatsProvider(widget.roomId)).valueOrNull ?? [], ref.read(roomProvider(widget.roomId)).valueOrNull, me);
                                       if (enabled && !stillAllowed) { await _mute(); }
                                       else { setState(() => _micOn = enabled); }
                                   } catch (e) {

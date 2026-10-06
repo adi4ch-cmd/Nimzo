@@ -116,6 +116,7 @@ class _RechargeState extends ConsumerState<RechargeScreen> {
 
   Future<void> _onPurchases(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
+      if (!mounted) return;
       if (purchase.status == PurchaseStatus.purchased ||
           purchase.status == PurchaseStatus.restored) {
         final key =
@@ -151,8 +152,10 @@ class _RechargeState extends ConsumerState<RechargeScreen> {
             await _iap.completePurchase(purchase);
           }
           _pending.remove(key);
-          ref.invalidate(walletProvider);
-          ref.invalidate(vipStatusProvider);
+          if (mounted) {
+            ref.invalidate(walletProvider);
+            ref.invalidate(vipStatusProvider);
+          }
           if (mounted && _credited.add(key)) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(

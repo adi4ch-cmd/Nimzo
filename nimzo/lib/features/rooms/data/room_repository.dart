@@ -93,8 +93,19 @@ class RoomRepository {
     }
   }
 
-  Future<void> join(String roomId, {String? password}) =>
-      _rpc('join_room', {'p_room': roomId, 'p_password': password});
+  Future<void> join(String roomId, {String? password}) async {
+    final uid = _db.auth.currentUser?.id;
+    if (uid == null) throw StateError('Please sign in again');
+    final previous = await _db
+        .from('room_members')
+        .select('room_id')
+        .eq('user_id', uid)
+        .maybeSingle();
+    if (previous != null && previous['room_id'] != roomId)
+      await leave(previous['room_id'] as String);
+    await _rpc('join_room', {'p_room': roomId, 'p_password': password});
+  }
+
   Future<void> leave(String roomId) => _rpc('leave_room', {'p_room': roomId});
   Future<void> takeSeat(String roomId, int seat) =>
       _rpc('take_seat', {'p_room': roomId, 'p_seat': seat});

@@ -54,7 +54,7 @@ class MomentRepository {
           .eq('author_id', authorId)
           .order('created_at', ascending: false)
           .limit(50);
-      return Future.wait(rows.map((row) => get(row['id'] as String)));
+      return await Future.wait(rows.map((row) => get(row['id'] as String)));
     } catch (e) {
       throw mapError(e);
     }
@@ -63,17 +63,27 @@ class MomentRepository {
   Future<Moment> get(String id) async {
     try {
       final row = await _db.from('moments').select().eq('id', id).single();
-      final details = await Future.wait([
-        _db.from('moment_likes').select('user_id').eq('moment_id', id),
-        _db.from('moment_comments').select('id').eq('moment_id', id),
+      final counts = await Future.wait([
+        _db.from('moment_likes').count(CountOption.exact).eq('moment_id', id),
+        _db
+            .from('moment_comments')
+            .count(CountOption.exact)
+            .eq('moment_id', id),
       ]);
+      final userId = _db.auth.currentUser?.id;
+      final like = userId == null
+          ? null
+          : await _db
+                .from('moment_likes')
+                .select('user_id')
+                .eq('moment_id', id)
+                .eq('user_id', userId)
+                .maybeSingle();
       return Moment.fromJson({
         ...row,
-        'liked': details[0].any(
-          (like) => like['user_id'] == _db.auth.currentUser?.id,
-        ),
-        'like_count': details[0].length,
-        'comment_count': details[1].length,
+        'liked': like != null,
+        'like_count': counts[0],
+        'comment_count': counts[1],
       });
     } catch (e) {
       throw mapError(e);
