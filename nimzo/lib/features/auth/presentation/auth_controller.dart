@@ -32,3 +32,5 @@ class AuthController extends AsyncNotifier<void> {
 
 final authControllerProvider =
     AsyncNotifierProvider<AuthController, void>(AuthController.new);
+
+final passwordRecoveryProvider = StateProvider<bool>((ref) => false);

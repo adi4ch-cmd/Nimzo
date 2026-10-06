@@ -1,0 +1,9 @@
+# Nimzo premium repair brief
+
+User authorizes autonomous repair of the audited app, a premium visual polish and a public/shareable test APK. Existing Flutter/Supabase/Vivox stack and five-tab navigation remain. No Agency/BD/Host Center/Movies or separate gift/coin history screens. No account deletion or balance reset. Coins per USD stays 500000. The repository locked economy defines 45% receiver diamonds and 5% room-owner reward; restore the live 6% discrepancy to that spec.
+
+Deliver working security controls on protected profile fields; room membership/seat uniqueness, ephemeral chat and lifetime counters; backend crypto resolution and room-only game play; correct package-based receipt verification; voice initialization/join/leave/seat/mute lifecycle with Android permission handling and nonblocking native work; truthful profile data and polished white/green UI with consistent vector icons. Premium does not mean simulated stats or verification badges.
+
+Test DB authorization with rollback-scoped cases and read-only assertions. Keep real accounts/data. Reconcile the exactly 5M unlogged test credit only after confirming its provenance; never overwrite wallet balances. Meaningful Flutter tests cover voice lifecycle and data/error behavior. Run analyze, tests and release build. Publish a test APK with clear limitations for external provider/device-only checks. Runtime account secrets are never printed or put in client code.
+
+Visual direction: off-white background, white surfaces, restrained green accents, professional line/filled vector icons, genuine room/profile images, compact cards, proper type hierarchy, cohesive gift artwork, no fake badges, large decorative gradients or invented popularity. Arabic/English support and RTL follow the existing locked specification where feasible.

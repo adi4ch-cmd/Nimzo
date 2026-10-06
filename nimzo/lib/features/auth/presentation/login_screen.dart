@@ -1,7 +1,10 @@
 import '../../../core/widgets/nimzo_icon.dart';
+import '../../../core/theme/colors.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/responsive/responsive.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/nimzo_button.dart';
@@ -44,25 +47,54 @@ class _LoginState extends ConsumerState<LoginScreen> {
             child: ListView(
               padding: EdgeInsets.all(Responsive.gutter(context)),
               children: [
+                const SizedBox(height: 56),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: NimzoColors.primaryLight,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: const NimzoIcon(
+                      Icons.mic_rounded,
+                      size: 28,
+                      color: NimzoColors.primaryDark,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 28),
+                Text(
+                  'Welcome to Nimzo',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Your people. Your conversations.',
+                  style: Theme.of(context).textTheme.bodyMedium
+                      ?.copyWith(color: NimzoColors.textSecondary),
+                ),
                 const SizedBox(height: 32),
-                Text('Welcome to Nimzo',
-                    style: Theme.of(context).textTheme.headlineMedium),
-                const SizedBox(height: 24),
                 Form(
                   key: _form,
-                  child: Column(children: [
-                    NimzoTextField(
+                  child: Column(
+                    children: [
+                      NimzoTextField(
                         controller: _email,
                         label: 'Email',
                         keyboardType: TextInputType.emailAddress,
-                        validator: Validators.email),
-                    const SizedBox(height: 12),
-                    NimzoTextField(
+                        validator: Validators.email,
+                      ),
+                      const SizedBox(height: 12),
+                      NimzoTextField(
                         controller: _pass,
                         label: 'Password',
                         obscure: true,
-                        validator: Validators.password),
-                  ]),
+                        validator: Validators.password,
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 NimzoButton(
@@ -75,22 +107,26 @@ class _LoginState extends ConsumerState<LoginScreen> {
                   },
                 ),
                 TextButton(
-                    onPressed: () => context.push('/forgot'),
-                    child: const Text('Forgot password?')),
+                  onPressed: () => context.push('/forgot'),
+                  child: const Text('Forgot password?'),
+                ),
                 const SizedBox(height: 8),
                 NimzoButton(
-                    label: 'Continue with Google',
-                    outlined: true,
-                    onPressed: auth.isLoading ? null : ctrl.google),
+                  label: 'Continue with Google',
+                  outlined: true,
+                  onPressed: auth.isLoading ? null : ctrl.google,
+                ),
                 const SizedBox(height: 12),
                 NimzoButton(
-                    label: 'Continue with Facebook',
-                    outlined: true,
-                    onPressed: auth.isLoading ? null : ctrl.facebook),
+                  label: 'Continue with Facebook',
+                  outlined: true,
+                  onPressed: auth.isLoading ? null : ctrl.facebook,
+                ),
                 const SizedBox(height: 16),
                 TextButton(
-                    onPressed: () => context.push('/register'),
-                    child: const Text('Create an account')),
+                  onPressed: () => context.push('/register'),
+                  child: const Text('Create an account'),
+                ),
               ],
             ),
           ),

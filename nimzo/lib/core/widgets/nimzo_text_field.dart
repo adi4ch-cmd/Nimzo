@@ -17,10 +17,10 @@ class NimzoTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TextFormField(
-        controller: controller,
-        obscureText: obscure,
-        validator: validator,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(labelText: label),
-      );
+    controller: controller,
+    obscureText: obscure,
+    validator: validator,
+    keyboardType: keyboardType,
+    decoration: InputDecoration(labelText: label),
+  );
 }
