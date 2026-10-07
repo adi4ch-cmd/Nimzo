@@ -106,15 +106,20 @@ class ProfileRepository {
   }
 
   Future<List<Map<String, dynamic>>> _searchByName(String term) async {
+    // Escape SQL LIKE wildcards so literal user input does not broaden results.
+    final escaped = term
+        .replaceAll(r'\', r'\\')
+        .replaceAll('%', r'\%')
+        .replaceAll('_', r'\_');
     final usernameRows = await _db
         .from('profiles')
         .select()
-        .ilike('username', '%$term%')
+        .ilike('username', '%$escaped%')
         .limit(20);
     final nameRows = await _db
         .from('profiles')
         .select()
-        .ilike('display_name', '%$term%')
+        .ilike('display_name', '%$escaped%')
         .limit(20);
     final unique = <String, Map<String, dynamic>>{};
     for (final row in [...usernameRows, ...nameRows]) {
