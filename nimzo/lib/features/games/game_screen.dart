@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../wallet/wallet_screen.dart';
 import 'game_repository.dart';
+import 'game_catalog.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
   final String? roomId;
@@ -127,24 +128,14 @@ class _GameScreenState extends ConsumerState<GameScreen>
             spacing: 8,
             runSpacing: 8,
             children: [
-              for (final item in const <(String, String, bool)>[
-                ('fruit_party', 'Fruit Party', true),
-                ('fruit_wheel', 'Fruit Wheel', true),
-                ('fruit_party_jackpot', 'Fruit Party Jackpot', false),
-                ('lucky_wheel_77', 'Lucky Wheel 77', false),
-                ('grady_lion', 'Grady Lion', false),
-                ('bigetar', 'Bigetar', false),
-                ('slot', 'Slot', false),
-                ('teen_patti', 'Teen Patti', false),
-                ('bounty_football', 'Bounty Football', false),
-              ])
+              for (final item in NimzoRoomGames.all)
                 ChoiceChip(
-                  label: Text(item.$3 ? item.$2 : '${item.$2} · Coming soon'),
-                  selected: game == item.$1,
-                  onSelected: busy || !item.$3
+                  label: Text(item.serverEnabled ? item.title : '${item.title} · Coming soon'),
+                  selected: game == item.slug,
+                  onSelected: busy || !item.serverEnabled
                       ? null
                       : (_) => setState(() {
-                          game = item.$1;
+                          game = item.slug;
                           result = null;
                           _key = null;
                           _request = null;
