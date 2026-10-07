@@ -42,6 +42,7 @@ class GiftRepository {
       required String giftId,
       required int qty,
       required String key}) async {
+    _validateGiftRequest(receiverId, giftId, qty, key);
     try {
       await _db.rpc('send_profile_gift', params: {
         'p_receiver': receiverId,
@@ -62,6 +63,10 @@ class GiftRepository {
       required String giftId,
       required int qty,
       required String key}) async {
+    if (roomId.trim().isEmpty) {
+      throw ArgumentError.value(roomId, 'roomId', 'Room is required.');
+    }
+    _validateGiftRequest(receiverId, giftId, qty, key);
     try {
       await _db.rpc('send_gift', params: {
         'p_room': roomId,
@@ -72,6 +77,22 @@ class GiftRepository {
       });
     } catch (e) {
       throw mapError(e);
+    }
+  }
+  static void _validateGiftRequest(
+    String receiverId, String giftId, int qty, String key,
+  ) {
+    if (receiverId.trim().isEmpty) {
+      throw ArgumentError.value(receiverId, 'receiverId', 'Recipient is required.');
+    }
+    if (giftId.trim().isEmpty) {
+      throw ArgumentError.value(giftId, 'giftId', 'Gift is required.');
+    }
+    if (qty <= 0) {
+      throw RangeError.value(qty, 'qty', 'Quantity must be positive.');
+    }
+    if (key.trim().isEmpty) {
+      throw ArgumentError.value(key, 'key', 'Idempotency key is required.');
     }
   }
 }
