@@ -75,6 +75,19 @@ class RoomRepository {
     }
   }
 
+  /// Return the permanent room owned by the signed-in user, if any.
+  /// Closed rooms are included: one user may own only one room.
+  Future<String?> ownedRoomId() async {
+    final uid = _db.auth.currentUser?.id;
+    if (uid == null) throw StateError('Please sign in again');
+    final room = await _db
+        .from('rooms')
+        .select('id')
+        .eq('owner_id', uid)
+        .maybeSingle();
+    return room?['id']?.toString();
+  }
+
   /// Room creation is performed by the SECURITY DEFINER RPC so the owner,
   /// ten mic seats and membership are initialized atomically server-side.
   Future<String> create(
@@ -82,10 +95,17 @@ class RoomRepository {
     String? country,
     String? password,
   }) async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty || trimmed.length > 40) {
+      throw StateError('Room name must contain 1 to 40 characters.');
+    }
+    // Reuse the existing permanent room; do not create a second room.
+    final existing = await ownedRoomId();
+    if (existing != null) return existing;
     try {
       final id = await _db.rpc(
         'create_room',
-        params: {'p_name': name, 'p_country': country, 'p_password': password},
+        params: {'p_name': trimmed, 'p_country': country, 'p_password': password},
       );
       return id.toString();
     } catch (e) {
