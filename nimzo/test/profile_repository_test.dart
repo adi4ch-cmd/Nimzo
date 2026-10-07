@@ -88,6 +88,46 @@ void main() {
     expect(await ProfileRepository(db).search('   '), isEmpty);
   });
 
+  test('invalid gift quantity never calls Supabase', () async {
+    final db = await signedClient((_) {
+      fail('Invalid gift quantity must never reach the database');
+    });
+    final repo = GiftRepository(db);
+    await expectLater(
+      repo.sendProfile(receiverId: 'other', giftId: 'gift', qty: 0, key: 'key'),
+      throwsArgumentError,
+    );
+    await expectLater(
+      repo.send(roomId: 'room', receiverId: 'other', giftId: 'gift',
+          qty: -1, key: 'key'),
+      throwsArgumentError,
+    );
+  });
+
+  test('gift requests require recipient, gift, room and stable key', () async {
+    final db = await signedClient((_) {
+      fail('Invalid gift request must never reach the database');
+    });
+    final repo = GiftRepository(db);
+    await expectLater(
+      repo.sendProfile(receiverId: '', giftId: 'gift', qty: 1, key: 'key'),
+      throwsArgumentError,
+    );
+    await expectLater(
+      repo.sendProfile(receiverId: 'other', giftId: '', qty: 1, key: 'key'),
+      throwsArgumentError,
+    );
+    await expectLater(
+      repo.sendProfile(receiverId: 'other', giftId: 'gift', qty: 1, key: ' '),
+      throwsArgumentError,
+    );
+    await expectLater(
+      repo.send(roomId: '', receiverId: 'other', giftId: 'gift',
+          qty: 1, key: 'key'),
+      throwsArgumentError,
+    );
+  });
+
   test('profile gift forwards recipient and stable key without room or client price', () async {
     final db = await signedClient((request) {
       expect(request.url.path, '/rest/v1/rpc/send_profile_gift');
