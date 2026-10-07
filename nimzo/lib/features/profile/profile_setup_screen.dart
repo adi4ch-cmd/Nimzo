@@ -127,25 +127,9 @@ class _S extends ConsumerState<ProfileSetupScreen> {
   Future<void> _save() async {
     if (busy || loading || loadError != null) return;
     final name = _name.text.trim();
-    if (_avatarPath?.trim().isNotEmpty != true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please add a profile photo.')),
-      );
-      return;
-    }
-    if (_countryCode == null ||
-        _dob == null ||
-        _language == null ||
-        _gender == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Please complete country, language, date of birth and gender.',
-          ),
-        ),
-      );
-      return;
-    }
+    // Editing an existing profile must not force the user to provide every
+    // optional field or upload a new avatar. Unchanged null fields are omitted
+    // by ProfileRepository.update, preserving existing database values.
     setState(() => busy = true);
     try {
       await ref.read(profileRepositoryProvider).update(
