@@ -32,7 +32,7 @@ void main() {
       ),
     ))!;
     addTearDown(() => tester.runAsync(db.dispose));
-    var senderLoads = 0, receiverLoads = 0;
+    var senderLoads = 0, receiverLoads = 0, senderStats = 0, receiverStats = 0;
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -45,6 +45,14 @@ void main() {
             ],
           ),
           walletProvider.overrideWith((_) async => (coins: 10000, diamonds: 0)),
+          profileStatsProvider('sender').overrideWith((_) async {
+            senderStats++;
+            return {};
+          }),
+          profileStatsProvider('receiver').overrideWith((_) async {
+            receiverStats++;
+            return {};
+          }),
           profileProvider('sender').overrideWith((_) async {
             senderLoads++;
             return const Profile(id: 'sender', nimzoId: 1);
@@ -57,6 +65,8 @@ void main() {
         child: MaterialApp(
           home: Consumer(
             builder: (context, ref, _) {
+              ref.watch(profileStatsProvider('sender'));
+              ref.watch(profileStatsProvider('receiver'));
               ref.watch(profileProvider('sender'));
               ref.watch(profileProvider('receiver'));
               return Scaffold(
@@ -83,6 +93,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(senderLoads, 2);
     expect(receiverLoads, 2);
+    expect(senderStats, 2);
+    expect(receiverStats, 2);
     expect(tester.takeException(), isNull);
   });
 }

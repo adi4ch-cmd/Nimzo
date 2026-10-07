@@ -33,12 +33,12 @@ Yeh implementation checkpoint hai; A-to-Z completion ya release readiness ka cla
 - `tools/extract_reference_assets.py`: 93 original images extract karta hai; prototype pricing/data import nahi karta.
 - `nimzo/assets/reference/*`: exact approved images, integrity test byte-for-byte match karta hai.
 - `nimzo/test/*`: existing tests retained, focused lifecycle/identity/setup/error/game-layout tests add kiye. Existing source/tests ki formatting normalize ki.
-- `.github/workflows/nimzo-apk-build.yml`: format/reference/voice tests add; push par APK release nahi. Release stage explicit `release_ready` dispatch ke baghair disabled.
+- `.github/workflows/nimzo-apk-build.yml`: checks ke baad Android verification APK build, packaged Vivox/OAuth checks, SHA256 aur prerelease testing download publish karta hai. Testing build final release certification nahi hai.
 
 ## Verification
 
 - Flutter 3.47.6 / Dart 3.13.5 use kiya.
-- Full Flutter suite: 66 tests pass.
+- Full Flutter suite: 70 tests pass at the latest continuation checkpoint.
 - Native Vivox contract: 2 tests pass.
 - Voice-token authorization: 6 tests pass.
 - Reference artwork integrity: 1 test pass, 93 assets matched.
@@ -52,11 +52,25 @@ Yeh implementation checkpoint hai; A-to-Z completion ya release readiness ka cla
 2. Seven approved game UIs ka verified server service repo mein nahi. Existing `fruit_party` aur `fruit_wheel` contracts approved boards se different hain. Client random outcomes/payouts use nahi kiye. Production betting unavailable hai.
 3. Actual Google/Facebook callbacks aur email/signup/session restore physical device par test karna baqi hai. Email signup confirmation UX abhi basic hai.
 4. Vivox native service aur bridge reused/tested contracts hain; two-device incoming/outgoing audio, interruptions, reconnect/background mic behavior runtime verify nahi hua.
-5. Full HTML visual parity abhi complete nahi: profile cover/avatar overlap, gift artwork mapping/quantity/animations, room header/avatar/lifetime presentation/moderator actions, several sheets/catalog sections aur all-screen responsive captures polish baqi hai.
+5. Full HTML visual parity abhi complete nahi: profile cover/avatar overlap, gift animations, room moderator actions, several sheets/catalog sections aur all-screen responsive captures polish baqi hai.
 6. VIP/SVIP live pricing/duration, Sunday reward scheduler aur purchase contracts verify nahi. Existing Friday-named catalog ko current scheduler ka proof nahi maana.
 7. Store/Tasks/Privacy/Help/deletion aur payment gateways ka verified production implementation missing/unverified hai; unavailable states show hain. Recharge receipt verifier reuse hua, store checkout UI abhi unavailable.
-8. Moments delete/gifting/pagination, message avatars/unread list details, notification preferences aur several public-profile social actions abhi incomplete hain.
+8. Moments delete/pagination, message avatars/unread list details, notification preferences aur several public-profile social actions abhi incomplete hain.
 9. Android SDK/device aur macOS/iOS runtime available nahi. iOS Vivox native bridge/project readiness verify nahi; APK/iOS build nahi banaya.
 10. Owned closed room reopen contract ki zaroorat investigate karni hai; duplicate room creation intentionally avoid hoti hai.
 
 Agla checkpoint: remaining reference presentation aur supported interactions finish, live backend/device QA, phir full retest aur final release APK. Yeh source checkpoint installable final APK nahi.
+
+
+## Latest continuation — safe branch publish and verification APK
+
+- Local `5b7c2fccec2d5f006bd754ec85e7f54f72f0376b` tree GitHub commit `eae09c81d064201423a7927498ec74ab3e941016` mein exact match ke saath publish hua. API commit metadata ki wajah se SHA alag hai; source tree same hai.
+- Compatible live gift names approved `assets/reference/gift/` art use karte hain. Unmatched art unavailable hai; generic gift icon inventory remove hui. Live IDs/prices unchanged.
+- Quantity 1/10/99, confirmation mein total, duplicate confirmation guard aur uncertain-response retry mein frozen gift/quantity/key implemented. Quantity/client price financial authority nahi; RPC decides settlement.
+- Profile/room/Moment gifting existing RPCs reuse karta hai. Successful send wallet, sender/recipient profile stats aur room lifetime total refresh karta hai.
+- Moment feed real author avatar path use karta hai.
+- Room header real room artwork aur lifetime coins use karta hai. Room settings gallery/camera uploads owner room UUID folder mein save karte hain; Storage policy still authoritative.
+- Shared image upload validates JPEG/PNG/WebP signature, preserves MIME/extension, limits upload to 10 MB, and uses authenticated ownership folder. No production upload was made by development tests.
+- Latest local checks: 70 Flutter tests pass; analyzer no issues; 2 native contract tests, 6 voice authorization tests, 1 reference integrity test pass; format and whitespace check pass.
+- CI build now produces a prerelease testing APK with a SHA256 companion only after tests and packaged-native verification succeed. Actual build/download result is recorded after CI finishes; do not assume it has succeeded from this source checkpoint.
+- No destructive production operation, data reset or old deleted UI restoration occurred. Pending engines/payment/device QA/visual parity/iOS gaps listed above remain release blockers.

@@ -35,21 +35,24 @@ class _State extends ConsumerState<RoomScreen> {
         voice = ref.read(voiceServiceProvider),
         me = ref.read(currentUserIdProvider);
     session = RoomSession(
-        joinRoom: () async {
-          final room = await repository.get(widget.roomId);
-          String? password;
-          if (!mounted) throw StateError('Room closed');
-          if (room.isPrivate && room.ownerId != me) {
-            password = await showDialog<String>(
-                context: context, builder: (c) => _PasswordDialog());
-            if (password == null || !mounted)
-              throw StateError('Room join cancelled');
-          }
-          await repository.join(widget.roomId, password: password);
-        },
-        leaveRoom: () => repository.leave(widget.roomId),
-        joinVoice: () => voice.join(widget.roomId, ''),
-        leaveVoice: voice.leave);
+      joinRoom: () async {
+        final room = await repository.get(widget.roomId);
+        String? password;
+        if (!mounted) throw StateError('Room closed');
+        if (room.isPrivate && room.ownerId != me) {
+          password = await showDialog<String>(
+            context: context,
+            builder: (c) => _PasswordDialog(),
+          );
+          if (password == null || !mounted)
+            throw StateError('Room join cancelled');
+        }
+        await repository.join(widget.roomId, password: password);
+      },
+      leaveRoom: () => repository.leave(widget.roomId),
+      joinVoice: () => voice.join(widget.roomId, ''),
+      leaveVoice: voice.leave,
+    );
     Future.microtask(join);
   }
 
@@ -147,14 +150,58 @@ class _State extends ConsumerState<RoomScreen> {
               if (joining) const LinearProgressIndicator(),
               if (room.hasError)
                 DataFailure(
-                    onRetry: () => ref.invalidate(roomProvider(widget.roomId))),
+                  onRetry: () => ref.invalidate(roomProvider(widget.roomId)),
+                ),
               if (seats.hasError)
                 DataFailure(
-                    message: 'Seats could not be loaded.',
-                    onRetry: () =>
-                        ref.invalidate(seatsProvider(widget.roomId))),
+                  message: 'Seats could not be loaded.',
+                  onRetry: () => ref.invalidate(seatsProvider(widget.roomId)),
+                ),
               if (failure != null)
                 DataFailure(message: failure!, onRetry: join),
+              if (room.valueOrNull != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+                  child: Row(
+                    children: [
+                      NimzoAvatar(
+                        name: room.valueOrNull!.name,
+                        size: 52,
+                        url: room.valueOrNull!.avatarPath == null
+                            ? null
+                            : ref
+                                .watch(supabaseProvider)
+                                .storage
+                                .from('room-images')
+                                .getPublicUrl(room.valueOrNull!.avatarPath!),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              room.valueOrNull!.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              'Lifetime gifts: ${room.valueOrNull!.lifetimeGiftCoins} coins',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: NimzoStyle.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 child: Row(
@@ -440,14 +487,17 @@ class _PasswordState extends State<_PasswordDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-          title: const Text('Room password'),
-          content: TextField(controller: password, obscureText: true),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel')),
-            FilledButton(
-                onPressed: () => Navigator.pop(context, password.text),
-                child: const Text('Join'))
-          ]);
+        title: const Text('Room password'),
+        content: TextField(controller: password, obscureText: true),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, password.text),
+            child: const Text('Join'),
+          ),
+        ],
+      );
 }

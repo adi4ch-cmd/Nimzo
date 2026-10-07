@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../../../core/services/storage_service.dart';
 
 import '../data/room_settings_repository.dart';
 import 'room_controller.dart';
@@ -22,6 +25,24 @@ class _State extends ConsumerState<RoomSettingsScreen> {
   final name = TextEditingController(), password = TextEditingController();
   RoomSettings? settings;
   bool busy = false;
+  String? artwork;
+  Future<void> upload(ImageSource source) async {
+    setState(() => busy = true);
+    try {
+      final path = await ref
+          .read(storageServiceProvider)
+          .pickAndUpload('room-images', source: source, roomId: widget.roomId);
+      if (mounted && path != null) setState(() => artwork = path);
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Room photo could not be uploaded.')),
+        );
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
   @override
   void dispose() {
     name.dispose();
@@ -44,6 +65,25 @@ class _State extends ConsumerState<RoomSettingsScreen> {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              Wrap(
+                spacing: 8,
+                children: [
+                  OutlinedButton(
+                    onPressed: !owner || busy
+                        ? null
+                        : () => upload(ImageSource.gallery),
+                    child: const Text('Choose room photo'),
+                  ),
+                  OutlinedButton(
+                    onPressed: !owner || busy
+                        ? null
+                        : () => upload(ImageSource.camera),
+                    child: const Text('Camera'),
+                  ),
+                ],
+              ),
+              if (artwork != null)
+                const Text('New room photo selected. Save to apply.'),
               TextField(
                 controller: name,
                 enabled: owner,
@@ -101,6 +141,7 @@ class _State extends ConsumerState<RoomSettingsScreen> {
                                 RoomSettings(
                                   name: name.text,
                                   theme: x.theme,
+                                  avatarPath: artwork ?? x.avatarPath,
                                   isPrivate: x.isPrivate,
                                   mic: x.mic,
                                   chat: x.chat,

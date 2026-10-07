@@ -6,6 +6,7 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/services/storage_service.dart';
 import '../profile/profile_repository.dart';
+import '../gifts/gift_sheet.dart';
 import 'moment_repository.dart';
 
 class MomentsScreen extends ConsumerWidget {
@@ -55,7 +56,16 @@ class MomentCard extends ConsumerWidget {
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: NimzoAvatar(name: author?.displayName ?? 'N'),
+            leading: NimzoAvatar(
+              name: author?.displayName ?? 'N',
+              url: author?.avatarPath == null
+                  ? null
+                  : ref
+                      .watch(supabaseProvider)
+                      .storage
+                      .from('avatars')
+                      .getPublicUrl(author!.avatarPath!),
+            ),
             title: Text(author?.displayName ?? 'Nimzo user'),
             subtitle: Text(
               moment.createdAt.toLocal().toString().split('.').first,
@@ -94,6 +104,11 @@ class MomentCard extends ConsumerWidget {
               TextButton(
                 onPressed: () => context.push('/moments/${moment.id}'),
                 child: Text('${moment.comments} comments'),
+              ),
+              TextButton(
+                onPressed: () =>
+                    showMomentGiftSheet(context, moment.id, moment.authorId),
+                child: const Text('Gift'),
               ),
               if (ref.watch(currentUserIdProvider) == moment.authorId)
                 TextButton(

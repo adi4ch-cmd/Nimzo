@@ -8,6 +8,9 @@ import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
+import 'gift_artwork.dart';
+import '../moments/moment_repository.dart';
+import '../rooms/presentation/room_controller.dart';
 
 Future<void> showProfileGiftSheet(BuildContext context, String receiverId) =>
     showModalBottomSheet<void>(
@@ -26,10 +29,27 @@ Future<void> showRoomGiftSheet(
       builder: (_) => GiftSheet(receiverId: receiverId, roomId: roomId),
     );
 
+Future<void> showMomentGiftSheet(
+  BuildContext context,
+  String momentId,
+  String receiverId,
+) =>
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => GiftSheet(receiverId: receiverId, momentId: momentId),
+    );
+
 class GiftSheet extends ConsumerStatefulWidget {
   final String receiverId;
   final String? roomId;
-  const GiftSheet({super.key, required this.receiverId, this.roomId});
+  final String? momentId;
+  const GiftSheet({
+    super.key,
+    required this.receiverId,
+    this.roomId,
+    this.momentId,
+  });
   @override
   ConsumerState<GiftSheet> createState() => _State();
 }
@@ -37,14 +57,21 @@ class GiftSheet extends ConsumerStatefulWidget {
 class _State extends ConsumerState<GiftSheet> {
   Gift? selected;
   bool busy = false;
+  bool confirming = false;
+  int quantity = 1;
   String? key;
   Future<void> send() async {
-    if (selected == null || busy) return;
+    if (selected == null || busy || confirming) return;
+    final gift = selected!;
+    final requestQuantity = quantity;
+    setState(() => confirming = true);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('Send gift?'),
-        content: Text('${selected!.name} · ${selected!.price} coins'),
+        content: Text(
+          '${gift.name} × $requestQuantity · ${gift.price * requestQuantity} coins',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
@@ -57,19 +84,32 @@ class _State extends ConsumerState<GiftSheet> {
         ],
       ),
     );
-    if (confirmed != true || !mounted) return;
+    if (!mounted) return;
+    setState(() => confirming = false);
+    if (confirmed != true) return;
+    final container = ProviderScope.containerOf(context, listen: false);
+    final me = ref.read(currentUserIdProvider);
     key ??= List.generate(
       16,
       (_) => Random.secure().nextInt(256).toRadixString(16).padLeft(2, '0'),
     ).join();
     setState(() => busy = true);
     try {
-      final r = ref.read(giftRepositoryProvider), g = selected!;
-      if (widget.roomId == null) {
+      final r = ref.read(giftRepositoryProvider), g = gift;
+      if (widget.momentId != null) {
+        await ref.read(momentRepositoryProvider).sendGift(
+              momentId: widget.momentId!,
+              receiverId: widget.receiverId,
+              giftId: g.id,
+              qty: requestQuantity,
+              key: key!,
+            );
+        container.invalidate(momentsFeedProvider);
+      } else if (widget.roomId == null) {
         await r.sendProfile(
           receiverId: widget.receiverId,
           giftId: g.id,
-          qty: 1,
+          qty: requestQuantity,
           key: key!,
         );
       } else {
@@ -77,15 +117,20 @@ class _State extends ConsumerState<GiftSheet> {
           roomId: widget.roomId!,
           receiverId: widget.receiverId,
           giftId: g.id,
-          qty: 1,
+          qty: requestQuantity,
           key: key!,
         );
       }
-      ref.invalidate(walletProvider);
-      ref.invalidate(profileProvider(widget.receiverId));
-      ref.invalidate(profileGiftsProvider(widget.receiverId));
-      final me = ref.read(currentUserIdProvider);
-      if (me != null) ref.invalidate(profileProvider(me));
+      container.invalidate(walletProvider);
+      container.invalidate(profileProvider(widget.receiverId));
+      container.invalidate(profileStatsProvider(widget.receiverId));
+      if (widget.roomId != null)
+        container.invalidate(roomProvider(widget.roomId!));
+      container.invalidate(profileGiftsProvider(widget.receiverId));
+      if (me != null) {
+        container.invalidate(profileProvider(me));
+        container.invalidate(profileStatsProvider(me));
+      }
       if (mounted) Navigator.pop(context);
     } catch (_) {
       if (mounted)
@@ -132,7 +177,7 @@ class _State extends ConsumerState<GiftSheet> {
                           children: [
                             for (final gift in gifts)
                               InkWell(
-                                onTap: busy
+                                onTap: busy || confirming
                                     ? null
                                     : () {
                                         if (key != null && selected != gift)
@@ -151,23 +196,10 @@ class _State extends ConsumerState<GiftSheet> {
                                   child: Column(
                                     children: [
                                       Expanded(
-                                        child: gift.assetPath == null
-                                            ? const Icon(Icons.card_giftcard)
-                                            : gift.assetPath!.startsWith('http')
-                                                ? Image.network(
-                                                    gift.assetPath!,
-                                                    errorBuilder:
-                                                        (_, __, ___) =>
-                                                            const Icon(Icons
-                                                                .card_giftcard),
-                                                  )
-                                                : Image.asset(
-                                                    gift.assetPath!,
-                                                    errorBuilder:
-                                                        (_, __, ___) =>
-                                                            const Icon(Icons
-                                                                .card_giftcard),
-                                                  ),
+                                        child: GiftArtwork(
+                                          name: gift.name,
+                                          assetPath: gift.assetPath,
+                                        ),
                                       ),
                                       Text(
                                         gift.name,
@@ -189,9 +221,33 @@ class _State extends ConsumerState<GiftSheet> {
               ),
               Padding(
                 padding: const EdgeInsets.all(12),
-                child: FilledButton(
-                  onPressed: busy || selected == null ? null : send,
-                  child: Text(busy ? 'Sending…' : 'Send'),
+                child: Row(
+                  children: [
+                    const Text('Quantity'),
+                    const SizedBox(width: 12),
+                    DropdownButton<int>(
+                      value: quantity,
+                      items: [
+                        for (final q in [1, 10, 99])
+                          DropdownMenuItem(value: q, child: Text('$q')),
+                      ],
+                      onChanged: busy || confirming || key != null
+                          ? null
+                          : (q) => setState(() => quantity = q!),
+                    ),
+                    const Spacer(),
+                    FilledButton(
+                      onPressed:
+                          busy || confirming || selected == null ? null : send,
+                      child: Text(
+                        busy
+                            ? 'Sending…'
+                            : key == null
+                                ? 'Send'
+                                : 'Retry',
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
