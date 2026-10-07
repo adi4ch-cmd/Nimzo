@@ -57,6 +57,21 @@ void main() {
     expect(queried, ['username', 'display_name']);
   });
 
+  test('profile search treats percent and underscore as literal characters', () async {
+    final queried = <String>[];
+    final db = await signedClient((request) {
+      final column = request.url.queryParameters.containsKey('username')
+          ? 'username'
+          : 'display_name';
+      queried.add(column);
+      expect(request.url.queryParameters[column], r'ilike.%A\\%B\\_C%');
+      expect(request.url.queryParameters.containsKey('or'), isFalse);
+      return http.Response('[]', 200);
+    });
+    expect(await ProfileRepository(db).search('A%B_C'), isEmpty);
+    expect(queried, ['username', 'display_name']);
+  });
+
   test('numeric profile search uses permanent Nimzo ID', () async {
     final db = await signedClient((request) {
       expect(request.url.queryParameters['nimzo_id'], 'eq.100005');
