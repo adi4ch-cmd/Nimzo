@@ -6,6 +6,7 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import 'message_repository.dart';
+import '../profile/profile_repository.dart';
 
 class MessagesScreen extends ConsumerWidget {
   const MessagesScreen({super.key});
@@ -26,23 +27,7 @@ class MessagesScreen extends ConsumerWidget {
                     ? const EmptyContent('No conversations yet')
                     : Column(
                         children: [
-                          for (final r in rows)
-                            ListTile(
-                              leading: NimzoAvatar(
-                                name: r['display_name']?.toString() ?? 'N',
-                              ),
-                              title: Text(
-                                r['display_name']?.toString() ??
-                                    r['username']?.toString() ??
-                                    'Nimzo user',
-                              ),
-                              subtitle: Text(
-                                r['last_body']?.toString() ?? '',
-                                maxLines: 1,
-                              ),
-                              onTap: () =>
-                                  context.push('/chat/${r['other_id']}'),
-                            ),
+                          for (final r in rows) ConversationTile(row: r),
                         ],
                       ),
               ),
@@ -50,6 +35,37 @@ class MessagesScreen extends ConsumerWidget {
           ),
         ),
       );
+}
+
+class ConversationTile extends ConsumerWidget {
+  final Map<String, dynamic> row;
+  const ConversationTile({super.key, required this.row});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final id = row['other_id']?.toString();
+    if (id == null || id.isEmpty) return const SizedBox.shrink();
+    final profile = ref.watch(profileProvider(id)).valueOrNull;
+    final name = profile?.displayName ??
+        profile?.username ??
+        row['display_name']?.toString() ??
+        row['username']?.toString() ??
+        'Nimzo user';
+    return ListTile(
+      leading: NimzoAvatar(
+          name: name,
+          url: profile?.avatarPath == null
+              ? null
+              : ref
+                  .watch(supabaseProvider)
+                  .storage
+                  .from('avatars')
+                  .getPublicUrl(profile!.avatarPath!)),
+      title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: Text(row['last_body']?.toString() ?? '',
+          maxLines: 1, overflow: TextOverflow.ellipsis),
+      onTap: () => context.push('/chat/$id'),
+    );
+  }
 }
 
 class ConversationScreen extends ConsumerStatefulWidget {
@@ -72,11 +88,11 @@ class _State extends ConsumerState<ConversationScreen> {
     if (busy || body.text.trim().isEmpty) return;
     setState(() => busy = true);
     try {
-      await ref
-          .read(messageRepositoryProvider)
-          .send(widget.otherId, body.text.trim());
-      body.clear();
-      ref.invalidate(conversationsProvider);
+      final container = ProviderScope.containerOf(context, listen: false);
+      final repository = ref.read(messageRepositoryProvider);
+      await repository.send(widget.otherId, body.text.trim());
+      container.invalidate(conversationsProvider);
+      if (mounted) body.clear();
     } catch (_) {
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(

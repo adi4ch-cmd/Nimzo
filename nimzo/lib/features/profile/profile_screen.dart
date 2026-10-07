@@ -37,49 +37,55 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           final cover = image('covers', p.coverPath);
           return ListView(
             children: [
-              Container(
-                height: 130,
-                decoration: BoxDecoration(
-                  color: const Color(0xff111827),
-                  image: cover == null
-                      ? null
-                      : DecorationImage(
-                          image: NetworkImage(cover),
-                          fit: BoxFit.cover,
-                        ),
-                ),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: SafeArea(
-                    bottom: false,
-                    child: IconButton(
-                      onPressed: () {
-                        if (Navigator.of(context).canPop())
-                          Navigator.of(context).pop();
-                      },
-                      icon: const Icon(
-                        LucideIcons.chevronLeft,
-                        color: Colors.white,
-                      ),
+              SizedBox(
+                  height: 170,
+                  child: Stack(children: [
+                    Container(
+                      key: const ValueKey('profile-cover'),
+                      height: 130,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                              colors: [Color(0xff4b5563), Color(0xff111827)]),
+                          image: cover == null
+                              ? null
+                              : DecorationImage(
+                                  image: NetworkImage(cover),
+                                  fit: BoxFit.cover)),
+                      child: Align(
+                          alignment: Alignment.topLeft,
+                          child: SafeArea(
+                              bottom: false,
+                              child: IconButton(
+                                  onPressed: () {
+                                    if (Navigator.of(context).canPop())
+                                      Navigator.of(context).pop();
+                                  },
+                                  icon: const Icon(LucideIcons.chevronLeft,
+                                      color: Colors.white)))),
                     ),
-                  ),
-                ),
-              ),
+                    Positioned(
+                        top: 90,
+                        left: 16,
+                        child: Container(
+                            key: const ValueKey('profile-avatar'),
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                                color: Colors.white, shape: BoxShape.circle),
+                            child: NimzoAvatar(
+                                name: p.displayName ?? p.username ?? 'N',
+                                url: image('avatars', p.avatarPath),
+                                size: 70))),
+                  ])),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    NimzoAvatar(
-                      name: p.displayName ?? p.username ?? 'N',
-                      url: image('avatars', p.avatarPath),
-                      size: 72,
-                    ),
-                    const SizedBox(height: 8),
                     Text(
                       p.displayName ?? p.username ?? 'Nimzo user',
                       style: const TextStyle(
-                        fontSize: 21,
+                        fontSize: 19,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

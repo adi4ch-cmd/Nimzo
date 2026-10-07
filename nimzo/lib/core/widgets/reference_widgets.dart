@@ -104,13 +104,12 @@ class ReferenceCard extends StatelessWidget {
   final Widget child;
   const ReferenceCard({super.key, required this.child});
   @override
-  Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Material(
           color: NimzoStyle.surface,
           borderRadius: BorderRadius.circular(14),
+          child: Padding(padding: const EdgeInsets.all(14), child: child),
         ),
-        child: child,
       );
 }

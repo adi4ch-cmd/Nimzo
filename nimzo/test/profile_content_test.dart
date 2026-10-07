@@ -86,6 +86,18 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets('profile avatar overlaps the approved 130px cover',
+      (tester) async {
+    await openProfile(tester);
+    final cover = tester.getRect(find.byKey(const ValueKey('profile-cover')));
+    final avatar = tester.getRect(find.byKey(const ValueKey('profile-avatar')));
+    expect(cover.height, 130);
+    expect(avatar.width, 78);
+    expect(avatar.top, lessThan(cover.bottom));
+    expect(avatar.bottom, greaterThan(cover.bottom));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('linked owner can still manage outstanding CP invitations', (
     tester,
   ) async {

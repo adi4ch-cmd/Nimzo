@@ -14,6 +14,7 @@ import '../data/room_chat_repository.dart';
 import '../domain/room.dart';
 import 'room_controller.dart';
 import 'room_session.dart';
+import 'room_user_sheet.dart';
 
 class RoomScreen extends ConsumerStatefulWidget {
   final String roomId;
@@ -246,7 +247,7 @@ class _State extends ConsumerState<RoomScreen> {
                                     return InkWell(
                                       onTap: !joined ||
                                               !seats.hasValue ||
-                                              s.locked
+                                              (s.locked && s.userId == null)
                                           ? null
                                           : () => action(() async {
                                                 if (s.userId == null) {
@@ -256,20 +257,18 @@ class _State extends ConsumerState<RoomScreen> {
                                                       )
                                                       .takeSeat(
                                                           widget.roomId, n);
-                                                } else if (s.userId == me) {
-                                                  await ref
-                                                      .read(
-                                                          voiceServiceProvider)
-                                                      .setMicEnabled(false);
-                                                  await ref
-                                                      .read(
-                                                        roomRepositoryProvider,
-                                                      )
-                                                      .leaveSeat(widget.roomId);
                                                 } else {
-                                                  context.push(
-                                                    '/profile/${s.userId}',
-                                                  );
+                                                  await showModalBottomSheet<
+                                                          void>(
+                                                      context: context,
+                                                      isScrollControlled: true,
+                                                      builder: (_) =>
+                                                          RoomUserSheet(
+                                                              roomId:
+                                                                  widget.roomId,
+                                                              userId: s.userId!,
+                                                              seatNo: n,
+                                                              muted: s.muted));
                                                 }
                                               }),
                                       child: Column(
@@ -402,7 +401,7 @@ class _State extends ConsumerState<RoomScreen> {
                                 await ref
                                     .read(roomChatRepositoryProvider)
                                     .send(widget.roomId, body);
-                                text.clear();
+                                if (mounted) text.clear();
                               }),
                       icon: const Icon(LucideIcons.send),
                     ),

@@ -38,7 +38,7 @@ Yeh implementation checkpoint hai; A-to-Z completion ya release readiness ka cla
 ## Verification
 
 - Flutter 3.47.6 / Dart 3.13.5 use kiya.
-- Full Flutter suite: 70 tests pass at the latest continuation checkpoint.
+- Full Flutter suite: 77 tests pass at the latest continuation checkpoint.
 - Native Vivox contract: 2 tests pass.
 - Voice-token authorization: 6 tests pass.
 - Reference artwork integrity: 1 test pass, 93 assets matched.
@@ -52,11 +52,11 @@ Yeh implementation checkpoint hai; A-to-Z completion ya release readiness ka cla
 2. Seven approved game UIs ka verified server service repo mein nahi. Existing `fruit_party` aur `fruit_wheel` contracts approved boards se different hain. Client random outcomes/payouts use nahi kiye. Production betting unavailable hai.
 3. Actual Google/Facebook callbacks aur email/signup/session restore physical device par test karna baqi hai. Email signup confirmation UX abhi basic hai.
 4. Vivox native service aur bridge reused/tested contracts hain; two-device incoming/outgoing audio, interruptions, reconnect/background mic behavior runtime verify nahi hua.
-5. Full HTML visual parity abhi complete nahi: profile cover/avatar overlap, gift animations, room moderator actions, several sheets/catalog sections aur all-screen responsive captures polish baqi hai.
+5. Full HTML visual parity abhi complete nahi: gift animations, assigned-moderator/ban coverage, several sheets/catalog sections aur all-screen responsive captures polish baqi hai. Profile cover/avatar overlap aur owner mute/kick sheet ab implemented/tested hain.
 6. VIP/SVIP live pricing/duration, Sunday reward scheduler aur purchase contracts verify nahi. Existing Friday-named catalog ko current scheduler ka proof nahi maana.
 7. Store/Tasks/Privacy/Help/deletion aur payment gateways ka verified production implementation missing/unverified hai; unavailable states show hain. Recharge receipt verifier reuse hua, store checkout UI abhi unavailable.
-8. Moments delete/pagination, message avatars/unread list details, notification preferences aur several public-profile social actions abhi incomplete hain.
-9. Android SDK/device aur macOS/iOS runtime available nahi. iOS Vivox native bridge/project readiness verify nahi; APK/iOS build nahi banaya.
+8. Moments pagination, unread list details, notification preferences aur several public-profile social actions abhi incomplete hain.
+9. Android SDK/device aur macOS/iOS runtime available nahi. iOS Vivox native bridge/project readiness verify nahi; Android testing build GitHub CI par pass hua; iOS build/device verification abhi nahi hua.
 10. Owned closed room reopen contract ki zaroorat investigate karni hai; duplicate room creation intentionally avoid hoti hai.
 
 Agla checkpoint: remaining reference presentation aur supported interactions finish, live backend/device QA, phir full retest aur final release APK. Yeh source checkpoint installable final APK nahi.
@@ -74,3 +74,16 @@ Agla checkpoint: remaining reference presentation aur supported interactions fin
 - Latest local checks: 70 Flutter tests pass; analyzer no issues; 2 native contract tests, 6 voice authorization tests, 1 reference integrity test pass; format and whitespace check pass.
 - CI build now produces a prerelease testing APK with a SHA256 companion only after tests and packaged-native verification succeed. Actual build/download result is recorded after CI finishes; do not assume it has succeeded from this source checkpoint.
 - No destructive production operation, data reset or old deleted UI restoration occurred. Pending engines/payment/device QA/visual parity/iOS gaps listed above remain release blockers.
+
+
+## Latest UI/interactions continuation
+
+- Room occupied-seat tap now opens a real profile sheet: full profile, follow/unfollow, friend request/accept, gift. Owner sees server-backed mute/kick with removal confirmation; self seat offers leave and self gifting. Locked occupied seats still allow opening the sheet. Existing RPC/RLS remains authoritative; assigned moderator/ban coverage is not claimed.
+- Seat leave captures its services before async work so dismissing the sheet cannot abandon the requested operation. If mic disable fails after server seat removal, voice disconnect is attempted. Two-device runtime audio still requires QA.
+- Public profile uses the reference 130px cover and 78px avatar with actual overlap. A geometry regression test verifies overlap; this is not full HTML pixel parity certification.
+- Conversations use current profile names/real avatar paths with server message preview. Completing a send after leaving the screen no longer clears a disposed controller.
+- Own Moment deletion is an explicit confirmation action; repository filters by authenticated author and requires a returned deleted row. Cancellation/confirmation behavior is tested with a recorder; no production post was deleted by these tests.
+- Reference cards now have a Material surface so ListTile ink/background is not hidden by decoration. Existing render baselines and full tests remain passing.
+- Latest local verification: **77 Flutter tests passed; analyzer no issues; 2 native contract tests, 6 token authorization tests, 1 reference asset integrity test passed.** Format and whitespace checks passed.
+- First verification APK was actually built/uploaded for `73b8558b513c99e5f974ee493dcc7851c7a3482a`, release tag `nimzo-reference-test-73b8558b513c`; APK SHA256 `13f63a5d1a1ce351216daa51545ec86481bfff2d933f86ad83a09bb6bca8fa50`. Newer UI source in this checkpoint requires its own CI build; use the later commit's artifact once verified.
+- These APKs are prerelease testing builds. Final release certification remains blocked by verified seven-game settlement services, payment/store credentials/contracts, complete visual parity, physical-device OAuth/audio QA, stable production signing and iOS readiness. Do not label this A-to-Z complete.

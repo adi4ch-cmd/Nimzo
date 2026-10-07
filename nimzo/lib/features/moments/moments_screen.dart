@@ -46,7 +46,8 @@ class MomentsScreen extends ConsumerWidget {
 
 class MomentCard extends ConsumerWidget {
   final Moment moment;
-  const MomentCard({super.key, required this.moment});
+  final VoidCallback? onDeleted;
+  const MomentCard({super.key, required this.moment, this.onDeleted});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final author = ref.watch(profileProvider(moment.authorId)).valueOrNull;
@@ -110,6 +111,45 @@ class MomentCard extends ConsumerWidget {
                     showMomentGiftSheet(context, moment.id, moment.authorId),
                 child: const Text('Gift'),
               ),
+              if (ref.watch(currentUserIdProvider) == moment.authorId)
+                TextButton(
+                    child: const Text('Delete'),
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (c) => AlertDialog(
+                                  title: const Text('Delete this Moment?'),
+                                  content: const Text(
+                                      'This removes your post from Moments.'),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(c, false),
+                                        child: const Text('Cancel')),
+                                    FilledButton(
+                                        onPressed: () => Navigator.pop(c, true),
+                                        child: const Text('Delete')),
+                                  ]));
+                      if (confirmed != true || !context.mounted) return;
+                      final container =
+                          ProviderScope.containerOf(context, listen: false);
+                      final repo = ref.read(momentRepositoryProvider);
+                      try {
+                        await repo.delete(moment.id);
+                        container.invalidate(momentsFeedProvider);
+                        container.invalidate(
+                            profileMomentsProvider(moment.authorId));
+                        container
+                            .invalidate(profileStatsProvider(moment.authorId));
+                        container.invalidate(momentDetailProvider(moment.id));
+                        if (context.mounted) onDeleted?.call();
+                      } catch (_) {
+                        if (context.mounted)
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text(
+                                  'Moment could not be deleted. Please retry.')));
+                      }
+                    }),
               if (ref.watch(currentUserIdProvider) == moment.authorId)
                 TextButton(
                   onPressed: () => context.push('/moments/${moment.id}/edit'),
@@ -275,7 +315,11 @@ class _DetailState extends ConsumerState<MomentDetailScreen> {
             AsyncContent(
               value: ref.watch(momentDetailProvider(widget.id)),
               onRetry: () => ref.invalidate(momentDetailProvider(widget.id)),
-              builder: (m) => MomentCard(moment: m),
+              builder: (m) => MomentCard(
+                  moment: m,
+                  onDeleted: () {
+                    if (Navigator.of(context).canPop()) Navigator.pop(context);
+                  }),
             ),
             AsyncContent(
               value: ref.watch(commentsProvider(widget.id)),

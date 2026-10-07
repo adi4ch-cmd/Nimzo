@@ -118,7 +118,15 @@ class MomentRepository {
       _db.rpc('toggle_like', params: {'p_moment': id});
   Future<void> delete(String id) async {
     try {
-      await _db.from('moments').delete().eq('id', id);
+      final uid = _db.auth.currentUser?.id;
+      if (uid == null) throw StateError('Please sign in again.');
+      await _db
+          .from('moments')
+          .delete()
+          .eq('id', id)
+          .eq('author_id', uid)
+          .select('id')
+          .single();
     } catch (e) {
       throw mapError(e);
     }
