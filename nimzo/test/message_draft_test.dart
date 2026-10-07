@@ -1,3 +1,5 @@
+import 'package:nimzo/features/profile/profile.dart';
+import 'package:nimzo/features/profile/profile_repository.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,11 +30,14 @@ void main() {
     final repo = SendingRepository(db);
     await tester.pumpWidget(ProviderScope(overrides: [
       currentUserIdProvider.overrideWithValue('viewer'),
+      profileProvider('other').overrideWith((_) async => const Profile(
+          id: 'other', nimzoId: 123, displayName: 'Actual recipient')),
       messageRepositoryProvider.overrideWithValue(repo),
       chatProvider('other').overrideWith((_) => Stream.value([])),
       conversationsProvider.overrideWith((_) async => []),
     ], child: const MaterialApp(home: ConversationScreen(otherId: 'other'))));
     await tester.pumpAndSettle();
+    expect(find.text('Actual recipient'), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'First');
     await tester.tap(find.byIcon(Icons.send));
     await tester.pump();

@@ -108,7 +108,9 @@ class MomentRepository {
           .from('moments')
           .update({'body': text, 'image_path': imagePath})
           .eq('id', id)
-          .eq('author_id', _db.auth.currentUser!.id);
+          .eq('author_id', _db.auth.currentUser!.id)
+          .select('id')
+          .single();
     } catch (e) {
       throw mapError(e);
     }

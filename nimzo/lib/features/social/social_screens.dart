@@ -49,7 +49,15 @@ class SocialListScreen extends ConsumerWidget {
                 : Column(children: [
                     for (final p in rows)
                       ListTile(
-                          leading: NimzoAvatar(name: p.displayName ?? 'N'),
+                          leading: NimzoAvatar(
+                              name: p.displayName ?? 'N',
+                              url: p.avatarPath == null
+                                  ? null
+                                  : ref
+                                      .watch(supabaseProvider)
+                                      .storage
+                                      .from('avatars')
+                                      .getPublicUrl(p.avatarPath!)),
                           title:
                               Text(p.displayName ?? p.username ?? 'Nimzo user'),
                           subtitle: Text('ID:${p.nimzoId}'),

@@ -420,8 +420,7 @@ class _DetailState extends ConsumerState<MomentDetailScreen> {
               onRetry: () => ref.invalidate(commentsProvider(widget.id)),
               builder: (rows) => Column(
                 children: [
-                  for (final c in rows)
-                    ListTile(title: Text(c['body']?.toString() ?? '')),
+                  for (final c in rows) MomentCommentTile(comment: c),
                 ],
               ),
             ),
@@ -472,4 +471,30 @@ class _DetailState extends ConsumerState<MomentDetailScreen> {
           ],
         ),
       );
+}
+
+class MomentCommentTile extends ConsumerWidget {
+  final Map<String, dynamic> comment;
+  const MomentCommentTile({super.key, required this.comment});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final id = comment['author_id'] as String?;
+    final author =
+        id == null ? null : ref.watch(profileProvider(id)).valueOrNull;
+    final path = author?.avatarPath;
+    return ListTile(
+      leading: NimzoAvatar(
+          name: author?.displayName ?? 'N',
+          url: path == null
+              ? null
+              : ref
+                  .watch(supabaseProvider)
+                  .storage
+                  .from('avatars')
+                  .getPublicUrl(path)),
+      title: Text(author?.displayName ?? author?.username ?? 'Nimzo user'),
+      subtitle: Text(comment['body']?.toString() ?? ''),
+      onTap: id == null ? null : () => context.push('/profile/$id'),
+    );
+  }
 }

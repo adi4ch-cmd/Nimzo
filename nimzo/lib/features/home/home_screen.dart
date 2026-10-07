@@ -57,7 +57,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: RefreshIndicator(
         onRefresh: () async {
           retry();
-          await ref.read(popularRoomsProvider(country).future);
+          if (tab == 0) {
+            await ref.read(popularRoomsProvider(country).future);
+          } else {
+            await ref.read(myRoomsProvider.future);
+          }
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),

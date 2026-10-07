@@ -31,20 +31,23 @@ class SettingsScreen extends ConsumerWidget {
               onPressed: ref.watch(authControllerProvider).isLoading
                   ? null
                   : () async {
+                      final auth = ref.read(authControllerProvider.notifier);
+                      final voice = ref.read(voiceServiceProvider);
+                      final container =
+                          ProviderScope.containerOf(context, listen: false);
                       try {
-                        await ref.read(voiceServiceProvider).leave();
-                        await ref
-                            .read(authControllerProvider.notifier)
-                            .signOut();
-                        if (ref.read(authControllerProvider).hasError &&
-                            context.mounted)
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Logout could not be completed. Retry.',
-                              ),
-                            ),
-                          );
+                        try {
+                          await voice.leave();
+                        } catch (_) {/* Session logout must still run. */}
+                        await auth.signOut();
+                        if (container.read(authControllerProvider).hasError &&
+                            context.mounted) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content:
+                                Text('Logout could not be completed. Retry.'),
+                          ));
+                        }
                       } catch (_) {
                         if (context.mounted)
                           ScaffoldMessenger.of(context).showSnackBar(

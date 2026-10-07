@@ -107,6 +107,8 @@ class _State extends ConsumerState<ConversationScreen> {
   @override
   Widget build(BuildContext context) {
     final me = ref.watch(currentUserIdProvider);
+    final other = ref.watch(profileProvider(widget.otherId)).valueOrNull;
+    final avatar = other?.avatarPath;
     ref.listen(chatProvider(widget.otherId), (_, next) {
       if (next.hasValue)
         ref
@@ -115,7 +117,28 @@ class _State extends ConsumerState<ConversationScreen> {
             .catchError((_) {});
     });
     return Scaffold(
-      appBar: AppBar(title: const Text('Conversation')),
+      appBar: AppBar(
+          title: InkWell(
+        onTap: () => context.push('/profile/${widget.otherId}'),
+        child: Row(children: [
+          NimzoAvatar(
+              name: other?.displayName ?? 'N',
+              size: 36,
+              url: avatar == null
+                  ? null
+                  : ref
+                      .watch(supabaseProvider)
+                      .storage
+                      .from('avatars')
+                      .getPublicUrl(avatar)),
+          const SizedBox(width: 10),
+          Expanded(
+              child: Text(
+                  other?.displayName ?? other?.username ?? 'Conversation',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis)),
+        ]),
+      )),
       body: SafeArea(
         child: Column(
           children: [
