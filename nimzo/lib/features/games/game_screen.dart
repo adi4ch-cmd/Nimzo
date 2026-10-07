@@ -35,6 +35,19 @@ class _GameScreenState extends ConsumerState<GameScreen>
 
   Future<void> _play() async {
     final amount = int.tryParse(_bet.text.trim()) ?? 0;
+    if (busy) return;
+    if (amount < 1 || amount > 500000) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bet must be 1 to 500,000 coins.')),
+      );
+      return;
+    }
+    if (widget.roomId == null || widget.roomId!.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Join a room to play.')),
+      );
+      return;
+    }
     final request = '${widget.roomId}:$game:$amount';
     if (request != _request || _key == null) {
       _request = request;
