@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/providers/supabase_provider.dart';
+import 'game_catalog.dart';
 
 class GameRepository {
   final SupabaseClient _db;
@@ -14,7 +15,7 @@ class GameRepository {
   }) async {
     if (roomId == null || roomId.trim().isEmpty)
       throw StateError('Open a room before playing.');
-    if (!const ['fruit_wheel', 'fruit_party'].contains(game))
+    if (!NimzoRoomGames.canPlay(game))
       throw StateError('Game unavailable');
     if (bet <= 0 || bet > 500000)
       throw StateError('Bet must be between 1 and 500,000 coins.');
