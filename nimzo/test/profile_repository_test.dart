@@ -39,6 +39,34 @@ void main() {
     final db = await signedClient((_) => http.Response('{"code":"PGRST116","message":"JSON object requested","details":"Results contain 0 rows"}', 406));
     await expectLater(ProfileRepository(db).update(bio: 'Hello'), throwsA(isA<Exception>()));
   });
+  test('profile search matches username and display name', () async {
+    final db = await signedClient((request) {
+      expect(request.method, 'GET');
+      expect(request.url.path, '/rest/v1/profiles');
+      expect(request.url.queryParameters['or'],
+          '(username.ilike.%Amina%,display_name.ilike.%Amina%)');
+      expect(request.url.queryParameters['limit'], '20');
+      return http.Response('[]', 200);
+    });
+    expect(await ProfileRepository(db).search(' Amina '), isEmpty);
+  });
+
+  test('numeric profile search uses permanent Nimzo ID', () async {
+    final db = await signedClient((request) {
+      expect(request.url.queryParameters['nimzo_id'], 'eq.100005');
+      expect(request.url.queryParameters.containsKey('or'), isFalse);
+      return http.Response('[]', 200);
+    });
+    expect(await ProfileRepository(db).search('100005'), isEmpty);
+  });
+
+  test('blank profile search does not query the server', () async {
+    final db = await signedClient((_) {
+      fail('Empty searches should not reach Supabase');
+    });
+    expect(await ProfileRepository(db).search('   '), isEmpty);
+  });
+
   test('profile gift forwards recipient and stable key without room or client price', () async {
     final db = await signedClient((request) {
       expect(request.url.path, '/rest/v1/rpc/send_profile_gift');
