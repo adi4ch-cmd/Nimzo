@@ -140,7 +140,10 @@ class VivoxVoiceService implements VoiceService {
       });
       if (result != 0) throw StateError('Vivox join failed (code $result).');
       await connected;
-      await _channel.invokeMethod<int>('setMic', {'enabled': false});
+      final muted =
+          await _channel.invokeMethod<int>('setMic', {'enabled': false});
+      if (muted != 0)
+        throw StateError('Vivox initial mute failed (code $muted).');
       _roomId = roomId;
       _canTransmit = data['canTransmit'] == true;
     } catch (_) {

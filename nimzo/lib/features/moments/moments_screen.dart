@@ -111,7 +111,8 @@ class _MomentCardState extends ConsumerState<MomentCard> {
                               .toggleLike(id);
                           container.invalidate(momentsFeedProvider);
                           container.invalidate(momentDetailProvider(id));
-                          container.invalidate(profileMomentsProvider(authorId));
+                          container
+                              .invalidate(profileMomentsProvider(authorId));
                         } catch (_) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -198,26 +199,31 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
   final text = TextEditingController();
   String? image;
   bool busy = false, ready = false;
+  bool loadFailed = false;
   @override
   void initState() {
     super.initState();
-    Future.microtask(() async {
+    Future.microtask(_load);
+  }
+
+  Future<void> _load() async {
+    if (!mounted) return;
+    setState(() {
+      ready = false;
+      loadFailed = false;
+    });
+    final repository = ref.read(momentRepositoryProvider);
+    try {
       if (widget.id != null) {
-        try {
-          final m = await ref.read(momentRepositoryProvider).get(widget.id!);
-          if (!mounted) return;
-          text.text = m.text ?? '';
-          image = m.imagePath;
-        } catch (_) {
-          if (mounted)
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Unable to load Moment.')),
-            );
-          return;
-        }
+        final m = await repository.get(widget.id!);
+        if (!mounted) return;
+        text.text = m.text ?? '';
+        image = m.imagePath;
       }
       if (mounted) setState(() => ready = true);
-    });
+    } catch (_) {
+      if (mounted) setState(() => loadFailed = true);
+    }
   }
 
   @override
@@ -231,94 +237,102 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
         appBar: AppBar(
           title: Text(widget.id == null ? 'Create Moment' : 'Edit Moment'),
         ),
-        body: !ready
-            ? const Center(child: CircularProgressIndicator())
-            : ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  TextField(
-                    controller: text,
-                    maxLength: 2000,
-                    maxLines: 5,
-                    decoration:
-                        const InputDecoration(hintText: 'Share a Moment'),
+        body: loadFailed
+            ? Center(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                const EmptyContent('Unable to load Moment.'),
+                OutlinedButton(onPressed: _load, child: const Text('Retry'))
+              ]))
+            : !ready
+                ? const Center(child: CircularProgressIndicator())
+                : ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      TextField(
+                        controller: text,
+                        maxLength: 2000,
+                        maxLines: 5,
+                        decoration:
+                            const InputDecoration(hintText: 'Share a Moment'),
+                      ),
+                      OutlinedButton(
+                        onPressed: busy
+                            ? null
+                            : () async {
+                                setState(() => busy = true);
+                                try {
+                                  final path = await ref
+                                      .read(storageServiceProvider)
+                                      .pickAndUpload('moments');
+                                  if (path != null && mounted)
+                                    setState(() => image = path);
+                                } catch (_) {
+                                  if (context.mounted)
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                            'Image could not be uploaded.'),
+                                      ),
+                                    );
+                                } finally {
+                                  if (mounted) setState(() => busy = false);
+                                }
+                              },
+                        child: Text(
+                            image == null ? 'Choose photo' : 'Replace photo'),
+                      ),
+                      FilledButton(
+                        onPressed: busy
+                            ? null
+                            : () async {
+                                if (text.text.trim().isEmpty && image == null)
+                                  return;
+                                setState(() => busy = true);
+                                try {
+                                  final r = ref.read(momentRepositoryProvider);
+                                  final currentUserId =
+                                      ref.read(currentUserIdProvider);
+                                  String? authorId = currentUserId;
+                                  if (widget.id == null) {
+                                    await r.create(
+                                      text: text.text.trim(),
+                                      imagePath: image,
+                                    );
+                                  } else {
+                                    authorId ??=
+                                        (await r.get(widget.id!)).authorId;
+                                    await r.update(
+                                      widget.id!,
+                                      text: text.text.trim(),
+                                      imagePath: image,
+                                    );
+                                    ref.invalidate(
+                                        momentDetailProvider(widget.id!));
+                                  }
+                                  ref.invalidate(momentsFeedProvider);
+                                  if (authorId != null) {
+                                    ref.invalidate(
+                                        profileMomentsProvider(authorId));
+                                    ref.invalidate(
+                                        profileStatsProvider(authorId));
+                                  }
+                                  if (context.mounted) Navigator.pop(context);
+                                } catch (_) {
+                                  if (context.mounted)
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content:
+                                            Text('Moment could not be saved.'),
+                                      ),
+                                    );
+                                } finally {
+                                  if (mounted) setState(() => busy = false);
+                                }
+                              },
+                        child: const Text('Save'),
+                      ),
+                    ],
                   ),
-                  OutlinedButton(
-                    onPressed: busy
-                        ? null
-                        : () async {
-                            setState(() => busy = true);
-                            try {
-                              final path = await ref
-                                  .read(storageServiceProvider)
-                                  .pickAndUpload('moments');
-                              if (path != null && mounted)
-                                setState(() => image = path);
-                            } catch (_) {
-                              if (context.mounted)
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('Image could not be uploaded.'),
-                                  ),
-                                );
-                            } finally {
-                              if (mounted) setState(() => busy = false);
-                            }
-                          },
-                    child:
-                        Text(image == null ? 'Choose photo' : 'Replace photo'),
-                  ),
-                  FilledButton(
-                    onPressed: busy
-                        ? null
-                        : () async {
-                            if (text.text.trim().isEmpty && image == null)
-                              return;
-                            setState(() => busy = true);
-                            try {
-                              final r = ref.read(momentRepositoryProvider);
-                              final currentUserId =
-                                  ref.read(currentUserIdProvider);
-                              String? authorId = currentUserId;
-                              if (widget.id == null) {
-                                await r.create(
-                                  text: text.text.trim(),
-                                  imagePath: image,
-                                );
-                              } else {
-                                authorId ??=
-                                    (await r.get(widget.id!)).authorId;
-                                await r.update(
-                                  widget.id!,
-                                  text: text.text.trim(),
-                                  imagePath: image,
-                                );
-                                ref.invalidate(
-                                    momentDetailProvider(widget.id!));
-                              }
-                              ref.invalidate(momentsFeedProvider);
-                              if (authorId != null) {
-                                ref.invalidate(
-                                    profileMomentsProvider(authorId));
-                                ref.invalidate(profileStatsProvider(authorId));
-                              }
-                              if (context.mounted) Navigator.pop(context);
-                            } catch (_) {
-                              if (context.mounted)
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Moment could not be saved.'),
-                                  ),
-                                );
-                            } finally {
-                              if (mounted) setState(() => busy = false);
-                            }
-                          },
-                    child: const Text('Save'),
-                  ),
-                ],
-              ),
       );
 }
 

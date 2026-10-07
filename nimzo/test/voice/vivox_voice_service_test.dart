@@ -74,6 +74,24 @@ void main() {
       await voice.dispose();
     },
   );
+  test('failed initial mute rejects join and leaves native channel', () async {
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+    final methods = <String>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      methods.add(call.method);
+      if (call.method == 'join') await emit('audioConnected');
+      if (call.method == 'setMic') return 17;
+      return call.method == 'initialize' ||
+              call.method == 'requestMicPermission'
+          ? true
+          : 0;
+    });
+    await expectLater(voice.join('room', ''), throwsStateError);
+    expect(methods.last, 'leave');
+    await expectLater(voice.setMicEnabled(true), throwsStateError);
+    await voice.dispose();
+  });
   test('native media failure fails join and cleans up', () async {
     final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
     final methods = <String>[];
