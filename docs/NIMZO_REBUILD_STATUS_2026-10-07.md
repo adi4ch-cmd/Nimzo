@@ -87,3 +87,12 @@ Agla checkpoint: remaining reference presentation aur supported interactions fin
 - Latest local verification: **77 Flutter tests passed; analyzer no issues; 2 native contract tests, 6 token authorization tests, 1 reference asset integrity test passed.** Format and whitespace checks passed.
 - First verification APK was actually built/uploaded for `73b8558b513c99e5f974ee493dcc7851c7a3482a`, release tag `nimzo-reference-test-73b8558b513c`; APK SHA256 `13f63a5d1a1ce351216daa51545ec86481bfff2d933f86ad83a09bb6bca8fa50`. Newer UI source in this checkpoint requires its own CI build; use the later commit's artifact once verified.
 - These APKs are prerelease testing builds. Final release certification remains blocked by verified seven-game settlement services, payment/store credentials/contracts, complete visual parity, physical-device OAuth/audio QA, stable production signing and iOS readiness. Do not label this A-to-Z complete.
+
+
+## 2026-10-08 — Moment comment interaction batch
+
+- Continued from remote ccd8d16 (eae09c8 is an earlier ancestor); completed rebuilds were preserved.
+- Comment submission captures repository/container before awaiting. Completion after screen dismissal refreshes data without touching disposed controller/ref.
+- Successful comments refresh detail/comments, feed and author profile Moments; server counts remain authoritative. A newer draft typed while sending is preserved. Existing send busy guard and backend insert flow are preserved.
+- Two delayed-response widget regressions cover navigation away and newer draft/cache refresh. Full Flutter suite: 79 passed. Analyzer: no issues. Format and whitespace checks passed. No production mutation was performed.
+- Next manageable batch: Moment like duplicate-tap/lifecycle handling and create/edit success cache refresh, with focused regressions. Existing visual presentation remains unchanged by this batch.

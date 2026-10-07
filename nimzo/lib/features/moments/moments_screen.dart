@@ -341,14 +341,27 @@ class _DetailState extends ConsumerState<MomentDetailScreen> {
                   ? null
                   : () async {
                       if (comment.text.trim().isEmpty) return;
+                      final submitted = comment.text;
+                      final id = widget.id;
+                      final authorId = ref
+                          .read(momentDetailProvider(id))
+                          .valueOrNull
+                          ?.authorId;
+                      final repository = ref.read(momentRepositoryProvider);
+                      final container =
+                          ProviderScope.containerOf(context, listen: false);
                       setState(() => busy = true);
                       try {
-                        await ref
-                            .read(momentRepositoryProvider)
-                            .addComment(widget.id, comment.text.trim());
-                        comment.clear();
-                        ref.invalidate(commentsProvider(widget.id));
-                        ref.invalidate(momentDetailProvider(widget.id));
+                        await repository.addComment(id, submitted.trim());
+                        container.invalidate(commentsProvider(id));
+                        container.invalidate(momentDetailProvider(id));
+                        container.invalidate(momentsFeedProvider);
+                        if (authorId != null) {
+                          container
+                              .invalidate(profileMomentsProvider(authorId));
+                        }
+                        if (mounted && comment.text == submitted)
+                          comment.clear();
                       } catch (_) {
                         if (context.mounted)
                           ScaffoldMessenger.of(context).showSnackBar(
