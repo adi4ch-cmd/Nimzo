@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/profile-reference-redesign
+      - feat/nimzo-approved-reference
   workflow_dispatch:
 
 permissions:
