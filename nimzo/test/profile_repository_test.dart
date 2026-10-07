@@ -39,16 +39,22 @@ void main() {
     final db = await signedClient((_) => http.Response('{"code":"PGRST116","message":"JSON object requested","details":"Results contain 0 rows"}', 406));
     await expectLater(ProfileRepository(db).update(bio: 'Hello'), throwsA(isA<Exception>()));
   });
-  test('profile search matches username and display name', () async {
+  test('profile search matches username and display name without .or() filters', () async {
+    final queried = <String>[];
     final db = await signedClient((request) {
       expect(request.method, 'GET');
       expect(request.url.path, '/rest/v1/profiles');
-      expect(request.url.queryParameters['or'],
-          '(username.ilike.%Amina%,display_name.ilike.%Amina%)');
+      expect(request.url.queryParameters.containsKey('or'), isFalse);
       expect(request.url.queryParameters['limit'], '20');
+      final column = request.url.queryParameters.containsKey('username')
+          ? 'username'
+          : 'display_name';
+      queried.add(column);
+      expect(request.url.queryParameters[column], 'ilike.%Amina%');
       return http.Response('[]', 200);
     });
     expect(await ProfileRepository(db).search(' Amina '), isEmpty);
+    expect(queried, ['username', 'display_name']);
   });
 
   test('numeric profile search uses permanent Nimzo ID', () async {
