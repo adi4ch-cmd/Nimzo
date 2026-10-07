@@ -55,6 +55,13 @@ class VipScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 20),
                     Text(
+                      'Normal VIP levels — coin prices',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    const _VipPriceCatalog(),
+                    const SizedBox(height: 16),
+                    Text(
                       'VIP daily rewards',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
@@ -217,6 +224,34 @@ class _SvipCatalog extends StatelessWidget {
           ),
           title: Text('SVIP ${i + 1} · ${rechargeUsd[i]} USD'),
           subtitle: Text('${weeklyCoins[i]} coins / week'),
+        ),
+    ],
+  );
+}
+
+/// Locked Normal VIP prices. Informational only: membership purchase must
+/// be implemented as an authorized, atomic server-side wallet operation.
+class _VipPriceCatalog extends StatelessWidget {
+  const _VipPriceCatalog();
+
+  static const coinPrices = <int>[
+    1000000, 3000000, 8000000, 15000000, 30000000,
+    60000000, 100000000, 200000000, 350000000, 600000000,
+  ];
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      for (var i = 0; i < coinPrices.length; i++)
+        ListTile(
+          dense: true,
+          leading: CircleAvatar(
+            backgroundColor: const Color(0xFFE5F4E9),
+            child: Text('${i + 1}',
+              style: const TextStyle(color: Color(0xFF176B4C))),
+          ),
+          title: Text('VIP ${i + 1}'),
+          subtitle: Text('${coinPrices[i]} coins'),
         ),
     ],
   );
