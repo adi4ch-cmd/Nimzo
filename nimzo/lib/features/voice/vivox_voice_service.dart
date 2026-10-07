@@ -47,6 +47,8 @@ class VivoxVoiceService implements VoiceService {
             (call.method == 'audioState' || call.method == 'loginState'))) {
       _connected = false;
       _connectedEvents.add(false);
+      _speakingUsers.clear();
+      _speaking.add(const <String>{});
       if (_connection?.isCompleted == false) {
         _connection!.completeError(
           StateError('Voice connection failed ($status): $detail'),

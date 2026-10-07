@@ -27,6 +27,8 @@ class _State extends ConsumerState<RoomScreen> {
   final text = TextEditingController();
   DateTime? entered;
   bool joining = true, joined = false, mic = false, leaving = false;
+  bool micBusy = false;
+  bool chatBusy = false;
   String? failure;
   late final RoomSession session;
   @override
@@ -62,6 +64,7 @@ class _State extends ConsumerState<RoomScreen> {
     setState(() {
       joining = true;
       failure = null;
+      mic = false;
     });
     try {
       await session.join();
@@ -115,16 +118,29 @@ class _State extends ConsumerState<RoomScreen> {
     final me = ref.watch(currentUserIdProvider),
         speaking = ref.watch(speakingProvider).valueOrNull ?? <String>{};
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
+    ref.listen(voiceConnectedProvider, (previous, next) {
+      if (previous?.valueOrNull == true &&
+          next.valueOrNull == false &&
+          joined &&
+          !joining &&
+          !leaving &&
+          !session.closed) {
+        setState(() {
+          mic = false;
+          failure = 'Voice disconnected. Retry voice.';
+        });
+      }
+    });
     ref.listen(seatsProvider(widget.roomId), (_, next) {
       final occupied =
           next.valueOrNull?.any((s) => s.userId == me && !s.muted) ?? false;
       if (mic && !occupied) {
         mic = false;
+        final voice = ref.read(voiceServiceProvider);
         unawaited(
-          ref
-              .read(voiceServiceProvider)
-              .setMicEnabled(false)
-              .catchError((_) {}),
+          voice.setMicEnabled(false).catchError((Object _) async {
+            await voice.leave();
+          }).catchError((Object _) {}),
         );
       }
     });
@@ -393,27 +409,47 @@ class _State extends ConsumerState<RoomScreen> {
                     ),
                     IconButton(
                       tooltip: 'Send',
-                      onPressed: !joined
+                      onPressed: !joined || chatBusy
                           ? null
                           : () => action(() async {
-                                final body = text.text.trim();
-                                if (body.isEmpty) return;
-                                await ref
-                                    .read(roomChatRepositoryProvider)
-                                    .send(widget.roomId, body);
-                                if (mounted) text.clear();
+                                if (chatBusy) return;
+                                final submitted = text.text;
+                                if (submitted.trim().isEmpty) return;
+                                final repository =
+                                    ref.read(roomChatRepositoryProvider);
+                                setState(() => chatBusy = true);
+                                try {
+                                  await repository.send(
+                                      widget.roomId, submitted.trim());
+                                  if (mounted && text.text == submitted)
+                                    text.clear();
+                                } finally {
+                                  if (mounted) setState(() => chatBusy = false);
+                                }
                               }),
                       icon: const Icon(LucideIcons.send),
                     ),
                     IconButton(
                       tooltip: 'Microphone',
-                      onPressed: !connected
+                      onPressed: !connected || micBusy
                           ? null
                           : () => action(() async {
-                                await ref
-                                    .read(voiceServiceProvider)
-                                    .setMicEnabled(!mic);
-                                if (mounted) setState(() => mic = !mic);
+                                if (micBusy) return;
+                                final enabled = !mic;
+                                final voice = ref.read(voiceServiceProvider);
+                                setState(() => micBusy = true);
+                                try {
+                                  await voice.setMicEnabled(enabled);
+                                  if (mounted &&
+                                      ref
+                                              .read(voiceConnectedProvider)
+                                              .valueOrNull ==
+                                          true) {
+                                    setState(() => mic = enabled);
+                                  }
+                                } finally {
+                                  if (mounted) setState(() => micBusy = false);
+                                }
                               }),
                       icon: Icon(mic ? LucideIcons.mic : LucideIcons.micOff),
                     ),

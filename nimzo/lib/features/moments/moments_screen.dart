@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -259,11 +260,29 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                         onPressed: busy
                             ? null
                             : () async {
+                                final source =
+                                    await showModalBottomSheet<ImageSource>(
+                                  context: context,
+                                  builder: (c) => SafeArea(
+                                      child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                        ListTile(
+                                            title: const Text('Gallery'),
+                                            onTap: () => Navigator.pop(
+                                                c, ImageSource.gallery)),
+                                        ListTile(
+                                            title: const Text('Camera'),
+                                            onTap: () => Navigator.pop(
+                                                c, ImageSource.camera)),
+                                      ])),
+                                );
+                                if (source == null || !mounted) return;
                                 setState(() => busy = true);
                                 try {
                                   final path = await ref
                                       .read(storageServiceProvider)
-                                      .pickAndUpload('moments');
+                                      .pickAndUpload('moments', source: source);
                                   if (path != null && mounted)
                                     setState(() => image = path);
                                 } catch (_) {
@@ -281,6 +300,26 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                         child: Text(
                             image == null ? 'Choose photo' : 'Replace photo'),
                       ),
+                      if (image != null) ...[
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(14),
+                            child: Image.network(
+                              ref
+                                  .watch(supabaseProvider)
+                                  .storage
+                                  .from('moments')
+                                  .getPublicUrl(image!),
+                              height: 220,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) =>
+                                  const EmptyContent('Image unavailable'),
+                            )),
+                        TextButton(
+                            onPressed: busy
+                                ? null
+                                : () => setState(() => image = null),
+                            child: const Text('Remove photo')),
+                      ],
                       FilledButton(
                         onPressed: busy
                             ? null
@@ -290,30 +329,35 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                 setState(() => busy = true);
                                 try {
                                   final r = ref.read(momentRepositoryProvider);
+                                  final container = ProviderScope.containerOf(
+                                      context,
+                                      listen: false);
+                                  final id = widget.id;
+                                  final body = text.text.trim();
+                                  final photo = image;
                                   final currentUserId =
                                       ref.read(currentUserIdProvider);
                                   String? authorId = currentUserId;
-                                  if (widget.id == null) {
+                                  if (id == null) {
                                     await r.create(
-                                      text: text.text.trim(),
-                                      imagePath: image,
+                                      text: body,
+                                      imagePath: photo,
                                     );
                                   } else {
-                                    authorId ??=
-                                        (await r.get(widget.id!)).authorId;
+                                    authorId ??= (await r.get(id)).authorId;
                                     await r.update(
-                                      widget.id!,
-                                      text: text.text.trim(),
-                                      imagePath: image,
+                                      id,
+                                      text: body,
+                                      imagePath: photo,
                                     );
-                                    ref.invalidate(
-                                        momentDetailProvider(widget.id!));
+                                    container
+                                        .invalidate(momentDetailProvider(id));
                                   }
-                                  ref.invalidate(momentsFeedProvider);
+                                  container.invalidate(momentsFeedProvider);
                                   if (authorId != null) {
-                                    ref.invalidate(
+                                    container.invalidate(
                                         profileMomentsProvider(authorId));
-                                    ref.invalidate(
+                                    container.invalidate(
                                         profileStatsProvider(authorId));
                                   }
                                   if (context.mounted) Navigator.pop(context);

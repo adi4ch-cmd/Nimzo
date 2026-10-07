@@ -92,6 +92,27 @@ void main() {
     await expectLater(voice.setMicEnabled(true), throwsStateError);
     await voice.dispose();
   });
+  test('native error clears stale speaking indicators', () async {
+    final voice = VivoxVoiceService();
+    const id = 'c3d02bfb-a0f0-4ef9-b19f-10409dcb59af';
+    final states = <Set<String>>[];
+    final subscription = voice.speaking.listen(states.add);
+    await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .handlePlatformMessage(
+            'nimzo/vivox',
+            const StandardMethodCodec().encodeMethodCall(const MethodCall(
+                'speaking',
+                {'detail': 'sip:.issuer.$id.@voice.example', 'status': 0})),
+            (_) {});
+    await emit('error', status: 500);
+    await Future<void>.delayed(Duration.zero);
+    expect(states, [
+      {id},
+      <String>{}
+    ]);
+    await subscription.cancel();
+    await voice.dispose();
+  });
   test('native media failure fails join and cleans up', () async {
     final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
     final methods = <String>[];

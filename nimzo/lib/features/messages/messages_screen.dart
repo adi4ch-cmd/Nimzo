@@ -86,13 +86,14 @@ class _State extends ConsumerState<ConversationScreen> {
 
   Future<void> send() async {
     if (busy || body.text.trim().isEmpty) return;
+    final submitted = body.text;
     setState(() => busy = true);
     try {
       final container = ProviderScope.containerOf(context, listen: false);
       final repository = ref.read(messageRepositoryProvider);
-      await repository.send(widget.otherId, body.text.trim());
+      await repository.send(widget.otherId, submitted.trim());
       container.invalidate(conversationsProvider);
-      if (mounted) body.clear();
+      if (mounted && body.text == submitted) body.clear();
     } catch (_) {
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(

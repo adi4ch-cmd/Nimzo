@@ -96,3 +96,18 @@ Agla checkpoint: remaining reference presentation aur supported interactions fin
 - Successful comments refresh detail/comments, feed and author profile Moments; server counts remain authoritative. A newer draft typed while sending is preserved. Existing send busy guard and backend insert flow are preserved.
 - Two delayed-response widget regressions cover navigation away and newer draft/cache refresh. Full Flutter suite: 79 passed. Analyzer: no issues. Format and whitespace checks passed. No production mutation was performed.
 - Next manageable batch: Moment like duplicate-tap/lifecycle handling and create/edit success cache refresh, with focused regressions. Existing visual presentation remains unchanged by this batch.
+
+
+## 2026-10-08 — continuation from e740a328
+
+- Pulled the actual remote e740a328 checkpoint; prior Moments like/cache fixes and approved current UI preserved. No old audit/rebuild repeated.
+- Stable checkpoint 56a4c73c07f3fb863a84da4c99e96a5df26b94b0 published: failed Moment editor loads now offer retry; initial Vivox mute failure rejects join and leaves native channel.
+- Moment editor now offers Gallery/Camera selection, actual uploaded photo preview and removal from draft; removal does not delete Storage files. Save completion after dismissal refreshes feed/detail/profile via captured container; post text/image are captured before awaiting.
+- Direct messages preserve a newer draft typed during an earlier pending send. Existing server send/read contracts remain unchanged.
+- Room voice disconnect offers Retry voice, clears local mic state and reconnects without rejoining membership. Mic toggles have a pending guard and stable requested state. Seat revoke/mute attempts mic disable; on failure it leaves voice.
+- Room chat prevents simultaneous duplicate sends and preserves a newer draft. Ephemeral timestamp/filter and room-session membership flow retained.
+- Native voice errors clear stale speaking indicators. These are Dart/native contract verifications, not physical audio certification.
+- Regression: flutter pub get --offline passed using locked verified cache; dart format . passed; analyzer no issues; full 86 Flutter tests passed (including reference render/small-phone game tests); 2 native contract tests, 6 voice-token authorization tests and reference integrity test (93 exact images) passed; git diff --check passed.
+- No production data mutation/migration, payment, secret access or old deleted UI restoration performed. No fake financial results or users added.
+- App is not certified release-ready. Remaining implementation includes seven approved game settlement services (unsupported betting remains unavailable), payment/store/VIP production contracts, comprehensive HTML parity and unfinished supporting/social/message interactions. Separate external blockers: existing production signing key/configuration, physical-device OAuth and two-device Vivox audio/reconnect/background QA, iOS native/build/device environment. Existing automatic workflow can publish testing APKs; such builds do not certify these gaps.
+- Next code batch: authenticated Moment update row confirmation, remaining editor/empty/error responsive coverage, real comment-author identity, room moderation/permissions coverage and unread behavior supported by verified server contracts. Do not repeat already completed foundation or like/cache fixes.
