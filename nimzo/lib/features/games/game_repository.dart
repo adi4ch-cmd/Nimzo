@@ -18,6 +18,8 @@ class GameRepository {
       throw StateError('Game unavailable');
     if (bet <= 0 || bet > 500000)
       throw StateError('Bet must be between 1 and 500,000 coins.');
+    if (key.trim().isEmpty)
+      throw StateError('A unique round request key is required.');
     final response = await _db.rpc(
       'play_game',
       params: {
