@@ -44,12 +44,22 @@ class MomentsScreen extends ConsumerWidget {
       );
 }
 
-class MomentCard extends ConsumerWidget {
+class MomentCard extends ConsumerStatefulWidget {
   final Moment moment;
   final VoidCallback? onDeleted;
   const MomentCard({super.key, required this.moment, this.onDeleted});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MomentCard> createState() => _MomentCardState();
+}
+
+class _MomentCardState extends ConsumerState<MomentCard> {
+  bool _likeBusy = false;
+
+  Moment get moment => widget.moment;
+
+  @override
+  Widget build(BuildContext context) {
     final author = ref.watch(profileProvider(moment.authorId)).valueOrNull;
     return ReferenceCard(
       child: Column(
@@ -87,19 +97,33 @@ class MomentCard extends ConsumerWidget {
           Wrap(
             children: [
               TextButton(
-                onPressed: () async {
-                  try {
-                    await ref
-                        .read(momentRepositoryProvider)
-                        .toggleLike(moment.id);
-                    ref.invalidate(momentsFeedProvider);
-                  } catch (_) {
-                    if (context.mounted)
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Unable to update like.')),
-                      );
-                  }
-                },
+                onPressed: _likeBusy
+                    ? null
+                    : () async {
+                        final id = moment.id;
+                        final authorId = moment.authorId;
+                        final container =
+                            ProviderScope.containerOf(context, listen: false);
+                        setState(() => _likeBusy = true);
+                        try {
+                          await ref
+                              .read(momentRepositoryProvider)
+                              .toggleLike(id);
+                          container.invalidate(momentsFeedProvider);
+                          container.invalidate(momentDetailProvider(id));
+                          container.invalidate(profileMomentsProvider(authorId));
+                        } catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Unable to update like.'),
+                              ),
+                            );
+                          }
+                        } finally {
+                          if (mounted) setState(() => _likeBusy = false);
+                        }
+                      },
                 child: Text('${moment.likes} likes'),
               ),
               TextButton(
@@ -142,7 +166,7 @@ class MomentCard extends ConsumerWidget {
                         container
                             .invalidate(profileStatsProvider(moment.authorId));
                         container.invalidate(momentDetailProvider(moment.id));
-                        if (context.mounted) onDeleted?.call();
+                        if (context.mounted) widget.onDeleted?.call();
                       } catch (_) {
                         if (context.mounted)
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -254,19 +278,31 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                             setState(() => busy = true);
                             try {
                               final r = ref.read(momentRepositoryProvider);
+                              final currentUserId =
+                                  ref.read(currentUserIdProvider);
+                              String? authorId = currentUserId;
                               if (widget.id == null) {
                                 await r.create(
                                   text: text.text.trim(),
                                   imagePath: image,
                                 );
                               } else {
+                                authorId ??=
+                                    (await r.get(widget.id!)).authorId;
                                 await r.update(
                                   widget.id!,
                                   text: text.text.trim(),
                                   imagePath: image,
                                 );
+                                ref.invalidate(
+                                    momentDetailProvider(widget.id!));
                               }
                               ref.invalidate(momentsFeedProvider);
+                              if (authorId != null) {
+                                ref.invalidate(
+                                    profileMomentsProvider(authorId));
+                                ref.invalidate(profileStatsProvider(authorId));
+                              }
                               if (context.mounted) Navigator.pop(context);
                             } catch (_) {
                               if (context.mounted)
