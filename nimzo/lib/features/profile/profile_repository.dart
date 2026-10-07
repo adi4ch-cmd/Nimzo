@@ -91,13 +91,15 @@ class ProfileRepository {
 
   Future<List<Profile>> search(String q) async {
     try {
-      final id = int.tryParse(q);
+      final term = q.trim();
+      if (term.isEmpty) return [];
+      final id = int.tryParse(term);
       final rows = id != null
           ? await _db.from('profiles').select().eq('nimzo_id', id).limit(20)
           : await _db
               .from('profiles')
               .select()
-              .ilike('country_name', '%$q%')
+              .or('username.ilike.%$term%,display_name.ilike.%$term%')
               .limit(20);
       return rows.map(Profile.fromJson).toList();
     } catch (e) {
