@@ -118,27 +118,37 @@ class _GameScreenState extends ConsumerState<GameScreen>
                 child: Text('Open a voice room to play games with coins.'),
               ),
             ),
-          SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(
-                value: 'fruit_wheel',
-                label: Text('Fruit Wheel'),
-                icon: Icon(Icons.casino_outlined),
-              ),
-              ButtonSegment(
-                value: 'fruit_party',
-                label: Text('Fruit Party'),
-                icon: Icon(Icons.grid_view_rounded),
-              ),
+          Text(
+            'Games',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final item in const <(String, String, bool)>[
+                ('fruit_party', 'Fruit Party Jackpot', true),
+                ('fruit_wheel', 'Lucky Wheel 77', true),
+                ('grady_lion', 'Grady Lion', false),
+                ('bigetar', 'Bigetar', false),
+                ('slot', 'Slot', false),
+                ('teen_patti', 'Teen Patti', false),
+                ('bounty_football', 'Bounty Football', false),
+              ])
+                ChoiceChip(
+                  label: Text(item.$3 ? item.$2 : '${item.$2} · Coming soon'),
+                  selected: game == item.$1,
+                  onSelected: busy || !item.$3
+                      ? null
+                      : (_) => setState(() {
+                          game = item.$1;
+                          result = null;
+                          _key = null;
+                          _request = null;
+                        }),
+                ),
             ],
-            selected: {game},
-            onSelectionChanged: busy
-                ? null
-                : (v) => setState(() {
-                    game = v.first;
-                    result = null;
-                    _key = null;
-                  }),
           ),
           const SizedBox(height: 16),
           Card(
@@ -147,7 +157,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
               child: Column(
                 children: [
                   Text(
-                    game == 'fruit_wheel' ? 'Fruit Wheel' : 'Fruit Party',
+                    game == 'fruit_wheel' ? 'Lucky Wheel 77' : 'Fruit Party Jackpot',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 16),
