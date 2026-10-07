@@ -154,7 +154,10 @@ class _S extends ConsumerState<ProfileSetupScreen> {
             dateOfBirth: _dob,
             gender: _gender,
           );
-      ref.invalidate(profileProvider(ref.read(currentUserIdProvider)!));
+      final id = ref.read(currentUserIdProvider);
+      if (id != null) {
+        ref.invalidate(profileProvider(id));
+      }
       if (mounted) context.pop();
     } catch (e) {
       if (mounted)
