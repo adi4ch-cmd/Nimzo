@@ -64,7 +64,7 @@ void main() {
           ? 'username'
           : 'display_name';
       queried.add(column);
-      expect(request.url.queryParameters[column], r'ilike.%A\\%B\\_C%');
+      expect(request.url.queryParameters[column], r'ilike.%A\%B\_C%');
       expect(request.url.queryParameters.containsKey('or'), isFalse);
       return http.Response('[]', 200);
     });
