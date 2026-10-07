@@ -128,8 +128,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
             runSpacing: 8,
             children: [
               for (final item in const <(String, String, bool)>[
-                ('fruit_party', 'Fruit Party Jackpot', true),
-                ('fruit_wheel', 'Lucky Wheel 77', true),
+                ('fruit_party', 'Fruit Party', true),
+                ('fruit_wheel', 'Fruit Wheel', true),
+                ('fruit_party_jackpot', 'Fruit Party Jackpot', false),
+                ('lucky_wheel_77', 'Lucky Wheel 77', false),
                 ('grady_lion', 'Grady Lion', false),
                 ('bigetar', 'Bigetar', false),
                 ('slot', 'Slot', false),
@@ -157,7 +159,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
               child: Column(
                 children: [
                   Text(
-                    game == 'fruit_wheel' ? 'Lucky Wheel 77' : 'Fruit Party Jackpot',
+                    game == 'fruit_wheel' ? 'Fruit Wheel' : 'Fruit Party',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 16),
