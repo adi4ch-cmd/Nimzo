@@ -6,6 +6,7 @@ import '../../core/widgets/loading_view.dart';
 import '../../core/widgets/nimzo_button.dart';
 import '../../core/widgets/nimzo_icon.dart';
 import 'vip_repository.dart';
+import 'vip_tiers.dart';
 import '../wallet/wallet_screen.dart';
 
 class VipScreen extends ConsumerWidget {
@@ -203,18 +204,11 @@ class _RewardRow extends StatelessWidget {
 class _SvipCatalog extends StatelessWidget {
   const _SvipCatalog();
 
-  static const rechargeUsd = <int>[
-    50, 200, 500, 1000, 3000, 10000, 30000, 75000, 200000, 500000,
-  ];
-  static const weeklyCoins = <int>[
-    2000000, 5000000, 10000000, 20000000, 40000000,
-    80000000, 150000000, 250000000, 450000000, 800000000,
-  ];
 
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      for (var i = 0; i < rechargeUsd.length; i++)
+      for (var i = 0; i < NimzoVipTiers.svipRechargeUsd.length; i++)
         ListTile(
           dense: true,
           leading: CircleAvatar(
@@ -222,8 +216,8 @@ class _SvipCatalog extends StatelessWidget {
             child: Text('${i + 1}',
               style: const TextStyle(color: Color(0xFFFFD27C))),
           ),
-          title: Text('SVIP ${i + 1} · ${rechargeUsd[i]} USD'),
-          subtitle: Text('${weeklyCoins[i]} coins / week'),
+          title: Text('SVIP ${i + 1} · ${NimzoVipTiers.svipRechargeUsd[i]} USD'),
+          subtitle: Text('${NimzoVipTiers.svipWeeklyCoins[i]} coins / week'),
         ),
     ],
   );
@@ -234,15 +228,11 @@ class _SvipCatalog extends StatelessWidget {
 class _VipPriceCatalog extends StatelessWidget {
   const _VipPriceCatalog();
 
-  static const coinPrices = <int>[
-    1000000, 3000000, 8000000, 15000000, 30000000,
-    60000000, 100000000, 200000000, 350000000, 600000000,
-  ];
 
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      for (var i = 0; i < coinPrices.length; i++)
+      for (var i = 0; i < NimzoVipTiers.normalVipCoins.length; i++)
         ListTile(
           dense: true,
           leading: CircleAvatar(
@@ -251,7 +241,7 @@ class _VipPriceCatalog extends StatelessWidget {
               style: const TextStyle(color: Color(0xFF176B4C))),
           ),
           title: Text('VIP ${i + 1}'),
-          subtitle: Text('${coinPrices[i]} coins'),
+          subtitle: Text('${NimzoVipTiers.normalVipCoins[i]} coins'),
         ),
     ],
   );
