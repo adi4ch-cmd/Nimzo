@@ -75,7 +75,7 @@ class VipScreen extends ConsumerWidget {
                         ),
                     const SizedBox(height: 16),
                     Text(
-                      'SVIP Friday rewards',
+                      'SVIP weekly rewards (Sunday)',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     ref
@@ -112,23 +112,14 @@ class VipScreen extends ConsumerWidget {
                           : null,
                     ),
                     const SizedBox(height: 10),
-                    NimzoButton(
-                      label: 'Claim SVIP Friday reward',
-                      outlined: true,
-                      onPressed: svip > 0
-                          ? () async {
-                              try {
-                                await ref
-                                    .read(vipRepositoryProvider)
-                                    .claimSvipFriday();
-                                msg('SVIP reward claimed');
-                                ref.invalidate(vipStatusProvider);
-                                ref.invalidate(walletProvider);
-                              } catch (e) {
-                                msg('$e');
-                              }
-                            }
-                          : null,
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        'SVIP weekly rewards are scheduled for Sunday at 9:00 PM '
+                        'Saudi time. Automatic payouts are not active yet; '
+                        'the legacy Friday claim is disabled to avoid '
+                        'incorrect or duplicate credits.',
+                      ),
                     ),
                   ],
                 ),
