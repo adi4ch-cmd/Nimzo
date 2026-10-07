@@ -19,11 +19,13 @@ void main() {
                 body: ConversationTile(row: {
           'other_id': 'other',
           'display_name': 'Old name',
-          'last_body': 'Actual message'
+          'last_body': 'Actual message',
+          'unread': 4
         })))));
     await tester.pumpAndSettle();
     expect(find.text('Updated name'), findsOneWidget);
     expect(find.text('Actual message'), findsOneWidget);
+    expect(find.text('4'), findsOneWidget);
     expect(find.text('Old name'), findsNothing);
     expect(tester.takeException(), isNull);
   });

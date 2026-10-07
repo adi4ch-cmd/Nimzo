@@ -50,6 +50,7 @@ class ConversationTile extends ConsumerWidget {
         row['display_name']?.toString() ??
         row['username']?.toString() ??
         'Nimzo user';
+    final unread = int.tryParse(row['unread']?.toString() ?? '') ?? 0;
     return ListTile(
       leading: NimzoAvatar(
           name: name,
@@ -63,6 +64,17 @@ class ConversationTile extends ConsumerWidget {
       title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: Text(row['last_body']?.toString() ?? '',
           maxLines: 1, overflow: TextOverflow.ellipsis),
+      trailing: unread > 0
+          ? Semantics(
+              label: '$unread unread messages',
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Text('$unread'),
+              ))
+          : null,
       onTap: () => context.push('/chat/$id'),
     );
   }
@@ -77,7 +89,7 @@ class ConversationScreen extends ConsumerStatefulWidget {
 
 class _State extends ConsumerState<ConversationScreen> {
   final body = TextEditingController();
-  bool busy = false;
+  bool busy = false, reading = false;
   @override
   void dispose() {
     body.dispose();
@@ -110,11 +122,20 @@ class _State extends ConsumerState<ConversationScreen> {
     final other = ref.watch(profileProvider(widget.otherId)).valueOrNull;
     final avatar = other?.avatarPath;
     ref.listen(chatProvider(widget.otherId), (_, next) {
-      if (next.hasValue)
+      final unread =
+          next.valueOrNull?.any((m) => m.receiverId == me && !m.read) ?? false;
+      if (unread && !reading) {
+        reading = true;
+        final container = ProviderScope.containerOf(context, listen: false);
         ref
             .read(messageRepositoryProvider)
             .markRead(widget.otherId)
-            .catchError((_) {});
+            .then((_) {
+              container.invalidate(conversationsProvider);
+            })
+            .catchError((Object _) {})
+            .whenComplete(() => reading = false);
+      }
     });
     return Scaffold(
       appBar: AppBar(
@@ -191,7 +212,7 @@ class _State extends ConsumerState<ConversationScreen> {
                   Expanded(
                     child: TextField(
                       controller: body,
-                      maxLength: 2000,
+                      maxLength: 1000,
                       decoration: const InputDecoration(
                         hintText: 'Message',
                         counterText: '',

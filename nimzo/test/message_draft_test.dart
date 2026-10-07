@@ -38,6 +38,7 @@ void main() {
     ], child: const MaterialApp(home: ConversationScreen(otherId: 'other'))));
     await tester.pumpAndSettle();
     expect(find.text('Actual recipient'), findsOneWidget);
+    expect(tester.widget<TextField>(find.byType(TextField)).maxLength, 1000);
     await tester.enterText(find.byType(TextField), 'First');
     await tester.tap(find.byIcon(Icons.send));
     await tester.pump();

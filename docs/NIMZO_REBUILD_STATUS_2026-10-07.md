@@ -111,3 +111,18 @@ Agla checkpoint: remaining reference presentation aur supported interactions fin
 - No production data mutation/migration, payment, secret access or old deleted UI restoration performed. No fake financial results or users added.
 - App is not certified release-ready. Remaining implementation includes seven approved game settlement services (unsupported betting remains unavailable), payment/store/VIP production contracts, comprehensive HTML parity and unfinished supporting/social/message interactions. Separate external blockers: existing production signing key/configuration, physical-device OAuth and two-device Vivox audio/reconnect/background QA, iOS native/build/device environment. Existing automatic workflow can publish testing APKs; such builds do not certify these gaps.
 - Next code batch: authenticated Moment update row confirmation, remaining editor/empty/error responsive coverage, real comment-author identity, room moderation/permissions coverage and unread behavior supported by verified server contracts. Do not repeat already completed foundation or like/cache fixes.
+
+
+## 2026-10-08 — notification/social/message continuation from d67e6e6
+
+- Preserved current approved UI and completed rebuild/Moments/room work; no old audit or production mutation.
+- Checkpoint 093bfab31c7a0694ec872e199e51489ddcf8ae47 published after 93 Flutter tests and clean analyzer.
+- Notifications: existing real category query and mark_notifications_read RPC exposed with filters, pending guard, retryable failure and pull-to-refresh. Read styling uses server read_at. No fabricated notifications/counts.
+- Followers/following/visitor lists display stored avatar paths. Conversation header displays actual recipient identity/avatar and opens their profile.
+- Logout captures services before awaiting and still attempts session logout when native voice leave fails. Existing server room-cleanup/account retention flows preserved.
+- Moment edits require an authenticated-author filtered returned row; zero affected rows no longer report saved. Comment rows display real author name/avatar and profile navigation; 320x640 layout regression passes.
+- Home refresh waits for the currently selected followed/recent backend list, instead of only the popular list.
+- Conversation unread badges use verified conversation_list unread field. Successful mark_read refreshes server counts; overlapping mark-read calls are guarded and only incoming unread rows trigger them. Composer max length matches verified send_message server limit of 1000 characters.
+- Final source verification: flutter pub get --offline succeeded with verified locked cache; dart format . clean; flutter analyze no issues; 94 Flutter tests passed including game/render/responsive regressions; 6 voice-token authorization tests passed; 2 native contract tests passed; reference integrity test passed with 93 artwork matches; git diff --check passed.
+- Final APK must be built from this latest published source and verified independently. This source status does not assume CI success. Existing workflow publishes release-mode testing APKs using generated template debug signing, not a certified production signing identity.
+- Full A-to-Z certification is not claimed. Remaining implementation includes comprehensive HTML parity, seven approved games' verified settlement services (unsupported financial controls remain unavailable), payment/store/tasks/VIP production integration and unfinished supporting interactions. External requirements remain production signing credentials, real-device OAuth and two-device Vivox/background audio QA, and iOS native/runtime environment. These implementation gaps are not being misrepresented as credential/device-only blockers.
