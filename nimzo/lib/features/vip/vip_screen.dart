@@ -75,24 +75,17 @@ class VipScreen extends ConsumerWidget {
                         ),
                     const SizedBox(height: 16),
                     Text(
-                      'SVIP weekly rewards (Sunday)',
+                      'SVIP levels — approved recharge and weekly rewards',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    ref
-                        .watch(svipFridayRewardsProvider)
-                        .when(
-                          loading: () => const LinearProgressIndicator(),
-                          error: (e, _) => Text('$e'),
-                          data: (rows) => Column(
-                            children: [
-                              for (final row in rows)
-                                _RewardRow(
-                                  level: row['level'],
-                                  coins: row['coins'],
-                                ),
-                            ],
-                          ),
-                        ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Reference prices only. Purchases require verified '
+                      'server-side payments; Sunday 9 PM Saudi-time '
+                      'automatic payouts are not active yet.',
+                    ),
+                    const SizedBox(height: 8),
+                    const _SvipCatalog(),
                     const SizedBox(height: 20),
                     NimzoButton(
                       label: 'Claim daily VIP reward',
@@ -195,5 +188,36 @@ class _RewardRow extends StatelessWidget {
       '${coins ?? 0} coins',
       style: const TextStyle(fontWeight: FontWeight.w600),
     ),
+  );
+}
+
+/// Approved 7 October tier reference. This is display-only; never credit coins
+/// or change memberships based on client-side catalog values.
+class _SvipCatalog extends StatelessWidget {
+  const _SvipCatalog();
+
+  static const rechargeUsd = <int>[
+    50, 200, 500, 1000, 3000, 10000, 30000, 75000, 200000, 500000,
+  ];
+  static const weeklyCoins = <int>[
+    2000000, 5000000, 10000000, 20000000, 40000000,
+    80000000, 150000000, 250000000, 450000000, 800000000,
+  ];
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      for (var i = 0; i < rechargeUsd.length; i++)
+        ListTile(
+          dense: true,
+          leading: CircleAvatar(
+            backgroundColor: const Color(0xFF2B2020),
+            child: Text('${i + 1}',
+              style: const TextStyle(color: Color(0xFFFFD27C))),
+          ),
+          title: Text('SVIP ${i + 1} · ${rechargeUsd[i]} USD'),
+          subtitle: Text('${weeklyCoins[i]} coins / week'),
+        ),
+    ],
   );
 }
