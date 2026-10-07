@@ -94,17 +94,34 @@ class ProfileRepository {
       final term = q.trim();
       if (term.isEmpty) return [];
       final id = int.tryParse(term);
+      // Do not interpolate untrusted text into a PostgREST .or() filter.
+      // The punctuation in that syntax could otherwise change the filter.
       final rows = id != null
           ? await _db.from('profiles').select().eq('nimzo_id', id).limit(20)
-          : await _db
-              .from('profiles')
-              .select()
-              .or('username.ilike.%$term%,display_name.ilike.%$term%')
-              .limit(20);
+          : await _searchByName(term);
       return rows.map(Profile.fromJson).toList();
     } catch (e) {
       throw mapError(e);
     }
+  }
+
+  Future<List<Map<String, dynamic>>> _searchByName(String term) async {
+    final usernameRows = await _db
+        .from('profiles')
+        .select()
+        .ilike('username', '%$term%')
+        .limit(20);
+    final nameRows = await _db
+        .from('profiles')
+        .select()
+        .ilike('display_name', '%$term%')
+        .limit(20);
+    final unique = <String, Map<String, dynamic>>{};
+    for (final row in [...usernameRows, ...nameRows]) {
+      unique[row['id'] as String] = row;
+      if (unique.length >= 20) break;
+    }
+    return unique.values.toList();
   }
 
   Future<List<Map<String, dynamic>>> gifts(String id) async {
