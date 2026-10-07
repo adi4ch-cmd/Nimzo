@@ -78,6 +78,11 @@ class _S extends ConsumerState<ProfileSetupScreen> {
       );
       if (x == null || !mounted) return;
       final bytes = await x.readAsBytes();
+      // Reject oversized uploads before consuming storage or mobile data.
+      // Supabase bucket policies may enforce a stricter server-side limit.
+      if (bytes.length > 5 * 1024 * 1024) {
+        throw const FormatException('Photo must be 5 MB or smaller.');
+      }
       final (extension, contentType) = profileImageFormat(bytes);
       if (!mounted) return;
       final db = ref.read(supabaseProvider);
