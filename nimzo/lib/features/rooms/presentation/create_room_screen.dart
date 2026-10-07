@@ -33,11 +33,18 @@ class _S extends ConsumerState<CreateRoomScreen> {
           const SizedBox(height: 20),
           NimzoButton(label: 'Create', loading: busy, onPressed: () async {
             final name = _n.text.trim();
-            if (name.isEmpty) return;
+            if (name.isEmpty || name.length > 40) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Room name must contain 1 to 40 characters.')),
+              );
+              return;
+            }
             setState(() => busy = true);
             try {
               final id = await ref.read(roomRepositoryProvider).create(name, country: country?.name);
               ref.invalidate(newRoomsProvider);
+              ref.invalidate(myRoomsProvider);
+              ref.invalidate(popularRoomsProvider(null));
               if (context.mounted) context.pushReplacement('/room/$id');
             } catch (e) {
               if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
