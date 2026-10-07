@@ -24,4 +24,15 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/gifts/
+    - assets/reference/gift/
+    - assets/reference/fruit/
+    - assets/reference/grady/
+    - assets/reference/slot/
+    - assets/reference/game/
+    - assets/reference/med/
+    - assets/reference/frame/
+    - assets/reference/car/
+    - assets/reference/pg/
+    - assets/reference/lv/
+    - assets/reference/svip/
+    - assets/reference/vip/

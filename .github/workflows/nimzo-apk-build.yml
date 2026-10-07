@@ -5,6 +5,11 @@ on:
     branches:
       - feature/profile-reference-redesign
   workflow_dispatch:
+    inputs:
+      release_ready:
+        description: "Build only after visual parity and device/runtime QA are verified"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -203,6 +208,21 @@ jobs:
         working-directory: nimzo
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
+      - name: Format check
+        working-directory: nimzo
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Reference asset integrity
+        run: python3 -m unittest discover -s nimzo/test/reference -p "*_test.py"
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Voice token authorization tests
+        run: node --test supabase/functions/voice-token/tests/authorization.test.mjs
+
       - name: Regression tests
         working-directory: nimzo
         run: flutter test
@@ -211,16 +231,19 @@ jobs:
         run: python3 -m unittest discover -s nimzo/test/voice -p "*_test.py"
 
       - name: Build release APK
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ready }}
         working-directory: nimzo
         run: flutter build apk --release
 
       - name: Verify APK exists
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ready }}
         run: |
           set -euo pipefail
           test -s nimzo/build/app/outputs/flutter-apk/app-release.apk
           ls -lh nimzo/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Verify packaged Vivox and OAuth contract
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ready }}
         run: |
           python3 - <<'PY'
           import os, subprocess, zipfile
@@ -243,6 +266,7 @@ jobs:
           PY
 
       - name: Upload APK
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ready }}
         id: apk
         uses: actions/upload-artifact@v4
         with:
@@ -251,4 +275,5 @@ jobs:
           if-no-files-found: error
 
       - name: APK download link
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ready }}
         run: echo '${{ steps.apk.outputs.artifact-url }}' >> "$GITHUB_STEP_SUMMARY"

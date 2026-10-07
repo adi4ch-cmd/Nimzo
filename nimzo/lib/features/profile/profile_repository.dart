@@ -158,7 +158,7 @@ class ProfileRepository {
 }
 
 final profileRepositoryProvider = Provider(
-  (ref) => ProfileRepository(ref.watch(supabaseProvider)),
+  (ref) => ProfileRepository(ref.watch(sessionSupabaseProvider).client),
 );
 final profileProvider = FutureProvider.family<Profile, String>(
   (ref, id) => ref.watch(profileRepositoryProvider).get(id),

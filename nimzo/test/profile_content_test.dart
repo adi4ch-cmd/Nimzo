@@ -47,20 +47,35 @@ void main() {
           ),
           profileStatsProvider('u').overrideWith((_) async => {'followers': 7}),
           profileTagsProvider('u').overrideWith((_) async => []),
-          profileCoupleProvider('u').overrideWith((_) async => linked
-            ? {'user_a': 'u', 'user_b': 'partner', 'created_at': '2026-10-01T00:00:00Z'} : null),
-          profileProvider('partner').overrideWith((_) async => const Profile(id: 'partner', nimzoId: 102, displayName: 'Partner')),
+          profileCoupleProvider('u').overrideWith(
+            (_) async => linked
+                ? {
+                    'user_a': 'u',
+                    'user_b': 'partner',
+                    'created_at': '2026-10-01T00:00:00Z',
+                  }
+                : null,
+          ),
+          profileProvider('partner').overrideWith(
+            (_) async => const Profile(
+              id: 'partner',
+              nimzoId: 102,
+              displayName: 'Partner',
+            ),
+          ),
           profileModelsProvider('u').overrideWith((_) async => []),
           profileMomentsProvider('u').overrideWith((_) async => []),
           profileGiftsProvider('u').overrideWith((_) async {
             if (giftError) throw StateError('backend unavailable');
-            return [for (var i = 0; i < giftCount; i++)
-              {'name': i == 0 ? 'Rose' : 'Gift $i', 'quantity': 12 + i},
+            return [
+              for (var i = 0; i < giftCount; i++)
+                {'name': i == 0 ? 'Rose' : 'Gift $i', 'quantity': 12 + i},
             ];
           }),
           profileAchievementsProvider('u').overrideWith((_) async => []),
           for (final kind in ProfileCollection.values)
-            profileCollectionProvider(('u', kind)).overrideWith((_) async => []),
+            profileCollectionProvider(('u', kind))
+                .overrideWith((_) async => []),
         ],
         child: MaterialApp(
           theme: AppTheme.light(),
@@ -71,22 +86,24 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets(
-    'linked owner can still manage outstanding CP invitations',
-    (tester) async {
-      await openProfile(tester, linked: true);
-      expect(find.text('CP invitations'), findsOneWidget);
-      expect(find.text('Partner'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    },
-  );
+  testWidgets('linked owner can still manage outstanding CP invitations', (
+    tester,
+  ) async {
+    await openProfile(tester, linked: true);
+    expect(find.text('CP invitations'), findsOneWidget);
+    expect(find.text('Partner'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'top 15 preview opens all received gifts without a tab context error',
     (tester) async {
       await openProfile(tester, giftCount: 16);
-      await tester.scrollUntilVisible(find.text('View All').hitTestable(), 250,
-          scrollable: find.byType(Scrollable).first);
+      await tester.scrollUntilVisible(
+        find.text('View All').hitTestable(),
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.tap(find.text('View All'));
       await tester.pumpAndSettle();
       expect(find.text('All received gifts'), findsOneWidget);
@@ -101,15 +118,24 @@ void main() {
       expect(find.text('Amina'), findsOneWidget);
       expect(find.text('Wealth'), findsNothing);
       expect(find.byIcon(Icons.verified_rounded), findsNothing);
-      await tester.scrollUntilVisible(find.text('Gifts').hitTestable(), 250,
-          scrollable: find.byType(Scrollable).first);
+      await tester.scrollUntilVisible(
+        find.text('Gifts').hitTestable(),
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.tap(find.text('Gifts'));
       await tester.pumpAndSettle();
-      expect(find.descendant(of: find.byType(ListTile), matching: find.text('Rose')), findsOneWidget);
+      expect(
+        find.descendant(of: find.byType(ListTile), matching: find.text('Rose')),
+        findsOneWidget,
+      );
       expect(find.text('× 12'), findsOneWidget);
       expect(find.text('No gifts received yet'), findsNothing);
-      await tester.scrollUntilVisible(find.text('Achievements').hitTestable(), -250,
-          scrollable: find.byType(Scrollable).first);
+      await tester.scrollUntilVisible(
+        find.text('Achievements').hitTestable(),
+        -250,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.tap(find.text('Achievements'));
       await tester.pumpAndSettle();
       expect(find.text('No achievements yet'), findsOneWidget);
@@ -121,8 +147,11 @@ void main() {
     'profile gift failure remains a retryable error rather than empty data',
     (tester) async {
       await openProfile(tester, giftError: true);
-      await tester.scrollUntilVisible(find.text('Gifts').hitTestable(), 250,
-          scrollable: find.byType(Scrollable).first);
+      await tester.scrollUntilVisible(
+        find.text('Gifts').hitTestable(),
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.tap(find.text('Gifts'));
       await tester.pumpAndSettle();
       expect(find.text('Gifts could not be loaded.'), findsOneWidget);

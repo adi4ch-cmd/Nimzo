@@ -1,5 +1,7 @@
+import '../../core/providers/supabase_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../core/errors/error_handler.dart';
 
 class Gift {
@@ -17,7 +19,8 @@ class GiftRepository {
       .order('created_at', ascending: false)
       .limit(20)
       .map(
-          (rows) => rows.map((row) => Map<String, dynamic>.from(row)).toList());
+        (rows) => rows.map((row) => Map<String, dynamic>.from(row)).toList(),
+      );
   final SupabaseClient _db;
   GiftRepository(this._db);
 
@@ -29,27 +32,38 @@ class GiftRepository {
           .eq('active', true)
           .order('coin_price');
       return r
-          .map((j) => Gift(j['id'], j['name'], j['category'],
-              (j['coin_price'] as num).toInt(), j['asset_path'] as String?))
+          .map(
+            (j) => Gift(
+              j['id'],
+              j['name'],
+              j['category'],
+              (j['coin_price'] as num).toInt(),
+              j['asset_path'] as String?,
+            ),
+          )
           .toList();
     } catch (e) {
       throw mapError(e);
     }
   }
 
-  Future<void> sendProfile(
-      {required String receiverId,
-      required String giftId,
-      required int qty,
-      required String key}) async {
+  Future<void> sendProfile({
+    required String receiverId,
+    required String giftId,
+    required int qty,
+    required String key,
+  }) async {
     _validateGiftRequest(receiverId, giftId, qty, key);
     try {
-      await _db.rpc('send_profile_gift', params: {
-        'p_receiver': receiverId,
-        'p_gift': giftId,
-        'p_qty': qty,
-        'p_key': key,
-      });
+      await _db.rpc(
+        'send_profile_gift',
+        params: {
+          'p_receiver': receiverId,
+          'p_gift': giftId,
+          'p_qty': qty,
+          'p_key': key,
+        },
+      );
     } catch (e) {
       throw mapError(e);
     }
@@ -57,33 +71,45 @@ class GiftRepository {
 
   /// Price, balance and the 45/5 split are decided by Postgres `send_gift`.
   /// The idempotency key makes retries safe.
-  Future<void> send(
-      {required String roomId,
-      required String receiverId,
-      required String giftId,
-      required int qty,
-      required String key}) async {
+  Future<void> send({
+    required String roomId,
+    required String receiverId,
+    required String giftId,
+    required int qty,
+    required String key,
+  }) async {
     if (roomId.trim().isEmpty) {
       throw ArgumentError.value(roomId, 'roomId', 'Room is required.');
     }
     _validateGiftRequest(receiverId, giftId, qty, key);
     try {
-      await _db.rpc('send_gift', params: {
-        'p_room': roomId,
-        'p_receiver': receiverId,
-        'p_gift': giftId,
-        'p_qty': qty,
-        'p_key': key
-      });
+      await _db.rpc(
+        'send_gift',
+        params: {
+          'p_room': roomId,
+          'p_receiver': receiverId,
+          'p_gift': giftId,
+          'p_qty': qty,
+          'p_key': key,
+        },
+      );
     } catch (e) {
       throw mapError(e);
     }
   }
+
   static void _validateGiftRequest(
-    String receiverId, String giftId, int qty, String key,
+    String receiverId,
+    String giftId,
+    int qty,
+    String key,
   ) {
     if (receiverId.trim().isEmpty) {
-      throw ArgumentError.value(receiverId, 'receiverId', 'Recipient is required.');
+      throw ArgumentError.value(
+        receiverId,
+        'receiverId',
+        'Recipient is required.',
+      );
     }
     if (giftId.trim().isEmpty) {
       throw ArgumentError.value(giftId, 'giftId', 'Gift is required.');
@@ -97,12 +123,14 @@ class GiftRepository {
   }
 }
 
-final giftRepositoryProvider =
-    Provider((ref) => GiftRepository(Supabase.instance.client));
-final giftCatalogProvider =
-    FutureProvider((ref) => ref.watch(giftRepositoryProvider).catalog());
+final giftRepositoryProvider = Provider(
+  (ref) => GiftRepository(ref.watch(sessionSupabaseProvider).client),
+);
+final giftCatalogProvider = FutureProvider(
+  (ref) => ref.watch(giftRepositoryProvider).catalog(),
+);
 final roomGiftEventProvider =
-    StreamProvider.family<List<Map<String, dynamic>>, String>(
+    StreamProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
   (ref, roomId) =>
       ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
 );

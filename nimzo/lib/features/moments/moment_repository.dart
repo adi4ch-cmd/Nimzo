@@ -21,15 +21,15 @@ class Moment {
     required this.createdAt,
   });
   factory Moment.fromJson(Map<String, dynamic> j) => Moment(
-    id: j['id'],
-    authorId: j['author_id'],
-    text: j['body'],
-    imagePath: j['image_path'],
-    likes: (j['like_count'] as num?)?.toInt() ?? 0,
-    comments: (j['comment_count'] as num?)?.toInt() ?? 0,
-    liked: j['liked'] ?? false,
-    createdAt: DateTime.parse(j['created_at']),
-  );
+        id: j['id'],
+        authorId: j['author_id'],
+        text: j['body'],
+        imagePath: j['image_path'],
+        likes: (j['like_count'] as num?)?.toInt() ?? 0,
+        comments: (j['comment_count'] as num?)?.toInt() ?? 0,
+        liked: j['liked'] ?? false,
+        createdAt: DateTime.parse(j['created_at']),
+      );
 }
 
 class MomentRepository {
@@ -74,11 +74,11 @@ class MomentRepository {
       final like = userId == null
           ? null
           : await _db
-                .from('moment_likes')
-                .select('user_id')
-                .eq('moment_id', id)
-                .eq('user_id', userId)
-                .maybeSingle();
+              .from('moment_likes')
+              .select('user_id')
+              .eq('moment_id', id)
+              .eq('user_id', userId)
+              .maybeSingle();
       return Moment.fromJson({
         ...row,
         'liked': like != null,
@@ -179,7 +179,7 @@ class MomentRepository {
 }
 
 final momentRepositoryProvider = Provider(
-  (ref) => MomentRepository(ref.watch(supabaseProvider)),
+  (ref) => MomentRepository(ref.watch(sessionSupabaseProvider).client),
 );
 final momentsFeedProvider = FutureProvider(
   (ref) => ref.watch(momentRepositoryProvider).feed(),

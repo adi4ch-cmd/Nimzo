@@ -37,7 +37,7 @@ class RechargeRepository {
       throw StateError(
         data is Map
             ? (data['error']?.toString() ??
-                  'Purchase settlement was not confirmed')
+                'Purchase settlement was not confirmed')
             : 'Invalid purchase verification response',
       );
     }
@@ -45,7 +45,7 @@ class RechargeRepository {
 }
 
 final rechargeRepositoryProvider = Provider(
-  (ref) => RechargeRepository(ref.watch(supabaseProvider)),
+  (ref) => RechargeRepository(ref.watch(sessionSupabaseProvider).client),
 );
 final packagesProvider = FutureProvider(
   (ref) => ref.watch(rechargeRepositoryProvider).packages(),

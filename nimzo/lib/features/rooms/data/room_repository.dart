@@ -80,11 +80,8 @@ class RoomRepository {
   Future<String?> ownedRoomId() async {
     final uid = _db.auth.currentUser?.id;
     if (uid == null) throw StateError('Please sign in again');
-    final room = await _db
-        .from('rooms')
-        .select('id')
-        .eq('owner_id', uid)
-        .maybeSingle();
+    final room =
+        await _db.from('rooms').select('id').eq('owner_id', uid).maybeSingle();
     return room?['id']?.toString();
   }
 
@@ -105,7 +102,11 @@ class RoomRepository {
     try {
       final id = await _db.rpc(
         'create_room',
-        params: {'p_name': trimmed, 'p_country': country, 'p_password': password},
+        params: {
+          'p_name': trimmed,
+          'p_country': country,
+          'p_password': password,
+        },
       );
       return id.toString();
     } catch (e) {
@@ -132,9 +133,9 @@ class RoomRepository {
   Future<void> leaveSeat(String roomId) =>
       _rpc('leave_seat', {'p_room': roomId});
   Future<void> modMuteSeat(String roomId, int seat, bool muted) => _rpc(
-    'mod_mute_seat',
-    {'p_room': roomId, 'p_seat': seat, 'p_muted': muted},
-  );
+        'mod_mute_seat',
+        {'p_room': roomId, 'p_seat': seat, 'p_muted': muted},
+      );
   Future<void> kick(String roomId, String userId) =>
       _rpc('kick_member', {'p_room': roomId, 'p_user': userId});
 
