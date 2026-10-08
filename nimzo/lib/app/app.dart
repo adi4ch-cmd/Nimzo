@@ -2,15 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/theme/app_theme.dart';
+import '../core/services/app_update_service.dart';
 import 'router.dart';
 import '../core/providers/ui_language_provider.dart';
 import '../core/providers/supabase_provider.dart';
 import '../features/profile/profile_repository.dart';
 
-class NimzoApp extends ConsumerWidget {
+class NimzoApp extends ConsumerStatefulWidget {
   const NimzoApp({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NimzoApp> createState() => _NimzoAppState();
+}
+
+class _NimzoAppState extends ConsumerState<NimzoApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) NimzoAppUpdateService.prompt(context);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final id = ref.watch(currentUserIdProvider);
     if (id != null)
       ref.listen(profileProvider(id), (_, next) {
