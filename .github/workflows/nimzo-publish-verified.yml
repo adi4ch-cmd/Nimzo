@@ -1,5 +1,8 @@
 name: Publish Verified Signed NIMZO APK
 on:
+  push:
+    branches: [feature/profile-reference-redesign]
+    paths: [tools/prebuilt_apk_manifest.json]
   workflow_dispatch:
     inputs:
       manifest:
@@ -25,7 +28,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const manifest = JSON.parse(process.env.PREBUILT_MANIFEST);
+            const manifest = JSON.parse(process.env.PREBUILT_MANIFEST || fs.readFileSync('tools/prebuilt_apk_manifest.json', 'utf8'));
             if (!/^[a-f0-9]{40}$/.test(manifest.sourceSha) || !/^[a-f0-9]{64}$/.test(manifest.sha256) || !Array.isArray(manifest.blobs) || manifest.blobs.length < 1 || manifest.blobs.length > 100 || manifest.blobs.some(sha => !/^[a-f0-9]{40}$/.test(sha))) throw new Error('Invalid public APK manifest');
             fs.mkdirSync('verified-apk', {recursive: true});
             const output = fs.openSync('verified-apk/app-release.apk', 'w');
@@ -59,6 +62,9 @@ jobs:
             let release = all.find(r => r.draft && r.tag_name === tag);
             if (!release) release = (await github.rest.repos.createRelease({owner: context.repo.owner, repo: context.repo.repo, tag_name: tag, target_commitish: manifest.sourceSha, draft: true, prerelease: true, name: `NIMZO ${update.version} (${update.buildNumber})`, body: ''})).data;
             await github.rest.repos.updateRelease({owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, name: `NIMZO ${update.version} (${update.buildNumber})`, body: `NIMZO_BUILD_NUMBER=${update.buildNumber}\nVerified locally built release APK signed with the preserved permanent identity. Initial migration from old debug-signed APKs requires uninstall/reinstall; Supabase accounts, IDs and coins persist. Future updates use the same package/certificate. Users never configure signing or GitHub. Android confirms installation. Analyzer/all172Flutter tests/native tests passed; physical-device audio/installer/payment remain unverified. Automatic compilation signing remains blocked by developer Secrets provisioning (HTTP403).`, draft: true});
+            for (const asset of release.assets || []) {
+              if (['app-release.apk', 'app-release.apk.sha256', 'app-release.apk.signing.txt', 'nimzo-update.json'].includes(asset.name)) await github.rest.repos.deleteReleaseAsset({owner: context.repo.owner, repo: context.repo.repo, asset_id: asset.id});
+            }
             for (const name of ['app-release.apk', 'app-release.apk.sha256', 'app-release.apk.signing.txt', 'nimzo-update.json']) {
               const data = fs.readFileSync(`verified-apk/${name}`);
               await github.rest.repos.uploadReleaseAsset({owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, name, data, headers: {'content-type': name.endsWith('.apk') ? 'application/vnd.android.package-archive' : name.endsWith('.json') ? 'application/json' : 'text/plain', 'content-length': data.length}});
