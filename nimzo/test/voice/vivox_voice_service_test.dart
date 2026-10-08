@@ -50,8 +50,26 @@ void main() {
     'channelToken': 'join',
     'server': 'https://voice.example',
     'channelUri': 'sip:room@voice.example',
+    'accountUri': 'sip:.issuer.user.@voice.example',
     'canTransmit': true,
   };
+  test('server account URI supplies the SDK login account name', () async {
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+    Map? login;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'join') {
+        login = call.arguments as Map;
+        await emit('audioConnected');
+      }
+      return ['initialize', 'requestMicPermission'].contains(call.method)
+          ? true
+          : 0;
+    });
+    await voice.join('room', '');
+    expect(login?['accountName'], '.issuer.user.');
+    await voice.dispose();
+  });
   test(
       'missing server configuration is actionable and does not start native login',
       () async {

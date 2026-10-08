@@ -9,6 +9,7 @@ import '../../../core/utils/formatters.dart';
 import '../../wallet/wallet_screen.dart';
 import '../domain/room.dart';
 import 'room_controller.dart';
+import '../diamond/room_diamond_widgets.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../data/room_chat_repository.dart';
 
@@ -320,43 +321,10 @@ class _TreasureState extends ConsumerState<TreasureSheet> {
 }
 
 class CrystalSheet extends StatelessWidget {
-  const CrystalSheet({super.key});
+  const CrystalSheet({super.key, this.roomId});
+  final String? roomId;
   @override
-  Widget build(BuildContext context) => Column(children: [
-        const ReferenceArtwork('crys', 0, size: 96),
-        const SizedBox(height: 8),
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          for (var i = 0; i < 5; i++) ...[
-            if (i > 0)
-              const Icon(Icons.chevron_right,
-                  color: NimzoStyle.primary, size: 14),
-            ReferenceArtwork('gem', i, size: 38)
-          ]
-        ]),
-        const Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Text('Send gifts to boom the crystal!',
-                style: TextStyle(
-                    color: NimzoStyle.primary, fontWeight: FontWeight.w700))),
-        const LinearProgressIndicator(
-            value: 0,
-            color: NimzoStyle.primary,
-            backgroundColor: NimzoStyle.line),
-        const SizedBox(height: 14),
-        Row(children: [
-          const Expanded(
-              flex: 2,
-              child: Column(children: [
-                ReferenceArtwork('prz', 0, size: 84),
-                Text('TOP1 Only',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
-              ])),
-          for (var i = 1; i < 5; i++)
-            Expanded(child: ReferenceArtwork('prz', i, size: 48))
-        ]),
-        const EmptyContent(
-            'Progress and prizes unavailable. Restart everyday at 11:00 p.m (GMT+3)'),
-      ]);
+  Widget build(BuildContext context) => RoomDiamondSheet(roomId: roomId);
 }
 
 class VoiceEffectsSheet extends StatelessWidget {

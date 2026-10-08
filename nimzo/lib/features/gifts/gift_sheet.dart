@@ -210,41 +210,48 @@ class _State extends ConsumerState<GiftSheet> {
                       onRetry: () => ref.invalidate(giftCatalogProvider),
                       builder: (gifts) => gifts.isEmpty
                           ? const EmptyContent('No gifts available')
-                          : ListView(
-                              padding: const EdgeInsets.all(16),
-                              children: [
-                                  const Padding(
-                                    padding: EdgeInsets.only(bottom: 12),
-                                    child: Text('GIFT COLLECTION',
-                                      style: TextStyle(
+                          : CustomScrollView(slivers: [
+                              const SliverToBoxAdapter(
+                                  child: Padding(
+                                padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+                                child: Text('GIFT COLLECTION',
+                                    style: TextStyle(
                                         letterSpacing: 2,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w800,
                                         color: Color(0xffd6ad61))),
-                                  ),
-                                  GridView.count(
-                                    shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10,
-                                    childAspectRatio: .82 /
-                                        MediaQuery.textScalerOf(context).scale(1),
-                                    children: [
-                                      for (final gift in gifts)
-                                        _giftCard(gift, legendary: gift.price >= 35000000),
-                                    ],
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.only(top: 12),
-                                    child: Text(
-                                      'Cinematic animations play after verified gift settlement. 35M and 50M gifts are country-wide.',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: NimzoStyle.muted,
-                                        fontSize: 12)),
-                                  ),
-                                ]))),
+                              )),
+                              SliverPadding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                sliver: SliverGrid(
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3,
+                                          crossAxisSpacing: 10,
+                                          mainAxisSpacing: 10,
+                                          childAspectRatio: .82 /
+                                              MediaQuery.textScalerOf(context)
+                                                  .scale(1)),
+                                  delegate: SliverChildBuilderDelegate(
+                                      (context, index) {
+                                    final gift = gifts[index];
+                                    return _giftCard(gift,
+                                        legendary: gift.price == 35000000 ||
+                                            gift.price == 50000000);
+                                  }, childCount: gifts.length),
+                                ),
+                              ),
+                              const SliverToBoxAdapter(
+                                  child: Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Text(
+                                    'Cinematic gift playback is pending approved animation media.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: NimzoStyle.muted, fontSize: 12)),
+                              )),
+                            ]))),
               Padding(
                   padding: const EdgeInsets.all(12),
                   child: Row(children: [

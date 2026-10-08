@@ -319,6 +319,7 @@ jobs:
           print('Packaged Vivox SDK, JNI bridge, app ID, launcher, OAuth and permissions: PASS')
           PY
           python3 tools/verify_vivox_callback.py nimzo/build/app/outputs/flutter-apk/app-release.apk
+          python3 tools/verify_vivox_login.py nimzo/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload APK
         id: apk

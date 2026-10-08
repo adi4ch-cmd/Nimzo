@@ -18,6 +18,14 @@ class NativeVoiceContract(unittest.TestCase):
         self.assertNotIn('emit("error", status, join_resp->base.status_string', source)
         self.assertNotIn('emit("error", status, lr->base.status_string', source)
 
+    def test_vivox_access_token_uses_sdk_anonymous_login_contract(self):
+        source = (ROOT / 'native/vivox/android/vivox_bridge.cpp').read_text()
+        self.assertNotIn('vx_req_account_authtoken_login', source)
+        self.assertIn('vx_req_account_anonymous_login_create(&login)', source)
+        self.assertIn('login->access_token = vx_strdup(lt)', source)
+        self.assertIn('login->acct_name = vx_strdup(an)', source)
+        self.assertIn('resp_account_anonymous_login', source)
+
     def test_jni_callback_survives_release_shrinking(self):
         rules_path = ROOT / 'native/vivox/android/proguard-rules.pro'
         self.assertTrue(rules_path.exists(), 'JNI callbacks require R8 keep rules')

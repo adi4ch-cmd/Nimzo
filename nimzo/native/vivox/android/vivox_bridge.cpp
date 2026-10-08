@@ -49,7 +49,7 @@ static void emit(const char* event, int status, const char* detail) {
 static const char* response_stage(vx_response_type type) {
   switch (type) {
     case resp_connector_create: return "connector";
-    case resp_account_authtoken_login: return "login";
+    case resp_account_anonymous_login: return "login";
     case resp_sessiongroup_add_session: return "channel-join";
     case resp_connector_mute_local_mic: return "microphone";
     case resp_connector_mute_local_speaker: return "speaker";
@@ -163,7 +163,8 @@ extern "C" JNIEXPORT jint JNICALL
 Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
                                                    jstring loginToken,
                                                    jstring channelToken,
-                                                   jstring channelUri) {
+                                                   jstring channelUri,
+                                                   jstring accountName) {
   std::lock_guard<std::mutex> lock(g_mu);
   if (!g_initialized.load() || !g_connector) { emit("error", -100, "initialize"); return -100; }
   // Only one SDK message consumer may run while waiting for responses.
@@ -173,18 +174,22 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
   const char* ct = env->GetStringUTFChars(channelToken, nullptr);
   const char* cu = env->GetStringUTFChars(channelUri, nullptr);
 
-  vx_req_account_authtoken_login_t* login = nullptr;
-  int rc = vx_req_account_authtoken_login_create(&login);
+  const char* an = env->GetStringUTFChars(accountName, nullptr);
+
+  // Unity Vivox Access Tokens use anonymous login, not legacy auth tickets.
+  vx_req_account_anonymous_login_t* login = nullptr;
+  int rc = vx_req_account_anonymous_login_create(&login);
   if (rc == VxErrorSuccess) {
     login->connector_handle = vx_strdup(g_connector);
-    login->authtoken = vx_strdup(lt);
+    login->access_token = vx_strdup(lt);
+    login->acct_name = vx_strdup(an);
     login->account_handle = vx_strdup("nimzo_account");
-    login->enable_text = text_mode_disabled;
     login->enable_buddies_and_presence = 0;
     login->enable_presence_persistence = 0;
     int login_request_count = 0;
     rc = vx_issue_request3(&login->base, &login_request_count);
   }
+  env->ReleaseStringUTFChars(accountName, an);
   if (rc != VxErrorSuccess) {
     emit("error", rc, "login");
     env->ReleaseStringUTFChars(loginToken, lt);
@@ -194,14 +199,14 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
   }
 
   vx_message_base_t* msg = nullptr;
-  if (wait_for_response(resp_account_authtoken_login, 20000, &msg) != 0) {
+  if (wait_for_response(resp_account_anonymous_login, 20000, &msg) != 0) {
     emit("error", -101, "login");
     env->ReleaseStringUTFChars(loginToken, lt);
     env->ReleaseStringUTFChars(channelToken, ct);
     env->ReleaseStringUTFChars(channelUri, cu);
     return -101;
   }
-  auto* lr = reinterpret_cast<vx_resp_account_authtoken_login_t*>(msg);
+  auto* lr = reinterpret_cast<vx_resp_account_anonymous_login_t*>(msg);
   if (lr->base.status_code != 0) {
     int status = lr->base.status_code;
     emit("error", status, "login");

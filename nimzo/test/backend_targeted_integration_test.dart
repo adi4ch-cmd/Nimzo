@@ -14,6 +14,7 @@ import 'package:nimzo/core/theme/app_theme.dart';
 import 'package:nimzo/features/rooms/presentation/room_screen.dart';
 import 'package:nimzo/features/rooms/presentation/room_controller.dart';
 import 'package:nimzo/features/rooms/data/room_chat_repository.dart';
+import 'package:nimzo/features/rooms/diamond/room_diamond_repository.dart';
 import 'package:nimzo/features/voice/voice_controller.dart';
 import 'remaining_visual_qa_test.dart'
     show FixtureRoomRepository, FixtureVoice, fixtureRoom;
@@ -87,6 +88,16 @@ void main() {
           supabaseProvider.overrideWithValue(db),
           currentUserIdProvider.overrideWithValue('me'),
           roomRepositoryProvider.overrideWithValue(FixtureRoomRepository(db)),
+          roomDiamondEventsProvider('room')
+              .overrideWith((_) => const Stream.empty()),
+          roomDiamondStatusProvider('room').overrideWith((_) async =>
+              RoomDiamondStatus(
+                  totalCoins: 0,
+                  completedStages: 0,
+                  progress: 0,
+                  cycleStart: DateTime.utc(2026, 10, 9, 20),
+                  serverNow: DateTime.utc(2026, 10, 9, 21),
+                  resetAt: DateTime.utc(2026, 10, 10, 20))),
           voiceServiceProvider.overrideWithValue(FixtureVoice()),
           roomProvider('room').overrideWith((_) async => fixtureRoom),
           seatsProvider('room').overrideWith((_) => Stream.value([])),

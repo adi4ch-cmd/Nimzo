@@ -59,6 +59,7 @@ void main() {
     await tester.tap(find.widgetWithText(ChoiceChip, 'Myself'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Coffee'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Coffee'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Send'));

@@ -123,11 +123,13 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                   if (self)
                     ListTile(
                       title: const Text('Edit Profile'),
-                      onTap: busy ? null : () {
-                        final router = GoRouter.of(context);
-                        Navigator.pop(context);
-                        router.push('/profile');
-                      },
+                      onTap: busy
+                          ? null
+                          : () {
+                              final router = GoRouter.of(context);
+                              Navigator.pop(context);
+                              router.push('/profile');
+                            },
                     ),
                   ListTile(
                       title: Text(self ? 'My Profile' : 'View profile'),
@@ -178,7 +180,8 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                 friendship?.valueOrNull == FriendState.sent
                             ? null
                             : () => run(() async {
-                                  if (friendship!.valueOrNull == FriendState.friends) {
+                                  if (friendship!.valueOrNull ==
+                                      FriendState.friends) {
                                     final router = GoRouter.of(context);
                                     Navigator.pop(context);
                                     router.push('/chat/${widget.userId}');

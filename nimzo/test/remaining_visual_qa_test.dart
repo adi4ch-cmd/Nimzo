@@ -17,6 +17,7 @@ import 'package:nimzo/features/games/game_catalog.dart';
 import 'package:nimzo/features/games/games_catalog_screen.dart';
 import 'package:nimzo/features/gifts/gift_sheet.dart';
 import 'package:nimzo/features/gifts/gift_repository.dart';
+import 'package:nimzo/features/rooms/diamond/room_diamond_repository.dart';
 import 'package:nimzo/features/profile/profile.dart';
 import 'package:nimzo/features/profile/profile_setup_screen.dart';
 import 'package:nimzo/features/rooms/presentation/room_settings_screen.dart';
@@ -227,6 +228,16 @@ void main() {
       await tester.pumpWidget(ProviderScope(
           key: ValueKey(entry.key),
           overrides: [
+            roomDiamondEventsProvider('room')
+                .overrideWith((_) => const Stream.empty()),
+            roomDiamondStatusProvider('room').overrideWith((_) async =>
+                RoomDiamondStatus(
+                    totalCoins: 15000000,
+                    completedStages: 2,
+                    progress: .5,
+                    cycleStart: DateTime.utc(2026, 10, 9, 20),
+                    serverNow: DateTime.utc(2026, 10, 9, 21),
+                    resetAt: DateTime.utc(2026, 10, 10, 20))),
             supabaseProvider.overrideWithValue(db),
             currentUserIdProvider.overrideWithValue('me'),
             authControllerProvider.overrideWith(AuthController.new),

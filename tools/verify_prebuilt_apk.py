@@ -29,3 +29,5 @@ update=dict(version=version,buildNumber=build,packageName='io.nimzo.app',signing
 (folder/'nimzo-update.json').write_text(json.dumps(update,indent=2)+'\n');(folder/'app-release.apk.sha256').write_text(digest+'  app-release.apk\n');(folder/'app-release.apk.signing.txt').write_text(signature)
 subprocess.run(['python3','tools/verify_vivox_callback.py',str(apk)],check=True)
 print('Prebuilt APK checksum, permanent signing identity, package/version, update lifecycle and Vivox libraries: PASS')
+
+subprocess.run(["python3", "tools/verify_vivox_login.py", str(apk)], check=True)

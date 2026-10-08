@@ -174,10 +174,25 @@ class VivoxVoiceService implements VoiceService {
     }
     if (generation != _sessionGeneration || _disposed)
       throw StateError('Voice join cancelled.');
-    for (final key in ['loginToken', 'channelToken', 'server', 'channelUri']) {
+    for (final key in [
+      'loginToken',
+      'channelToken',
+      'server',
+      'channelUri',
+      'accountUri'
+    ]) {
       if (data[key] is! String || (data[key] as String).isEmpty) {
         throw StateError('Vivox voice-token response is incomplete.');
       }
+    }
+    // SDK account name must match the server-signed login token's SIP identity.
+    final identity =
+        RegExp(r'^sip:(\.[A-Za-z0-9=+_.!~()\-]+\.)@[A-Za-z0-9.-]+$')
+            .firstMatch(data['accountUri'] as String);
+    final accountName = identity?.group(1);
+    if (accountName == null || accountName.length > 127) {
+      throw VoiceConnectionFailure(
+          'Voice account configuration is invalid. Contact support.');
     }
     if (!_initialized) {
       _nativeFailure = null;
@@ -214,6 +229,7 @@ class VivoxVoiceService implements VoiceService {
         'loginToken': data['loginToken'],
         'channelToken': data['channelToken'],
         'channelUri': data['channelUri'],
+        'accountName': accountName,
       });
       if (result != 0)
         throw _nativeFailure ??

@@ -17,7 +17,7 @@ class NativeResponseWait(unittest.TestCase):
         function = re.search(r'static const char\* response_stage\([\s\S]*?\n}\n', source).group()
         cases = {
             'resp_connector_create': 'connector',
-            'resp_account_authtoken_login': 'login',
+            'resp_account_anonymous_login': 'login',
             'resp_sessiongroup_add_session': 'channel-join',
             'resp_connector_mute_local_mic': 'microphone',
             'resp_connector_mute_local_speaker': 'speaker',

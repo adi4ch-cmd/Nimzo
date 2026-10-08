@@ -64,7 +64,7 @@ public class MainActivity extends FlutterActivity {
                 }
               });
               break;
-            case "join": value = NimzoVivox.join(call.argument("loginToken"), call.argument("channelToken"), call.argument("channelUri")); break;
+            case "join": value = NimzoVivox.join(call.argument("loginToken"), call.argument("channelToken"), call.argument("channelUri"), call.argument("accountName")); break;
             case "setMic": value = NimzoVivox.setMic(Boolean.TRUE.equals(call.argument("enabled"))); break;
             case "setSpeaker": value = NimzoVivox.setSpeaker(Boolean.TRUE.equals(call.argument("enabled"))); break;
             case "leave": value = NimzoVivox.leave(); break;
