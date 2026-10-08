@@ -1,6 +1,7 @@
 import '../../core/widgets/master_ui.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import '../../core/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -69,6 +70,7 @@ class _MomentCardState extends ConsumerState<MomentCard> {
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
+            minTileHeight: 42,
             leading: NimzoAvatar(
               name: author?.displayName ?? 'N',
               url: author?.avatarPath == null
@@ -79,10 +81,9 @@ class _MomentCardState extends ConsumerState<MomentCard> {
                       .from('avatars')
                       .getPublicUrl(author!.avatarPath!),
             ),
-            title: Text(author?.displayName ?? 'Nimzo user'),
-            subtitle: Text(
-              moment.createdAt.toLocal().toString().split('.').first,
-            ),
+            title: Tooltip(
+                message: moment.createdAt.toLocal().toString().split('.').first,
+                child: Text(author?.displayName ?? 'Nimzo user')),
             onTap: () => context.push('/profile/${moment.authorId}'),
           ),
           if (moment.text != null) Text(moment.text!),
@@ -127,11 +128,18 @@ class _MomentCardState extends ConsumerState<MomentCard> {
                           if (mounted) setState(() => _likeBusy = false);
                         }
                       },
-                child: Text('${moment.likes} likes'),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  ReferenceIcon(moment.liked ? 'cp_filled' : 'cp',
+                      size: 18,
+                      color: moment.liked ? NimzoStyle.pink : NimzoStyle.muted),
+                  const SizedBox(width: 4),
+                  Text('${moment.likes} likes')
+                ]),
               ),
               TextButton(
-                onPressed: () => context.push('/moments/${moment.id}'),
-                child: Text('${moment.comments} comments'),
+                onPressed: () => showReferenceSheet(
+                    context, MomentDetailScreen(id: moment.id, sheet: true)),
+                child: Text('Comment ${moment.comments}'),
               ),
               TextButton(
                 onPressed: () =>
@@ -387,7 +395,8 @@ final momentDetailProvider = FutureProvider.family<Moment, String>(
 
 class MomentDetailScreen extends ConsumerStatefulWidget {
   final String id;
-  const MomentDetailScreen({super.key, required this.id});
+  final bool sheet;
+  const MomentDetailScreen({super.key, required this.id, this.sheet = false});
   @override
   ConsumerState<MomentDetailScreen> createState() => _DetailState();
 }
@@ -402,76 +411,81 @@ class _DetailState extends ConsumerState<MomentDetailScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Moment')),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            AsyncContent(
-              value: ref.watch(momentDetailProvider(widget.id)),
-              onRetry: () => ref.invalidate(momentDetailProvider(widget.id)),
-              builder: (m) => MomentCard(
-                  moment: m,
-                  onDeleted: () {
-                    if (Navigator.of(context).canPop()) Navigator.pop(context);
-                  }),
-            ),
-            AsyncContent(
-              value: ref.watch(commentsProvider(widget.id)),
-              onRetry: () => ref.invalidate(commentsProvider(widget.id)),
-              builder: (rows) => Column(
-                children: [
-                  for (final c in rows) MomentCommentTile(comment: c),
-                ],
-              ),
-            ),
-            TextField(
-              controller: comment,
-              maxLength: 500,
-              decoration: const InputDecoration(labelText: 'Comment'),
-            ),
-            FilledButton(
-              onPressed: busy
-                  ? null
-                  : () async {
-                      if (comment.text.trim().isEmpty) return;
-                      final submitted = comment.text;
-                      final id = widget.id;
-                      final authorId = ref
-                          .read(momentDetailProvider(id))
-                          .valueOrNull
-                          ?.authorId;
-                      final repository = ref.read(momentRepositoryProvider);
-                      final container =
-                          ProviderScope.containerOf(context, listen: false);
-                      setState(() => busy = true);
-                      try {
-                        await repository.addComment(id, submitted.trim());
-                        container.invalidate(commentsProvider(id));
-                        container.invalidate(momentDetailProvider(id));
-                        container.invalidate(momentsFeedProvider);
-                        if (authorId != null) {
-                          container
-                              .invalidate(profileMomentsProvider(authorId));
-                        }
-                        if (mounted && comment.text == submitted)
-                          comment.clear();
-                      } catch (_) {
-                        if (context.mounted)
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Comment could not be sent.'),
-                            ),
-                          );
-                      } finally {
-                        if (mounted) setState(() => busy = false);
-                      }
-                    },
-              child: const Text('Send'),
-            ),
-          ],
+  Widget build(BuildContext context) {
+    final content = ListView(
+      shrinkWrap: widget.sheet,
+      physics: widget.sheet ? const NeverScrollableScrollPhysics() : null,
+      padding: widget.sheet ? EdgeInsets.zero : const EdgeInsets.all(16),
+      children: [
+        if (!widget.sheet)
+          AsyncContent(
+            value: ref.watch(momentDetailProvider(widget.id)),
+            onRetry: () => ref.invalidate(momentDetailProvider(widget.id)),
+            builder: (m) => MomentCard(
+                moment: m,
+                onDeleted: () {
+                  if (Navigator.of(context).canPop()) Navigator.pop(context);
+                }),
+          ),
+        AsyncContent(
+          value: ref.watch(commentsProvider(widget.id)),
+          onRetry: () => ref.invalidate(commentsProvider(widget.id)),
+          builder: (rows) => Column(
+            children: [
+              for (final c in rows) MomentCommentTile(comment: c),
+            ],
+          ),
         ),
-      );
+        TextField(
+          controller: comment,
+          maxLength: 500,
+          decoration: const InputDecoration(hintText: 'Add a comment…'),
+        ),
+        GradientButton(
+          onPressed: busy
+              ? null
+              : () async {
+                  if (comment.text.trim().isEmpty) return;
+                  final submitted = comment.text;
+                  final id = widget.id;
+                  final authorId =
+                      ref.read(momentDetailProvider(id)).valueOrNull?.authorId;
+                  final repository = ref.read(momentRepositoryProvider);
+                  final container =
+                      ProviderScope.containerOf(context, listen: false);
+                  setState(() => busy = true);
+                  try {
+                    await repository.addComment(id, submitted.trim());
+                    container.invalidate(commentsProvider(id));
+                    container.invalidate(momentDetailProvider(id));
+                    container.invalidate(momentsFeedProvider);
+                    if (authorId != null) {
+                      container.invalidate(profileMomentsProvider(authorId));
+                    }
+                    if (mounted && comment.text == submitted) comment.clear();
+                  } catch (_) {
+                    if (context.mounted)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Comment could not be sent.'),
+                        ),
+                      );
+                  } finally {
+                    if (mounted) setState(() => busy = false);
+                  }
+                },
+          child: const Text('Send'),
+        ),
+      ],
+    );
+    return widget.sheet
+        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('Comments',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            content
+          ])
+        : Scaffold(appBar: AppBar(title: const Text('Moment')), body: content);
+  }
 }
 
 class MomentCommentTile extends ConsumerWidget {
@@ -482,20 +496,31 @@ class MomentCommentTile extends ConsumerWidget {
     final id = comment['author_id'] as String?;
     final author =
         id == null ? null : ref.watch(profileProvider(id)).valueOrNull;
-    final path = author?.avatarPath;
-    return ListTile(
-      leading: NimzoAvatar(
-          name: author?.displayName ?? 'N',
-          url: path == null
-              ? null
-              : ref
-                  .watch(supabaseProvider)
-                  .storage
-                  .from('avatars')
-                  .getPublicUrl(path)),
-      title: Text(author?.displayName ?? author?.username ?? 'Nimzo user'),
-      subtitle: Text(comment['body']?.toString() ?? ''),
-      onTap: id == null ? null : () => context.push('/profile/$id'),
-    );
+    return InkWell(
+        onTap: id == null ? null : () => context.push('/profile/$id'),
+        child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Container(
+                margin: const EdgeInsets.only(bottom: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.sizeOf(context).width * .85),
+                decoration: BoxDecoration(
+                    color: NimzoStyle.surface,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          author?.displayName ??
+                              author?.username ??
+                              'Nimzo user',
+                          style: const TextStyle(
+                              color: NimzoStyle.primary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700)),
+                      Text(comment['body']?.toString() ?? ''),
+                    ]))));
   }
 }

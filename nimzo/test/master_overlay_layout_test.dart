@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/core/theme/app_theme.dart';
 import 'package:nimzo/features/rooms/presentation/room_overlays.dart';
 import 'package:nimzo/features/wallet/wallet_screen.dart';
@@ -48,6 +49,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(ProviderScope(
         overrides: [
+          currentUserIdProvider.overrideWithValue(null),
           walletProvider.overrideWith((_) async => (coins: 123, diamonds: 0))
         ],
         child: MaterialApp(
@@ -77,18 +79,21 @@ void main() {
     'Language'
   ]) {
     testWidgets('$title stays bounded with larger text', (tester) async {
-      await tester.pumpWidget(MaterialApp(
-          theme: AppTheme.light(),
-          home: MediaQuery(
-              data: const MediaQueryData(
-                  size: Size(320, 640), textScaler: TextScaler.linear(1.3)),
-              child: Scaffold(
-                  body: SizedBox(
-                      width: 320,
-                      child: SingleChildScrollView(
-                          child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: ReferenceInfoContent(title: title))))))));
+      await tester.pumpWidget(ProviderScope(
+          overrides: [currentUserIdProvider.overrideWithValue(null)],
+          child: MaterialApp(
+              theme: AppTheme.light(),
+              home: MediaQuery(
+                  data: const MediaQueryData(
+                      size: Size(320, 640), textScaler: TextScaler.linear(1.3)),
+                  child: Scaffold(
+                      body: SizedBox(
+                          width: 320,
+                          child: SingleChildScrollView(
+                              child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: ReferenceInfoContent(
+                                      title: title)))))))));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     });

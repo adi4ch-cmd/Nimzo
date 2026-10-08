@@ -9,6 +9,8 @@ import '../../../core/utils/formatters.dart';
 import '../../wallet/wallet_screen.dart';
 import '../domain/room.dart';
 import 'room_controller.dart';
+import '../../../core/providers/supabase_provider.dart';
+import '../data/room_chat_repository.dart';
 
 const roomToolNames = [
   'Broadcast',
@@ -26,7 +28,7 @@ const roomToolNames = [
   'Clean'
 ];
 
-Future<void> showPartyTools(BuildContext context) async {
+Future<void> showPartyTools(BuildContext context, {String? roomId}) async {
   final tool = await showReferenceSheet<int>(
       context,
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -39,7 +41,7 @@ Future<void> showPartyTools(BuildContext context) async {
             crossAxisCount: 4,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: .9,
+            mainAxisExtent: 84 * MediaQuery.textScalerOf(context).scale(1),
             children: [
               for (var i = 0; i < roomToolNames.length; i++)
                 InkWell(
@@ -63,12 +65,75 @@ Future<void> showPartyTools(BuildContext context) async {
         builder: (_) => RoomToolPage(title: roomToolNames[tool])));
     return;
   }
-  await showReferenceSheet(context, RoomToolForm(tool: roomToolNames[tool]));
+  final container = ProviderScope.containerOf(context, listen: false);
+  await showReferenceSheet(
+      context,
+      RoomToolForm(
+          tool: roomToolNames[tool],
+          onAnnounce: roomId == null
+              ? null
+              : (body) =>
+                  container.read(roomChatRepositoryProvider).send(roomId, body),
+          onClear: roomId == null
+              ? null
+              : () =>
+                  container.read(roomChatRepositoryProvider).clear(roomId)));
 }
 
-class RoomToolForm extends StatelessWidget {
+class RoomToolForm extends StatefulWidget {
   final String tool;
-  const RoomToolForm({super.key, required this.tool});
+  final Future<void> Function(String)? onAnnounce;
+  final Future<void> Function()? onClear;
+  const RoomToolForm(
+      {super.key, required this.tool, this.onAnnounce, this.onClear});
+  @override
+  State<RoomToolForm> createState() => _ToolFormState();
+}
+
+class _ToolFormState extends State<RoomToolForm> {
+  final input = TextEditingController();
+  String when = 'In 10 minutes';
+  bool busy = false;
+  String get tool => widget.tool;
+  @override
+  void dispose() {
+    input.dispose();
+    super.dispose();
+  }
+
+  Future<void> submit() async {
+    if (busy) return;
+    if (tool != 'Clean' && input.text.trim().isEmpty) return;
+    setState(() => busy = true);
+    try {
+      if (tool == 'Clean') {
+        final confirm = await showDialog<bool>(
+            context: context,
+            builder: (c) =>
+                AlertDialog(title: const Text('Clear room chat?'), actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(c, false),
+                      child: const Text('Cancel')),
+                  FilledButton(
+                      onPressed: () => Navigator.pop(c, true),
+                      child: const Text('Clear'))
+                ]));
+        if (confirm != true) return;
+        await widget.onClear!();
+      } else {
+        await widget.onAnnounce!(
+            '$tool · ${input.text.trim()}${tool == 'Gathering' ? ' · $when' : ''}');
+      }
+      if (mounted) Navigator.pop(context);
+    } catch (_) {
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Room action could not be completed. Retry.')));
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) =>
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -87,14 +152,17 @@ class RoomToolForm extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
         const SizedBox(height: 12),
         if (tool == 'Broadcast')
-          const TextField(
+          TextField(
+              controller: input,
               maxLength: 100,
               maxLines: 3,
               decoration:
                   InputDecoration(hintText: 'Message for the whole room')),
         if (tool == 'Gathering') ...[
-          const TextField(
-              maxLength: 40, decoration: InputDecoration(hintText: 'Title')),
+          TextField(
+              controller: input,
+              maxLength: 40,
+              decoration: const InputDecoration(hintText: 'Title')),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
               initialValue: 'In 10 minutes',
@@ -102,7 +170,7 @@ class RoomToolForm extends StatelessWidget {
                 for (final t in ['In 10 minutes', 'In 30 minutes', 'In 1 hour'])
                   DropdownMenuItem(value: t, child: Text(t))
               ],
-              onChanged: (_) {})
+              onChanged: (value) => when = value!)
         ],
         if (tool == 'Prize')
           const TextField(
@@ -152,18 +220,25 @@ class RoomToolForm extends StatelessWidget {
         SizedBox(
             width: double.infinity,
             child: GradientButton(
-                onPressed: null,
-                child: Text({
-                      'Broadcast': 'Send to room',
-                      'Gathering': 'Announce',
-                      'Prize': 'Draw a winner',
-                      'Video': 'Play for the room',
-                      'Vote': 'Start vote',
-                      'Wheel': 'Spin',
-                      'Calculator': 'Clear',
-                      'Clean': 'Clear'
-                    }[tool] ??
-                    'Play'))),
+                onPressed: busy ||
+                        !((tool == 'Broadcast' || tool == 'Gathering') &&
+                                widget.onAnnounce != null ||
+                            tool == 'Clean' && widget.onClear != null)
+                    ? null
+                    : submit,
+                child: Text(busy
+                    ? 'Sending…'
+                    : {
+                          'Broadcast': 'Send to room',
+                          'Gathering': 'Announce',
+                          'Prize': 'Draw a winner',
+                          'Video': 'Play for the room',
+                          'Vote': 'Start vote',
+                          'Wheel': 'Spin',
+                          'Calculator': 'Clear',
+                          'Clean': 'Clear'
+                        }[tool] ??
+                        'Play'))),
       ]);
 }
 
@@ -363,7 +438,7 @@ class RoomToolPage extends StatelessWidget {
                                 color: Color(0xfffde68a),
                                 fontSize: 28,
                                 fontWeight: FontWeight.w700)),
-                        DashedCircle(size: 64, child: Icon(LucideIcons.mic))
+                        DashedCircle(size: 64, child: ReferenceIcon('mic'))
                       ]),
                   const SizedBox(height: 14),
                   const LinearProgressIndicator(
@@ -395,18 +470,41 @@ class _RoomProfileState extends ConsumerState<RoomProfilePage> {
   int tab = 0;
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(title: Text(widget.room.name)),
+      appBar: AppBar(
+          titleSpacing: 0,
+          title: Row(children: [
+            ReferenceRoomAvatar(
+                size: 44,
+                url: widget.room.avatarPath == null
+                    ? null
+                    : ref
+                        .read(supabaseProvider)
+                        .storage
+                        .from('room-images')
+                        .getPublicUrl(widget.room.avatarPath!)),
+            const SizedBox(width: 8),
+            Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(widget.room.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w700)),
+                  Text('ID:${widget.room.roomNo}',
+                      style: const TextStyle(
+                          color: NimzoStyle.muted, fontSize: 12))
+                ]))
+          ])),
       body: ListView(padding: const EdgeInsets.all(16), children: [
-        Text('ID:${widget.room.roomNo}',
-            style: const TextStyle(color: NimzoStyle.muted, fontSize: 12)),
-        const SizedBox(height: 12),
         ReferenceTabs(
             labels: const ['Profile', 'Member', 'Activity'],
             selected: tab,
             onSelected: (i) => setState(() => tab = i)),
         if (tab == 0) ...[
-          _row('Announcement', widget.room.rules ?? 'Welcome'),
-          _row('Country', widget.room.country ?? '—'),
+          _detail('Announcement', widget.room.rules ?? 'Welcome'),
+          _detail('Country', widget.room.country ?? '—'),
           for (final label in [
             'Room Rewards',
             'Room Support',
@@ -447,7 +545,15 @@ class _RoomProfileState extends ConsumerState<RoomProfilePage> {
                 : Column(children: [
                     for (final p in members.values)
                       ListTile(
-                          leading: NimzoAvatar(name: p.displayName ?? 'N'),
+                          leading: NimzoAvatar(
+                              name: p.displayName ?? 'N',
+                              url: p.avatarPath == null
+                                  ? null
+                                  : ref
+                                      .read(supabaseProvider)
+                                      .storage
+                                      .from('avatars')
+                                      .getPublicUrl(p.avatarPath!)),
                           title:
                               Text(p.displayName ?? p.username ?? 'Nimzo user'),
                           onTap: () => context.push('/profile/${p.id}'))
@@ -455,6 +561,14 @@ class _RoomProfileState extends ConsumerState<RoomProfilePage> {
           )
         else
           const EmptyContent('No activity yet'),
+      ]));
+  Widget _detail(String title, String value) => Container(
+      padding: const EdgeInsets.symmetric(vertical: 13),
+      decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: NimzoStyle.line))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+        Text(value)
       ]));
   Widget _row(String title, String value) => Container(
       padding: const EdgeInsets.symmetric(vertical: 13),

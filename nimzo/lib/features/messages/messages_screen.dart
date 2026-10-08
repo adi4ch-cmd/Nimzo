@@ -234,7 +234,14 @@ class _State extends ConsumerState<ConversationScreen> {
                   ),
                   IconButton(
                     onPressed: busy ? null : send,
-                    icon: const Icon(Icons.send),
+                    tooltip: 'Send',
+                    icon: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: NimzoStyle.gradient),
+                        child:
+                            const ReferenceIcon('send', color: Colors.white)),
                   ),
                 ],
               ),

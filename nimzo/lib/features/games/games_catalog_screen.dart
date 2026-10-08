@@ -49,3 +49,46 @@ class GamesCatalogScreen extends StatelessWidget {
         ),
       );
 }
+
+Future<void> showRoomGamesSheet(BuildContext context, String roomId) async {
+  final selected = await showReferenceSheet<String>(
+      context,
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('Games',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 12),
+        GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 4,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            mainAxisExtent: 100 * MediaQuery.textScalerOf(context).scale(1),
+            children: [
+              for (final game in NimzoRoomGames.approved)
+                InkWell(
+                    onTap: () => Navigator.pop(context, game.slug),
+                    child: Column(children: [
+                      Flexible(
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Image.asset(
+                                  'assets/reference/game/${game.artwork}.jpg',
+                                  width: 64,
+                                  height: 64,
+                                  fit: BoxFit.cover))),
+                      const SizedBox(height: 4),
+                      Text(
+                          game.artwork == 1
+                              ? 'Grady Pro'
+                              : game.artwork == 3
+                                  ? 'Slot Jackpots'
+                                  : game.title,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 12))
+                    ]))
+            ])
+      ]));
+  if (selected != null && context.mounted)
+    context.push('/games-play?game=$selected&room=$roomId');
+}

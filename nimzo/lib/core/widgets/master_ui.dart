@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../theme/app_theme.dart';
 
 /// Presentation primitives transcribed from nimzo-ui-2.html.
@@ -217,3 +218,49 @@ Future<T?> showReferenceSheet<T>(BuildContext context, Widget child) =>
                           16 + MediaQuery.viewInsetsOf(context).bottom),
                       child: SingleChildScrollView(child: child))))),
     );
+
+/// Original path artwork from the final HTML; never a substitute icon catalog.
+class ReferenceIcon extends StatelessWidget {
+  final String name;
+  final double size;
+  final Color? color;
+  final bool originalColors;
+  const ReferenceIcon(this.name,
+      {super.key, this.size = 22, this.color, this.originalColors = false});
+  @override
+  Widget build(BuildContext context) => Align(
+      widthFactor: 1,
+      heightFactor: 1,
+      child: SvgPicture.asset('assets/reference/icons/$name.svg',
+          width: size,
+          height: size,
+          colorFilter: originalColors
+              ? null
+              : ColorFilter.mode(
+                  color ?? IconTheme.of(context).color ?? NimzoStyle.ink,
+                  BlendMode.srcIn)));
+}
+
+/// The reference's generated microphone room artwork is its default room image.
+class ReferenceRoomAvatar extends StatelessWidget {
+  final String? url;
+  final double size;
+  const ReferenceRoomAvatar({super.key, this.url, this.size = 46});
+  @override
+  Widget build(BuildContext context) {
+    final fallback = SvgPicture.asset('assets/reference/icons/room.svg',
+        width: size, height: size);
+    return SizedBox.square(
+        dimension: size,
+        child: ClipOval(
+            child: url == null || url!.isEmpty
+                ? fallback
+                : Image.network(url!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => fallback)));
+  }
+}
+
+String referenceNumber(num value) => value
+    .toString()
+    .replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');

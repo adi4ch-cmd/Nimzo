@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
+import 'membership_motion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../core/widgets/master_ui.dart';
 
 const vipPalette = [
   [Color(0xffbef264), Color(0xff4d7c0f)],
@@ -65,9 +66,9 @@ class MembershipHero extends StatefulWidget {
 
 class _HeroState extends State<MembershipHero>
     with SingleTickerProviderStateMixin {
-  late final AnimationController motion = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 3400))
-    ..repeat(reverse: true);
+  late final AnimationController motion =
+      AnimationController(vsync: this, duration: const Duration(seconds: 24))
+        ..repeat();
   @override
   void dispose() {
     motion.dispose();
@@ -78,36 +79,96 @@ class _HeroState extends State<MembershipHero>
   Widget build(BuildContext context) => Column(children: [
         SizedBox(
             height: 210,
-            child: Stack(alignment: Alignment.center, children: [
-              Container(
-                  width: 260,
-                  height: 260,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(colors: [
-                        widget.color.withValues(alpha: .4),
-                        Colors.transparent
-                      ]))),
-              AnimatedBuilder(
-                  animation: motion,
-                  builder: (_, child) => Transform.translate(
-                      offset: Offset(0, -6 * motion.value), child: child),
-                  child: widget.emblem),
-              for (final pos in [
-                const Offset(.10, .30),
-                const Offset(.85, .22),
-                const Offset(.22, .70),
-                const Offset(.78, .64),
-                const Offset(.5, .08)
-              ])
-                Positioned(
-                    left: pos.dx * 280,
-                    top: pos.dy * 190,
-                    child:
-                        Icon(Icons.auto_awesome, size: 8, color: widget.color)),
-            ])),
-        GradientText(widget.title,
-            gradient: membershipGold,
+            child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                      top: -20,
+                      child: AnimatedBuilder(
+                          animation: motion,
+                          builder: (_, __) => MembershipRays(
+                              angle: motion.value * math.pi * 2))),
+                  AnimatedBuilder(
+                      animation: motion,
+                      builder: (_, __) {
+                        final pulse = (1 -
+                                math.cos(motion.value *
+                                    math.pi *
+                                    2 *
+                                    24000 /
+                                    3200)) /
+                            2;
+                        return Transform.scale(
+                            scale: 1 + .08 * pulse,
+                            child: Container(
+                                width: 230,
+                                height: 230,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: RadialGradient(colors: [
+                                      widget.color
+                                          .withValues(alpha: .38 + .22 * pulse),
+                                      Colors.transparent
+                                    ], stops: const [
+                                      0,
+                                      .68
+                                    ]))));
+                      }),
+                  AnimatedBuilder(
+                      animation: motion,
+                      builder: (_, child) => Transform.translate(
+                          offset: Offset(
+                              0,
+                              -3 *
+                                  (1 -
+                                      math.cos(motion.value *
+                                          math.pi *
+                                          2 *
+                                          24000 /
+                                          3400))),
+                          child: child),
+                      child: widget.emblem),
+                  for (final pos in [
+                    const Offset(.10, .30),
+                    const Offset(.85, .22),
+                    const Offset(.22, .70),
+                    const Offset(.78, .64),
+                    const Offset(.5, .08),
+                    const Offset(.92, .52),
+                    const Offset(.06, .56)
+                  ])
+                    Positioned(
+                        left: pos.dx * (MediaQuery.sizeOf(context).width - 32),
+                        top: pos.dy * 300,
+                        child: AnimatedBuilder(
+                            animation: motion,
+                            builder: (_, __) {
+                              final twinkle = (1 -
+                                      math.cos((motion.value * 24000 / 2400 +
+                                              pos.dx) *
+                                          math.pi *
+                                          2)) /
+                                  2;
+                              return Opacity(
+                                  opacity: .1 + .9 * twinkle,
+                                  child: Transform.scale(
+                                      scale: .5 + .8 * twinkle,
+                                      child: Container(
+                                          width: 4,
+                                          height: 4,
+                                          decoration: const BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.circle,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Color(0xfff5c451),
+                                                    blurRadius: 8,
+                                                    spreadRadius: 2)
+                                              ]))));
+                            })),
+                ])),
+        MembershipGoldText(widget.title,
             style: const TextStyle(
                 fontFamily: 'Cinzel',
                 fontSize: 30,

@@ -26,6 +26,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(ProviderScope(
+        key: const ValueKey('home-scope'),
         overrides: [popularRoomsProvider(null).overrideWith((_) async => [])],
         child: MaterialApp(
             theme: AppTheme.light(),
@@ -40,11 +41,13 @@ void main() {
       'slot',
       'lucky_wheel_77'
     ]) {
-      await tester.pumpWidget(MaterialApp(
-          theme: AppTheme.light(),
-          home: RepaintBoundary(
-              key: const ValueKey('preview'),
-              child: GameScreen(slug: slug, roomId: 'room'))));
+      await tester.pumpWidget(ProviderScope(
+          key: ValueKey(slug),
+          child: MaterialApp(
+              theme: AppTheme.light(),
+              home: RepaintBoundary(
+                  key: const ValueKey('preview'),
+                  child: GameScreen(slug: slug, roomId: 'room')))));
       final context = tester.element(find.byKey(const ValueKey('preview')));
       final group = slug == 'grady_lion'
           ? 'grady'

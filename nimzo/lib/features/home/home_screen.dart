@@ -2,7 +2,6 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_flutter/lucide_flutter.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -12,6 +11,12 @@ import '../../core/widgets/master_ui.dart';
 import '../rooms/domain/room.dart';
 import '../rooms/data/room_chat_repository.dart';
 import '../rooms/presentation/room_controller.dart';
+
+final ownedRoomPreviewProvider = FutureProvider<Room?>((ref) async {
+  final repo = ref.watch(roomRepositoryProvider);
+  final id = await repo.ownedRoomId();
+  return id == null ? null : repo.get(id);
+});
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -45,6 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final owned = ref.watch(ownedRoomPreviewProvider).valueOrNull;
     final popular = ref.watch(popularRoomsProvider(country));
     final mine = tab == 0 ? null : ref.watch(myRoomsProvider);
     final AsyncValue<List<Room>> rooms = tab == 0
@@ -75,12 +81,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const Expanded(child: GradientText('NIMZO')),
                   IconButton(
                     tooltip: 'Search',
-                    icon: const Icon(LucideIcons.search, size: 22),
+                    icon: const ReferenceIcon('search', size: 22),
                     onPressed: () => context.push('/discover'),
                   ),
                   IconButton(
                     tooltip: 'Notifications',
-                    icon: const Icon(LucideIcons.bell, size: 22),
+                    icon: const ReferenceIcon('bell', size: 22),
                     onPressed: () => context.push('/notifications'),
                   ),
                   ActionChip(
@@ -118,14 +124,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     child: Row(
                       children: [
-                        const NimzoAvatar(name: 'N', size: 46),
+                        ReferenceRoomAvatar(
+                            url: owned?.avatarPath == null
+                                ? null
+                                : ref
+                                    .read(supabaseProvider)
+                                    .storage
+                                    .from('room-images')
+                                    .getPublicUrl(owned!.avatarPath!)),
                         const SizedBox(width: 10),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'My room',
+                                owned?.name ?? 'My room',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(fontWeight: FontWeight.w700),
                               ),
                               Text(
@@ -138,7 +153,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ],
                           ),
                         ),
-                        FilledButton(
+                        GradientButton(
                           onPressed: opening ? null : openMine,
                           child: Text(opening ? 'Opening…' : 'Open my room'),
                         ),
@@ -194,7 +209,7 @@ class RoomTile extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            NimzoAvatar(name: room.name, url: url),
+            ReferenceRoomAvatar(url: url),
             const SizedBox(width: 12),
             Expanded(
               child: Column(

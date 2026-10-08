@@ -15,8 +15,8 @@ class RechargeScreen extends ConsumerWidget {
         AsyncContent(
             value: ref.watch(walletProvider),
             onRetry: () => ref.invalidate(walletProvider),
-            builder: (wallet) =>
-                BalancePanel(label: 'Your coins', balance: '${wallet.coins}')),
+            builder: (wallet) => BalancePanel(
+                label: 'Your coins', balance: referenceNumber(wallet.coins))),
         const Padding(
             padding: EdgeInsets.fromLTRB(0, 6, 0, 8),
             child: Text('Choose amount',
@@ -32,7 +32,8 @@ class RechargeScreen extends ConsumerWidget {
                     crossAxisCount: 2,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
-                    childAspectRatio: 1.9,
+                    mainAxisExtent:
+                        94 * MediaQuery.textScalerOf(context).scale(1),
                     children: [
                         for (final r in rows)
                           InkWell(
@@ -75,7 +76,8 @@ class RechargeScreen extends ConsumerWidget {
                                             style: const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w700)),
-                                        Text('${r['coins']} coins',
+                                        Text(
+                                            '${referenceNumber(r['coins'] as num)} coins',
                                             style: const TextStyle(
                                                 color: NimzoStyle.primary,
                                                 fontSize: 12))

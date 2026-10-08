@@ -1,12 +1,14 @@
 import 'dart:math';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../wallet/wallet_screen.dart';
 import '../../core/widgets/master_ui.dart';
 import '../../core/utils/formatters.dart';
 import 'game_catalog.dart';
 
 /// Visual boards from nimzo-ui-2.html. Settlement is never simulated locally.
-class GameScreen extends StatefulWidget {
+class GameScreen extends ConsumerStatefulWidget {
   final String? roomId, slug;
   const GameScreen({super.key, this.roomId, this.slug});
   static const fruit = [
@@ -42,10 +44,10 @@ class GameScreen extends StatefulWidget {
     'Mercedes'
   ];
   @override
-  State<GameScreen> createState() => _GameState();
+  ConsumerState<GameScreen> createState() => _GameState();
 }
 
-class _GameState extends State<GameScreen> {
+class _GameState extends ConsumerState<GameScreen> {
   int selectedChip = 0;
   static const gold = Color(0xfffde68a);
   static const multipliers = [
@@ -117,6 +119,7 @@ class _GameState extends State<GameScreen> {
                 ? 'Slot Jackpots'
                 : game.title;
     final spin = i == 3 || i == 5;
+    final wallet = ref.watch(walletProvider).valueOrNull;
     final options = i == 0
         ? GameScreen.fruit
         : i == 1
@@ -133,31 +136,58 @@ class _GameState extends State<GameScreen> {
         child: Scaffold(
             backgroundColor: const Color(0xff14052e),
             appBar: AppBar(
+                toolbarHeight: 60,
                 backgroundColor: const Color(0xff3b0f7a),
                 foregroundColor: Colors.white,
                 title: Text(title,
-                    style: const TextStyle(color: Colors.white, fontSize: 16)),
+                    style: const TextStyle(
+                        fontFamily: 'Roboto',
+                        color: Colors.white,
+                        fontSize: 16)),
                 actions: [
-                  IconButton(
-                      tooltip: 'Rules',
-                      onPressed: () => showReferenceSheet(
-                          context,
-                          Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('$title · Rules',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w700)),
-                                const SizedBox(height: 12),
-                                Text(spin
-                                    ? 'Pick a bet amount and press Spin. The payout depends on the result.'
-                                    : 'Choose up to ${i == 4 || i == 6 ? 3 : 6} options and set an amount on each. A winning option pays amount × multiplier.'),
-                                const SizedBox(height: 12),
-                                const Text('Game service unavailable.',
-                                    style: TextStyle(color: Color(0xff6b7a72)))
-                              ])),
-                      icon: const Icon(Icons.help_outline, size: 22))
+                  Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                                tooltip: 'Rules',
+                                onPressed: () => showReferenceSheet(
+                                    context,
+                                    Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('$title · Rules',
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.w700)),
+                                          const SizedBox(height: 12),
+                                          Text(spin
+                                              ? 'Pick a bet amount and press Spin. The payout depends on the result.'
+                                              : 'Choose up to ${i == 4 || i == 6 ? 3 : 6} options and set an amount on each. A winning option pays amount × multiplier.'),
+                                          const SizedBox(height: 12),
+                                          const Text(
+                                              'Game service unavailable.',
+                                              style: TextStyle(
+                                                  color: Color(0xff6b7a72)))
+                                        ])),
+                                style: IconButton.styleFrom(
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    minimumSize: const Size(24, 22),
+                                    maximumSize: const Size(24, 22),
+                                    padding: EdgeInsets.zero),
+                                icon: const Text('?',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 12))),
+                            Text(
+                                wallet == null
+                                    ? 'Balance unavailable'
+                                    : '${referenceNumber(wallet.coins)} coins',
+                                style:
+                                    const TextStyle(color: gold, fontSize: 12))
+                          ]))
                 ]),
             body: Container(
                 decoration: const BoxDecoration(
@@ -172,25 +202,31 @@ class _GameState extends State<GameScreen> {
                       if (!spin)
                         const Padding(
                             padding: EdgeInsets.fromLTRB(4, 0, 4, 10),
-                            child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('Round —',
-                                          style: TextStyle(
-                                              color: Color(0xffe9d5ff),
-                                              fontSize: 12)),
-                                      Text('Time —',
-                                          style: TextStyle(
-                                              color: Color(0xffe9d5ff),
-                                              fontSize: 12)),
-                                      Text('Total bet —',
-                                          style: TextStyle(
-                                              color: Color(0xffe9d5ff),
-                                              fontSize: 12))
-                                    ]))),
+                            child: Row(children: [
+                              Expanded(
+                                  child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: FittedBox(
+                                          child: Text('Round —',
+                                              style: TextStyle(
+                                                  color: Color(0xffe9d5ff),
+                                                  fontSize: 12))))),
+                              Expanded(
+                                  child: Center(
+                                      child: FittedBox(
+                                          child: Text('Time —',
+                                              style: TextStyle(
+                                                  color: Color(0xffe9d5ff),
+                                                  fontSize: 12))))),
+                              Expanded(
+                                  child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: FittedBox(
+                                          child: Text('Total bet —',
+                                              style: TextStyle(
+                                                  color: Color(0xffe9d5ff),
+                                                  fontSize: 12))))),
+                            ])),
                       if (i == 5)
                         const Padding(
                             padding: EdgeInsets.all(14),
@@ -237,7 +273,7 @@ class _GameState extends State<GameScreen> {
                                 crossAxisCount: 5,
                                 mainAxisSpacing: 4,
                                 crossAxisSpacing: 4,
-                                childAspectRatio: .85,
+                                mainAxisExtent: 70,
                                 children: [
                                   for (var n = 0; n < 15; n++)
                                     Container(
@@ -256,11 +292,12 @@ class _GameState extends State<GameScreen> {
                             crossAxisCount: i == 1 ? 5 : 3,
                             mainAxisSpacing: 6,
                             crossAxisSpacing: 6,
-                            childAspectRatio: i == 1
-                                ? .45
-                                : i == 2
-                                    ? .62
-                                    : .72,
+                            mainAxisExtent: (i == 2
+                                    ? 128.0
+                                    : i == 4 || i == 6
+                                        ? 144.0
+                                        : 112.0) *
+                                MediaQuery.textScalerOf(context).scale(1),
                             children: [
                               for (var n = 0;
                                   n <
@@ -343,28 +380,31 @@ class _GameState extends State<GameScreen> {
                                   child: InkWell(
                                       onTap: () =>
                                           setState(() => selectedChip = k),
-                                      child: Container(
-                                          width: 50,
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: selectedChip == k
-                                                  ? const Color(0xfff59e0b)
-                                                  : const Color(0xff7c3aed),
-                                              border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 3)),
-                                          child: Center(
-                                              child: Text(
-                                                  compactNumber(chips[i][k]),
-                                                  style: TextStyle(
-                                                      color: selectedChip == k
-                                                          ? const Color(
-                                                              0xff3b0764)
-                                                          : Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontSize: 12))))))
+                                      child: CustomPaint(
+                                          foregroundPainter:
+                                              const _ChipEdgePainter(),
+                                          child: Container(
+                                              width: 54,
+                                              height: 54,
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: selectedChip == k
+                                                      ? const Color(0xfff59e0b)
+                                                      : const Color(0xff7c3aed),
+                                                  border: Border.all(
+                                                      color: Colors.transparent,
+                                                      width: 4)),
+                                              child: Center(
+                                                  child: Text(
+                                                      compactNumber(chips[i][k])
+                                                          .replaceAll('.0', ''),
+                                                      style: TextStyle(
+                                                          color: selectedChip == k
+                                                              ? const Color(
+                                                                  0xff3b0764)
+                                                              : Colors.white,
+                                                          fontWeight: FontWeight.w700,
+                                                          fontSize: 12)))))))
                           ]),
                       const SizedBox(height: 12),
                       Row(children: [
@@ -452,7 +492,8 @@ class _GameState extends State<GameScreen> {
                                 fontWeight: FontWeight.w800,
                                 fontSize: 15))))
               else
-                Expanded(
+                SizedBox(
+                    height: 56,
                     child: Image.asset(
                         'assets/reference/${game == 0 ? 'fruit' : game == 1 ? 'grady' : 'game'}/${game == 4 ? 4 : game == 6 ? 6 : index}.jpg',
                         width: double.infinity,
@@ -460,19 +501,23 @@ class _GameState extends State<GameScreen> {
               if (game != 0 && game != 1)
                 Text(names[index],
                     style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w700),
+                        fontSize: 12, height: 1.1, fontWeight: FontWeight.w700),
                     maxLines: 1),
               Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Text(
                       special ? 'SPECIAL' : '${multipliers[game][index]}x',
+                      maxLines: 1,
+                      overflow: TextOverflow.clip,
                       style: TextStyle(
                           color: gold,
                           fontSize: special ? 12 : 18,
+                          height: 1.1,
                           fontWeight: FontWeight.w800))),
               if (special)
-                Text(index == 4 ? 'All 4 upper' : 'All 4 lower',
-                    style: const TextStyle(fontSize: 9))
+                FittedBox(
+                    child: Text(index == 4 ? 'All 4 upper' : 'All 4 lower',
+                        style: const TextStyle(fontSize: 9, height: 1)))
               else if (game == 4 || game == 6)
                 Text(
                     game == 4
@@ -482,7 +527,7 @@ class _GameState extends State<GameScreen> {
                             'K♠ Q♠ J♥ · 1:1'
                           ][index]
                         : ['1:1.5', '1:5', '1:1.5'][index],
-                    style: const TextStyle(fontSize: 10)),
+                    style: const TextStyle(fontSize: 10, height: 1)),
               if (!special)
                 Container(
                     margin: const EdgeInsets.only(bottom: 6),
@@ -491,7 +536,8 @@ class _GameState extends State<GameScreen> {
                     decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: .45),
                         borderRadius: BorderRadius.circular(12)),
-                    child: const Text('+', style: TextStyle(fontSize: 12))),
+                    child: const Text('+',
+                        style: TextStyle(fontSize: 12, height: 1))),
             ]));
   }
 }
@@ -520,16 +566,17 @@ class _WheelPainter extends CustomPainter {
           text: TextSpan(
               text: labels[i],
               style: const TextStyle(
+                  fontFamily: 'Roboto',
                   color: Colors.white,
                   fontSize: 13,
                   fontWeight: FontWeight.w800)),
           textDirection: TextDirection.ltr)
         ..layout();
-      t.paint(
-          canvas,
-          center +
-              Offset(cos(angle) * 68, sin(angle) * 68) -
-              Offset(t.width / 2, t.height / 2));
+      canvas.save();
+      canvas.translate(center.dx, center.dy);
+      canvas.rotate(angle + pi / 2);
+      t.paint(canvas, Offset(-t.width / 2, -68 - t.height / 2));
+      canvas.restore();
     }
     canvas.drawCircle(
         center,
@@ -543,6 +590,7 @@ class _WheelPainter extends CustomPainter {
         text: const TextSpan(
             text: '77',
             style: TextStyle(
+                fontFamily: 'Roboto',
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
                 color: Color(0xff92400e))),
@@ -553,4 +601,21 @@ class _WheelPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_WheelPainter oldDelegate) => false;
+}
+
+class _ChipEdgePainter extends CustomPainter {
+  const _ChipEdgePainter();
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Rect.fromLTWH(2, 2, size.width - 4, size.height - 4);
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4;
+    for (var i = 0; i < 16; i++)
+      canvas.drawArc(rect, i * pi / 8, pi / 12, false, paint);
+  }
+
+  @override
+  bool shouldRepaint(_ChipEdgePainter old) => false;
 }

@@ -43,6 +43,7 @@ flutter:
     - assets/reference/rmed/
     - assets/reference/prz/
     - assets/reference/emblems/
+    - assets/reference/icons/
   fonts:
     - family: Cinzel
       fonts:

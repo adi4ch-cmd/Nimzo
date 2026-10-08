@@ -63,7 +63,7 @@ The complete final HTML was read before implementation. Its later JavaScript ove
 
 Updated Flutter presentation covers authentication, Home, seven game boards, the two-by-five voice seats, room toolbar/profile/settings, party tools and forms, treasure/crystal/effects/music/PK views, gift sheets, Moments, messages, Me and public/edit profiles, search/social/CP, Levels, VIP/SVIP, wallet/recharge, Task, Store, Ranking, Honor Wall, notifications, settings/account/privacy/language/help/about and shared sheets/buttons/navigation sizing. Existing data, financial settlement, authentication, voice and game-service contracts are retained.
 
-This is a broad visual implementation pass, not a claim of complete pixel parity. Remaining differences:
+The following records the original pass; the continuation below supersedes resolved gaps. This is not a claim of complete pixel parity. Original remaining differences:
 
 - Backend-dependent prototype actions stay unavailable: game execution, membership purchase, task claims, store purchases, treasure/crystal rewards, PK/music and party-tool execution. No prototype balances, users, scores or purchases were copied into authoritative state.
 - Ranking supports only the existing Wealth/Charm weekly/monthly data. Gift/Active/Daily combinations show unavailable. Recharge displays actual configured packages rather than fabricating the six prototype amounts when packages are absent.
@@ -85,3 +85,19 @@ This is a broad visual implementation pass, not a claim of complete pixel parity
 - All 27 newly extracted room-tool/gem/chest/crystal/medal/prize images compare byte-for-byte with embedded HTML assets.
 - Independent review found room-avatar regression, long CP-name overflow and missing Account UI; all three were corrected.
 - Scope audit: presentation Dart, reference assets/fonts, pubspec asset/font registrations, UI tests/goldens and this report only. No repository/data layer, backend, migrations, game engine, Vivox or native files changed.
+
+## Remaining-gap continuation — 2026-10-08
+
+Continued completed work from `c7ec5f190b869213f735a269e2cfdac573e1f8d0`. No inventory restart or HTML changes.
+
+Completed: exact master SVG icons/brand marks/default room artwork; constrained icon sizing; auth circles/tabs/divider/social buttons; actual owned-room preview; Me cover/age/badge alignment; compact dimensions/art/chips for all seven boards; real balance formatting; rotated wheel labels; four-column room game sheet; room notice/toolbar/gift styling; bounded gift recipient rail and World Crown treatment; compact profile gift rails and collection View All sheets; real profile/CP artwork; pastel profile actions and confirmed friend requests; comment sheets with real authors; message send styling; own visitor timestamps; actual Account ID; confirmed language saving, Arabic tabs/RTL and identity reset; VIP/SVIP rotating rays/sparkles/halo/conic frame/mic aura/gold shimmer; compact Store cards and shared reference icons throughout remaining pages.
+
+Broadcast/gathering and confirmed clear-chat use existing repositories. Gift recipient IDs, quantity, stable keys, confirmation and retries remain authoritative. Language and friend completions safely refresh after navigation. Unverified SVIP recharge progress is no longer represented by a fabricated level ratio. Asset integrity now uses the final master and verifies all 120 embedded images.
+
+Chromium rendered 32 HTML states at 390×844. Flutter captured 41 continuation states, plus the existing membership/treasure/crystal and board baselines. Isolated sample data exists only in tests. Side-by-side inspection corrected oversized boards, stretched icons, wheel text/font/rotation, room notice width, profile badge alignment and oversized Store cards. See the [representative comparison sheet](remaining-visual-comparison.png) and individual captures in `nimzo/test/goldens/remaining/`.
+
+Remaining: approved game execution, membership/purchase/task/store/reward services, PK/music/random party games/prizes/votes/video, Gift/Active/Daily rankings and Me live gift cards, authoritative XP/recharge/room-level totals, persisted privacy/notification preferences and full room directory/rewards/support/certification/activity/banner services. These retain unavailable states instead of invented results, money or people. Real recharge packages and supported Wealth/Charm weekly/monthly rankings remain. Outcome-driven animations cannot be exercised without real service contracts. Native photo/date/country pickers and working edit/room-settings forms retain their Flutter controls and additional existing options. Full pixel parity and physical-device voice/OAuth QA are not claimed.
+
+Independent review found disposed friend refresh, language leakage across accounts and unbounded gift recipient chips; all were fixed and reviewed again. Analyzer: no issues. Full Flutter regression suite: 123 tests passed. Narrow 320×640 game/room layouts, exactly ten seats (5+5), larger-text overlays/Store, friend/language confirmation and navigation lifecycle, gift retries and message/comment drafts are covered. Python reference integrity/native contracts and all six voice authorization tests pass.
+
+Reference SHA-256 remains `f3401ddc3d565428a07697a5f21e416ef5e34329450e6eda78b149e425bbf4e2` (428560 bytes); the legacy file remains absent. Scope is presentation/state, reference SVG assets, asset registration, tests/goldens and this report. No backend, migrations, repositories, game engine, Vivox/native bridge or settlement logic changed. The existing branch workflow builds a release APK and checks packaged Vivox/JNI, application ID, launcher, OAuth and microphone/internet permissions before publishing an artifact/test release.

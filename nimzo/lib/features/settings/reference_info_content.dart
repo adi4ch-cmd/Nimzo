@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'language_choices.dart';
+import '../profile/profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
@@ -13,20 +15,24 @@ class ReferenceInfoContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (title == 'Account') {
-      final email = ref.watch(supabaseProvider).auth.currentUser?.email;
+      final id = ref.watch(currentUserIdProvider);
+      final profile =
+          id == null ? null : ref.watch(profileProvider(id)).valueOrNull;
       return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         ReferenceCard(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('Email', style: TextStyle(fontWeight: FontWeight.w700)),
+          const Text('Nimzo ID', style: TextStyle(fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
-          Text(email ?? 'No email linked',
+          Text(profile?.nimzoId.toString() ?? 'ID unavailable',
               style: const TextStyle(color: NimzoStyle.muted)),
+          const Text('Permanent, cannot be changed',
+              style: TextStyle(color: NimzoStyle.muted, fontSize: 12)),
         ])),
         const SizedBox(height: 14),
         GradientButton(
             onPressed: () => context.push('/forgot'),
-            child: const Text('Reset password')),
+            child: const Text('Change password')),
       ]);
     }
     if (title == 'Task')
@@ -56,7 +62,7 @@ class ReferenceInfoContent extends ConsumerWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 2,
-          childAspectRatio: 0.6 / MediaQuery.textScalerOf(context).scale(1),
+          mainAxisExtent: 180 * MediaQuery.textScalerOf(context).scale(1),
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
           children: [
@@ -127,13 +133,7 @@ class ReferenceInfoContent extends ConsumerWidget {
               value: true,
               onChanged: null)
       ]);
-    if (title == 'Language')
-      return const Column(children: [
-        ListTile(
-            title: Text('English'),
-            trailing: Icon(Icons.check, color: NimzoStyle.primary)),
-        ListTile(title: Text('العربية'))
-      ]);
+    if (title == 'Language') return const LanguageChoices();
     return const EmptyContent('This service is not available yet.');
   }
 }

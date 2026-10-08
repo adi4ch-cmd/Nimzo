@@ -36,8 +36,8 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(
-        const MaterialApp(home: GameScreen(slug: 'bigetar', roomId: 'room')));
+    await tester.pumpWidget(const ProviderScope(
+        child: MaterialApp(home: GameScreen(slug: 'bigetar', roomId: 'room'))));
     await tester.pumpAndSettle();
     expect(find.text('BM'), findsOneWidget);
     expect(find.text('66x'), findsOneWidget);

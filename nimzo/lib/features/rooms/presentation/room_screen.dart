@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
 import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/reference_widgets.dart';
 import '../../gifts/gift_sheet.dart';
+import '../../games/games_catalog_screen.dart';
 import '../../voice/voice_controller.dart';
 import '../data/room_chat_repository.dart';
 import '../domain/room.dart';
@@ -122,6 +122,35 @@ class _State extends ConsumerState<RoomScreen> {
               borderRadius: BorderRadius.circular(14)),
           child: ReferenceArtwork(group, 0, size: 38)));
 
+  Future<void> toggleMic() => action(() async {
+        if (micBusy) return;
+        final enabled = !mic;
+        final voice = ref.read(voiceServiceProvider);
+        setState(() => micBusy = true);
+        try {
+          await voice.setMicEnabled(enabled);
+          if (mounted && ref.read(voiceConnectedProvider).valueOrNull == true) {
+            setState(() => mic = enabled);
+          }
+        } finally {
+          if (mounted) setState(() => micBusy = false);
+        }
+      });
+
+  Future<void> sendMessage() => action(() async {
+        if (chatBusy) return;
+        final submitted = text.text;
+        if (submitted.trim().isEmpty) return;
+        final repository = ref.read(roomChatRepositoryProvider);
+        setState(() => chatBusy = true);
+        try {
+          await repository.send(widget.roomId, submitted.trim());
+          if (mounted && text.text == submitted) text.clear();
+        } finally {
+          if (mounted) setState(() => chatBusy = false);
+        }
+      });
+
   @override
   Widget build(BuildContext context) {
     final room = ref.watch(roomProvider(widget.roomId)),
@@ -172,8 +201,7 @@ class _State extends ConsumerState<RoomScreen> {
                 : () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => RoomProfilePage(room: room.valueOrNull!))),
             child: Row(children: [
-              NimzoAvatar(
-                  name: room.valueOrNull?.name ?? 'N',
+              ReferenceRoomAvatar(
                   size: 38,
                   url: room.valueOrNull?.avatarPath == null
                       ? null
@@ -235,7 +263,7 @@ class _State extends ConsumerState<RoomScreen> {
                   children: [
                     for (var row = 0; row < 2; row++)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
+                        padding: EdgeInsets.only(bottom: row == 0 ? 14 : 0),
                         child: Row(
                           children: [
                             for (var col = 0; col < 5; col++)
@@ -279,10 +307,8 @@ class _State extends ConsumerState<RoomScreen> {
                                         children: [
                                           if (s.userId == null)
                                             DashedCircle(
-                                                child: Icon(
-                                                    s.locked
-                                                        ? LucideIcons.lock
-                                                        : LucideIcons.mic,
+                                                child: ReferenceIcon(
+                                                    s.locked ? 'lock' : 'mic',
                                                     size: 22,
                                                     color: NimzoStyle.primary))
                                           else
@@ -341,6 +367,8 @@ class _State extends ConsumerState<RoomScreen> {
                   child: Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
+                          constraints: BoxConstraints(
+                              maxWidth: MediaQuery.sizeOf(context).width * .85),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 11, vertical: 7),
                           decoration: BoxDecoration(
@@ -350,7 +378,7 @@ class _State extends ConsumerState<RoomScreen> {
                               room.valueOrNull?.rules?.isNotEmpty == true
                                   ? room.valueOrNull!.rules!
                                   : 'Please respect each other and chat in a decent manner.',
-                              style: const TextStyle(fontSize: 13))))),
+                              style: const TextStyle(fontSize: 14))))),
               Expanded(
                 child: Stack(children: [
                   Positioned.fill(
@@ -412,7 +440,9 @@ class _State extends ConsumerState<RoomScreen> {
                       ])),
                 ]),
               ),
-              Padding(
+              Container(
+                decoration: const BoxDecoration(
+                    border: Border(top: BorderSide(color: NimzoStyle.line))),
                 padding: EdgeInsets.only(
                   left: 10,
                   right: 10,
@@ -430,18 +460,35 @@ class _State extends ConsumerState<RoomScreen> {
                       children: [
                         IconButton(
                             tooltip: 'Party Tools',
-                            onPressed: () => showPartyTools(context),
-                            icon: const Icon(LucideIcons.layoutGrid)),
+                            onPressed: () =>
+                                showPartyTools(context, roomId: widget.roomId),
+                            icon: const ReferenceIcon('grid')),
                         IconButton(
                             tooltip: 'Voice and Effect',
                             onPressed: () => showReferenceSheet(
-                                context, VoiceEffectsSheet(micEnabled: mic)),
-                            icon: const Icon(LucideIcons.volume2)),
+                                context,
+                                VoiceEffectsSheet(
+                                    micEnabled: mic,
+                                    onMic: !connected || micBusy
+                                        ? null
+                                        : toggleMic)),
+                            icon: const ReferenceIcon('spk')),
                         Expanded(
                           child: TextField(
                             controller: text,
                             maxLength: 500,
-                            decoration: const InputDecoration(
+                            onSubmitted: (_) =>
+                                !joined || chatBusy ? null : sendMessage(),
+                            decoration: InputDecoration(
+                              suffixIconConstraints:
+                                  const BoxConstraints.tightFor(
+                                      width: 30, height: 34),
+                              suffixIcon: IconButton(
+                                  tooltip: 'Send',
+                                  onPressed:
+                                      !joined || chatBusy ? null : sendMessage,
+                                  icon: const ReferenceIcon('send',
+                                      size: 18, color: NimzoStyle.primary)),
                               hintText: 'Say hi…',
                               counterText: '',
                               contentPadding: EdgeInsets.symmetric(
@@ -450,60 +497,16 @@ class _State extends ConsumerState<RoomScreen> {
                           ),
                         ),
                         IconButton(
-                          tooltip: 'Send',
-                          onPressed: !joined || chatBusy
-                              ? null
-                              : () => action(() async {
-                                    if (chatBusy) return;
-                                    final submitted = text.text;
-                                    if (submitted.trim().isEmpty) return;
-                                    final repository =
-                                        ref.read(roomChatRepositoryProvider);
-                                    setState(() => chatBusy = true);
-                                    try {
-                                      await repository.send(
-                                          widget.roomId, submitted.trim());
-                                      if (mounted && text.text == submitted)
-                                        text.clear();
-                                    } finally {
-                                      if (mounted)
-                                        setState(() => chatBusy = false);
-                                    }
-                                  }),
-                          icon: const Icon(LucideIcons.send),
-                        ),
-                        IconButton(
                           tooltip: 'Microphone',
-                          onPressed: !connected || micBusy
-                              ? null
-                              : () => action(() async {
-                                    if (micBusy) return;
-                                    final enabled = !mic;
-                                    final voice =
-                                        ref.read(voiceServiceProvider);
-                                    setState(() => micBusy = true);
-                                    try {
-                                      await voice.setMicEnabled(enabled);
-                                      if (mounted &&
-                                          ref
-                                                  .read(voiceConnectedProvider)
-                                                  .valueOrNull ==
-                                              true) {
-                                        setState(() => mic = enabled);
-                                      }
-                                    } finally {
-                                      if (mounted)
-                                        setState(() => micBusy = false);
-                                    }
-                                  }),
+                          onPressed: !connected || micBusy ? null : toggleMic,
                           icon:
                               Icon(mic ? LucideIcons.mic : LucideIcons.micOff),
                         ),
                         IconButton(
                           tooltip: 'Games',
                           onPressed: () =>
-                              context.push('/games?room=${widget.roomId}'),
-                          icon: const Icon(LucideIcons.gamepad2),
+                              showRoomGamesSheet(context, widget.roomId),
+                          icon: const ReferenceIcon('game'),
                         ),
                         IconButton(
                           tooltip: 'Gift',
@@ -539,8 +542,8 @@ class _State extends ConsumerState<RoomScreen> {
                                     showRoomGiftSheet(
                                         context, widget.roomId, id);
                                 },
-                          icon: const Icon(
-                            LucideIcons.gift,
+                          icon: const ReferenceIcon(
+                            'gift',
                             color: NimzoStyle.pink,
                           ),
                         ),

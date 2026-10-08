@@ -45,7 +45,7 @@ class WalletScreen extends ConsumerWidget {
                   children: [
                     const Text('Coins', style: TextStyle(color: Colors.white)),
                     Text(
-                      '${w.coins}',
+                      referenceNumber(w.coins),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 30,

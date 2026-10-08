@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/reference_widgets.dart';
+import '../../core/providers/supabase_provider.dart';
 import '../profile/profile.dart';
 import '../profile/profile_repository.dart';
 import '../social/follow_button.dart';
@@ -59,7 +60,15 @@ class _State extends ConsumerState<DiscoverScreen> {
                       children: [
                         for (final user in p)
                           ListTile(
-                            leading: NimzoAvatar(name: user.displayName ?? 'N'),
+                            leading: NimzoAvatar(
+                                name: user.displayName ?? 'N',
+                                url: user.avatarPath == null
+                                    ? null
+                                    : ref
+                                        .read(supabaseProvider)
+                                        .storage
+                                        .from('avatars')
+                                        .getPublicUrl(user.avatarPath!)),
                             title: Text(
                               user.displayName ?? user.username ?? 'Nimzo user',
                             ),

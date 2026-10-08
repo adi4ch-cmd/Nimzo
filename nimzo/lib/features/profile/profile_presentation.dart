@@ -4,11 +4,17 @@ import '../../core/theme/app_theme.dart';
 
 class CouplePanel extends StatelessWidget {
   final String name;
-  final String? partner;
+  final String? partner, avatarUrl, partnerAvatarUrl;
   final int days;
   final VoidCallback? onAdd;
   const CouplePanel(
-      {super.key, required this.name, this.partner, this.days = 0, this.onAdd});
+      {super.key,
+      required this.name,
+      this.partner,
+      this.avatarUrl,
+      this.partnerAvatarUrl,
+      this.days = 0,
+      this.onAdd});
   @override
   Widget build(BuildContext context) => Padding(
       padding: const EdgeInsets.only(top: 12, bottom: 8),
@@ -31,7 +37,11 @@ class CouplePanel extends StatelessWidget {
                           padding: const EdgeInsets.all(3),
                           decoration: const BoxDecoration(
                               shape: BoxShape.circle, color: Colors.white),
-                          child: NimzoAvatar(name: name, size: 52)),
+                          child: NimzoAvatar(
+                              name: name,
+                              url: avatarUrl,
+                              backgroundColor: NimzoStyle.ink,
+                              size: 52)),
                       const Icon(Icons.favorite, color: Colors.white, size: 48),
                       partner == null
                           ? InkWell(
@@ -64,7 +74,10 @@ class CouplePanel extends StatelessWidget {
                               child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    NimzoAvatar(name: partner!, size: 52),
+                                    NimzoAvatar(
+                                        name: partner!,
+                                        url: partnerAvatarUrl,
+                                        size: 52),
                                     Text(partner!,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -93,7 +106,14 @@ class CollectibleArtwork extends StatelessWidget {
   const CollectibleArtwork({super.key, required this.item, this.size = 58});
   @override
   Widget build(BuildContext context) {
-    final path = item['image_path']?.toString();
+    final path = item['image_path']?.toString() ??
+        switch (item['name']?.toString().toLowerCase()) {
+          'gold frame' => 'assets/reference/frame/0.jpg',
+          'vip frame' => 'assets/reference/frame/1.jpg',
+          'eagle car' => 'assets/reference/car/0.jpg',
+          'jeep car' => 'assets/reference/car/1.jpg',
+          _ => null
+        };
     if (path != null && path.startsWith('assets/'))
       return Image.asset(path,
           width: size, height: size, errorBuilder: (_, __, ___) => _fallback());
@@ -110,4 +130,13 @@ class CollectibleArtwork extends StatelessWidget {
           child: Text(item['name']?.toString() ?? 'Artwork unavailable',
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 11, color: NimzoStyle.muted))));
+}
+
+int profileAge(DateTime dob) {
+  final now = DateTime.now();
+  return now.year -
+      dob.year -
+      (now.month < dob.month || now.month == dob.month && now.day < dob.day
+          ? 1
+          : 0);
 }

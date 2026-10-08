@@ -1,13 +1,14 @@
+import '../../core/widgets/master_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_flutter/lucide_flutter.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../gifts/gift_sheet.dart';
 import '../social/social_repositories.dart';
+import '../social/friend_button.dart';
 import 'profile_repository.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
@@ -23,58 +24,49 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   int section = 0;
-  Widget _actions(BuildContext context, String id, String? me) {
-    return me == id
-        ? FilledButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const ProfileSetupScreen(edit: true),
-              ),
-            ),
-            child: const Text('Edit profile'),
-          )
-        : Wrap(
-            spacing: 8,
-            children: [
-              OutlinedButton(
-                onPressed: () async {
-                  try {
-                    final on = await ref.read(
-                      isFollowingProvider(id).future,
-                    );
-                    final repo = ref.read(followRepositoryProvider);
-                    on ? await repo.unfollow(id) : await repo.follow(id);
-                    ref.invalidate(isFollowingProvider(id));
-                    ref.invalidate(profileStatsProvider(id));
-                    if (me != null) ref.invalidate(profileStatsProvider(me));
-                  } catch (_) {
-                    if (context.mounted)
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Unable to update follow. Retry.',
-                          ),
-                        ),
-                      );
-                  }
-                },
-                child: Text(
-                  ref.watch(isFollowingProvider(id)).valueOrNull == true
-                      ? 'Unfollow'
-                      : 'Follow',
-                ),
-              ),
-              OutlinedButton(
-                onPressed: () => showProfileGiftSheet(context, id),
-                child: const Text('Gift'),
-              ),
-              OutlinedButton(
-                onPressed: () => context.push('/chat/$id'),
-                child: const Text('Chat'),
-              ),
-            ],
-          );
-  }
+  Widget _actions(BuildContext context, String id, String? me) => me == id
+      ? GradientButton(
+          onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => const ProfileSetupScreen(edit: true))),
+          child: const Text('Edit profile'))
+      : Row(children: [
+          Expanded(
+              child: FilledButton(
+                  style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xffdcfce7),
+                      foregroundColor: const Color(0xff16a34a)),
+                  onPressed: () async {
+                    try {
+                      final on = await ref.read(isFollowingProvider(id).future);
+                      final repo = ref.read(followRepositoryProvider);
+                      on ? await repo.unfollow(id) : await repo.follow(id);
+                      ref.invalidate(isFollowingProvider(id));
+                      ref.invalidate(profileStatsProvider(id));
+                      if (me != null) ref.invalidate(profileStatsProvider(me));
+                    } catch (_) {
+                      if (context.mounted)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text('Unable to update follow. Retry.')));
+                    }
+                  },
+                  child: Text(
+                      ref.watch(isFollowingProvider(id)).valueOrNull == true
+                          ? 'Following'
+                          : 'Follow',
+                      style: const TextStyle(fontSize: 12)))),
+          const SizedBox(width: 8),
+          Expanded(child: ReferenceFriendButton(userId: id)),
+          const SizedBox(width: 8),
+          Expanded(
+              child: FilledButton(
+                  style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xfffce7f3),
+                      foregroundColor: const Color(0xffdb2777)),
+                  onPressed: () => showProfileGiftSheet(context, id),
+                  child: const Text('Gift'))),
+        ]);
 
   @override
   Widget build(BuildContext context) {
@@ -123,9 +115,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     if (Navigator.of(context).canPop())
                                       Navigator.of(context).pop();
                                   },
-                                  icon: const Icon(LucideIcons.chevronLeft,
+                                  icon: const ReferenceIcon('back',
                                       color: Colors.white)))),
                     ),
+                    Positioned(
+                        right: 6,
+                        top: 6,
+                        child: SafeArea(
+                            bottom: false,
+                            child: PopupMenuButton<String>(
+                                icon: const Icon(Icons.more_vert,
+                                    color: Colors.white),
+                                onSelected: (value) {
+                                  if (value == 'chat')
+                                    context.push('/chat/$id');
+                                  if (value == 'visitors')
+                                    context.push('/social/visitors/$id');
+                                },
+                                itemBuilder: (_) => [
+                                      const PopupMenuItem(
+                                          value: 'visitors',
+                                          child: Text('Visitors')),
+                                      if (id != me)
+                                        const PopupMenuItem(
+                                            value: 'chat', child: Text('Chat'))
+                                    ]))),
                     Positioned(
                         top: 90,
                         left: 16,
@@ -137,7 +151,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             child: NimzoAvatar(
                                 name: p.displayName ?? p.username ?? 'N',
                                 url: image('avatars', p.avatarPath),
-                                size: 70))),
+                                size: 70,
+                                backgroundColor: NimzoStyle.ink,
+                                online: id == me))),
                   ])),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
@@ -145,7 +161,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(children: [
-                      const Icon(LucideIcons.crown,
+                      const ReferenceIcon('crown_filled',
                           color: Color(0xfff59e0b), size: 22),
                       const SizedBox(width: 8),
                       Expanded(
@@ -164,7 +180,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 color: const Color(0xff2563eb),
                                 borderRadius: BorderRadius.circular(12)),
                             child: Text(
-                                '${p.gender == "Female" ? "♀" : "♂"} ${(DateTime.now().difference(p.dateOfBirth!).inDays / 365.25).floor()}',
+                                '${p.gender == "Female" ? "♀" : "♂"} ${profileAge(p.dateOfBirth!)}',
                                 style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 13,
@@ -195,38 +211,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     AsyncContent(
                       value: ref.watch(profileStatsProvider(id)),
                       onRetry: () => ref.invalidate(profileStatsProvider(id)),
-                      builder: (stats) => Row(
-                        children: [
-                          for (final key in [
-                            'following',
-                            'followers',
-                            'visitors',
-                          ])
-                            Expanded(
-                              child: InkWell(
-                                  onTap: () => context.push('/social/$key/$id'),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          '${stats[key] ?? 0}',
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        Text(key),
-                                      ],
-                                    ),
-                                  )),
-                            ),
-                        ],
-                      ),
+                      builder: (stats) => Wrap(spacing: 10, children: [
+                        for (final key in ['following', 'followers'])
+                          InkWell(
+                              onTap: () => context.push('/social/$key/$id'),
+                              child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 6),
+                                  child: Text.rich(TextSpan(children: [
+                                    TextSpan(
+                                        text: '${stats[key] ?? 0} ',
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w700)),
+                                    TextSpan(
+                                        text:
+                                            '${key[0].toUpperCase()}${key.substring(1)}',
+                                        style: const TextStyle(
+                                            color: NimzoStyle.muted)),
+                                  ]))))
+                      ]),
                     ),
-                    const SizedBox(height: 16),
                     AsyncContent(
                         value: ref.watch(profileTagsProvider(id)),
                         onRetry: () => ref.invalidate(profileTagsProvider(id)),
@@ -266,6 +270,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         if (cp == null)
                           return CouplePanel(
                               name: p.displayName ?? 'N',
+                              avatarUrl: image('avatars', p.avatarPath),
                               onAdd:
                                   me == id ? () => context.push('/cp') : null);
                         final partner =
@@ -276,6 +281,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ref.invalidate(profileProvider(partner)),
                           builder: (other) => CouplePanel(
                               name: p.displayName ?? 'N',
+                              avatarUrl: image('avatars', p.avatarPath),
+                              partnerAvatarUrl:
+                                  image('avatars', other.avatarPath),
                               partner: other.displayName ??
                                   other.username ??
                                   'Nimzo user',
@@ -296,14 +304,46 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         child: const Text('CP invitations'),
                       ),
                     for (final kind in ProfileCollection.values) ...[
-                      Text(
-                        {
-                          'medal': 'Medal Wall',
-                          'frame': 'Frame',
-                          'car': 'Car',
-                        }[kind.name]!,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
+                      Row(children: [
+                        Expanded(
+                            child: Text(
+                          {
+                            'medal': 'Medal Wall',
+                            'frame': 'Frame',
+                            'car': 'Car'
+                          }[kind.name]!,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        )),
+                        TextButton(
+                            onPressed: () => showReferenceSheet(
+                                context,
+                                Consumer(
+                                    builder: (context, ref, _) => Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: AsyncContent(
+                                          value: ref.watch(
+                                              profileCollectionProvider(
+                                                  (id, kind))),
+                                          onRetry: () => ref.invalidate(
+                                              profileCollectionProvider(
+                                                  (id, kind))),
+                                          builder: (items) => items.isEmpty
+                                              ? const EmptyContent(
+                                                  'No items yet')
+                                              : SingleChildScrollView(
+                                                  child: Wrap(
+                                                      spacing: 10,
+                                                      runSpacing: 10,
+                                                      children: [
+                                                      for (final item in items)
+                                                        CollectibleArtwork(
+                                                            item: item)
+                                                    ])),
+                                        )))),
+                            child: const Text('View All',
+                                style: TextStyle(
+                                    fontSize: 12, color: NimzoStyle.muted)))
+                      ]),
                       AsyncContent(
                         value: ref.watch(profileCollectionProvider((id, kind))),
                         onRetry: () => ref.invalidate(
@@ -331,6 +371,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                         TextButton(
+                          key: const ValueKey('all-received-gifts'),
                           onPressed: () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => _AllGifts(id: id),
@@ -412,11 +453,11 @@ class GiftList extends ConsumerWidget {
         data: (g) => g.isEmpty
             ? const EmptyContent('No gifts received yet')
             : SizedBox(
-                height: 150,
+                height: 96 * MediaQuery.textScalerOf(context).scale(1),
                 child: ListView(scrollDirection: Axis.horizontal, children: [
                   for (final item in g.take(limit ?? g.length))
                     SizedBox(
-                        width: 86,
+                        width: 64,
                         child: Column(children: [
                           SizedBox(
                               width: 46,
@@ -424,17 +465,16 @@ class GiftList extends ConsumerWidget {
                               child: GiftArtwork(
                                   name: item['name'].toString(),
                                   assetPath: item['asset_path']?.toString())),
-                          ListTile(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 4),
-                              title: Text(item['name'].toString(),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontSize: 11)),
-                              subtitle: Text('× ${item['quantity']}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 11))),
+                          Text(item['name'].toString(),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style:
+                                  const TextStyle(fontSize: 11, height: 1.2)),
+                          Text('× ${item['quantity']}',
+                              textAlign: TextAlign.center,
+                              style:
+                                  const TextStyle(fontSize: 11, height: 1.2)),
                         ])),
                 ])),
       );
@@ -454,26 +494,11 @@ class LevelBadge extends StatelessWidget {
   final int kind, level;
   const LevelBadge({super.key, required this.kind, required this.level});
   static Color color(int kind, int level) {
-    final band = level <= 20
-        ? 0
-        : level <= 39
-            ? 1
-            : level <= 59
-                ? 2
-                : level <= 79
-                    ? 3
-                    : level <= 99
-                        ? 4
-                        : 5;
-    const families = [
-      [0xff8b5e3c, 0xffa16d48, 0xff654321],
-      [0xff15803d, 0xff16a34a, 0xff047857],
-      [0xff1d4ed8, 0xff0284c7, 0xff4338ca],
-      [0xffdb2777, 0xffbe185d, 0xffc026d3],
-      [0xffdc2626, 0xffb91c1c, 0xffe11d48],
-      [0xffb77900, 0xffa16207, 0xffca8a04],
-    ];
-    return Color(families[band][kind]);
+    return const [
+      Color(0xff16a34a),
+      Color(0xff2563eb),
+      Color(0xffdc2626)
+    ][kind];
   }
 
   @override
@@ -486,8 +511,8 @@ class LevelBadge extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              [LucideIcons.crown, LucideIcons.star, LucideIcons.zap][kind],
+            ReferenceIcon(
+              kind == 0 ? 'crown' : 'star',
               size: 14,
               color: Colors.white,
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/widgets/reference_widgets.dart';
 import 'notification_repository.dart';
+import '../../core/theme/app_theme.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -84,9 +85,23 @@ class _NoticeState extends ConsumerState<NotificationsScreen> {
                                                     : FontWeight.normal)),
                                         subtitle:
                                             Text(r['body']?.toString() ?? ''),
+                                        trailing: Text(
+                                            notificationTime(r['created_at']),
+                                            style: const TextStyle(
+                                                color: NimzoStyle.muted,
+                                                fontSize: 12)),
                                       ),
                                   ])),
                       ]))),
         ]),
       );
+}
+
+String notificationTime(dynamic value) {
+  final at = DateTime.tryParse(value?.toString() ?? '');
+  if (at == null) return '';
+  final diff = DateTime.now().difference(at);
+  if (diff.inDays > 0) return '${diff.inDays}d';
+  if (diff.inHours > 0) return '${diff.inHours}h';
+  return '${diff.inMinutes.clamp(0, 59)}m';
 }

@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_flutter/lucide_flutter.dart';
 import '../../core/widgets/master_ui.dart';
 import '../../core/utils/formatters.dart';
 import 'vip_repository.dart';
 import 'vip_tiers.dart';
 import 'vip_presentation.dart';
+import 'membership_motion.dart';
+import '../../core/providers/supabase_provider.dart';
+import '../profile/profile_repository.dart';
+
+final membershipNameProvider = FutureProvider<String?>((ref) async {
+  final id = ref.watch(currentUserIdProvider);
+  if (id == null) return null;
+  final profile = await ref.watch(profileProvider(id).future);
+  return profile.displayName ?? profile.username;
+});
 
 class VipScreen extends ConsumerStatefulWidget {
   final bool svip;
@@ -19,6 +28,8 @@ class _VipState extends ConsumerState<VipScreen> {
   int tier = 5;
   @override
   Widget build(BuildContext context) {
+    final name = ref.watch(membershipNameProvider).valueOrNull;
+    final initial = name?.trim().characters.firstOrNull ?? 'N';
     final status = ref.watch(vipStatusProvider);
     final active =
         status.valueOrNull?[widget.svip ? 'svip_level' : 'vip_level'];
@@ -95,25 +106,12 @@ class _VipState extends ConsumerState<VipScreen> {
                                                       size: 66))))))),
                           MembershipHeading('Your VIP $tier look'),
                           MembershipBenefit(
-                              preview: MembershipFrame(colors: c),
+                              preview:
+                                  MembershipFrame(colors: c, initial: initial),
                               title: 'Profile frame',
                               subtitle: 'A glowing frame around your photo'),
                           MembershipBenefit(
-                              preview: Container(
-                                  width: 48,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: const Color(0xff1b1230),
-                                      border:
-                                          Border.all(color: c.first, width: 3),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color:
-                                                c.first.withValues(alpha: .5),
-                                            blurRadius: 16)
-                                      ]),
-                                  child: const Icon(LucideIcons.mic)),
+                              preview: MembershipAura(color: c.first),
                               title: 'Mic seat effect',
                               subtitle: 'An animated aura on your mic seat'),
                           MembershipBenefit(
@@ -130,7 +128,7 @@ class _VipState extends ConsumerState<VipScreen> {
                                       child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                        const Icon(LucideIcons.crown,
+                                        const ReferenceIcon('crown',
                                             size: 12, color: Color(0xff22112e)),
                                         Text(' VIP$tier',
                                             style: const TextStyle(
@@ -141,7 +139,7 @@ class _VipState extends ConsumerState<VipScreen> {
                               title: 'VIP tag',
                               subtitle: 'Shown beside your name'),
                           MembershipBenefit(
-                              preview: GradientText('NIMZO',
+                              preview: GradientText(name ?? 'Name unavailable',
                                   gradient: LinearGradient(colors: c),
                                   style: const TextStyle(
                                       fontSize: 17,
@@ -176,13 +174,13 @@ class _VipState extends ConsumerState<VipScreen> {
                               title: 'Room theme',
                               subtitle: 'A VIP theme for your room'),
                           const MembershipBenefit(
-                              preview: Icon(LucideIcons.arrowUp,
-                                  color: Color(0xfff5c451)),
+                              preview:
+                                  ReferenceIcon('up', color: Color(0xfff5c451)),
                               title: 'Rank at front',
                               subtitle: 'VIP members are listed first'),
                           if (tier >= 3)
                             const MembershipBenefit(
-                                preview: Icon(LucideIcons.film,
+                                preview: ReferenceIcon('film',
                                     color: Color(0xfff5c451)),
                                 title: 'Animated room theme',
                                 subtitle:
@@ -198,7 +196,9 @@ class _VipState extends ConsumerState<VipScreen> {
                                   itemBuilder: (_, i) => InkWell(
                                       onTap: () => setState(() => tier = i + 1),
                                       child: Column(children: [
-                                        MembershipFrame(colors: vipPalette[i]),
+                                        MembershipFrame(
+                                            colors: vipPalette[i],
+                                            initial: initial),
                                         Text('VIP${i + 1}',
                                             style: const TextStyle(
                                                 fontSize: 11,
@@ -206,7 +206,12 @@ class _VipState extends ConsumerState<VipScreen> {
                                       ])))),
                         ])),
           bottomNavigationBar: Container(
-              color: const Color(0xff0b0813),
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0x000b0813), Color(0xff0b0813)],
+                      stops: [0, .38])),
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
               child: SafeArea(
                   top: false,
@@ -227,9 +232,7 @@ class _VipState extends ConsumerState<VipScreen> {
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700))
                         ])),
-                    GradientButton(
-                        gradient: membershipGold,
-                        foreground: const Color(0xff3b2200),
+                    MembershipGoldButton(
                         onPressed: widget.svip
                             ? () => context.push('/recharge')
                             : () => showUiUnavailable(context, 'VIP purchase'),
@@ -256,10 +259,10 @@ class _VipState extends ConsumerState<VipScreen> {
             subtitle: 'More recharge, higher level, more privileges',
             color: const Color(0xfffbbf24)),
         _features(const [
-          (LucideIcons.zap, 'Instant upgrade'),
-          (LucideIcons.gift, 'Weekly coins'),
-          (LucideIcons.clock, '90 days validity'),
-          (LucideIcons.crown, '10 sections')
+          ('bolt', 'Instant upgrade'),
+          ('gift', 'Weekly coins'),
+          ('clock', '90 days validity'),
+          ('crown', '10 sections')
         ], 4),
         Container(
             padding: const EdgeInsets.all(14),
@@ -273,25 +276,29 @@ class _VipState extends ConsumerState<VipScreen> {
                 _pill(status)
               ]),
               const SizedBox(height: 10),
-              LinearProgressIndicator(
-                  value: level == null ? null : level.clamp(0, 10) / 10,
-                  color: const Color(0xfff5c451),
-                  backgroundColor: const Color(0xff3a3047)),
+              Semantics(
+                  label: 'Recharge progress unavailable',
+                  child: Container(
+                      height: 8,
+                      decoration: BoxDecoration(
+                          color: const Color(0xff3a3047),
+                          borderRadius: BorderRadius.circular(4)))),
               const SizedBox(height: 8),
-              const Text('Total recharge determines your level',
+              const Text(
+                  'Recharge progress unavailable · your level comes from the backend',
                   style: TextStyle(fontSize: 12, color: Color(0xffaa9fbc)))
             ])),
         const MembershipHeading('Privileges'),
         _features(const [
-          (LucideIcons.crown, 'SVIP Level'),
-          (LucideIcons.star, 'Exclusive Icon'),
-          (LucideIcons.gift, 'Gift Banner'),
-          (LucideIcons.user, 'Channel Admin'),
-          (LucideIcons.medal, 'Customized Medal'),
-          (LucideIcons.sparkles, 'Shining Title'),
-          (LucideIcons.contact, 'Letter ID'),
-          (LucideIcons.mountain, 'Exclusive Mounts'),
-          (LucideIcons.shield, 'Unban Account')
+          ('crown', 'SVIP Level'),
+          ('star', 'Exclusive Icon'),
+          ('gift', 'Gift Banner'),
+          ('user', 'Channel Admin'),
+          ('medal', 'Customized Medal'),
+          ('spark', 'Shining Title'),
+          ('idc', 'Letter ID'),
+          ('mount', 'Exclusive Mounts'),
+          ('shield', 'Unban Account')
         ], 3),
         const MembershipHeading('Levels'),
         for (var i = 0; i < 10; i++)
@@ -308,76 +315,92 @@ class _VipState extends ConsumerState<VipScreen> {
                         svipPalette[i].last.withValues(alpha: .5),
                         const Color(0xff120b24)
                       ])),
-              child: Row(children: [
-                MembershipEmblem(level: i + 1, svip: true, size: 90),
-                const SizedBox(width: 12),
-                Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      GradientText('SVIP ${i + 1}',
-                          gradient: membershipGold,
-                          style: const TextStyle(
-                              fontFamily: 'Cinzel',
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800)),
-                      const SizedBox(height: 6),
-                      Text(
-                          'Total recharge  \$${NimzoVipTiers.svipRechargeUsd[i]}',
-                          style: const TextStyle(
-                              fontSize: 13, color: Color(0xfffcd34d))),
-                      Text(
-                          '${compactNumber(NimzoVipTiers.svipRechargeUsd[i] * 500000)} coins',
-                          style: const TextStyle(
-                              fontSize: 11, color: Color(0xffb4a6c6))),
-                      Container(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
+              child: Stack(children: [
+                Row(children: [
+                  MembershipEmblem(level: i + 1, svip: true, size: 90),
+                  const SizedBox(width: 12),
+                  Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                        MembershipGoldText('SVIP ${i + 1}',
+                            style: const TextStyle(
+                                fontFamily: 'Cinzel',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 6),
+                        Text(
+                            'Total recharge  \$${NimzoVipTiers.svipRechargeUsd[i]}',
+                            style: const TextStyle(
+                                fontSize: 13, color: Color(0xfffcd34d))),
+                        Text(
+                            '${compactNumber(NimzoVipTiers.svipRechargeUsd[i] * 500000)} coins',
+                            style: const TextStyle(
+                                fontSize: 11, color: Color(0xffb4a6c6))),
+                        Container(
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                                gradient: membershipGold,
+                                borderRadius: BorderRadius.circular(14)),
+                            child: Text(
+                                'Weekly +${compactNumber(NimzoVipTiers.svipWeeklyCoins[i])} coins',
+                                style: const TextStyle(
+                                    fontSize: 11,
+                                    color: Color(0xff2a1100),
+                                    fontWeight: FontWeight.w800))),
+                        Text(
+                            'All SVIP1${i == 0 ? '' : '-${i + 1}'} privileges · 90 days',
+                            style: const TextStyle(
+                                fontSize: 11, color: Color(0xffb4a6c6)))
+                      ]))
+                ]),
+                if (level != null && i == level)
+                  Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
+                              horizontal: 9, vertical: 2),
                           decoration: BoxDecoration(
-                              gradient: membershipGold,
-                              borderRadius: BorderRadius.circular(14)),
-                          child: Text(
-                              'Weekly +${compactNumber(NimzoVipTiers.svipWeeklyCoins[i])} coins',
-                              style: const TextStyle(
-                                  fontSize: 11,
+                              color: const Color(0xfff5c451),
+                              borderRadius: BorderRadius.circular(8)),
+                          child: const Text('NEXT',
+                              style: TextStyle(
                                   color: Color(0xff2a1100),
-                                  fontWeight: FontWeight.w800))),
-                      Text(
-                          'All SVIP1${i == 0 ? '' : '-${i + 1}'} privileges · 90 days',
-                          style: const TextStyle(
-                              fontSize: 11, color: Color(0xffb4a6c6)))
-                    ]))
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800))))
               ])),
         const MembershipHeading('Important rules'),
         for (final rule in const [
           (
-            LucideIcons.zap,
+            'bolt',
             'Instant upgrade',
             'Upgrade as soon as total recharge reaches the next level.'
           ),
           (
-            LucideIcons.clock,
+            'clock',
             '90 days validity',
             'Each level is valid for 90 days from activation.'
           ),
           (
-            LucideIcons.gift,
+            'gift',
             'Weekly coins reward',
             'Every Sunday at 9:00 PM (Saudi Arabia time).'
           ),
           (
-            LucideIcons.arrowUp,
+            'up',
             'Level maintenance',
             'Your level is based on your total recharge.'
           )
         ])
           MembershipBenefit(
-              preview: Icon(rule.$1, color: const Color(0xfff5c451)),
+              preview: ReferenceIcon(rule.$1, color: const Color(0xfff5c451)),
               title: rule.$2,
               subtitle: rule.$3),
       ];
-  Widget _features(List<(IconData, String)> items, int columns) => Padding(
+  Widget _features(List<(String, String)> items, int columns) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: GridView.count(
           shrinkWrap: true,
@@ -397,7 +420,8 @@ class _VipState extends ConsumerState<VipScreen> {
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(item.$1, color: const Color(0xfff5c451), size: 22),
+                        ReferenceIcon(item.$1,
+                            color: const Color(0xfff5c451), size: 22),
                         const SizedBox(height: 6),
                         Text(item.$2,
                             textAlign: TextAlign.center,

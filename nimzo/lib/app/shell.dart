@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_flutter/lucide_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/providers/ui_language_provider.dart';
+import '../core/widgets/master_ui.dart';
 
 import '../core/theme/app_theme.dart';
 
-class MainShell extends StatelessWidget {
+class MainShell extends ConsumerWidget {
   final StatefulNavigationShell shell;
   const MainShell({super.key, required this.shell});
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
         body: SafeArea(bottom: false, child: shell),
         bottomNavigationBar: Container(
           decoration: const BoxDecoration(
@@ -30,14 +32,8 @@ class MainShell extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              [
-                                LucideIcons.house,
-                                LucideIcons.gamepad2,
-                                LucideIcons.compass,
-                                LucideIcons.messageSquare,
-                                LucideIcons.user,
-                              ][i],
+                            ReferenceIcon(
+                              ['home', 'game', 'moments', 'msg', 'user'][i],
                               size: 22,
                               color: i == shell.currentIndex
                                   ? NimzoStyle.primary
@@ -45,7 +41,15 @@ class MainShell extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              ['Home', 'Games', 'Moments', 'Messages', 'Me'][i],
+                              (ref.watch(uiLanguageProvider) == 'ar'
+                                  ? referenceArabicTabs
+                                  : [
+                                      'Home',
+                                      'Games',
+                                      'Moments',
+                                      'Messages',
+                                      'Me'
+                                    ])[i],
                               style: TextStyle(
                                 fontSize: 11,
                                 color: i == shell.currentIndex

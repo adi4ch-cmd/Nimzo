@@ -29,15 +29,23 @@ class SettingsScreen extends ConsumerWidget {
                   ])
                     ListTile(
                       title: Text(label),
-                      trailing: const Icon(Icons.chevron_right),
+                      minTileHeight: 46,
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 14),
+                      shape: const Border(
+                          bottom: BorderSide(color: NimzoStyle.line)),
                       onTap: () =>
                           context.push('/info/${Uri.encodeComponent(label)}'),
                     ),
                   const SwitchListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 14),
                       title: Text('Message notifications'),
                       value: true,
                       onChanged: null),
                   const SwitchListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 14),
                       title: Text('Gift notifications'),
                       value: true,
                       onChanged: null),

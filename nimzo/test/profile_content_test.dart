@@ -112,11 +112,11 @@ void main() {
     (tester) async {
       await openProfile(tester, giftCount: 16);
       await tester.scrollUntilVisible(
-        find.text('View All').hitTestable(),
+        find.byKey(const ValueKey('all-received-gifts')).hitTestable(),
         250,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.tap(find.text('View All'));
+      await tester.tap(find.byKey(const ValueKey('all-received-gifts')));
       await tester.pumpAndSettle();
       expect(find.text('All received gifts'), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -138,7 +138,7 @@ void main() {
       await tester.tap(find.text('Gifts'));
       await tester.pumpAndSettle();
       expect(
-        find.descendant(of: find.byType(ListTile), matching: find.text('Rose')),
+        find.text('Rose'),
         findsOneWidget,
       );
       expect(find.text('× 12'), findsOneWidget);

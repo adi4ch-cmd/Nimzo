@@ -10,13 +10,15 @@ class NimzoAvatar extends StatelessWidget {
   final double size;
   final Color backgroundColor;
   final double borderWidth;
+  final bool online;
   const NimzoAvatar(
       {super.key,
       required this.name,
       this.url,
       this.size = 46,
       this.backgroundColor = NimzoStyle.primary,
-      this.borderWidth = 0});
+      this.borderWidth = 0,
+      this.online = false});
   @override
   Widget build(BuildContext context) {
     final fallback = ColoredBox(
@@ -35,7 +37,7 @@ class NimzoAvatar extends StatelessWidget {
         ),
       ),
     );
-    return SizedBox.square(
+    final avatar = SizedBox.square(
       dimension: size,
       child: Container(
           padding: EdgeInsets.all(borderWidth),
@@ -51,6 +53,21 @@ class NimzoAvatar extends StatelessWidget {
                   ),
           )),
     );
+    return !online
+        ? avatar
+        : Stack(clipBehavior: Clip.none, children: [
+            avatar,
+            Positioned(
+                right: 2,
+                bottom: 4,
+                child: Container(
+                    width: 14,
+                    height: 14,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xff22c55e),
+                        border: Border.all(color: Colors.white, width: 2))))
+          ]);
   }
 }
 

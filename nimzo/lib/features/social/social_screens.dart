@@ -6,6 +6,7 @@ import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile.dart';
 import '../profile/profile_repository.dart';
 import 'follow_button.dart';
+import 'social_repositories.dart';
 
 final socialListProvider =
     FutureProvider.family<List<Profile>, (String, String)>((ref, args) async {
@@ -35,6 +36,23 @@ final socialListProvider =
       .toList();
 });
 
+final visitorTimesProvider = FutureProvider<Map<String, DateTime>>((ref) async {
+  final rows = await ref.watch(visitorRepositoryProvider).mine();
+  return {
+    for (final row in rows)
+      if (DateTime.tryParse(row['visited_at']?.toString() ?? '') != null)
+        row['visitor_id'].toString():
+            DateTime.parse(row['visited_at'].toString())
+  };
+});
+String visitLabel(DateTime time) {
+  final now = DateTime.now();
+  final t = time.toLocal();
+  return now.year == t.year && now.month == t.month && now.day == t.day
+      ? 'visited today'
+      : 'visited ${t.day}/${t.month}/${t.year}';
+}
+
 class SocialListScreen extends ConsumerWidget {
   final String kind, userId;
   const SocialListScreen({super.key, required this.kind, required this.userId});
@@ -42,31 +60,35 @@ class SocialListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
       appBar:
           AppBar(title: Text('${kind[0].toUpperCase()}${kind.substring(1)}')),
-      body: ListView(children: [
-        AsyncContent(
-            value: ref.watch(socialListProvider((kind, userId))),
-            onRetry: () => ref.invalidate(socialListProvider((kind, userId))),
-            builder: (rows) => rows.isEmpty
-                ? const EmptyContent('No users yet')
-                : Column(children: [
-                    for (final p in rows)
-                      ListTile(
-                          leading: NimzoAvatar(
-                              name: p.displayName ?? 'N',
-                              url: p.avatarPath == null
-                                  ? null
-                                  : ref
-                                      .watch(supabaseProvider)
-                                      .storage
-                                      .from('avatars')
-                                      .getPublicUrl(p.avatarPath!)),
-                          title:
-                              Text(p.displayName ?? p.username ?? 'Nimzo user'),
-                          subtitle: Text('ID:${p.nimzoId}'),
-                          trailing: ReferenceFollowButton(userId: p.id),
-                          onTap: () => context.push('/profile/${p.id}'))
-                  ]))
-      ]));
+      body: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          children: [
+            AsyncContent(
+                value: ref.watch(socialListProvider((kind, userId))),
+                onRetry: () =>
+                    ref.invalidate(socialListProvider((kind, userId))),
+                builder: (rows) => rows.isEmpty
+                    ? const EmptyContent('No users yet')
+                    : Column(children: [
+                        for (final p in rows)
+                          ListTile(
+                              leading: NimzoAvatar(
+                                  name: p.displayName ?? 'N',
+                                  url: p.avatarPath == null
+                                      ? null
+                                      : ref
+                                          .watch(supabaseProvider)
+                                          .storage
+                                          .from('avatars')
+                                          .getPublicUrl(p.avatarPath!)),
+                              title: Text(
+                                  p.displayName ?? p.username ?? 'Nimzo user'),
+                              subtitle: Text(
+                                  'ID:${p.nimzoId}${kind == 'visitors' && userId == ref.watch(currentUserIdProvider) && ref.watch(visitorTimesProvider).valueOrNull?[p.id] != null ? ' · ${visitLabel(ref.watch(visitorTimesProvider).valueOrNull![p.id]!)}' : ''}'),
+                              trailing: ReferenceFollowButton(userId: p.id),
+                              onTap: () => context.push('/profile/${p.id}'))
+                      ]))
+          ]));
 }
 
 final coupleRequestsProvider = FutureProvider<List<Map<String, dynamic>>>(

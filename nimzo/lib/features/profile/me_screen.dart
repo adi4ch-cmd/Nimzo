@@ -1,13 +1,14 @@
+import '../../core/widgets/master_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_flutter/lucide_flutter.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/reference_widgets.dart';
 import 'profile_repository.dart';
 import 'profile_screen.dart';
+import 'profile_presentation.dart';
 
 class MeScreen extends ConsumerWidget {
   const MeScreen({super.key});
@@ -25,20 +26,32 @@ class MeScreen extends ConsumerWidget {
           children: [
             Container(
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 44),
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+              decoration: BoxDecoration(
+                  image: p.coverPath == null
+                      ? null
+                      : DecorationImage(
+                          image: NetworkImage(ref
+                              .read(supabaseProvider)
+                              .storage
+                              .from('covers')
+                              .getPublicUrl(p.coverPath!)),
+                          fit: BoxFit.cover,
+                          colorFilter: ColorFilter.mode(
+                              const Color(0xff9333ea).withValues(alpha: .65),
+                              BlendMode.srcATop)),
+                  gradient: const LinearGradient(
+                      begin: Alignment(-.34, -1),
+                      end: Alignment(.34, 1),
                       colors: [
-                    Color(0xff9333ea),
-                    Color(0xffc026d3),
-                    Color(0xffd946ef)
-                  ],
+                        Color(0xff9333ea),
+                        Color(0xffc026d3),
+                        Color(0xffd946ef)
+                      ],
                       stops: [
-                    0,
-                    .7,
-                    1
-                  ])),
+                        0,
+                        .7,
+                        1
+                      ])),
               child: Column(
                 children: [
                   InkWell(
@@ -48,6 +61,7 @@ class MeScreen extends ConsumerWidget {
                         NimzoAvatar(
                           name: p.displayName ?? 'N',
                           size: 78,
+                          online: true,
                           borderWidth: 3,
                           backgroundColor: NimzoStyle.ink,
                           url: p.avatarPath == null
@@ -63,14 +77,36 @@ class MeScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                p.displayName ?? p.username ?? 'Nimzo user',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
+                              Wrap(
+                                  spacing: 8,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    const ReferenceIcon('crown_filled',
+                                        color: Color(0xfffbbf24)),
+                                    Text(
+                                        p.displayName ??
+                                            p.username ??
+                                            'Nimzo user',
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700)),
+                                    if (p.dateOfBirth != null)
+                                      Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 9, vertical: 1),
+                                          decoration: BoxDecoration(
+                                              color: const Color(0xff2563eb),
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          child: Text(
+                                              '${p.gender == 'Female' ? '♀' : '♂'} ${profileAge(p.dateOfBirth!)}',
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 13,
+                                                  fontWeight:
+                                                      FontWeight.w700))),
+                                  ]),
                               Text(
                                 'ID:${p.nimzoId} | ${p.countryName ?? p.countryCode ?? ''}',
                                 style: const TextStyle(
@@ -78,27 +114,27 @@ class MeScreen extends ConsumerWidget {
                                   fontSize: 13,
                                 ),
                               ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                children: [
+                                  if (p.wealthLevel > 0)
+                                    LevelBadge(kind: 0, level: p.wealthLevel),
+                                  if (p.charmLevel > 0)
+                                    LevelBadge(kind: 1, level: p.charmLevel),
+                                  if (p.activeLevel > 0)
+                                    LevelBadge(kind: 2, level: p.activeLevel),
+                                ],
+                              ),
                             ],
                           ),
                         ),
-                        const Icon(
-                          LucideIcons.chevronRight,
+                        const ReferenceIcon(
+                          'fwd',
                           color: Colors.white,
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      if (p.wealthLevel > 0)
-                        LevelBadge(kind: 0, level: p.wealthLevel),
-                      if (p.charmLevel > 0)
-                        LevelBadge(kind: 1, level: p.charmLevel),
-                      if (p.activeLevel > 0)
-                        LevelBadge(kind: 2, level: p.activeLevel),
-                    ],
                   ),
                   AsyncContent(
                     value: ref.watch(profileStatsProvider(id)),
@@ -122,7 +158,7 @@ class MeScreen extends ConsumerWidget {
                                     ),
                                   ),
                                   Text(
-                                    k,
+                                    '${k[0].toUpperCase()}${k.substring(1)}',
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -143,14 +179,10 @@ class MeScreen extends ConsumerWidget {
                     children: [
                       _MenuRow(
                         items: const [
-                          ('Task', LucideIcons.listChecks, '/info/Task'),
-                          ('Store', LucideIcons.shoppingBag, '/info/Store'),
-                          ('Ranking', LucideIcons.trophy, '/ranking'),
-                          (
-                            'Honor Wall',
-                            LucideIcons.award,
-                            '/info/Honor%20Wall'
-                          ),
+                          ('Task', 'task', '/info/Task'),
+                          ('Store', 'store', '/info/Store'),
+                          ('Ranking', 'cup', '/ranking'),
+                          ('Honor Wall', 'moments', '/info/Honor%20Wall'),
                         ],
                       ),
                       Row(
@@ -178,11 +210,11 @@ class MeScreen extends ConsumerWidget {
                       ),
                       _MenuRow(
                         items: const [
-                          ('CP Zone', LucideIcons.heart, '/cp'),
-                          ('VIP', LucideIcons.crown, '/vip'),
-                          ('Settings', LucideIcons.settings, '/settings'),
-                          ('Level', LucideIcons.chartNoAxesColumn, '/levels'),
-                          ('About', LucideIcons.info, '/info/About'),
+                          ('CP Zone', 'cp', '/cp'),
+                          ('VIP', 'crown', '/vip'),
+                          ('Settings', 'gear', '/settings'),
+                          ('Level', 'bars', '/levels'),
+                          ('About', 'info', '/info/About'),
                         ],
                       ),
                       const ReferenceCard(
@@ -209,7 +241,7 @@ class MeScreen extends ConsumerWidget {
 }
 
 class _MenuRow extends StatelessWidget {
-  final List<(String, IconData, String)> items;
+  final List<(String, String, String)> items;
   const _MenuRow({required this.items});
   @override
   Widget build(BuildContext context) => Container(
@@ -233,8 +265,8 @@ class _MenuRow extends StatelessWidget {
                   child: Column(
                     children: [
                       Container(
-                          width: 52,
-                          height: 52,
+                          width: 54,
+                          height: 54,
                           decoration: BoxDecoration(
                               color: (item.$1 == 'Ranking' || item.$1 == 'VIP'
                                       ? const Color(0xfff59e0b)
@@ -245,8 +277,8 @@ class _MenuRow extends StatelessWidget {
                                           : NimzoStyle.primary)
                                   .withValues(alpha: .12),
                               borderRadius: BorderRadius.circular(16)),
-                          child: Icon(item.$2,
-                              size: 26,
+                          child: ReferenceIcon(item.$2,
+                              size: 22,
                               color: item.$1 == 'Ranking' || item.$1 == 'VIP'
                                   ? const Color(0xfff59e0b)
                                   : item.$1 == 'Task' ||

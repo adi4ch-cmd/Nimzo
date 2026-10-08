@@ -40,7 +40,7 @@ void main() {
     expect(find.text('Actual recipient'), findsOneWidget);
     expect(tester.widget<TextField>(find.byType(TextField)).maxLength, 1000);
     await tester.enterText(find.byType(TextField), 'First');
-    await tester.tap(find.byIcon(Icons.send));
+    await tester.tap(find.byTooltip('Send'));
     await tester.pump();
     await tester.enterText(find.byType(TextField), 'Second draft');
     repo.pending.complete();
