@@ -77,7 +77,7 @@ class _State extends ConsumerState<RoomScreen> {
       failure = joined
           ? error is VoiceConnectionFailure
               ? error.message.toString()
-              : 'Voice could not connect. Retry voice.'
+              : 'Voice connection failed (${error.runtimeType}). Retry voice.'
           : 'Unable to enter this room. Please retry.';
     } finally {
       if (mounted) setState(() => joining = false);
