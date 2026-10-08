@@ -372,7 +372,7 @@ jobs:
               core.info(asset.data.browser_download_url);
               await core.summary.addLink(name, asset.data.browser_download_url).write();
             }
-            await github.rest.repos.updateRelease({owner: context.repo.owner, repo: context.repo.repo, release_id: release.data.id, draft: false});
+            await github.rest.repos.updateRelease({owner: context.repo.owner, repo: context.repo.repo, release_id: release.data.id, tag_name: tag, target_commitish: context.sha, draft: false});
 
       - name: APK download link
         run: echo '${{ steps.apk.outputs.artifact-url }}' >> "$GITHUB_STEP_SUMMARY"

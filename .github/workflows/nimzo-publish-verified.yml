@@ -55,6 +55,17 @@ jobs:
             const manifest = JSON.parse(fs.readFileSync('verified-apk/prebuilt.json'));
             const tag = `nimzo-release-${manifest.sourceSha.slice(0, 12)}`;
             const all = await github.paginate(github.rest.repos.listReleases, {owner: context.repo.owner, repo: context.repo.repo, per_page: 100});
+            const existing = all.find(r => !r.draft && r.tag_name === tag);
+            if (existing) {
+              const crypto = require('crypto');
+              const assets = existing.assets || [];
+              const apk = assets.find(a => a.name === 'app-release.apk');
+              const metadata = assets.find(a => a.name === 'nimzo-update.json');
+              const metadataDigest = 'sha256:' + crypto.createHash('sha256').update(fs.readFileSync('verified-apk/nimzo-update.json')).digest('hex');
+              if (apk?.digest !== 'sha256:' + update.apkSha256 || apk.browser_download_url !== update.apkUrl || metadata?.digest !== metadataDigest || !['app-release.apk.sha256', 'app-release.apk.signing.txt'].every(name => assets.some(a => a.name === name))) throw new Error('Existing published release differs; refusing to overwrite');
+              await core.summary.addLink('Existing verified APK', update.apkUrl).write();
+              return;
+            }
             for (const release of all.filter(r => !r.draft)) {
               const build = release.body?.match(/NIMZO_BUILD_NUMBER=(\d+)/);
               if (build && Number(build[1]) >= update.buildNumber) throw new Error('New APK release must increase build number');
@@ -69,5 +80,5 @@ jobs:
               const data = fs.readFileSync(`verified-apk/${name}`);
               await github.rest.repos.uploadReleaseAsset({owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, name, data, headers: {'content-type': name.endsWith('.apk') ? 'application/vnd.android.package-archive' : name.endsWith('.json') ? 'application/json' : 'text/plain', 'content-length': data.length}});
             }
-            await github.rest.repos.updateRelease({owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, draft: false});
+            await github.rest.repos.updateRelease({owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, tag_name: tag, target_commitish: manifest.sourceSha, draft: false});
             await core.summary.addLink('Verified APK', update.apkUrl).write();
