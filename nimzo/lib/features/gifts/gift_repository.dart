@@ -23,6 +23,35 @@ class GiftRepository {
       .map(
         (rows) => rows.map((row) => Map<String, dynamic>.from(row)).toList(),
       );
+  /// Read-only, RLS-scoped animation events created by the settlement trigger.
+  /// Subscribe only while a room is active; do not treat these as payment proof
+  /// for any client-side wallet updates.
+  Stream<List<Map<String, dynamic>>> watchVerifiedAnimations({
+    required String roomId,
+    required String countryCode,
+  }) {
+    final normalized = countryCode.trim().toUpperCase();
+    if (normalized.isEmpty) {
+      return _db.from('gift_animation_events')
+          .stream(primaryKey: ['id'])
+          .eq('room_id', roomId)
+          .order('created_at', ascending: false)
+          .limit(20)
+          .map((rows) => rows.where((row) => row['scope'] == 'room')
+              .map((row) => Map<String, dynamic>.from(row)).toList());
+    }
+    // RLS restricts country broadcasts to the signed-in user's country.
+    // Room events are filtered locally after the RLS-scoped stream.
+    return _db.from('gift_animation_events')
+        .stream(primaryKey: ['id'])
+        .order('created_at', ascending: false)
+        .limit(100)
+        .map((rows) => rows.where((row) =>
+            (row['scope'] == 'room' && row['room_id'] == roomId) ||
+            (row['scope'] == 'country' && row['country_code'] == normalized))
+            .map((row) => Map<String, dynamic>.from(row)).toList());
+  }
+
   final SupabaseClient _db;
   GiftRepository(this._db);
 
@@ -135,4 +164,13 @@ final roomGiftEventProvider =
     StreamProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
   (ref, roomId) =>
       ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
+);
+
+final verifiedGiftAnimationProvider =
+    StreamProvider.autoDispose.family<List<Map<String, dynamic>>,
+        ({String roomId, String countryCode})>(
+  (ref, args) => ref.watch(giftRepositoryProvider).watchVerifiedAnimations(
+        roomId: args.roomId,
+        countryCode: args.countryCode,
+      ),
 );
