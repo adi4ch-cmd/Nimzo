@@ -213,38 +213,37 @@ class _State extends ConsumerState<GiftSheet> {
                           : ListView(
                               padding: const EdgeInsets.all(16),
                               children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(bottom: 12),
+                                    child: Text('GIFT COLLECTION',
+                                      style: TextStyle(
+                                        letterSpacing: 2,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w800,
+                                        color: Color(0xffd6ad61))),
+                                  ),
                                   GridView.count(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      crossAxisCount: 3,
-                                      crossAxisSpacing: 8,
-                                      mainAxisSpacing: 8,
-                                      childAspectRatio: .82 /
-                                          MediaQuery.textScalerOf(context)
-                                              .scale(1),
-                                      children: [
-                                        for (final gift in gifts.where((g) =>
-                                            g.name.toLowerCase() !=
-                                            'world crown'))
-                                          _giftCard(gift)
-                                      ]),
-                                  for (final gift in gifts.where((g) =>
-                                      g.name.toLowerCase() == 'world crown'))
-                                    Padding(
-                                        padding: const EdgeInsets.only(top: 8),
-                                        child:
-                                            _giftCard(gift, legendary: true)),
-                                  if (gifts.any((g) =>
-                                      g.name.toLowerCase() == 'world crown'))
-                                    const Padding(
-                                        padding: EdgeInsets.only(top: 12),
-                                        child: Text(
-                                            'World Crown: country theme, room-wide show, special announcement, medal after 15 sends.',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: NimzoStyle.muted,
-                                                fontSize: 12))),
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                    childAspectRatio: .82 /
+                                        MediaQuery.textScalerOf(context).scale(1),
+                                    children: [
+                                      for (final gift in gifts)
+                                        _giftCard(gift, legendary: gift.price >= 35000000),
+                                    ],
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.only(top: 12),
+                                    child: Text(
+                                      'Cinematic animations play after verified gift settlement. 35M and 50M gifts are country-wide.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: NimzoStyle.muted,
+                                        fontSize: 12)),
+                                  ),
                                 ]))),
               Padding(
                   padding: const EdgeInsets.all(12),
@@ -284,10 +283,10 @@ class _State extends ConsumerState<GiftSheet> {
       child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
           decoration: BoxDecoration(
-              color: const Color(0xff14082e),
+              color: const Color(0xff111923),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                  color: legendary || selected == gift
+                  color: selected == gift || legendary
                       ? const Color(0xfffbbf24)
                       : Colors.transparent,
                   width: 2)),
