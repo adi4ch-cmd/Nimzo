@@ -28,7 +28,9 @@ const svipPalette = [
   [Color(0xfffde047), Color(0xffa16207)],
 ];
 const membershipGold = LinearGradient(
-    colors: [Color(0xfffff3b0), Color(0xfff5c451), Color(0xffd9951b)]);
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xfffff4cf), Color(0xffe8c277), Color(0xffa36a2b), Color(0xfff7db9b)]);
 
 class MembershipEmblem extends StatelessWidget {
   final int level;
@@ -171,9 +173,9 @@ class _HeroState extends State<MembershipHero>
         MembershipGoldText(widget.title,
             style: const TextStyle(
                 fontFamily: 'Cinzel',
-                fontSize: 30,
+                fontSize: 29,
                 fontWeight: FontWeight.w800,
-                letterSpacing: 2)),
+                letterSpacing: 2.8)),
         Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(widget.subtitle,
@@ -212,9 +214,13 @@ class MembershipBenefit extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-          color: const Color(0xff150d29),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xff73513b))),
+          gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xff292038), Color(0xff171324)]),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xff8d7654), width: .8),
+          boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 16, offset: Offset(0, 6))]),
       child: Row(children: [
         SizedBox(width: 76, child: Center(child: preview)),
         const SizedBox(width: 14),
