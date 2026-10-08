@@ -120,8 +120,17 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                               ],
                             ),
                           )),
+                  if (self)
+                    ListTile(
+                      title: const Text('Edit Profile'),
+                      onTap: busy ? null : () {
+                        final router = GoRouter.of(context);
+                        Navigator.pop(context);
+                        router.push('/profile');
+                      },
+                    ),
                   ListTile(
-                      title: const Text('View profile'),
+                      title: Text(self ? 'My Profile' : 'View profile'),
                       onTap: busy
                           ? null
                           : () {
@@ -159,21 +168,25 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                   if (!self)
                     ListTile(
                         title: Text(switch (friendship?.valueOrNull) {
-                          FriendState.friends => 'Friends',
+                          FriendState.friends => 'Send Message',
                           FriendState.sent => 'Request sent',
                           FriendState.received => 'Accept friend request',
                           _ => 'Add friend',
                         }),
                         onTap: busy ||
                                 friendship?.hasValue != true ||
-                                friendship?.valueOrNull ==
-                                    FriendState.friends ||
                                 friendship?.valueOrNull == FriendState.sent
                             ? null
                             : () => run(() async {
+                                  if (friendship!.valueOrNull == FriendState.friends) {
+                                    final router = GoRouter.of(context);
+                                    Navigator.pop(context);
+                                    router.push('/chat/${widget.userId}');
+                                    return;
+                                  }
                                   final repo =
                                       ref.read(friendRepositoryProvider);
-                                  if (friendship!.valueOrNull ==
+                                  if (friendship.valueOrNull ==
                                       FriendState.received) {
                                     await repo.accept(widget.userId);
                                   } else {
