@@ -8,6 +8,7 @@ import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/reference_widgets.dart';
 import '../../gifts/gift_sheet.dart';
+import '../../gifts/verified_gift_broadcast.dart';
 import '../../games/games_catalog_screen.dart';
 import '../../games/room_game_host.dart';
 import '../../voice/voice_controller.dart';
@@ -249,7 +250,7 @@ class _State extends ConsumerState<RoomScreen> {
                                 fontWeight: FontWeight.w600))))
               ],
             ),
-            body: SafeArea(
+            body: Stack(children: [SafeArea(
               child: Column(
                 children: [
                   if (joining) const LinearProgressIndicator(),
@@ -589,6 +590,8 @@ class _State extends ConsumerState<RoomScreen> {
                 ],
               ),
             ),
+            if (joined) Positioned.fill(child: VerifiedGiftBroadcast(roomId: widget.roomId, countryCode: room.valueOrNull?.country ?? '')),
+            ]),
           ),
         ));
   }
