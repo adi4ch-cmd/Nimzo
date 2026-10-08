@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../auth/presentation/auth_controller.dart';
 import '../voice/voice_controller.dart';
+import '../../core/services/app_update_service.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import 'reference_info_content.dart';
@@ -51,6 +52,12 @@ class SettingsScreen extends ConsumerWidget {
                       onChanged: null),
                 ])),
             const SizedBox(height: 14),
+            ListTile(
+              leading: const Icon(Icons.system_update),
+              title: const Text('Check for updates'),
+              subtitle: const Text('Check NIMZO testing APK releases'),
+              onTap: () => NimzoAppUpdateService.prompt(context, showUpToDate: true),
+            ),
             OutlinedButton(
               onPressed: ref.watch(authControllerProvider).isLoading
                   ? null
