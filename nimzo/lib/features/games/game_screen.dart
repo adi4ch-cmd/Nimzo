@@ -10,7 +10,15 @@ import 'game_catalog.dart';
 /// Visual boards from nimzo-ui-2.html. Settlement is never simulated locally.
 class GameScreen extends ConsumerStatefulWidget {
   final String? roomId, slug;
-  const GameScreen({super.key, this.roomId, this.slug});
+  final VoidCallback? onMinimize, onClose;
+  final Widget? roomControls;
+  const GameScreen(
+      {super.key,
+      this.roomId,
+      this.slug,
+      this.onMinimize,
+      this.onClose,
+      this.roomControls});
   static const fruit = [
     'Orange',
     'Kiwi',
@@ -144,51 +152,68 @@ class _GameState extends ConsumerState<GameScreen> {
                         fontFamily: 'Roboto',
                         color: Colors.white,
                         fontSize: 16)),
+                leading: widget.onClose == null
+                    ? null
+                    : IconButton(
+                        tooltip: 'Close game',
+                        onPressed: widget.onClose,
+                        icon: const Icon(Icons.close)),
                 actions: [
+                  if (widget.onMinimize != null)
+                    IconButton(
+                        tooltip: 'Return to voice room',
+                        onPressed: widget.onMinimize,
+                        icon: const Icon(Icons.picture_in_picture_alt)),
                   Padding(
                       padding: const EdgeInsets.only(right: 12),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                                tooltip: 'Rules',
-                                onPressed: () => showReferenceSheet(
-                                    context,
-                                    Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('$title · Rules',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.w700)),
-                                          const SizedBox(height: 12),
-                                          Text(spin
-                                              ? 'Pick a bet amount and press Spin. The payout depends on the result.'
-                                              : 'Choose up to ${i == 4 || i == 6 ? 3 : 6} options and set an amount on each. A winning option pays amount × multiplier.'),
-                                          const SizedBox(height: 12),
-                                          const Text(
-                                              'Game service unavailable.',
-                                              style: TextStyle(
-                                                  color: Color(0xff6b7a72)))
-                                        ])),
-                                style: IconButton.styleFrom(
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    minimumSize: const Size(24, 22),
-                                    maximumSize: const Size(24, 22),
-                                    padding: EdgeInsets.zero),
-                                icon: const Text('?',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 12))),
-                            Text(
-                                wallet == null
-                                    ? 'Balance unavailable'
-                                    : '${referenceNumber(wallet.coins)} coins',
-                                style:
-                                    const TextStyle(color: gold, fontSize: 12))
-                          ]))
+                      child: SizedBox(
+                          width: 110,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                    tooltip: 'Rules',
+                                    onPressed: () => showReferenceSheet(
+                                        context,
+                                        Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text('$title · Rules',
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w700)),
+                                              const SizedBox(height: 12),
+                                              Text(spin
+                                                  ? 'Pick a bet amount and press Spin. The payout depends on the result.'
+                                                  : 'Choose up to ${i == 4 || i == 6 ? 3 : 6} options and set an amount on each. A winning option pays amount × multiplier.'),
+                                              const SizedBox(height: 12),
+                                              const Text(
+                                                  'Game service unavailable.',
+                                                  style: TextStyle(
+                                                      color: Color(0xff6b7a72)))
+                                            ])),
+                                    style: IconButton.styleFrom(
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        minimumSize: const Size(24, 22),
+                                        maximumSize: const Size(24, 22),
+                                        padding: EdgeInsets.zero),
+                                    icon: const Text('?',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12))),
+                                FittedBox(
+                                    child: Text(
+                                        wallet == null
+                                            ? 'Balance unavailable'
+                                            : '${referenceNumber(wallet.coins)} coins',
+                                        style: const TextStyle(
+                                            color: gold, fontSize: 12)))
+                              ])))
                 ]),
+            bottomNavigationBar: widget.roomControls,
             body: Container(
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(
@@ -199,6 +224,40 @@ class _GameState extends ConsumerState<GameScreen> {
                     scrollCacheExtent: const ScrollCacheExtent.pixels(3000),
                     padding: const EdgeInsets.fromLTRB(10, 10, 10, 14),
                     children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                              colors: [Color(0xff5b268e), Color(0xff271046)]),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: gold.withValues(alpha: .3)),
+                        ),
+                        child: Row(children: [
+                          ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                  'assets/reference/game/${game.artwork}.jpg',
+                                  width: 48,
+                                  height: 48)),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                Text('Game service unavailable',
+                                    style: TextStyle(
+                                        color: gold,
+                                        fontWeight: FontWeight.w700)),
+                                SizedBox(height: 4),
+                                Text(
+                                    'Explore the board and rules. Betting is paused.',
+                                    style: TextStyle(
+                                        color: Color(0xffe9d5ff),
+                                        fontSize: 12)),
+                              ])),
+                        ]),
+                      ),
                       if (!spin)
                         const Padding(
                             padding: EdgeInsets.fromLTRB(4, 0, 4, 10),
@@ -376,6 +435,8 @@ class _GameState extends ConsumerState<GameScreen> {
                           children: [
                             for (var k = 0; k < chips[i].length; k++)
                               Semantics(
+                                  button: true,
+                                  label: '${chips[i][k]} coins, preview amount',
                                   selected: selectedChip == k,
                                   child: InkWell(
                                       onTap: () =>
@@ -383,7 +444,13 @@ class _GameState extends ConsumerState<GameScreen> {
                                       child: CustomPaint(
                                           foregroundPainter:
                                               const _ChipEdgePainter(),
-                                          child: Container(
+                                          child: AnimatedContainer(
+                                              duration:
+                                                  MediaQuery.disableAnimationsOf(context)
+                                                      ? Duration.zero
+                                                      : const Duration(
+                                                          milliseconds: 180),
+                                              curve: Curves.easeOutCubic,
                                               width: 54,
                                               height: 54,
                                               decoration: BoxDecoration(
@@ -395,14 +462,9 @@ class _GameState extends ConsumerState<GameScreen> {
                                                       color: Colors.transparent,
                                                       width: 4)),
                                               child: Center(
-                                                  child: Text(
-                                                      compactNumber(chips[i][k])
-                                                          .replaceAll('.0', ''),
+                                                  child: Text(compactNumber(chips[i][k]).replaceAll('.0', ''),
                                                       style: TextStyle(
-                                                          color: selectedChip == k
-                                                              ? const Color(
-                                                                  0xff3b0764)
-                                                              : Colors.white,
+                                                          color: selectedChip == k ? const Color(0xff3b0764) : Colors.white,
                                                           fontWeight: FontWeight.w700,
                                                           fontSize: 12)))))))
                           ]),

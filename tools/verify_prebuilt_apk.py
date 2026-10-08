@@ -19,6 +19,7 @@ assert "package: name='io.nimzo.app'" in badging and f"versionCode='{build}'" in
 assert 'android.permission.REQUEST_INSTALL_PACKAGES' in badging,'Installer permission missing'
 xml=subprocess.check_output([str(tools/'aapt'),'dump','xmltree',str(apk),'AndroidManifest.xml'],text=True);assert 'io.nimzo.app.apk_updates' in xml,'Scoped update FileProvider missing'
 with zipfile.ZipFile(apk) as archive:
+ assert archive.testzip() is None, 'APK ZIP integrity failed'
  for abi in ('arm64-v8a','armeabi-v7a','x86_64'):
   for library in ('libvivox_bridge.so','libvivox-sdk.so'):
    assert archive.read(f'lib/{abi}/{library}')[:4]==b'\x7fELF','Native library missing/invalid'

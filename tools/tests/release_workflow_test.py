@@ -19,7 +19,7 @@ const assert=module.require('assert');
 const calls=[];
 const realRequire=require;
 const files={'nimzo/pubspec.yaml':'version: 1.0.6+106\n',
-'nimzo/build/app/outputs/flutter-apk/app-release.apk.signing.txt':'Signer #1 certificate SHA-256 digest: '+'e'.repeat(64),
+'nimzo/build/app/outputs/flutter-apk/app-release.apk.signing.txt':'Signer (minSdkVersion=24, maxSdkVersion=32) certificate SHA-256 digest: '+'e'.repeat(64)+'\nSigner #1 certificate SHA-256 digest: '+'e'.repeat(64),
 'nimzo/build/app/outputs/flutter-apk/app-release.apk':Buffer.from('test-apk'),
 'nimzo/build/app/outputs/flutter-apk/app-release.apk.sha256':'checksum'};
 const fs={readFileSync:(p)=>{assert(p in files);return files[p];},writeFileSync:(p,v)=>files[p]=v};

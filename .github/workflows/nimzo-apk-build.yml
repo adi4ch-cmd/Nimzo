@@ -288,9 +288,9 @@ jobs:
           apk.with_suffix('.apk.signing.txt').write_text(result.stdout)
           print(result.stdout)
           import re
-          certificate = re.search(r'Signer #1 certificate SHA-256 digest: ([0-9a-fA-F]+)', result.stdout)
+          certificates = {value.replace(':', '').lower() for value in re.findall(r'certificate SHA-256 digest:\s*([0-9a-fA-F:]+)', result.stdout)}
           expected = Path('nimzo/native/vivox/android/release-signing-certificate.sha256').read_text().strip()
-          assert certificate and certificate.group(1).lower() == expected, 'Signing identity differs from the authorized permanent release certificate; publishing blocked'
+          assert certificates == {expected}, 'Signing identity differs from the authorized permanent release certificate; publishing blocked'
           print('APK signature verified against authorized permanent release identity.')
           PY
 
@@ -301,6 +301,7 @@ jobs:
           from pathlib import Path
           apk = 'nimzo/build/app/outputs/flutter-apk/app-release.apk'
           with zipfile.ZipFile(apk) as archive:
+              assert archive.testzip() is None, 'APK ZIP integrity failed'
               entries = archive.namelist()
               for abi in ('arm64-v8a', 'armeabi-v7a', 'x86_64'):
                   assert f'lib/{abi}/libvivox_bridge.so' in entries, f'Vivox JNI bridge missing for {abi}'
@@ -345,13 +346,13 @@ jobs:
             }
             const folder = 'nimzo/build/app/outputs/flutter-apk/';
             const signing = fs.readFileSync(folder + 'app-release.apk.signing.txt', 'utf8');
-            const certificate = signing.match(/Signer #1 certificate SHA-256 digest: ([0-9a-fA-F]+)/);
-            if (!certificate) throw new Error('Missing verified signing certificate');
+            const certificates = [...new Set([...signing.matchAll(/certificate SHA-256 digest:\s*([0-9a-fA-F:]+)/g)].map(match => match[1].replaceAll(':', '').toLowerCase()))];
+            if (certificates.length !== 1) throw new Error('Missing verified signing certificate');
             const apk = fs.readFileSync(folder + 'app-release.apk');
             const crypto = require('crypto');
             const update = {
               version: version[1].trim(), buildNumber, packageName: 'io.nimzo.app',
-              signingCertificateSha256: certificate[1].toLowerCase(),
+              signingCertificateSha256: certificates[0],
               apkSha256: crypto.createHash('sha256').update(apk).digest('hex'),
               apkUrl: `https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${tag}/app-release.apk`
             };

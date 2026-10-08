@@ -50,7 +50,8 @@ class GamesCatalogScreen extends StatelessWidget {
       );
 }
 
-Future<void> showRoomGamesSheet(BuildContext context, String roomId) async {
+Future<void> showRoomGamesSheet(BuildContext context, String roomId,
+    {ValueChanged<String>? onSelected}) async {
   final selected = await showReferenceSheet<String>(
       context,
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -89,6 +90,11 @@ Future<void> showRoomGamesSheet(BuildContext context, String roomId) async {
                     ]))
             ])
       ]));
-  if (selected != null && context.mounted)
-    context.push('/games-play?game=$selected&room=$roomId');
+  if (selected != null && context.mounted) {
+    if (onSelected != null) {
+      onSelected(selected);
+    } else {
+      context.push('/games-play?game=$selected&room=$roomId');
+    }
+  }
 }

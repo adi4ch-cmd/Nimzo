@@ -40,6 +40,9 @@ void main() {
               id: 'u',
               nimzoId: 101,
               displayName: 'Amina',
+              wealthCoins: 1250000,
+              charmDiamonds: 2345,
+              activePoints: 89,
               wealthLevel: 0,
               charmLevel: 0,
               activeLevel: 0,
@@ -86,6 +89,21 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets('badge distinguishes unavailable total from a real zero',
+      (tester) async {
+    await tester.pumpWidget(const MaterialApp(
+        home: Scaffold(
+            body: Column(children: [
+      ProfileProgressBadge(kind: 0, level: 0),
+      ProfileProgressBadge(kind: 1, level: 0, total: 0),
+    ]))));
+    expect(find.text('Total unavailable'), findsOneWidget);
+    expect(find.text('0 diamonds'), findsOneWidget);
+    expect(find.text('Level unavailable'), findsNWidgets(2));
+    expect(find.text('Lv 0'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('profile avatar overlaps the approved 130px cover',
       (tester) async {
     await openProfile(tester);
@@ -128,7 +146,18 @@ void main() {
     (tester) async {
       await openProfile(tester);
       expect(find.text('Amina'), findsOneWidget);
-      expect(find.text('Wealth'), findsNothing);
+      expect(find.text('Wealth'), findsOneWidget);
+      expect(find.text('Charm'), findsOneWidget);
+      expect(find.text('Active'), findsOneWidget);
+      expect(find.text('1,250,000 coins'), findsOneWidget);
+      expect(find.text('2,345 diamonds'), findsOneWidget);
+      expect(find.text('89 points'), findsOneWidget);
+      expect(find.text('Level unavailable'), findsNWidgets(3));
+      final id = tester.getRect(find.text('ID:101 · '));
+      final badges =
+          tester.getRect(find.byKey(const ValueKey('profile-level-badges')));
+      expect(badges.top, greaterThanOrEqualTo(id.bottom));
+      expect(tester.takeException(), isNull);
       expect(find.byIcon(Icons.verified_rounded), findsNothing);
       await tester.scrollUntilVisible(
         find.text('Gifts').hitTestable(),

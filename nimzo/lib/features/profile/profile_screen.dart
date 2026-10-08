@@ -191,22 +191,38 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       style: const TextStyle(color: NimzoStyle.muted),
                     ),
                     const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 6,
+                    Row(
+                      key: const ValueKey('profile-level-badges'),
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (p.wealthLevel > 0)
-                          LevelBadge(kind: 0, level: p.wealthLevel),
-                        if (p.charmLevel > 0)
-                          LevelBadge(kind: 1, level: p.charmLevel),
-                        if (p.activeLevel > 0)
-                          LevelBadge(kind: 2, level: p.activeLevel),
+                        for (var kind = 0; kind < 3; kind++) ...[
+                          if (kind > 0) const SizedBox(width: 6),
+                          Expanded(
+                            child: ProfileProgressBadge(
+                              kind: kind,
+                              level: [
+                                p.wealthLevel,
+                                p.charmLevel,
+                                p.activeLevel
+                              ][kind],
+                              total: [
+                                p.wealthCoins,
+                                p.charmDiamonds,
+                                p.activePoints
+                              ][kind],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    if (p.vipLevel > 0 || p.svipLevel > 0)
+                      Wrap(spacing: 8, children: [
                         if (p.vipLevel > 0)
                           Chip(label: Text('VIP ${p.vipLevel}')),
                         if (p.svipLevel > 0)
                           Chip(label: Text('SVIP ${p.svipLevel}')),
-                      ],
-                    ),
+                      ]),
+                    const SizedBox(height: 8),
                     Text(p.bio?.isNotEmpty == true ? p.bio! : 'No bio yet'),
                     AsyncContent(
                       value: ref.watch(profileStatsProvider(id)),
@@ -488,6 +504,63 @@ class _AllGifts extends StatelessWidget {
         appBar: AppBar(title: const Text('All received gifts')),
         body: SingleChildScrollView(child: GiftList(id: id)),
       );
+}
+
+class ProfileProgressBadge extends StatelessWidget {
+  final int kind, level;
+  final int? total;
+  const ProfileProgressBadge(
+      {super.key, required this.kind, required this.level, this.total});
+
+  static Color color(int kind, int level) =>
+      const [Color(0xff16a34a), Color(0xff2563eb), Color(0xffdc2626)][kind];
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = color(kind, level);
+    final label = const ['Wealth', 'Charm', 'Active'][kind];
+    final unit = const ['coins', 'diamonds', 'points'][kind];
+    final amount = total?.toString().replaceAllMapped(
+        RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (match) => '${match[1]},');
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [accent, Color.lerp(accent, Colors.black, .24)!],
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: accent.withValues(alpha: .35)),
+        boxShadow: [
+          BoxShadow(
+              color: accent.withValues(alpha: .16),
+              blurRadius: 8,
+              offset: const Offset(0, 3))
+        ],
+      ),
+      child: DefaultTextStyle.merge(
+        style: const TextStyle(color: Colors.white, fontSize: 10),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            ReferenceIcon(kind == 0 ? 'crown' : 'star',
+                size: 14, color: Colors.white),
+            const SizedBox(width: 4),
+            Flexible(
+                child: Text(label,
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w700))),
+          ]),
+          const SizedBox(height: 5),
+          Text(amount == null ? 'Total unavailable' : '$amount $unit',
+              style: const TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 3),
+          Text(level > 0 ? 'Lv $level' : 'Level unavailable',
+              style: const TextStyle(fontSize: 9)),
+        ]),
+      ),
+    );
+  }
 }
 
 class LevelBadge extends StatelessWidget {
