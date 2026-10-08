@@ -2,7 +2,7 @@ name: Publish Verified Signed NIMZO APK
 on:
   push:
     branches: [feature/profile-reference-redesign]
-    paths: [tools/prebuilt_apk_manifest.json]
+    paths: [tools/prebuilt_apk_manifest.json, tools/verify_prebuilt_apk.py, .github/workflows/nimzo-publish-verified.yml]
   workflow_dispatch:
     inputs:
       manifest:

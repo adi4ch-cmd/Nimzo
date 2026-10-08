@@ -10,7 +10,10 @@ expected=source_file('nimzo/native/vivox/android/release-signing-certificate.sha
 apk=folder/'app-release.apk';digest=hashlib.sha256(apk.read_bytes()).hexdigest();assert digest==manifest['sha256'],'APK checksum mismatch'
 tools=sorted(Path(os.environ['ANDROID_HOME']).glob('build-tools/*/apksigner'))[-1].parent
 signature=subprocess.check_output([str(tools/'apksigner'),'verify','--verbose','--print-certs',str(apk)],text=True)
-cert=re.search(r'Signer #1 certificate SHA-256 digest: ([a-fA-F0-9]+)',signature).group(1).lower();assert cert==expected,'Permanent certificate mismatch'
+print(signature)  # Public certificate details only; no signing credentials.
+certificates={value.replace(':','').lower() for value in re.findall(r'certificate SHA-256 digest:\s*([a-fA-F0-9:]+)',signature)}
+assert certificates=={expected}, 'Permanent certificate mismatch or unreadable signer output'
+cert=expected
 badging=subprocess.check_output([str(tools/'aapt'),'dump','badging',str(apk)],text=True)
 assert "package: name='io.nimzo.app'" in badging and f"versionCode='{build}'" in badging and f"versionName='{version}'" in badging,'Package/version mismatch'
 assert 'android.permission.REQUEST_INSTALL_PACKAGES' in badging,'Installer permission missing'
