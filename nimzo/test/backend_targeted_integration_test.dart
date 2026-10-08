@@ -1,3 +1,4 @@
+import 'package:nimzo/features/gifts/gift_repository.dart';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,8 @@ void main() {
     test('SVIP progress consumes server cycle active=$active cents=$cents',
         () async {
       final container = ProviderContainer(overrides: [
+        verifiedGiftAnimationProvider
+            .overrideWith((ref, args) => const Stream.empty()),
         currentUserIdProvider.overrideWithValue('me'),
         vipStatusProvider.overrideWith((_) async => {
               'svip_cycle_cents': cents,
@@ -55,6 +58,8 @@ void main() {
   test('old status contract cannot present stale recharge as current progress',
       () async {
     final container = ProviderContainer(overrides: [
+      verifiedGiftAnimationProvider
+          .overrideWith((ref, args) => const Stream.empty()),
       currentUserIdProvider.overrideWithValue('me'),
       vipStatusProvider.overrideWith((_) async => {'svip_level': 0}),
       svipThresholdsProvider.overrideWith((_) async => {1: 5000}),
@@ -67,6 +72,8 @@ void main() {
       'progress handles simultaneous data/catalog failure without leaking a future error',
       () async {
     final container = ProviderContainer(overrides: [
+      verifiedGiftAnimationProvider
+          .overrideWith((ref, args) => const Stream.empty()),
       currentUserIdProvider.overrideWithValue('me'),
       vipStatusProvider
           .overrideWith((_) async => throw StateError('Status unavailable')),
@@ -85,6 +92,8 @@ void main() {
     addTearDown(() => tester.runAsync(db.dispose));
     await tester.pumpWidget(ProviderScope(
         overrides: [
+          verifiedGiftAnimationProvider
+              .overrideWith((ref, args) => const Stream.empty()),
           supabaseProvider.overrideWithValue(db),
           currentUserIdProvider.overrideWithValue('me'),
           roomRepositoryProvider.overrideWithValue(FixtureRoomRepository(db)),

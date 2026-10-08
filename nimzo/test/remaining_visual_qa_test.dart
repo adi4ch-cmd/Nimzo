@@ -228,6 +228,8 @@ void main() {
       await tester.pumpWidget(ProviderScope(
           key: ValueKey(entry.key),
           overrides: [
+            verifiedGiftAnimationProvider
+                .overrideWith((ref, args) => const Stream.empty()),
             roomDiamondEventsProvider('room')
                 .overrideWith((_) => const Stream.empty()),
             roomDiamondStatusProvider('room').overrideWith((_) async =>
