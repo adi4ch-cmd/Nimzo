@@ -23,3 +23,7 @@ Tests use PG17 disposable metadata clones and UI/server fixtures. No production 
 ## Verification before integration
 
 Flutter analyzer clean; 236 Flutter tests passed. Seven native voice contracts, native update test, tool contracts and 16 Edge Function tests passed. Disposable PG17 settlement/permission/race suites passed. Signed local 1.0.9+109 APK passed permanent certificate, packaged native libraries, DEX callback and modern login import gates. Physical device verification remains pending.
+
+## Final merged release verification
+
+Latest remote gift broadcast work preserved. Fixed literal escaped newlines that commented out its approved media lookup/client field; room fixtures explicitly mock its Realtime boundary. Final merged run: dart format 170 files/0 changes, analyzer no issues, all 236 Flutter tests passed. Signed 1.0.9+109 built; package io.nimzo.app, ZIP integrity/16KB alignment, three ABI libraries, concrete DEX callback and modern login gates passed. APK SHA256: 2f2b7579773c500cbef20e78c97030e38fd6c57d4a3e09a1e4f76fabdb81e0f6. Signing certificate SHA256: b11d41ae3037f16d639dc606af2ebf0150bf805a204577c7858cc044ff46bb4a. No physical device attached.
