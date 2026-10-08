@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../auth/presentation/auth_controller.dart';
 import '../voice/voice_controller.dart';
@@ -56,7 +57,8 @@ class SettingsScreen extends ConsumerWidget {
               leading: const Icon(Icons.system_update),
               title: const Text('Check for updates'),
               subtitle: const Text('Check NIMZO testing APK releases'),
-              onTap: () => NimzoAppUpdateService.prompt(context, showUpToDate: true),
+              onTap: () =>
+                  NimzoAppUpdateService.prompt(context, showUpToDate: true),
             ),
             OutlinedButton(
               onPressed: ref.watch(authControllerProvider).isLoading
@@ -107,11 +109,36 @@ class InfoScreen extends StatelessWidget {
             child: Padding(
           padding: const EdgeInsets.all(16),
           child: title == 'About'
-              ? const ReferenceCard(
-                  child:
-                      Text('NIMZO · 1.0.5\nVoice rooms and social connections'),
-                )
+              ? const _InstalledAppAbout()
               : ReferenceInfoContent(title: title),
         )),
+      );
+}
+
+class _InstalledAppAbout extends StatefulWidget {
+  const _InstalledAppAbout();
+
+  @override
+  State<_InstalledAppAbout> createState() => _InstalledAppAboutState();
+}
+
+class _InstalledAppAboutState extends State<_InstalledAppAbout> {
+  late final Future<PackageInfo> _installed =
+      PackageInfo.fromPlatform().timeout(const Duration(seconds: 5));
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<PackageInfo>(
+        future: _installed,
+        builder: (context, snapshot) {
+          final info = snapshot.data;
+          final version = info != null
+              ? ' · ${info.version} (build ${info.buildNumber})'
+              : snapshot.hasError
+                  ? ' · Version unavailable'
+                  : ' · Loading version…';
+          return ReferenceCard(
+            child: Text('NIMZO$version\nVoice rooms and social connections'),
+          );
+        },
       );
 }

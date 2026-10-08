@@ -18,16 +18,22 @@ void main() {
       vipDailyRewardsProvider.overrideWith((_) async => []),
     ], child: const MaterialApp(home: VipScreen())));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 350));
     expect(find.text('VIP 5'), findsWidgets);
+    expect(find.text('No active VIP membership'), findsOneWidget);
     await tester.scrollUntilVisible(
         find.byKey(const ValueKey('vip-tier-3')), 120,
         scrollable: find.byType(Scrollable).first);
     await tester.tap(find.byKey(const ValueKey('vip-tier-3')));
     await tester.pump();
-    expect(find.text('Get VIP 3'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Animated room theme'), 250,
-        scrollable: find.byType(Scrollable).first);
-    expect(find.text('Animated room theme'), findsOneWidget);
+    expect(find.text('Preview VIP 3 · Purchase unavailable'), findsOneWidget);
+    expect(find.text('VIP 3 · Collection preview'), findsOneWidget);
+    await tester.tap(find.text('Preview VIP 3 · Purchase unavailable'));
+    await tester.pump();
+    expect(find.text('VIP purchase is unavailable.'), findsOneWidget);
+    final container =
+        ProviderScope.containerOf(tester.element(find.byType(VipScreen)));
+    expect(container.read(vipStatusProvider).valueOrNull?['vip_level'], 0);
     expect(tester.takeException(), isNull);
   });
   testWidgets('Bigetar renders final multipliers and marque markers',

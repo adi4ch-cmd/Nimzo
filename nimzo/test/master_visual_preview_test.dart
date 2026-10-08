@@ -58,6 +58,17 @@ void main() {
               home: RepaintBoundary(
                   key: const ValueKey('preview'), child: preview.$2))));
       await tester.pump();
+      if (preview.$1 == 'vip_final' || preview.$1 == 'svip_final') {
+        final context = tester.element(find.byKey(const ValueKey('preview')));
+        await tester.runAsync(() async {
+          for (final family in ['vip', 'svip']) {
+            for (var i = 0; i < 10; i++) {
+              await precacheImage(
+                  AssetImage('assets/reference/$family/$i.jpg'), context);
+            }
+          }
+        });
+      }
       await tester.pump(const Duration(milliseconds: 300));
       await expectLater(find.byKey(const ValueKey('preview')),
           matchesGoldenFile('goldens/${preview.$1}.png'));

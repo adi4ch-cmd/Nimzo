@@ -8,6 +8,35 @@ import unittest
 
 
 class NativeResponseWait(unittest.TestCase):
+    def test_response_error_stages_are_stable_and_safe(self):
+        compiler = shutil.which('g++') or shutil.which('clang++')
+        if not compiler:
+            self.skipTest('Host C++ compiler unavailable')
+        source = (Path(__file__).resolve().parents[2] /
+                  'native/vivox/android/vivox_bridge.cpp').read_text()
+        function = re.search(r'static const char\* response_stage\([\s\S]*?\n}\n', source).group()
+        cases = {
+            'resp_connector_create': 'connector',
+            'resp_account_authtoken_login': 'login',
+            'resp_sessiongroup_add_session': 'channel-join',
+            'resp_connector_mute_local_mic': 'microphone',
+            'resp_connector_mute_local_speaker': 'speaker',
+            'resp_sessiongroup_remove_session': 'leave',
+            'resp_account_logout': 'leave',
+        }
+        harness = '#include <cassert>\n#include <cstring>\n'
+        harness += 'enum vx_response_type {' + ','.join(cases) + ', unknown};\n'
+        harness += function + 'int main() {\n'
+        for response, stage in cases.items():
+            harness += f'assert(strcmp(response_stage({response}), "{stage}") == 0);\n'
+        harness += 'assert(strcmp(response_stage(unknown), "native") == 0); }\n'
+        with tempfile.TemporaryDirectory(prefix='nimzo-native-stage-') as temporary:
+            cpp = Path(temporary) / 'stage.cpp'
+            binary = Path(temporary) / 'stage-test'
+            cpp.write_text(harness)
+            subprocess.run([compiler, '-std=c++17', str(cpp), '-o', str(binary)], check=True)
+            subprocess.run([str(binary)], check=True)
+
     def test_queued_events_do_not_consume_a_fictitious_timeout(self):
         compiler = shutil.which('g++') or shutil.which('clang++')
         if not compiler:

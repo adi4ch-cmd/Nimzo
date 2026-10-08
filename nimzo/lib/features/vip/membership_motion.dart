@@ -45,6 +45,17 @@ class _AuraState extends State<MembershipAura>
       vsync: this, duration: const Duration(milliseconds: 1800))
     ..repeat();
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      motion.stop();
+      motion.value = 0;
+    } else if (!motion.isAnimating) {
+      motion.repeat();
+    }
+  }
+
+  @override
   void dispose() {
     motion.dispose();
     super.dispose();
@@ -82,6 +93,17 @@ class _GoldTextState extends State<MembershipGoldText>
   late final AnimationController motion =
       AnimationController(vsync: this, duration: const Duration(seconds: 4))
         ..repeat();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      motion.stop();
+      motion.value = 0;
+    } else if (!motion.isAnimating) {
+      motion.repeat();
+    }
+  }
+
   @override
   void dispose() {
     motion.dispose();
@@ -129,6 +151,17 @@ class _GoldButtonState extends State<MembershipGoldButton>
       vsync: this, duration: const Duration(milliseconds: 2800))
     ..repeat();
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      motion.stop();
+      motion.value = 0;
+    } else if (!motion.isAnimating) {
+      motion.repeat();
+    }
+  }
+
+  @override
   void dispose() {
     motion.dispose();
     super.dispose();
@@ -146,13 +179,15 @@ class _GoldButtonState extends State<MembershipGoldButton>
       child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Stack(children: [
-            GradientButton(
-                gradient: membershipGold,
-                foreground: const Color(0xff3b2200),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                onPressed: widget.onPressed,
-                child: widget.child),
+            SizedBox(
+                width: double.infinity,
+                child: GradientButton(
+                    gradient: membershipGold,
+                    foreground: const Color(0xff3b2200),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 14),
+                    onPressed: widget.onPressed,
+                    child: widget.child)),
             Positioned.fill(
                 child: IgnorePointer(
                     child: AnimatedBuilder(

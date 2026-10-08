@@ -19,7 +19,11 @@ class _NimzoAppState extends ConsumerState<NimzoApp> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) NimzoAppUpdateService.prompt(context);
+      if (!mounted) return;
+      final navigatorContext =
+          ref.read(routerProvider).routerDelegate.navigatorKey.currentContext;
+      if (navigatorContext != null)
+        NimzoAppUpdateService.prompt(navigatorContext);
     });
   }
 

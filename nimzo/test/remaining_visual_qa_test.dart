@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -111,6 +112,13 @@ class FixtureVoice implements VoiceService {
 }
 
 void main() {
+  PackageInfo.setMockInitialValues(
+    appName: 'Nimzo',
+    packageName: 'io.nimzo.app',
+    version: '1.0.6',
+    buildNumber: '106',
+    buildSignature: '',
+  );
   testWidgets('remaining reference surfaces have reviewed phone screenshots',
       (tester) async {
     for (final font in [

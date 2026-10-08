@@ -33,12 +33,13 @@ void main() {
     expect(await event, {id});
     await voice.dispose();
   });
-  Future<void> emit(String event, {int status = 0}) async {
+  Future<void> emit(String event,
+      {int status = 0, String detail = 'test'}) async {
     await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .handlePlatformMessage(
       'nimzo/vivox',
       const StandardMethodCodec().encodeMethodCall(
-        MethodCall(event, {'status': status, 'detail': 'test'}),
+        MethodCall(event, {'status': status, 'detail': detail}),
       ),
       (_) {},
     );
@@ -71,6 +72,29 @@ void main() {
     expect(methods, ['requestMicPermission']);
     await voice.dispose();
   });
+  for (final stage in ['login', 'initial-mute', 'channel-join']) {
+    test('native $stage failure preserves its stage and status through cleanup',
+        () async {
+      final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+        if (call.method == 'join') {
+          await emit('error', status: 401, detail: stage);
+          return 401;
+        }
+        return ['initialize', 'requestMicPermission'].contains(call.method)
+            ? true
+            : 0;
+      });
+      await expectLater(
+          voice.join('room', ''),
+          throwsA(isA<VoiceConnectionFailure>().having(
+              (error) => error.message.toString(),
+              'safe stage diagnostic',
+              'Voice $stage failed (code 401). Retry voice.')));
+      await voice.dispose();
+    });
+  }
   test('media deadline begins after slow native login and join acceptance',
       () async {
     final voice = VivoxVoiceService(
