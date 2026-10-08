@@ -95,6 +95,82 @@ void main() {
       await voice.dispose();
     });
   }
+  for (final stage in [
+    'requestMicPermission',
+    'initialize',
+    'join',
+    'setMic'
+  ]) {
+    test('platform $stage failure is sanitized and identifies the method',
+        () async {
+      final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+      final methods = <String>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+        methods.add(call.method);
+        if (call.method == stage) {
+          throw PlatformException(
+              code: 'VIVOX_NATIVE',
+              message: 'secret-token',
+              details: {
+                'type': 'UnsatisfiedLinkError',
+                'payload': 'secret-token'
+              });
+        }
+        if (call.method == 'join') await emit('audioConnected');
+        return ['initialize', 'requestMicPermission'].contains(call.method)
+            ? true
+            : 0;
+      });
+      await expectLater(
+          voice.join('room', ''),
+          throwsA(isA<VoiceConnectionFailure>().having(
+              (error) => error.message.toString(),
+              'safe platform diagnostic',
+              'Voice $stage failed (VIVOX_NATIVE, UnsatisfiedLinkError). Retry voice.')));
+      if (stage == 'initialize') expect(methods, contains('shutdown'));
+      await voice.dispose();
+    });
+  }
+  test('JNI missing callback identifies NoSuchMethodError without raw message',
+      () async {
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'initialize') {
+        throw PlatformException(
+            code: 'VIVOX_NATIVE',
+            message: 'secret-token',
+            details: {'type': 'NoSuchMethodError'});
+      }
+      return call.method == 'requestMicPermission' ? true : 0;
+    });
+    await expectLater(
+        voice.join('room', ''),
+        throwsA(isA<VoiceConnectionFailure>().having(
+            (error) => error.message.toString(),
+            'JNI diagnostic',
+            'Voice initialize failed (VIVOX_NATIVE, NoSuchMethodError). Retry voice.')));
+    await voice.dispose();
+  });
+  test('untrusted platform code and details never enter the diagnostic',
+      () async {
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      throw PlatformException(
+          code: 'secret-token',
+          message: 'secret-token',
+          details: {'type': 'secret-token'});
+    });
+    await expectLater(
+        voice.join('room', ''),
+        throwsA(isA<VoiceConnectionFailure>().having(
+            (error) => error.message.toString(),
+            'safe fallback',
+            'Voice requestMicPermission failed (PLATFORM). Retry voice.')));
+    await voice.dispose();
+  });
   test('media deadline begins after slow native login and join acceptance',
       () async {
     final voice = VivoxVoiceService(

@@ -12,6 +12,18 @@ final roomRepositoryProvider = Provider(
 final roomProvider = FutureProvider.family<Room, String>(
   (ref, id) => ref.watch(roomRepositoryProvider).get(id),
 );
+
+/// Capability is scoped to the current session and remains false on lookup failure.
+final roomModerationProvider =
+    FutureProvider.autoDispose.family<bool, String>((ref, roomId) async {
+  if (ref.watch(currentUserIdProvider) == null) return false;
+  try {
+    return await ref.watch(roomRepositoryProvider).canModerate(roomId);
+  } catch (_) {
+    return false;
+  }
+});
+
 final seatsProvider = StreamProvider.autoDispose.family<List<MicSeat>, String>(
   (ref, id) => ref.watch(roomRepositoryProvider).watchSeats(id),
 );

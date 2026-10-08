@@ -43,6 +43,7 @@ jobs:
           mkdir -p android/app/src/main/cpp
           mkdir -p android/app/src/main/res/drawable
           cp native/vivox/android/nimzo_launcher.xml android/app/src/main/res/drawable/nimzo_launcher.xml
+          cp native/vivox/android/proguard-rules.pro android/app/proguard-rules.pro
           cp native/vivox/android/NimzoUpdate.java android/app/src/main/java/io/nimzo/app/NimzoUpdate.java
           cp native/vivox/android/MainActivity.java android/app/src/main/java/io/nimzo/app/MainActivity.java
           cp native/vivox/android/NimzoVivox.java android/app/src/main/java/io/nimzo/vivox/NimzoVivox.java
@@ -228,7 +229,7 @@ jobs:
           python3 -m unittest discover -s tools/tests -p "*_test.py"
 
       - name: Voice token authorization tests
-        run: node --test supabase/functions/voice-token/tests/authorization.test.mjs
+        run: node --test supabase/functions/voice-token/tests/authorization.test.mjs supabase/functions/verify-purchase/tests/*.test.mjs
 
       - name: Regression tests
         working-directory: nimzo
@@ -317,6 +318,7 @@ jobs:
               assert permission in badging, f'{permission} missing'
           print('Packaged Vivox SDK, JNI bridge, app ID, launcher, OAuth and permissions: PASS')
           PY
+          python3 tools/verify_vivox_callback.py nimzo/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload APK
         id: apk

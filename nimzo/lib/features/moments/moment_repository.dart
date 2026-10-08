@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/errors/error_handler.dart';
+import '../gifts/gift_error.dart';
 import '../../core/providers/supabase_provider.dart';
 
 class Moment {
@@ -183,7 +184,7 @@ class MomentRepository {
         },
       );
     } catch (e) {
-      throw mapError(e);
+      throw mapGiftError(e);
     }
   }
 }

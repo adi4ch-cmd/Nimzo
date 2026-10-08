@@ -101,6 +101,32 @@ class VivoxVoiceService implements VoiceService {
         'Voice $stage failed (code $code). Retry voice.');
   }
 
+  Future<T?> _invokeNative<T>(String method, [Object? arguments]) async {
+    try {
+      return await _channel.invokeMethod<T>(method, arguments);
+    } on PlatformException catch (error) {
+      // Java exception messages can contain credentials or provider payloads.
+      const codes = {'VIVOX_NATIVE', 'PERMISSION_PENDING'};
+      const types = {
+        'UnsatisfiedLinkError',
+        'NoClassDefFoundError',
+        'NoSuchMethodError',
+        'ExceptionInInitializerError',
+        'SecurityException',
+        'IllegalArgumentException',
+        'IllegalStateException',
+        'NullPointerException',
+        'RuntimeException',
+      };
+      final details = error.details;
+      final type = details is Map ? details['type'] : null;
+      final code = codes.contains(error.code) ? error.code : 'PLATFORM';
+      final diagnostic = types.contains(type) ? '$code, $type' : code;
+      throw VoiceConnectionFailure(
+          'Voice $method failed ($diagnostic). Retry voice.');
+    }
+  }
+
   static Future<Map<String, dynamic>> _issueVoiceToken(String roomId) async {
     final client = Supabase.instance.client;
     final session = client.auth.currentSession;
@@ -131,7 +157,7 @@ class VivoxVoiceService implements VoiceService {
     final generation = _sessionGeneration;
     if (_initialized) await _leave();
     // Vivox requires capture access before joining even when initially muted.
-    if (await _channel.invokeMethod<bool>('requestMicPermission') != true) {
+    if (await _invokeNative<bool>('requestMicPermission') != true) {
       throw VoiceConnectionFailure(
           'Microphone permission is required for room audio.');
     }
@@ -155,11 +181,19 @@ class VivoxVoiceService implements VoiceService {
     }
     if (!_initialized) {
       _nativeFailure = null;
-      final ok = await _channel.invokeMethod<bool>('initialize', {
-        'server': data['server'],
-      });
+      final bool? ok;
+      try {
+        ok = await _invokeNative<bool>('initialize', {
+          'server': data['server'],
+        });
+      } catch (_) {
+        try {
+          await _invokeNative<int>('shutdown');
+        } catch (_) {/* Preserve the initialization diagnostic. */}
+        rethrow;
+      }
       if (ok != true) {
-        await _channel.invokeMethod<int>('shutdown');
+        await _invokeNative<int>('shutdown');
         throw _nativeFailure ??
             VoiceConnectionFailure('Voice initialization failed. Retry voice.');
       }
@@ -176,7 +210,7 @@ class VivoxVoiceService implements VoiceService {
     // Consume errors immediately while the native join response is pending.
     unawaited(connected.catchError((Object _) {}));
     try {
-      final result = await _channel.invokeMethod<int>('join', {
+      final result = await _invokeNative<int>('join', {
         'loginToken': data['loginToken'],
         'channelToken': data['channelToken'],
         'channelUri': data['channelUri'],
@@ -188,8 +222,7 @@ class VivoxVoiceService implements VoiceService {
       await connected.timeout(connectionTimeout,
           onTimeout: () => throw VoiceConnectionFailure(
               'Voice audio connection timed out. Retry voice.'));
-      final muted =
-          await _channel.invokeMethod<int>('setMic', {'enabled': false});
+      final muted = await _invokeNative<int>('setMic', {'enabled': false});
       if (muted != 0)
         throw StateError('Vivox initial mute failed (code $muted).');
       if (!_connected || generation != _sessionGeneration || _disposed) {
@@ -213,11 +246,11 @@ class VivoxVoiceService implements VoiceService {
     if (!_disposed) _connectedEvents.add(false);
     if (_initialized) {
       try {
-        await _channel.invokeMethod<int>('leave');
+        await _invokeNative<int>('leave');
       } finally {
         // SDK teardown prevents delayed replies and fixed handles from a failed
         // attempt being reused by a retry or a listener-to-speaker upgrade.
-        await _channel.invokeMethod<int>('shutdown');
+        await _invokeNative<int>('shutdown');
         _initialized = false;
       }
     }
@@ -241,7 +274,7 @@ class VivoxVoiceService implements VoiceService {
         if (_disposed || !_connected)
           throw StateError('Voice audio is not connected.');
         if (enabled &&
-            await _channel.invokeMethod<bool>('requestMicPermission') != true) {
+            await _invokeNative<bool>('requestMicPermission') != true) {
           throw StateError('Microphone permission is required to speak.');
         }
         if (!_connected || _disposed)
@@ -263,7 +296,7 @@ class VivoxVoiceService implements VoiceService {
           if (!_connected || _disposed)
             throw StateError('Voice audio is not connected.');
         }
-        final result = await _channel.invokeMethod<int>('setMic', {
+        final result = await _invokeNative<int>('setMic', {
           'enabled': enabled,
         });
         if (result != 0)
@@ -274,7 +307,7 @@ class VivoxVoiceService implements VoiceService {
   Future<void> setSpeakerEnabled(bool enabled) => _serialize(() async {
         if (_disposed || !_connected)
           throw StateError('Voice audio is not connected.');
-        final result = await _channel.invokeMethod<int>('setSpeaker', {
+        final result = await _invokeNative<int>('setSpeaker', {
           'enabled': enabled,
         });
         if (result != 0)
@@ -290,7 +323,7 @@ class VivoxVoiceService implements VoiceService {
       await _serialize(() async {
         _disposed = true;
         try {
-          if (_initialized) await _channel.invokeMethod<int>('shutdown');
+          if (_initialized) await _invokeNative<int>('shutdown');
         } finally {
           _initialized = false;
           _channel.setMethodCallHandler(null);

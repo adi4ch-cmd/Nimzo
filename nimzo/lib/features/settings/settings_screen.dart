@@ -9,6 +9,8 @@ import '../../core/services/app_update_service.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import 'reference_info_content.dart';
+import 'user_preferences.dart';
+import '../support/legal_content.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -39,18 +41,7 @@ class SettingsScreen extends ConsumerWidget {
                       onTap: () =>
                           context.push('/info/${Uri.encodeComponent(label)}'),
                     ),
-                  const SwitchListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 14),
-                      title: Text('Message notifications'),
-                      value: true,
-                      onChanged: null),
-                  const SwitchListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 14),
-                      title: Text('Gift notifications'),
-                      value: true,
-                      onChanged: null),
+                  const PreferenceControls(),
                 ])),
             const SizedBox(height: 14),
             ListTile(
@@ -109,7 +100,8 @@ class InfoScreen extends StatelessWidget {
             child: Padding(
           padding: const EdgeInsets.all(16),
           child: title == 'About'
-              ? const _InstalledAppAbout()
+              ? const Column(
+                  children: [_InstalledAppAbout(), LegalPoliciesContent()])
               : ReferenceInfoContent(title: title),
         )),
       );

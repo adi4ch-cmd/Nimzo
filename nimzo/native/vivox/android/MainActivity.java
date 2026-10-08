@@ -52,11 +52,16 @@ public class MainActivity extends FlutterActivity {
           Object value;
           switch (call.method) {
             case "initialize":
-              value = NimzoVivox.initialize(this, call.argument("server"), (event, status, detail) -> {
-                HashMap<String, Object> payload = new HashMap<>();
-                payload.put("detail", detail);
-                payload.put("status", status);
-                runOnUiThread(() -> channel.invokeMethod(event, payload));
+              // JNI resolves this callback by name. An explicit implementation
+              // lets the R8 keep rule retain its method in release builds.
+              value = NimzoVivox.initialize(this, call.argument("server"), new NimzoVivox.Listener() {
+                @Override
+                public void onVivoxEvent(String event, int status, String detail) {
+                  HashMap<String, Object> payload = new HashMap<>();
+                  payload.put("detail", detail);
+                  payload.put("status", status);
+                  runOnUiThread(() -> channel.invokeMethod(event, payload));
+                }
               });
               break;
             case "join": value = NimzoVivox.join(call.argument("loginToken"), call.argument("channelToken"), call.argument("channelUri")); break;
@@ -69,7 +74,13 @@ public class MainActivity extends FlutterActivity {
           Object response = value;
           runOnUiThread(() -> result.success(response));
         } catch (Throwable t) {
-          runOnUiThread(() -> result.error("VIVOX_NATIVE", t.getMessage(), null));
+          // Exception messages may contain credentials. Retain only the stage
+          // and exception class so failures are actionable without token leaks.
+          HashMap<String, Object> diagnostic = new HashMap<>();
+          diagnostic.put("stage", call.method);
+          diagnostic.put("type", t.getClass().getSimpleName());
+          android.util.Log.e("NimzoVivox", call.method + " failed (" + t.getClass().getSimpleName() + ")");
+          runOnUiThread(() -> result.error("VIVOX_NATIVE", "Native voice operation failed", diagnostic));
         }
       });
     });

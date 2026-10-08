@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'language_choices.dart';
+import 'user_preferences.dart';
+import 'honor_wall_content.dart';
+import '../support/support_screen.dart';
+import '../social/blocked_users_screen.dart';
 import '../profile/profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -33,14 +37,16 @@ class ReferenceInfoContent extends ConsumerWidget {
         GradientButton(
             onPressed: () => context.push('/forgot'),
             child: const Text('Change password')),
+        const SizedBox(height: 20),
+        const AccountDeletionRequestContent(),
       ]);
     }
     if (title == 'Task')
       return Column(children: [
         for (final task in [
-          ('Daily check-in', '+100 coins'),
-          ('Send a gift', '+50 coins'),
-          ('Stay in a room 10 min', '+30 coins')
+          ('Daily check-in', 'Rewards unavailable'),
+          ('Send a gift', 'Rewards unavailable'),
+          ('Stay in a room 10 min', 'Rewards unavailable')
         ])
           ReferenceCard(
               child: Row(children: [
@@ -54,84 +60,66 @@ class ReferenceInfoContent extends ConsumerWidget {
                       style: const TextStyle(
                           color: NimzoStyle.muted, fontSize: 12))
                 ])),
-            const GradientButton(onPressed: null, child: Text('Claim'))
+            const GradientButton(onPressed: null, child: Text('Unavailable'))
           ]))
       ]);
     if (title == 'Store')
-      return GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          mainAxisExtent: 180 * MediaQuery.textScalerOf(context).scale(1),
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          children: [
-            for (final item in [
-              ('Gold Frame', 50000, 'frame', 0),
-              ('VIP Frame', 500000, 'frame', 1),
-              ('Eagle Car', 200000, 'car', 0),
-              ('Jeep Car', 100000, 'car', 1)
-            ])
-              Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                      color: NimzoStyle.surface,
-                      borderRadius: BorderRadius.circular(14)),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ReferenceArtwork(item.$3, item.$4, size: 58),
-                        const SizedBox(height: 6),
-                        Text(item.$1,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.w700)),
-                        Text('${compactNumber(item.$2)} coins',
-                            style: const TextStyle(
-                                color: NimzoStyle.primary, fontSize: 12)),
-                        const Text('Unavailable',
-                            style: TextStyle(
-                                color: NimzoStyle.muted, fontSize: 11))
-                      ]))
-          ]);
-    if (title == 'Honor Wall')
-      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Wrap(spacing: 16, runSpacing: 16, children: [
-          for (var i = 0; i < 5; i++) ReferenceArtwork('med', i, size: 84)
-        ]),
-        const SizedBox(height: 20),
-        const Text('Room medals',
-            style: TextStyle(fontWeight: FontWeight.w700)),
-        const SizedBox(height: 10),
-        const Row(children: [
-          ReferenceArtwork('rmed', 0, size: 90),
-          SizedBox(width: 10),
-          ReferenceArtwork('rmed', 1, size: 90)
-        ])
-      ]);
-    if (title == 'Help and feedback')
       return Column(children: [
-        for (final question in [
-          'How do I recharge?',
-          'How do VIP and SVIP work?',
-          'Report a problem'
-        ])
-          ListTile(
-              title: Text(question),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => showUiUnavailable(context, 'Help service'))
+        GradientButton(
+            onPressed: () => context.push('/recharge'),
+            child: const Text('Coin packages')),
+        const SizedBox(height: 12),
+        const Text('Cosmetic previews · purchases are unavailable'),
+        GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            mainAxisExtent: 180 * MediaQuery.textScalerOf(context).scale(1),
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            children: [
+              for (final item in [
+                ('Gold Frame', 50000, 'frame', 0),
+                ('VIP Frame', 500000, 'frame', 1),
+                ('Eagle Car', 200000, 'car', 0),
+                ('Jeep Car', 100000, 'car', 1)
+              ])
+                Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                        color: NimzoStyle.surface,
+                        borderRadius: BorderRadius.circular(14)),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ReferenceArtwork(item.$3, item.$4, size: 58),
+                          const SizedBox(height: 6),
+                          Text(item.$1,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w700)),
+                          Text('${compactNumber(item.$2)} coins',
+                              style: const TextStyle(
+                                  color: NimzoStyle.primary, fontSize: 12)),
+                          const Text('Unavailable',
+                              style: TextStyle(
+                                  color: NimzoStyle.muted, fontSize: 11))
+                        ]))
+            ])
       ]);
+    if (title == 'Honor Wall') return const HonorWallContent();
+    if (title == 'Help and feedback') return const SupportHelpContent();
     if (title == 'Privacy')
       return Column(children: [
-        for (final label in [
-          'Show me in visitors',
-          'Allow messages from everyone',
-          'Show my online status'
-        ])
-          SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(label),
-              value: true,
-              onChanged: null)
+        ListTile(
+            title: const Text('Blocked users'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const BlockedUsersScreen()))),
+        const PreferenceControls(privacy: true),
+        const Padding(
+            padding: EdgeInsets.all(12),
+            child: Text(
+                'Visitor visibility and online-status privacy are not supported by the current server contracts.')),
       ]);
     if (title == 'Language') return const LanguageChoices();
     return const EmptyContent('This service is not available yet.');

@@ -3,6 +3,20 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/providers/supabase_provider.dart';
 
+bool confirmedPurchase(dynamic data,
+        {required String store,
+        required String productId,
+        required String transactionId}) =>
+    data is Map &&
+    data['ok'] == true &&
+    ['credited', 'replayed'].contains(data['status']) &&
+    data['store'] == store &&
+    data['product_id'] == productId &&
+    data['transaction_id'] == transactionId &&
+    data['coins'] is int &&
+    (data['coins'] as int) > 0 &&
+    data['environment'] == 'production';
+
 /// Packages/prices come from the backend. Purchases are verified by the
 /// `verify-purchase` Edge Function against Google Play / App Store using
 /// server-held credentials. The client never sends a trusted price.
@@ -20,10 +34,15 @@ class RechargeRepository {
     required String receipt,
     String? transactionId,
   }) async {
+    final canonicalStore = store == 'google'
+        ? 'google_play'
+        : store == 'apple'
+            ? 'app_store'
+            : store;
     final response = await _db.functions.invoke(
       'verify-purchase',
       body: {
-        'store': store,
+        'store': canonicalStore,
         'product_id': productId,
         'receipt': receipt,
         if (transactionId != null) 'transaction_id': transactionId,
@@ -32,8 +51,12 @@ class RechargeRepository {
     final data = response.data;
     if (response.status < 200 ||
         response.status >= 300 ||
-        data is! Map ||
-        data['ok'] != true) {
+        !confirmedPurchase(data,
+            store: canonicalStore,
+            productId: productId,
+            transactionId: canonicalStore == 'google_play'
+                ? receipt
+                : transactionId ?? '')) {
       throw StateError(
         data is Map
             ? (data['error']?.toString() ??

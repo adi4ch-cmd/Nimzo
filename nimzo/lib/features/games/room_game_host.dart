@@ -22,6 +22,7 @@ class RoomGameHost extends StatefulWidget {
 class RoomGameHostState extends State<RoomGameHost> {
   String? _slug;
   bool _minimized = false;
+  bool _expanded = false;
   void open(String slug) {
     if (!NimzoRoomGames.approved.any((game) => game.slug == slug)) return;
     setState(() {
@@ -46,7 +47,7 @@ class RoomGameHostState extends State<RoomGameHost> {
                 widget.child,
                 if (game != null)
                   Positioned.fill(
-                      top: constraints.maxHeight * .35,
+                      top: _expanded ? 0 : constraints.maxHeight * .35,
                       child: ClipRRect(
                           borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(24)),
@@ -59,6 +60,9 @@ class RoomGameHostState extends State<RoomGameHost> {
                                   slug: game.slug,
                                   roomId: widget.roomId,
                                   onMinimize: _minimize,
+                                  expanded: _expanded,
+                                  onExpand: () =>
+                                      setState(() => _expanded = !_expanded),
                                   onClose: _close,
                                   roomControls: SafeArea(
                                       child: Material(

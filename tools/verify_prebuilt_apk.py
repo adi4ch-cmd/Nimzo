@@ -27,4 +27,5 @@ with zipfile.ZipFile(apk) as archive:
 url=f'https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-release-{source[:12]}/app-release.apk'
 update=dict(version=version,buildNumber=build,packageName='io.nimzo.app',signingCertificateSha256=cert,apkSha256=digest,apkUrl=url)
 (folder/'nimzo-update.json').write_text(json.dumps(update,indent=2)+'\n');(folder/'app-release.apk.sha256').write_text(digest+'  app-release.apk\n');(folder/'app-release.apk.signing.txt').write_text(signature)
+subprocess.run(['python3','tools/verify_vivox_callback.py',str(apk)],check=True)
 print('Prebuilt APK checksum, permanent signing identity, package/version, update lifecycle and Vivox libraries: PASS')

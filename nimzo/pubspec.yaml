@@ -1,7 +1,7 @@
 name: nimzo
 description: Nimzo social voice-room app
 publish_to: none
-version: 1.0.7+107
+version: 1.0.8+108
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:

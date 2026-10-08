@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/errors/error_handler.dart';
+import '../../core/services/account_table_activity.dart';
 import '../../core/providers/supabase_provider.dart';
 
 class Message {
@@ -33,6 +34,9 @@ class MessageRepository {
   final SupabaseClient _db;
   MessageRepository(this._db);
   String get _me => _db.auth.currentUser!.id;
+
+  Stream<int> changes() =>
+      accountTableActivity(_db, 'messages', ['sender_id', 'receiver_id']);
 
   Future<List<Map<String, dynamic>>> conversations() async {
     try {
@@ -81,9 +85,13 @@ class MessageRepository {
 final messageRepositoryProvider = Provider(
   (ref) => MessageRepository(ref.watch(sessionSupabaseProvider).client),
 );
-final conversationsProvider = FutureProvider(
-  (ref) => ref.watch(messageRepositoryProvider).conversations(),
+final conversationActivityProvider = StreamProvider.autoDispose(
+  (ref) => ref.watch(messageRepositoryProvider).changes(),
 );
+final conversationsProvider = FutureProvider((ref) {
+  ref.watch(conversationActivityProvider);
+  return ref.watch(messageRepositoryProvider).conversations();
+});
 final chatProvider = StreamProvider.autoDispose.family<List<Message>, String>(
   (ref, other) => ref.watch(messageRepositoryProvider).watch(other),
 );

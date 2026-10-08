@@ -1,5 +1,6 @@
 import '../../core/widgets/master_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +10,7 @@ import '../../core/widgets/reference_widgets.dart';
 import 'profile_repository.dart';
 import 'profile_screen.dart';
 import 'profile_presentation.dart';
+import 'levels_screen.dart';
 
 class MeScreen extends ConsumerWidget {
   const MeScreen({super.key});
@@ -107,23 +109,52 @@ class MeScreen extends ConsumerWidget {
                                                   fontWeight:
                                                       FontWeight.w700))),
                                   ]),
-                              Text(
-                                'ID:${p.nimzoId} | ${p.countryName ?? p.countryCode ?? ''}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                ),
+                              InkWell(
+                                key: const ValueKey('me-copy-id'),
+                                onTap: () async {
+                                  await Clipboard.setData(
+                                      ClipboardData(text: '${p.nimzoId}'));
+                                  if (context.mounted)
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text('ID copied')));
+                                },
+                                child: Row(children: [
+                                  Flexible(
+                                      child: Text(
+                                    'ID:${p.nimzoId} | ${p.countryName ?? p.countryCode ?? ''}',
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 13),
+                                  )),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.copy,
+                                      size: 13, color: Colors.white),
+                                ]),
                               ),
-                              const SizedBox(height: 12),
-                              Wrap(
-                                spacing: 8,
+                              const SizedBox(height: 6),
+                              Row(
+                                key: const ValueKey('me-level-badges'),
                                 children: [
-                                  if (p.wealthLevel > 0)
-                                    LevelBadge(kind: 0, level: p.wealthLevel),
-                                  if (p.charmLevel > 0)
-                                    LevelBadge(kind: 1, level: p.charmLevel),
-                                  if (p.activeLevel > 0)
-                                    LevelBadge(kind: 2, level: p.activeLevel),
+                                  for (var kind = 0; kind < 3; kind++) ...[
+                                    if (kind > 0) const SizedBox(width: 4),
+                                    Expanded(
+                                        child: InkWell(
+                                      key: ValueKey('me-level-$kind'),
+                                      onTap: () => Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (_) => LevelsScreen(
+                                                  initialKind: kind,
+                                                  userId: id))),
+                                      child: LevelBadge(
+                                          kind: kind,
+                                          level: [
+                                            p.wealthLevel,
+                                            p.charmLevel,
+                                            p.activeLevel
+                                          ][kind],
+                                          showLabel: true),
+                                    )),
+                                  ],
                                 ],
                               ),
                             ],

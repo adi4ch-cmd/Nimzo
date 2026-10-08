@@ -10,7 +10,8 @@ import 'game_catalog.dart';
 /// Visual boards from nimzo-ui-2.html. Settlement is never simulated locally.
 class GameScreen extends ConsumerStatefulWidget {
   final String? roomId, slug;
-  final VoidCallback? onMinimize, onClose;
+  final VoidCallback? onMinimize, onClose, onExpand;
+  final bool expanded;
   final Widget? roomControls;
   const GameScreen(
       {super.key,
@@ -18,6 +19,8 @@ class GameScreen extends ConsumerStatefulWidget {
       this.slug,
       this.onMinimize,
       this.onClose,
+      this.onExpand,
+      this.expanded = false,
       this.roomControls});
   static const fruit = [
     'Orange',
@@ -57,6 +60,7 @@ class GameScreen extends ConsumerStatefulWidget {
 
 class _GameState extends ConsumerState<GameScreen> {
   int selectedChip = 0;
+  final Set<int> _previewOptions = {};
   static const gold = Color(0xfffde68a);
   static const multipliers = [
     [5, 5, 5, 45, 5, 25, 15, 10],
@@ -159,6 +163,14 @@ class _GameState extends ConsumerState<GameScreen> {
                         onPressed: widget.onClose,
                         icon: const Icon(Icons.close)),
                 actions: [
+                  if (widget.onExpand != null)
+                    IconButton(
+                        tooltip:
+                            widget.expanded ? 'Collapse game' : 'Expand game',
+                        onPressed: widget.onExpand,
+                        icon: Icon(widget.expanded
+                            ? Icons.fullscreen_exit
+                            : Icons.fullscreen)),
                   if (widget.onMinimize != null)
                     IconButton(
                         tooltip: 'Return to voice room',
@@ -185,9 +197,14 @@ class _GameState extends ConsumerState<GameScreen> {
                                                       fontWeight:
                                                           FontWeight.w700)),
                                               const SizedBox(height: 12),
-                                              Text(spin
-                                                  ? 'Pick a bet amount and press Spin. The payout depends on the result.'
-                                                  : 'Choose up to ${i == 4 || i == 6 ? 3 : 6} options and set an amount on each. A winning option pays amount × multiplier.'),
+                                              const Text(
+                                                  'This is the approved visual reference. Displayed options and multipliers are not a complete approved gameplay contract.'),
+                                              const SizedBox(height: 12),
+                                              Text(i == 4
+                                                  ? 'Teen Patti identity requires confirmation: the reference shows Player A/B/C. Traditional Teen Patti rules have not been approved.'
+                                                  : i == 6
+                                                      ? 'Bounty Football is the seventh catalog entry. The reference shows Home/Draw/Away; match source and settlement rules require approval.'
+                                                      : 'Round timing, outcome source, wager limits and settlement rules require an approved server contract.'),
                                               const SizedBox(height: 12),
                                               const Text(
                                                   'Game service unavailable.',
@@ -251,7 +268,7 @@ class _GameState extends ConsumerState<GameScreen> {
                                         fontWeight: FontWeight.w700)),
                                 SizedBox(height: 4),
                                 Text(
-                                    'Explore the board and rules. Betting is paused.',
+                                    'Board preview only. Approved rules and live service are pending.',
                                     style: TextStyle(
                                         color: Color(0xffe9d5ff),
                                         fontSize: 12)),
@@ -516,91 +533,109 @@ class _GameState extends ConsumerState<GameScreen> {
 
   Widget _tile(int game, int index, List<String> names) {
     final special = game == 1 && (index == 4 || index == 9);
-    return Container(
-        decoration: BoxDecoration(
-            color: Color(colors[game][index]),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-                color: special ? const Color(0xfff59e0b) : Colors.transparent,
-                width: 2)),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              if (game == 2)
-                Container(
-                    width: 44,
-                    height: 44,
-                    margin: const EdgeInsets.only(top: 8),
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const RadialGradient(
-                            colors: [Colors.white, Color(0xff9ca3af)]),
-                        border: Border.all(color: gold, width: 2)),
-                    child: Center(
-                        child: Text(
-                            [
-                              'BM',
-                              'PO',
-                              'LR',
-                              'FE',
-                              'LB',
-                              'BU',
-                              'RR',
-                              'MB'
-                            ][index],
+    return Semantics(
+        button: true,
+        selected: _previewOptions.contains(index),
+        label: '${names[index]}, preview selection only',
+        child: InkWell(
+            onTap: () => setState(() {
+                  if (!_previewOptions.remove(index))
+                    _previewOptions.add(index);
+                }),
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Color(colors[game][index]),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: _previewOptions.contains(index) || special
+                            ? const Color(0xfff59e0b)
+                            : Colors.transparent,
+                        width: 2)),
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (game == 2)
+                        Container(
+                            width: 44,
+                            height: 44,
+                            margin: const EdgeInsets.only(top: 8),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: const RadialGradient(
+                                    colors: [Colors.white, Color(0xff9ca3af)]),
+                                border: Border.all(color: gold, width: 2)),
+                            child: Center(
+                                child: Text(
+                                    [
+                                      'BM',
+                                      'PO',
+                                      'LR',
+                                      'FE',
+                                      'LB',
+                                      'BU',
+                                      'RR',
+                                      'MB'
+                                    ][index],
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 15))))
+                      else
+                        SizedBox(
+                            height: 56,
+                            child: Image.asset(
+                                'assets/reference/${game == 0 ? 'fruit' : game == 1 ? 'grady' : 'game'}/${game == 4 ? 4 : game == 6 ? 6 : index}.jpg',
+                                width: double.infinity,
+                                fit: BoxFit.cover)),
+                      if (game != 0 && game != 1)
+                        Text(names[index],
                             style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 15))))
-              else
-                SizedBox(
-                    height: 56,
-                    child: Image.asset(
-                        'assets/reference/${game == 0 ? 'fruit' : game == 1 ? 'grady' : 'game'}/${game == 4 ? 4 : game == 6 ? 6 : index}.jpg',
-                        width: double.infinity,
-                        fit: BoxFit.cover)),
-              if (game != 0 && game != 1)
-                Text(names[index],
-                    style: const TextStyle(
-                        fontSize: 12, height: 1.1, fontWeight: FontWeight.w700),
-                    maxLines: 1),
-              Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Text(
-                      special ? 'SPECIAL' : '${multipliers[game][index]}x',
-                      maxLines: 1,
-                      overflow: TextOverflow.clip,
-                      style: TextStyle(
-                          color: gold,
-                          fontSize: special ? 12 : 18,
-                          height: 1.1,
-                          fontWeight: FontWeight.w800))),
-              if (special)
-                FittedBox(
-                    child: Text(index == 4 ? 'All 4 upper' : 'All 4 lower',
-                        style: const TextStyle(fontSize: 9, height: 1)))
-              else if (game == 4 || game == 6)
-                Text(
-                    game == 4
-                        ? [
-                            'A♠ K♠ Q♥ · 1:1',
-                            'A♥ A♦ A♣ · 1:8',
-                            'K♠ Q♠ J♥ · 1:1'
-                          ][index]
-                        : ['1:1.5', '1:5', '1:1.5'][index],
-                    style: const TextStyle(fontSize: 10, height: 1)),
-              if (!special)
-                Container(
-                    margin: const EdgeInsets.only(bottom: 6),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                    decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: .45),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: const Text('+',
-                        style: TextStyle(fontSize: 12, height: 1))),
-            ]));
+                                fontSize: 12,
+                                height: 1.1,
+                                fontWeight: FontWeight.w700),
+                            maxLines: 1),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2),
+                          child: Text(
+                              special
+                                  ? 'SPECIAL'
+                                  : '${multipliers[game][index]}x',
+                              maxLines: 1,
+                              overflow: TextOverflow.clip,
+                              style: TextStyle(
+                                  color: gold,
+                                  fontSize: special ? 12 : 18,
+                                  height: 1.1,
+                                  fontWeight: FontWeight.w800))),
+                      if (special)
+                        FittedBox(
+                            child: Text(
+                                index == 4 ? 'All 4 upper' : 'All 4 lower',
+                                style: const TextStyle(fontSize: 9, height: 1)))
+                      else if (game == 4 || game == 6)
+                        Text(
+                            game == 4
+                                ? [
+                                    'A♠ K♠ Q♥ · 1:1',
+                                    'A♥ A♦ A♣ · 1:8',
+                                    'K♠ Q♠ J♥ · 1:1'
+                                  ][index]
+                                : ['1:1.5', '1:5', '1:1.5'][index],
+                            style: const TextStyle(fontSize: 10, height: 1)),
+                      if (!special)
+                        Container(
+                            margin: const EdgeInsets.only(bottom: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 2),
+                            decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: .45),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Text(
+                                _previewOptions.contains(index) ? '✓' : '+',
+                                style:
+                                    const TextStyle(fontSize: 12, height: 1))),
+                    ]))));
   }
 }
 

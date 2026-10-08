@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/errors/error_handler.dart';
+import 'gift_error.dart';
 
 class Gift {
   final String id, name, category;
@@ -66,7 +67,7 @@ class GiftRepository {
         },
       );
     } catch (e) {
-      throw mapError(e);
+      throw mapGiftError(e);
     }
   }
 
@@ -95,7 +96,7 @@ class GiftRepository {
         },
       );
     } catch (e) {
-      throw mapError(e);
+      throw mapGiftError(e);
     }
   }
 

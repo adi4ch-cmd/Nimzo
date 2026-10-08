@@ -8,9 +8,11 @@ import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
+import 'gift_error.dart';
 import 'gift_artwork.dart';
 import '../../core/widgets/master_ui.dart';
 import '../moments/moment_repository.dart';
+import '../moments/moments_screen.dart' show momentDetailProvider;
 import '../rooms/presentation/room_controller.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
@@ -110,6 +112,8 @@ class _State extends ConsumerState<GiftSheet> {
               key: key!,
             );
         container.invalidate(momentsFeedProvider);
+        container.invalidate(momentDetailProvider(widget.momentId!));
+        container.invalidate(profileMomentsProvider(receiverId));
       } else if (widget.roomId == null) {
         await r.sendProfile(
           receiverId: receiverId,
@@ -137,12 +141,19 @@ class _State extends ConsumerState<GiftSheet> {
         container.invalidate(profileStatsProvider(me));
       }
       if (mounted) Navigator.pop(context);
-    } catch (_) {
+    } catch (error) {
+      // Known RPC rejections roll back settlement, so a new selection is safe.
+      // Uncertain responses keep the original key and payload for retry.
+      if (mounted && error is GiftRejectedException) {
+        setState(() => key = null);
+      }
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Gift was not confirmed. Retry to check this same request.',
+              error is GiftRejectedException
+                  ? error.message
+                  : 'Gift was not confirmed. Retry to check this same request.',
             ),
           ),
         );
@@ -178,12 +189,13 @@ class _State extends ConsumerState<GiftSheet> {
                         child: ListView(
                             scrollDirection: Axis.horizontal,
                             children: [
-                              for (final p
-                                  in recipients.values.where((p) => p.id != me))
+                              for (final p in recipients.values)
                                 ChoiceChip(
-                                    label: Text(p.displayName ??
-                                        p.username ??
-                                        'Nimzo user'),
+                                    label: Text(p.id == me
+                                        ? 'Myself'
+                                        : p.displayName ??
+                                            p.username ??
+                                            'Nimzo user'),
                                     selected: receiverId == p.id,
                                     onSelected: busy ||
                                             confirming ||

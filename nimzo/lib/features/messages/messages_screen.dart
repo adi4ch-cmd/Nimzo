@@ -7,6 +7,8 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import 'message_repository.dart';
+import '../social/social_repositories.dart';
+import '../social/blocked_users_screen.dart';
 import '../profile/profile_repository.dart';
 
 class MessagesScreen extends ConsumerWidget {
@@ -91,7 +93,7 @@ class ConversationScreen extends ConsumerStatefulWidget {
 
 class _State extends ConsumerState<ConversationScreen> {
   final body = TextEditingController();
-  bool busy = false, reading = false;
+  bool busy = false, reading = false, blockBusy = false;
   @override
   void dispose() {
     body.dispose();
@@ -118,6 +120,28 @@ class _State extends ConsumerState<ConversationScreen> {
     }
   }
 
+  Future<void> toggleBlock() async {
+    if (blockBusy) return;
+    setState(() => blockBusy = true);
+    final container = ProviderScope.containerOf(context, listen: false);
+    try {
+      final ids = await ref.read(blockedUserIdsProvider.future);
+      final repository = ref.read(blockRepositoryProvider);
+      if (ids.contains(widget.otherId)) {
+        await repository.unblock(widget.otherId);
+      } else {
+        await repository.block(widget.otherId);
+      }
+      container.invalidate(blockedUserIdsProvider);
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Unable to update blocking. Retry.')));
+    } finally {
+      if (mounted) setState(() => blockBusy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final me = ref.watch(currentUserIdProvider);
@@ -141,27 +165,44 @@ class _State extends ConsumerState<ConversationScreen> {
     });
     return Scaffold(
       appBar: AppBar(
+          actions: [
+            PopupMenuButton<String>(
+              enabled: !blockBusy,
+              onSelected: (_) => toggleBlock(),
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                    value: 'block',
+                    child: Text(ref
+                                .watch(blockedUserIdsProvider)
+                                .valueOrNull
+                                ?.contains(widget.otherId) ==
+                            true
+                        ? 'Unblock user'
+                        : 'Block user'))
+              ],
+            )
+          ],
           title: InkWell(
-        onTap: () => context.push('/profile/${widget.otherId}'),
-        child: Row(children: [
-          NimzoAvatar(
-              name: other?.displayName ?? 'N',
-              size: 36,
-              url: avatar == null
-                  ? null
-                  : ref
-                      .watch(supabaseProvider)
-                      .storage
-                      .from('avatars')
-                      .getPublicUrl(avatar)),
-          const SizedBox(width: 10),
-          Expanded(
-              child: Text(
-                  other?.displayName ?? other?.username ?? 'Conversation',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis)),
-        ]),
-      )),
+            onTap: () => context.push('/profile/${widget.otherId}'),
+            child: Row(children: [
+              NimzoAvatar(
+                  name: other?.displayName ?? 'N',
+                  size: 36,
+                  url: avatar == null
+                      ? null
+                      : ref
+                          .watch(supabaseProvider)
+                          .storage
+                          .from('avatars')
+                          .getPublicUrl(avatar)),
+              const SizedBox(width: 10),
+              Expanded(
+                  child: Text(
+                      other?.displayName ?? other?.username ?? 'Conversation',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis)),
+            ]),
+          )),
       body: SafeArea(
         child: Column(
           children: [

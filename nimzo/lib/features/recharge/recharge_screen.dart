@@ -2,92 +2,86 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/widgets/master_ui.dart';
-import '../../core/theme/app_theme.dart';
 import '../wallet/wallet_screen.dart';
-import 'recharge_repository.dart';
+import 'purchase_controller.dart';
 
-class RechargeScreen extends ConsumerWidget {
+class RechargeScreen extends ConsumerStatefulWidget {
   const RechargeScreen({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-      appBar: AppBar(title: const Text('Recharge')),
+  ConsumerState<RechargeScreen> createState() => _RechargeScreenState();
+}
+
+class _RechargeScreenState extends ConsumerState<RechargeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) ref.read(purchaseControllerProvider).load();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final checkout = ref.watch(purchaseControllerProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Coin store')),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         AsyncContent(
-            value: ref.watch(walletProvider),
-            onRetry: () => ref.invalidate(walletProvider),
-            builder: (wallet) => BalancePanel(
-                label: 'Your coins', balance: referenceNumber(wallet.coins))),
-        const Padding(
-            padding: EdgeInsets.fromLTRB(0, 6, 0, 8),
-            child: Text('Choose amount',
-                style: TextStyle(fontWeight: FontWeight.w700))),
-        AsyncContent(
-            value: ref.watch(packagesProvider),
-            onRetry: () => ref.invalidate(packagesProvider),
-            builder: (rows) => rows.isEmpty
-                ? const EmptyContent('No recharge packages available')
-                : GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    mainAxisExtent:
-                        94 * MediaQuery.textScalerOf(context).scale(1),
-                    children: [
-                        for (final r in rows)
-                          InkWell(
-                              onTap: () => showReferenceSheet(
-                                  context,
-                                  Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                            'Pay \$${((r['usd_cents'] as num) / 100).toStringAsFixed(2)}',
-                                            style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w700)),
-                                        for (final method in [
-                                          'Card',
-                                          'Google Pay / Apple Pay',
-                                          'Local wallet'
-                                        ])
-                                          ListTile(
-                                              contentPadding: EdgeInsets.zero,
-                                              title: Text(method),
-                                              trailing: const Icon(
-                                                  Icons.chevron_right),
-                                              onTap: () => showUiUnavailable(
-                                                  context, 'Payment'))
-                                      ])),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      color: NimzoStyle.surface,
-                                      border:
-                                          Border.all(color: NimzoStyle.line),
-                                      borderRadius: BorderRadius.circular(14)),
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                            '\$${((r['usd_cents'] as num) / 100).toStringAsFixed(2)}',
-                                            style: const TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700)),
-                                        Text(
-                                            '${referenceNumber(r['coins'] as num)} coins',
-                                            style: const TextStyle(
-                                                color: NimzoStyle.primary,
-                                                fontSize: 12))
-                                      ])))
-                      ])),
-        const Padding(
-            padding: EdgeInsets.only(top: 14),
-            child: Text(
-                '1 USD = 500,000 coins. Payment methods depend on your country. Coins are added only after the server verifies the payment.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: NimzoStyle.muted, fontSize: 12))),
-      ]));
+          value: ref.watch(walletProvider),
+          onRetry: () => ref.invalidate(walletProvider),
+          builder: (wallet) => BalancePanel(
+              label: 'Your coins', balance: referenceNumber(wallet.coins)),
+        ),
+        const SizedBox(height: 16),
+        Text(
+            checkout.store == 'google_play'
+                ? 'Google Play checkout'
+                : checkout.store == 'app_store'
+                    ? 'App Store checkout'
+                    : 'Mobile store checkout',
+            style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 6),
+        Text('Environment: ${checkout.environment}'),
+        const SizedBox(height: 8),
+        Text(checkout.message, key: const Key('checkout-status')),
+        if (checkout.loading || checkout.busy)
+          const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: LinearProgressIndicator()),
+        const SizedBox(height: 12),
+        for (final product in checkout.products)
+          Card(
+              child: ListTile(
+            title: Text(
+                '${referenceNumber((checkout.packages[product.id]['coins'] as num))} coins'),
+            subtitle: Text(product.title),
+            trailing: FilledButton(
+              onPressed: checkout.ready &&
+                      !checkout.busy &&
+                      !checkout.loading &&
+                      !checkout.canRetry
+                  ? () => checkout.buy(product)
+                  : null,
+              child: Text(product.price),
+            ),
+          )),
+        if (!checkout.busy)
+          OutlinedButton(
+            onPressed: checkout.loading ? null : checkout.load,
+            child: const Text('Reload store'),
+          ),
+        if (!checkout.busy && checkout.store != null)
+          TextButton(
+            onPressed: checkout.retry,
+            child: Text(checkout.canRetry
+                ? 'Retry payment verification'
+                : 'Check unfinished purchases'),
+          ),
+        const SizedBox(height: 12),
+        const Text(
+            'Sandbox purchases are not credited to live wallets. The store confirms the price and payment method before charging. Coins are credited only after server verification. If verification fails, retry it before buying again.',
+            textAlign: TextAlign.center),
+      ]),
+    );
+  }
 }

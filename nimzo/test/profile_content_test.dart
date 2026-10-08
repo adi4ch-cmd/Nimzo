@@ -7,6 +7,7 @@ import 'package:nimzo/core/theme/app_theme.dart';
 import 'package:nimzo/features/profile/profile.dart';
 import 'package:nimzo/features/profile/profile_repository.dart';
 import 'package:nimzo/features/profile/profile_screen.dart';
+import 'package:nimzo/features/profile/levels_screen.dart';
 import 'package:nimzo/features/profile/profile_collections.dart';
 
 void main() {
@@ -87,6 +88,20 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+  }
+
+  for (var kind = 0; kind < 3; kind++) {
+    testWidgets('public profile badge $kind opens its category',
+        (tester) async {
+      await openProfile(tester);
+      await tester.tap(find.byKey(ValueKey('profile-level-$kind')));
+      await tester.pumpAndSettle();
+      final screen = tester.widget<LevelsScreen>(find.byType(LevelsScreen));
+      expect(screen.initialKind, kind);
+      expect(screen.userId, 'u');
+      expect(find.text('Level unavailable'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets('badge distinguishes unavailable total from a real zero',

@@ -10,6 +10,7 @@ import '../gifts/gift_sheet.dart';
 import '../social/social_repositories.dart';
 import '../social/friend_button.dart';
 import 'profile_repository.dart';
+import 'levels_screen.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
@@ -198,19 +199,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         for (var kind = 0; kind < 3; kind++) ...[
                           if (kind > 0) const SizedBox(width: 6),
                           Expanded(
-                            child: ProfileProgressBadge(
-                              kind: kind,
-                              level: [
-                                p.wealthLevel,
-                                p.charmLevel,
-                                p.activeLevel
-                              ][kind],
-                              total: [
-                                p.wealthCoins,
-                                p.charmDiamonds,
-                                p.activePoints
-                              ][kind],
-                            ),
+                            child: InkWell(
+                                key: ValueKey('profile-level-$kind'),
+                                onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (_) => LevelsScreen(
+                                            initialKind: kind, userId: id))),
+                                child: ProfileProgressBadge(
+                                  kind: kind,
+                                  level: [
+                                    p.wealthLevel,
+                                    p.charmLevel,
+                                    p.activeLevel
+                                  ][kind],
+                                  total: [
+                                    p.wealthCoins,
+                                    p.charmDiamonds,
+                                    p.activePoints
+                                  ][kind],
+                                )),
                           ),
                         ],
                       ],
@@ -512,8 +519,7 @@ class ProfileProgressBadge extends StatelessWidget {
   const ProfileProgressBadge(
       {super.key, required this.kind, required this.level, this.total});
 
-  static Color color(int kind, int level) =>
-      const [Color(0xff16a34a), Color(0xff2563eb), Color(0xffdc2626)][kind];
+  static Color color(int kind, int level) => LevelBadge.color(kind, level);
 
   @override
   Widget build(BuildContext context) {
@@ -565,18 +571,28 @@ class ProfileProgressBadge extends StatelessWidget {
 
 class LevelBadge extends StatelessWidget {
   final int kind, level;
-  const LevelBadge({super.key, required this.kind, required this.level});
+  final bool showLabel;
+  const LevelBadge(
+      {super.key,
+      required this.kind,
+      required this.level,
+      this.showLabel = false});
   static Color color(int kind, int level) {
-    return const [
-      Color(0xff16a34a),
-      Color(0xff2563eb),
-      Color(0xffdc2626)
-    ][kind];
+    if (kind == 1) return const Color(0xff2563eb);
+    if (kind == 2) return const Color(0xffdc2626);
+    if (level < 1 || level > 120) return const Color(0xff6b7280);
+    if (level <= 20) return const Color(0xffa16207);
+    if (level <= 39) return const Color(0xff16a34a);
+    if (level <= 59) return const Color(0xff2563eb);
+    if (level <= 79) return const Color(0xffdb2777);
+    if (level <= 99) return const Color(0xffdc2626);
+    return const Color(0xffd4a017);
   }
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding:
+            EdgeInsets.symmetric(horizontal: showLabel ? 5 : 10, vertical: 4),
         decoration: BoxDecoration(
           color: color(kind, level),
           borderRadius: BorderRadius.circular(14),
@@ -586,18 +602,27 @@ class LevelBadge extends StatelessWidget {
           children: [
             ReferenceIcon(
               kind == 0 ? 'crown' : 'star',
-              size: 14,
+              size: showLabel ? 12 : 14,
               color: Colors.white,
             ),
             const SizedBox(width: 4),
-            Text(
-              '$level',
-              style: const TextStyle(
+            Flexible(
+                child: Text(
+              showLabel
+                  ? '${const [
+                      'Wealth',
+                      'Charm',
+                      'Active'
+                    ][kind]} ${level > 0 ? level : '—'}'
+                  : (level > 0 ? '$level' : '—'),
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: showLabel ? 9 : 12,
                 fontWeight: FontWeight.w700,
               ),
-            ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            )),
           ],
         ),
       );

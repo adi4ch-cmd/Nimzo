@@ -32,6 +32,14 @@ void main() {
     expect(tester.getTopLeft(find.byType(GameScreen)).dy, closeTo(224, 1));
     expect(tester.takeException(), isNull);
     final gameState = tester.state(find.byType(GameScreen));
+    await tester.tap(find.byTooltip('Expand game'));
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(find.byType(GameScreen)).dy, 0);
+    expect(tester.state(find.byType(GameScreen)), same(gameState));
+    expect(room.currentContext, same(roomElement));
+    await tester.tap(find.byTooltip('Collapse game'));
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(find.byType(GameScreen)).dy, closeTo(224, 1));
     await tester.tap(find.byTooltip('Return to voice room'));
     await tester.pumpAndSettle();
     expect(find.text('Room chat'), findsOneWidget);

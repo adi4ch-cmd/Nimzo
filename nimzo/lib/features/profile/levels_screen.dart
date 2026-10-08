@@ -8,13 +8,22 @@ import 'profile_repository.dart';
 import 'profile_screen.dart';
 
 class LevelsScreen extends ConsumerStatefulWidget {
-  const LevelsScreen({super.key});
+  final int initialKind;
+  final String? userId;
+  const LevelsScreen({super.key, this.initialKind = 0, this.userId})
+      : assert(initialKind >= 0 && initialKind < 3);
   @override
   ConsumerState<LevelsScreen> createState() => _LevelState();
 }
 
 class _LevelState extends ConsumerState<LevelsScreen> {
-  int selected = 0;
+  late int selected;
+  @override
+  void initState() {
+    super.initState();
+    selected = widget.initialKind;
+  }
+
   static const bands = [
     (1, 20, 'Brown', Color(0xffa16207)),
     (21, 39, 'Green', Color(0xff16a34a)),
@@ -25,7 +34,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
   ];
   @override
   Widget build(BuildContext context) {
-    final id = ref.watch(currentUserIdProvider),
+    final id = widget.userId ?? ref.watch(currentUserIdProvider),
         label = ['Wealth', 'Charm', 'Active'][selected];
     return Scaffold(
         appBar: AppBar(title: const Text('Level')),
@@ -58,20 +67,23 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                         scale: 1.4,
                         child: LevelBadge(kind: selected, level: level)),
                     const SizedBox(height: 16),
-                    Text('Tier: ${band?.$3 ?? 'Not started'}',
+                    Text(
+                        selected == 0
+                            ? 'Tier: ${band?.$3 ?? 'Unavailable'}'
+                            : '$label level',
                         style: const TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 10),
-                    Text('Level $level / 120',
+                    Text(level > 0 ? 'Level $level / 120' : 'Level unavailable',
                         style: const TextStyle(color: NimzoStyle.muted)),
                     const SizedBox(height: 6),
                     Text(
                         total == null
-                            ? 'XP progress unavailable'
+                            ? 'Total unavailable · next-level requirement unavailable'
                             : '${referenceNumber(total)} ${[
                                 'coins sent',
                                 'diamonds received',
                                 'activity points'
-                              ][selected]} · next-level threshold unavailable',
+                              ][selected]} · next-level requirement unavailable',
                         style: const TextStyle(
                             color: NimzoStyle.muted, fontSize: 12))
                   ]));
@@ -91,26 +103,29 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                     style:
                         const TextStyle(color: NimzoStyle.muted, fontSize: 12))
               ])),
-          const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Text('Tier colors',
-                  style: TextStyle(fontWeight: FontWeight.w700))),
-          for (final band in bands)
-            Container(
-                padding: const EdgeInsets.symmetric(vertical: 13),
-                decoration: const BoxDecoration(
-                    border: Border(bottom: BorderSide(color: NimzoStyle.line))),
-                child: Row(children: [
-                  Container(
-                      width: 14,
-                      height: 14,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: band.$4)),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text(band.$3)),
-                  Text('Level ${band.$1}-${band.$2}',
-                      style: const TextStyle(color: NimzoStyle.muted))
-                ])),
+          if (selected == 0)
+            const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Text('Tier colors',
+                    style: TextStyle(fontWeight: FontWeight.w700))),
+          if (selected == 0)
+            for (final band in bands)
+              Container(
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  decoration: const BoxDecoration(
+                      border:
+                          Border(bottom: BorderSide(color: NimzoStyle.line))),
+                  child: Row(children: [
+                    Container(
+                        width: 14,
+                        height: 14,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle, color: band.$4)),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(band.$3)),
+                    Text('Level ${band.$1}-${band.$2}',
+                        style: const TextStyle(color: NimzoStyle.muted))
+                  ])),
         ]));
   }
 }

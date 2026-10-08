@@ -18,6 +18,17 @@ class NativeVoiceContract(unittest.TestCase):
         self.assertNotIn('emit("error", status, join_resp->base.status_string', source)
         self.assertNotIn('emit("error", status, lr->base.status_string', source)
 
+    def test_jni_callback_survives_release_shrinking(self):
+        rules_path = ROOT / 'native/vivox/android/proguard-rules.pro'
+        self.assertTrue(rules_path.exists(), 'JNI callbacks require R8 keep rules')
+        rules = rules_path.read_text()
+        self.assertIn('-keep interface io.nimzo.vivox.NimzoVivox$Listener', rules)
+        self.assertIn('-keep class * implements io.nimzo.vivox.NimzoVivox$Listener', rules)
+        self.assertEqual(rules.count('void onVivoxEvent(java.lang.String, int, java.lang.String);'), 2)
+        activity = (ROOT / 'native/vivox/android/MainActivity.java').read_text()
+        self.assertIn('new NimzoVivox.Listener()', activity)
+        self.assertIn('public void onVivoxEvent(String event, int status, String detail)', activity)
+
     def test_jni_requests_run_on_serial_worker(self):
         source = (ROOT / 'native/vivox/android/MainActivity.java').read_text()
         self.assertIn('newSingleThreadExecutor', source)

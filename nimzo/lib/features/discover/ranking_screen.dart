@@ -13,7 +13,7 @@ class RankingScreen extends ConsumerStatefulWidget {
 }
 
 class _State extends ConsumerState<RankingScreen> {
-  int category = 0, period = 0;
+  int category = 1, period = 1;
   @override
   Widget build(BuildContext context) {
     final key = (

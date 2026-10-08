@@ -136,6 +136,20 @@ class RoomRepository {
         'mod_mute_seat',
         {'p_room': roomId, 'p_seat': seat, 'p_muted': muted},
       );
+  Future<bool> canModerate(String roomId) async {
+    try {
+      return await _db.rpc('get_room_moderation', params: {'p_room': roomId}) ==
+          true;
+    } catch (e) {
+      throw mapError(e);
+    }
+  }
+
+  Future<void> moderateMember(String roomId, String userId,
+          {required bool ban}) =>
+      _rpc('moderate_room_member',
+          {'p_room': roomId, 'p_user': userId, 'p_ban': ban});
+
   Future<void> kick(String roomId, String userId) =>
       _rpc('kick_member', {'p_room': roomId, 'p_user': userId});
 

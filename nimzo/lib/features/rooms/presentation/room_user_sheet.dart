@@ -6,6 +6,8 @@ import '../../../core/providers/supabase_provider.dart';
 import '../../../core/widgets/reference_widgets.dart';
 import '../../gifts/gift_sheet.dart';
 import '../../profile/profile_repository.dart';
+import '../../profile/profile_screen.dart';
+import '../../profile/levels_screen.dart';
 import '../../social/social_repositories.dart';
 import 'room_controller.dart';
 import '../../voice/voice_controller.dart';
@@ -44,9 +46,14 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
   Widget build(BuildContext context) {
     final me = ref.watch(currentUserIdProvider);
     final self = widget.userId == me;
-    final owner =
-        ref.watch(roomProvider(widget.roomId)).valueOrNull?.ownerId == me &&
-            me != null;
+    final roomOwner =
+        ref.watch(roomProvider(widget.roomId)).valueOrNull?.ownerId;
+    final owner = me != null && roomOwner == me;
+    final canModerate = me != null &&
+        (owner ||
+            ref.watch(roomModerationProvider(widget.roomId)).valueOrNull ==
+                true);
+    final removable = canModerate && !self && widget.userId != roomOwner;
     final following =
         self ? null : ref.watch(isFollowingProvider(widget.userId));
     final friendship =
@@ -72,7 +79,46 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                         .getPublicUrl(p.avatarPath!)),
                             title: Text(
                                 p.displayName ?? p.username ?? 'Nimzo user'),
-                            subtitle: Text('ID:${p.nimzoId}'),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('ID:${p.nimzoId}'),
+                                const SizedBox(height: 6),
+                                Row(
+                                  key: const ValueKey('room-user-level-badges'),
+                                  children: [
+                                    for (var kind = 0; kind < 3; kind++) ...[
+                                      if (kind > 0) const SizedBox(width: 4),
+                                      Expanded(
+                                          child: InkWell(
+                                        key: ValueKey('room-user-level-$kind'),
+                                        onTap: busy
+                                            ? null
+                                            : () => Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        LevelsScreen(
+                                                            initialKind: kind,
+                                                            userId: widget
+                                                                .userId))),
+                                        child: ProfileProgressBadge(
+                                            kind: kind,
+                                            level: [
+                                              p.wealthLevel,
+                                              p.charmLevel,
+                                              p.activeLevel
+                                            ][kind],
+                                            total: [
+                                              p.wealthCoins,
+                                              p.charmDiamonds,
+                                              p.activePoints
+                                            ][kind]),
+                                      )),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           )),
                   ListTile(
                       title: const Text('View profile'),
@@ -165,7 +211,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                   }
                                   if (context.mounted) Navigator.pop(context);
                                 })),
-                  if (owner && !self)
+                  if (removable)
                     ListTile(
                         title: Text(widget.muted ? 'Unmute seat' : 'Mute seat'),
                         onTap: busy
@@ -177,36 +223,45 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                           !widget.muted);
                                   if (context.mounted) Navigator.pop(context);
                                 })),
-                  if (owner && !self)
-                    ListTile(
-                        title: const Text('Kick from room'),
+                  if (removable)
+                    for (final ban in [false, true])
+                      ListTile(
+                        title: Text(ban ? 'Ban from room' : 'Kick from room'),
                         onTap: busy
                             ? null
                             : () => run(() async {
                                   final confirmed = await showDialog<bool>(
-                                      context: context,
-                                      builder: (c) => AlertDialog(
-                                              title: const Text(
-                                                  'Remove this user from the room?'),
-                                              actions: [
-                                                TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(c, false),
-                                                    child:
-                                                        const Text('Cancel')),
-                                                FilledButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(c, true),
-                                                    child:
-                                                        const Text('Remove')),
-                                              ]));
+                                    context: context,
+                                    builder: (c) => AlertDialog(
+                                      title: Text(ban
+                                          ? 'Permanently ban this user from the room?'
+                                          : 'Remove this user from the room?'),
+                                      content: Text(ban
+                                          ? 'This user will not be able to rejoin this room.'
+                                          : 'This user can rejoin the room.'),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(c, false),
+                                            child: const Text('Cancel')),
+                                        FilledButton(
+                                            onPressed: () =>
+                                                Navigator.pop(c, true),
+                                            child:
+                                                Text(ban ? 'Ban' : 'Remove')),
+                                      ],
+                                    ),
+                                  );
                                   if (confirmed != true || !context.mounted)
                                     return;
                                   await ref
                                       .read(roomRepositoryProvider)
-                                      .kick(widget.roomId, widget.userId);
+                                      .moderateMember(
+                                          widget.roomId, widget.userId,
+                                          ban: ban);
                                   if (context.mounted) Navigator.pop(context);
-                                })),
+                                }),
+                      ),
                 ]))));
   }
 }

@@ -5,6 +5,23 @@ import 'package:nimzo/features/games/game_catalog.dart';
 import 'package:nimzo/features/games/game_screen.dart';
 
 void main() {
+  testWidgets('board selection is nonfinancial and rules flag identity',
+      (tester) async {
+    await tester.pumpWidget(const ProviderScope(
+        child:
+            MaterialApp(home: GameScreen(slug: 'teen_patti', roomId: 'room'))));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Player A'));
+    await tester.pumpAndSettle();
+    expect(find.text('✓'), findsOneWidget);
+    await tester.tap(find.byTooltip('Rules'));
+    await tester.pumpAndSettle();
+    expect(
+        find.textContaining(
+            'Traditional Teen Patti rules have not been approved'),
+        findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
   for (final g in NimzoRoomGames.approved) {
     for (final textScale in [1.0, 1.8]) {
       testWidgets(
