@@ -11,6 +11,9 @@ class Profile {
       language,
       gender;
   final DateTime? dateOfBirth;
+  // Authoritative counters are distinct from levels; missing values stay unknown.
+  final int? wealthCoins, charmDiamonds, activePoints, svipCycleCents;
+  final DateTime? svipCycleStart;
   final int level, wealthLevel, charmLevel, activeLevel, vipLevel, svipLevel;
   const Profile({
     required this.id,
@@ -25,6 +28,11 @@ class Profile {
     this.language,
     this.gender,
     this.dateOfBirth,
+    this.wealthCoins,
+    this.charmDiamonds,
+    this.activePoints,
+    this.svipCycleCents,
+    this.svipCycleStart,
     this.level = 1,
     this.wealthLevel = 0,
     this.charmLevel = 0,
@@ -51,6 +59,12 @@ class Profile {
         countryName: j['country_name'] as String?,
         language: j['language'] as String?,
         gender: j['gender'] as String?,
+        wealthCoins: (j['wealth_coins'] as num?)?.toInt(),
+        charmDiamonds: (j['charm_diamonds'] as num?)?.toInt(),
+        activePoints: (j['active_points'] as num?)?.toInt(),
+        svipCycleCents: (j['svip_cycle_cents'] as num?)?.toInt(),
+        svipCycleStart:
+            DateTime.tryParse(j['svip_cycle_start']?.toString() ?? ''),
         dateOfBirth: j['date_of_birth'] == null
             ? null
             : DateTime.tryParse(j['date_of_birth'].toString()),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/widgets/master_ui.dart';
 import '../../core/utils/formatters.dart';
 import 'vip_repository.dart';
+import 'vip_progress.dart';
 import 'vip_tiers.dart';
 import 'vip_presentation.dart';
 import 'membership_motion.dart';
@@ -31,6 +32,8 @@ class _VipState extends ConsumerState<VipScreen> {
     final name = ref.watch(membershipNameProvider).valueOrNull;
     final initial = name?.trim().characters.firstOrNull ?? 'N';
     final status = ref.watch(vipStatusProvider);
+    final progress =
+        widget.svip ? ref.watch(svipProgressProvider).valueOrNull : null;
     final active =
         status.valueOrNull?[widget.svip ? 'svip_level' : 'vip_level'];
     final c = vipPalette[tier - 1];
@@ -67,8 +70,8 @@ class _VipState extends ConsumerState<VipScreen> {
               child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
                   children: widget.svip
-                      ? _svip(
-                          statusLabel, active is num ? active.toInt() : null)
+                      ? _svip(statusLabel,
+                          active is num ? active.toInt() : null, progress)
                       : [
                           MembershipHero(
                               emblem: MembershipEmblem(level: tier, size: 200),
@@ -251,7 +254,9 @@ class _VipState extends ConsumerState<VipScreen> {
           gradient: const LinearGradient(
               colors: [Color(0xff4a2e42), Color(0xff402039)])),
       child: Text(label, style: const TextStyle(fontSize: 12)));
-  List<Widget> _svip(String status, int? level) => [
+  String _usd(int cents) =>
+      '\$${referenceNumber(cents ~/ 100)}.${(cents % 100).toString().padLeft(2, '0')}';
+  List<Widget> _svip(String status, int? level, SvipProgress? progress) => [
         MembershipHero(
             emblem: const MembershipEmblem(
                 level: 10, svip: true, hero: true, size: 220),
@@ -277,16 +282,36 @@ class _VipState extends ConsumerState<VipScreen> {
               ]),
               const SizedBox(height: 10),
               Semantics(
-                  label: 'Recharge progress unavailable',
+                  label: progress == null
+                      ? 'Recharge progress unavailable'
+                      : 'Recorded recharge ${_usd(progress.cycleCents)}',
                   child: Container(
                       height: 8,
                       decoration: BoxDecoration(
                           color: const Color(0xff3a3047),
-                          borderRadius: BorderRadius.circular(4)))),
+                          borderRadius: BorderRadius.circular(4)),
+                      child: progress == null
+                          ? null
+                          : Align(
+                              alignment: Alignment.centerLeft,
+                              child: FractionallySizedBox(
+                                  widthFactor: progress.fraction ?? 0,
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                              colors: [
+                                                Color(0xfff59e0b),
+                                                Color(0xffec4899)
+                                              ]),
+                                          borderRadius:
+                                              BorderRadius.circular(4))))))),
               const SizedBox(height: 8),
-              const Text(
-                  'Recharge progress unavailable · your level comes from the backend',
-                  style: TextStyle(fontSize: 12, color: Color(0xffaa9fbc)))
+              Text(
+                  progress == null
+                      ? 'Recharge progress unavailable · your level comes from the backend'
+                      : 'Recorded cycle recharge: ${_usd(progress.cycleCents)} · ${progress.nextThresholdCents == null ? 'highest configured threshold reached' : 'next SVIP ${progress.nextLevel}: ${_usd(progress.nextThresholdCents!)}'}',
+                  style:
+                      const TextStyle(fontSize: 12, color: Color(0xffaa9fbc)))
             ])),
         const MembershipHeading('Privileges'),
         _features(const [

@@ -28,7 +28,6 @@ class RoomScreen extends ConsumerStatefulWidget {
 
 class _State extends ConsumerState<RoomScreen> {
   final text = TextEditingController();
-  DateTime? entered;
   bool joining = true, joined = false, mic = false, leaving = false;
   bool micBusy = false;
   bool chatBusy = false;
@@ -72,10 +71,8 @@ class _State extends ConsumerState<RoomScreen> {
     try {
       await session.join();
       joined = session.joined;
-      entered = session.enteredAt;
     } catch (_) {
       joined = session.joined;
-      entered = session.enteredAt;
       failure = joined
           ? 'Voice could not connect. Retry voice.'
           : 'Unable to enter this room. Please retry.';
@@ -390,9 +387,8 @@ class _State extends ConsumerState<RoomScreen> {
                       reverse: true,
                       padding: const EdgeInsets.all(14),
                       children: [
-                        for (final msg in messages.where(
-                          (m) => entered != null && !m.at.isBefore(entered!),
-                        ))
+                        // Server RLS uses joined_at. A phone clock cannot define this boundary.
+                        for (final msg in messages)
                           Align(
                               alignment: Alignment.centerLeft,
                               child: Container(

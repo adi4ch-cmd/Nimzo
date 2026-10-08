@@ -7,18 +7,26 @@ class LeaderboardRepository {
   final SupabaseClient _db;
   LeaderboardRepository(this._db);
 
-  /// kind: charm | wealth | room. period: weekly | monthly. limit: 3 / 10 / 100.
+  static const supportedKinds = {'charm', 'wealth', 'room'};
+  static const supportedPeriods = {'weekly', 'monthly'};
+
+  /// Only combinations implemented by the deployed RPC may be requested.
   Future<List<Map<String, dynamic>>> top(
     String kind,
     String period, {
     int limit = 10,
-  }) async =>
-      List<Map<String, dynamic>>.from(
-        await _db.rpc(
-          'leaderboard',
-          params: {'p_kind': kind, 'p_period': period, 'p_limit': limit},
-        ),
-      );
+  }) async {
+    if (!supportedKinds.contains(kind) || !supportedPeriods.contains(period)) {
+      throw ArgumentError('Unsupported ranking kind or period');
+    }
+    return List<Map<String, dynamic>>.from(
+      await _db.rpc(
+        'leaderboard',
+        params: {'p_kind': kind, 'p_period': period, 'p_limit': limit},
+      ),
+    );
+  }
+
   Future<Map<String, dynamic>?> weeklyStar() async =>
       await _db.rpc('weekly_star');
   Future<List<Map<String, dynamic>>> banners() async => await _db

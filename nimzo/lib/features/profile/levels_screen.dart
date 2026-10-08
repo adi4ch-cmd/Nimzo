@@ -44,6 +44,11 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                 builder: (p) {
                   final level =
                       [p.wealthLevel, p.charmLevel, p.activeLevel][selected];
+                  final total = [
+                    p.wealthCoins,
+                    p.charmDiamonds,
+                    p.activePoints
+                  ][selected];
                   final band = bands
                       .where((b) => level >= b.$1 && level <= b.$2)
                       .firstOrNull;
@@ -59,8 +64,16 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                     Text('Level $level / 120',
                         style: const TextStyle(color: NimzoStyle.muted)),
                     const SizedBox(height: 6),
-                    const Text('XP progress unavailable',
-                        style: TextStyle(color: NimzoStyle.muted, fontSize: 12))
+                    Text(
+                        total == null
+                            ? 'XP progress unavailable'
+                            : '${referenceNumber(total)} ${[
+                                'coins sent',
+                                'diamonds received',
+                                'activity points'
+                              ][selected]} · next-level threshold unavailable',
+                        style: const TextStyle(
+                            color: NimzoStyle.muted, fontSize: 12))
                   ]));
                 }),
           ReferenceCard(
