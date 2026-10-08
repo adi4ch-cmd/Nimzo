@@ -93,7 +93,9 @@ static void pump_loop() {
 extern "C" JNIEXPORT jboolean JNICALL
 Java_io_nimzo_vivox_NimzoVivox_nativeInit(JNIEnv* env, jclass, jobject callback, jstring server) {
   std::lock_guard<std::mutex> lock(g_mu);
-  if (g_initialized.load()) return JNI_TRUE;
+  // An earlier connector attempt may have failed after SDK initialization.
+  // Only report success when the connector is actually available.
+  if (g_initialized.load() && g_connector) return JNI_TRUE;
   if (!g_vm) env->GetJavaVM(&g_vm);
 
   jclass cls = env->GetObjectClass(callback);
