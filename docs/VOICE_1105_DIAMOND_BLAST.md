@@ -27,3 +27,7 @@ Flutter analyzer clean; 236 Flutter tests passed. Seven native voice contracts, 
 ## Final merged release verification
 
 Latest remote gift broadcast work preserved. Fixed literal escaped newlines that commented out its approved media lookup/client field; room fixtures explicitly mock its Realtime boundary. Final merged run: dart format 170 files/0 changes, analyzer no issues, all 236 Flutter tests passed. Signed 1.0.9+109 built; package io.nimzo.app, ZIP integrity/16KB alignment, three ABI libraries, concrete DEX callback and modern login gates passed. APK SHA256: 2f2b7579773c500cbef20e78c97030e38fd6c57d4a3e09a1e4f76fabdb81e0f6. Signing certificate SHA256: b11d41ae3037f16d639dc606af2ebf0150bf805a204577c7858cc044ff46bb4a. No physical device attached.
+
+## Published delivery
+
+Verified release workflow 37861430874 succeeded. Public test APK: https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-release-31816fbef069/app-release.apk . Public APK downloaded again; metadata build109/checksum, certificate, package/version, ZIP integrity/alignment, three ABI native login and callback gates passed. Full automatic compile run37861281145 passed formatting/analyzer/tests but stopped at Require existing signing identity: four signing Secrets absent. Secrets integration access remains HTTP403. Existing permanent local key preserved; no replacement generated. Real-device login/audio, gifting playback and Android installation remain unverified.
