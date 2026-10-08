@@ -52,7 +52,7 @@ class GiftRepository {
             .map((row) => Map<String, dynamic>.from(row)).toList());
   }
 
-  final SupabaseClient _db;
+  /// Only admin-approved HTTPS video media may be played.\n  Future<String?> approvedAnimationUrl(String giftId) async {\n    final rows = await _db.from('gift_animation_media')\n        .select('video_url').eq('gift_id', giftId).eq('approved', true).limit(1);\n    if (rows.isEmpty) return null;\n    final url = rows.first['video_url'] as String?;\n    final uri = Uri.tryParse(url ?? '');\n    return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty ? url : null;\n  }\n\n  final SupabaseClient _db;
   GiftRepository(this._db);
 
   Future<List<Gift>> catalog() async {
