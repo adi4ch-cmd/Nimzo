@@ -126,7 +126,7 @@ class _ToolFormState extends State<RoomToolForm> {
       }
       if (mounted) Navigator.pop(context);
     } catch (_) {
-      if (context.mounted)
+      if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Room action could not be completed. Retry.')));
     } finally {
@@ -156,8 +156,8 @@ class _ToolFormState extends State<RoomToolForm> {
               controller: input,
               maxLength: 100,
               maxLines: 3,
-              decoration:
-                  InputDecoration(hintText: 'Message for the whole room')),
+              decoration: const InputDecoration(
+                  hintText: 'Message for the whole room')),
         if (tool == 'Gathering') ...[
           TextField(
               controller: input,

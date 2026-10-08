@@ -490,7 +490,7 @@ class _State extends ConsumerState<RoomScreen> {
                                       size: 18, color: NimzoStyle.primary)),
                               hintText: 'Say hi…',
                               counterText: '',
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 14, vertical: 8),
                             ),
                           ),

@@ -163,7 +163,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                   } catch (_) {
                                     await voice.leave();
                                   }
-                                  if (mounted) Navigator.pop(context);
+                                  if (context.mounted) Navigator.pop(context);
                                 })),
                   if (owner && !self)
                     ListTile(
@@ -175,7 +175,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                       .read(roomRepositoryProvider)
                                       .modMuteSeat(widget.roomId, widget.seatNo,
                                           !widget.muted);
-                                  if (mounted) Navigator.pop(context);
+                                  if (context.mounted) Navigator.pop(context);
                                 })),
                   if (owner && !self)
                     ListTile(
@@ -200,11 +200,12 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                                     child:
                                                         const Text('Remove')),
                                               ]));
-                                  if (confirmed != true || !mounted) return;
+                                  if (confirmed != true || !context.mounted)
+                                    return;
                                   await ref
                                       .read(roomRepositoryProvider)
                                       .kick(widget.roomId, widget.userId);
-                                  if (mounted) Navigator.pop(context);
+                                  if (context.mounted) Navigator.pop(context);
                                 })),
                 ]))));
   }

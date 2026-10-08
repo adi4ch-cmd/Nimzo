@@ -4,12 +4,27 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
 
-/// GitHub testing releases only. Never downloads or installs APKs silently.
+/// Optional verified Android updates. Installation always requires user consent.
 class NimzoAppUpdateService {
   static const _api =
       'https://api.github.com/repos/adi4ch-cmd/Nimzo/releases?per_page=15';
+
+  static const _channel = MethodChannel('nimzo/app_update');
+  static Future<String> downloadAndInstall(AppUpdate update) async {
+    final result = await _channel.invokeMethod<String>('downloadAndInstall', {
+      'url': update.url.toString(),
+      'sha256': update.apkSha256,
+      'buildNumber': update.build,
+      'packageName': update.packageName,
+      'signingCertificateSha256': update.signingCertificateSha256,
+    });
+    if (result != 'installerOpened' && result != 'permissionRequired') {
+      throw const FormatException('Unexpected installer response');
+    }
+    return result!;
+  }
 
   static final _checker = NimzoUpdateChecker();
   static Future<AppUpdate?> check() => _checker.check();
@@ -23,13 +38,13 @@ class NimzoUpdatePrompter {
   NimzoUpdatePrompter(
       {required this.checkForUpdate,
       bool Function()? isAndroid,
-      Future<bool> Function(Uri)? openDownload})
+      Future<String> Function(AppUpdate)? downloadAndInstall})
       : isAndroid = isAndroid ?? (() => !kIsWeb && Platform.isAndroid),
-        openDownload = openDownload ??
-            ((uri) => launchUrl(uri, mode: LaunchMode.externalApplication));
+        downloadAndInstall =
+            downloadAndInstall ?? NimzoAppUpdateService.downloadAndInstall;
   final Future<AppUpdate?> Function() checkForUpdate;
   final bool Function() isAndroid;
-  final Future<bool> Function(Uri) openDownload;
+  final Future<String> Function(AppUpdate) downloadAndInstall;
   bool _promptInFlight = false;
   final Set<int> _promptedBuilds = {};
 
@@ -54,7 +69,7 @@ class NimzoUpdatePrompter {
         return;
       }
       if (!showUpToDate && !_promptedBuilds.add(update.build)) return;
-      await showDialog<void>(
+      final accepted = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
           title: const Text('NIMZO update available'),
@@ -65,24 +80,13 @@ class NimzoUpdatePrompter {
                 onPressed: () => Navigator.pop(dialogContext),
                 child: const Text('Later')),
             FilledButton(
-              onPressed: () async {
-                Navigator.pop(dialogContext);
-                try {
-                  final opened = await openDownload(update.url);
-                  if (!opened && context.mounted)
-                    _message(context,
-                        'Could not open the APK download. Try again later.');
-                } catch (_) {
-                  if (context.mounted)
-                    _message(context,
-                        'Could not open the APK download. Try again later.');
-                }
-              },
+              onPressed: () => Navigator.pop(dialogContext, true),
               child: const Text('Update'),
             ),
           ],
         ),
       );
+      if (accepted == true && context.mounted) await _install(context, update);
     } catch (_) {
       if (showUpToDate && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -95,6 +99,43 @@ class NimzoUpdatePrompter {
     }
   }
 
+  Future<void> _install(BuildContext context, AppUpdate update) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final progress = DialogRoute<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const PopScope(
+        canPop: false,
+        child: AlertDialog(
+          title: Text('Updating NIMZO'),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 20),
+            Text('Downloading and verifying update…'),
+          ]),
+        ),
+      ),
+    );
+    navigator.push(progress);
+    String message;
+    try {
+      final result = await downloadAndInstall(update);
+      message = switch (result) {
+        'installerOpened' =>
+          'Android installer opened. Confirm installation to update NIMZO.',
+        'permissionRequired' =>
+          'Allow NIMZO to install apps in Android settings. Return to NIMZO to confirm installation.',
+        _ => 'Could not download or verify the update. Try again later.',
+      };
+    } catch (_) {
+      message = 'Could not download or verify the update. Try again later.';
+    } finally {
+      if (navigator.mounted && progress.isActive)
+        navigator.removeRoute(progress);
+    }
+    if (context.mounted) _message(context, message);
+  }
+
   void _message(BuildContext context, String message) {
     ScaffoldMessenger.maybeOf(context)
         ?.showSnackBar(SnackBar(content: Text(message)));
@@ -105,7 +146,17 @@ class AppUpdate {
   final int build;
   final String title;
   final Uri url;
-  const AppUpdate(this.build, this.title, this.url);
+  final String apkSha256;
+  final String packageName;
+  final String signingCertificateSha256;
+  const AppUpdate(
+    this.build,
+    this.title,
+    this.url, {
+    this.apkSha256 = '',
+    this.packageName = '',
+    this.signingCertificateSha256 = '',
+  });
 }
 
 /// Reads only this project's release metadata. Android remains responsible for
@@ -184,7 +235,10 @@ class NimzoUpdateChecker {
             !_trusted(apk, 'app-release.apk') ||
             apk!.pathSegments[4] != manifestUrl.pathSegments[4]) continue;
         if (newest == null || build > newest.build)
-          newest = AppUpdate(build, 'NIMZO $version (build $build)', apk);
+          newest = AppUpdate(build, 'NIMZO $version (build $build)', apk,
+              apkSha256: _normalize(manifest['apkSha256']),
+              packageName: installed.packageName,
+              signingCertificateSha256: signature);
         break;
       }
     }

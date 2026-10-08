@@ -59,7 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     fontSize: 34,
                                     color: Colors.white,
                                     fontWeight: FontWeight.w800)))),
-                    Text(
+                    const Text(
                       'NIMZO',
                       style: TextStyle(
                         fontSize: 26,
@@ -69,7 +69,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    Text(
+                    const Text(
                       'Connect · Chat · Belong',
                       style: TextStyle(color: Colors.white, height: 1.2),
                     ),

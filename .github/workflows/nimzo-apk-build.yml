@@ -43,6 +43,7 @@ jobs:
           mkdir -p android/app/src/main/cpp
           mkdir -p android/app/src/main/res/drawable
           cp native/vivox/android/nimzo_launcher.xml android/app/src/main/res/drawable/nimzo_launcher.xml
+          cp native/vivox/android/NimzoUpdate.java android/app/src/main/java/io/nimzo/app/NimzoUpdate.java
           cp native/vivox/android/MainActivity.java android/app/src/main/java/io/nimzo/app/MainActivity.java
           cp native/vivox/android/NimzoVivox.java android/app/src/main/java/io/nimzo/vivox/NimzoVivox.java
           cp native/vivox/android/vivox_bridge.cpp android/app/src/main/cpp/vivox_bridge.cpp
@@ -93,6 +94,7 @@ jobs:
               m = m.replace("<manifest", '<manifest xmlns:tools="http://schemas.android.com/tools"', 1)
 
           for perm in [
+              "android.permission.REQUEST_INSTALL_PACKAGES",
               "android.permission.INTERNET",
               "android.permission.RECORD_AUDIO",
               "android.permission.MODIFY_AUDIO_SETTINGS",
@@ -148,6 +150,11 @@ jobs:
               app_end = m.find(">", m.find("<application"))
               m = m[:app_end+1] + '\n        <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />' + m[app_end+1:]
 
+          provider = '''<provider android:name="androidx.core.content.FileProvider" android:authorities="io.nimzo.app.apk_updates" android:exported="false" android:grantUriPermissions="true"><meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/nimzo_apk_paths" /></provider>'''
+          m = m.replace("</application>", provider + "\n</application>")
+          paths = Path("android/app/src/main/res/xml/nimzo_apk_paths.xml")
+          paths.parent.mkdir(parents=True, exist_ok=True)
+          paths.write_text('<paths xmlns:android="http://schemas.android.com/apk/res/android"><cache-path name="nimzo_updates" path="nimzo_updates/" /></paths>')
           manifest.write_text(m)
 
           # Fail fast: verify the exact OAuth contract that Supabase expects.
@@ -228,7 +235,9 @@ jobs:
         run: flutter test
 
       - name: Native contract tests
-        run: python3 -m unittest discover -s nimzo/test/voice -p "*_test.py"
+        run: |
+          python3 -m unittest discover -s nimzo/test/voice -p "*_test.py"
+          python3 -m unittest discover -s nimzo/test/update -p "*_test.py"
 
       - name: Require existing signing identity
         env:

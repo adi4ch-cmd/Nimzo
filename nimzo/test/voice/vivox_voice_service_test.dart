@@ -57,7 +57,7 @@ void main() {
       () async {
     final methods = <String>[];
     final voice = VivoxVoiceService(
-        tokenIssuer: (_) async => throw FunctionException(
+        tokenIssuer: (_) async => throw const FunctionException(
             status: 503,
             details: {'error': 'Vivox voice service is not configured'}));
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger

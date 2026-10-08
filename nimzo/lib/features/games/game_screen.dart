@@ -409,14 +409,14 @@ class _GameState extends ConsumerState<GameScreen> {
                       const SizedBox(height: 12),
                       Row(children: [
                         if (!spin) ...[
-                          Expanded(
+                          const Expanded(
                               child: GradientButton(
                                   onPressed: null,
-                                  gradient: const LinearGradient(colors: [
+                                  gradient: LinearGradient(colors: [
                                     Color(0xffec4899),
                                     Color(0xffec4899)
                                   ]),
-                                  child: const Text('Auto Play'))),
+                                  child: Text('Auto Play'))),
                           const SizedBox(width: 8)
                         ],
                         Expanded(

@@ -17,10 +17,19 @@ public class MainActivity extends FlutterActivity {
   private static final int AUDIO_PERMISSION = 4107;
   private final ExecutorService voiceWorker = Executors.newSingleThreadExecutor();
   private MethodChannel.Result permissionResult;
+  private NimzoUpdate appUpdates;
 
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
     super.configureFlutterEngine(flutterEngine);
+    appUpdates = new NimzoUpdate(this);
+    new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "nimzo/app_update")
+        .setMethodCallHandler((call, result) -> {
+          if (!call.method.equals("downloadAndInstall")) { result.notImplemented(); return; }
+          appUpdates.download(call.argument("url"), call.argument("sha256"),
+              call.argument("signingCertificateSha256"), call.argument("packageName"),
+              call.argument("buildNumber"), result);
+        });
     MethodChannel channel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL);
     channel.setMethodCallHandler((call, result) -> {
       if (call.method.equals("requestMicPermission")) {
@@ -76,7 +85,14 @@ public class MainActivity extends FlutterActivity {
   }
 
   @Override
+  protected void onResume() {
+    super.onResume();
+    if (appUpdates != null) appUpdates.onResume();
+  }
+
+  @Override
   protected void onDestroy() {
+    if (appUpdates != null) appUpdates.destroy();
     voiceWorker.execute(() -> { NimzoVivox.leave(); NimzoVivox.shutdown(); });
     voiceWorker.shutdown();
     if (permissionResult != null) { permissionResult.success(false); permissionResult = null; }

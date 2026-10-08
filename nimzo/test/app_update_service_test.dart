@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -45,7 +47,11 @@ void main() {
             : jsonEncode(data),
       );
   test('offers higher build from compatible manifest', () async {
-    expect((await checker(manifest()).check())?.build, 106);
+    final update = await checker(manifest()).check();
+    expect(update?.build, 106);
+    expect(update?.apkSha256, manifest()['apkSha256']);
+    expect(update?.packageName, installed.packageName);
+    expect(update?.signingCertificateSha256, certificate);
   });
   test('rejects same and older builds', () async {
     expect(await checker(manifest(build: 105)).check(), isNull);
@@ -147,14 +153,15 @@ void main() {
     expect(await subject.check(), isNull);
   });
   testWidgets(
-      'navigator context shows one optional dialog and failed browser launch is visible',
+      'navigator context shows one optional dialog and failed verified download is visible',
       (tester) async {
     final navigatorKey = GlobalKey<NavigatorState>();
     final subject = NimzoUpdatePrompter(
         isAndroid: () => true,
         checkForUpdate: () async => AppUpdate(
             106, 'NIMZO 1.0.6', Uri.parse(manifest()['apkUrl'] as String)),
-        openDownload: (_) async => false);
+        downloadAndInstall: (_) async =>
+            throw PlatformException(code: 'DOWNLOAD_FAILED'));
     await tester.pumpWidget(MaterialApp(
         navigatorKey: navigatorKey, home: const Scaffold(body: Text('Home'))));
     final context = navigatorKey.currentContext!;
@@ -165,7 +172,8 @@ void main() {
     await tester.tap(find.text('Update'));
     await tester.pumpAndSettle();
     await Future.wait([first, concurrent]);
-    expect(find.text('Could not open the APK download. Try again later.'),
+    expect(
+        find.text('Could not download or verify the update. Try again later.'),
         findsOneWidget);
     await subject.prompt(context);
     await tester.pumpAndSettle();
@@ -225,5 +233,80 @@ void main() {
           return jsonEncode(manifest());
         });
     expect((await subject.check())?.build, 106);
+  });
+  test('native installer receives every verified manifest field', () async {
+    const channel = MethodChannel('nimzo/app_update');
+    MethodCall? received;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      received = call;
+      return 'installerOpened';
+    });
+    final update = AppUpdate(
+        106, 'NIMZO', Uri.parse(manifest()['apkUrl'] as String),
+        apkSha256: manifest()['apkSha256'] as String,
+        packageName: 'com.nimzo.app',
+        signingCertificateSha256: certificate);
+    expect(await NimzoAppUpdateService.downloadAndInstall(update),
+        'installerOpened');
+    expect(received!.method, 'downloadAndInstall');
+    expect(received!.arguments, {
+      'url': update.url.toString(),
+      'sha256': update.apkSha256,
+      'buildNumber': 106,
+      'packageName': 'com.nimzo.app',
+      'signingCertificateSha256': certificate,
+    });
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, null);
+  });
+  testWidgets(
+      'verified download shows protected progress and permission instructions',
+      (tester) async {
+    late BuildContext context;
+    final result = Completer<String>();
+    final subject = NimzoUpdatePrompter(
+        isAndroid: () => true,
+        checkForUpdate: () async =>
+            AppUpdate(106, 'NIMZO', Uri.parse(manifest()['apkUrl'] as String)),
+        downloadAndInstall: (_) => result.future);
+    await tester
+        .pumpWidget(MaterialApp(home: Scaffold(body: Builder(builder: (value) {
+      context = value;
+      return const Text('Home');
+    }))));
+    final task = subject.prompt(context);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Update'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Downloading and verifying update…'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await subject.prompt(context, showUpToDate: true);
+    expect(find.byType(AlertDialog), findsOneWidget);
+    await tester.tapAt(const Offset(5, 5));
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    result.complete('permissionRequired');
+    await tester.pumpAndSettle();
+    await task;
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(
+        find.text(
+            'Allow NIMZO to install apps in Android settings. Return to NIMZO to confirm installation.'),
+        findsOneWidget);
+  });
+  test(
+      'unexpected native response is rejected rather than claiming installation',
+      () async {
+    const channel = MethodChannel('nimzo/app_update');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (_) async => 'installed');
+    final update =
+        AppUpdate(106, 'NIMZO', Uri.parse(manifest()['apkUrl'] as String));
+    await expectLater(NimzoAppUpdateService.downloadAndInstall(update),
+        throwsFormatException);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, null);
   });
 }

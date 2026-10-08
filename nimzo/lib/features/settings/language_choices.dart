@@ -38,7 +38,7 @@ class _LanguageState extends ConsumerState<LanguageChoices> {
                       if (container.read(currentUserIdProvider) == id)
                         container.read(uiLanguageProvider.notifier).state =
                             choice.$1;
-                      if (!mounted) return;
+                      if (!context.mounted) return;
                       if (Navigator.of(context).canPop())
                         Navigator.pop(context);
                     } catch (_) {

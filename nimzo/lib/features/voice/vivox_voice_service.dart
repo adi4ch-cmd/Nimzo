@@ -7,7 +7,7 @@ import 'voice_service.dart';
 
 /// Safe stage/code diagnostics: never includes credentials or raw provider payloads.
 class VoiceConnectionFailure extends StateError {
-  VoiceConnectionFailure(String message) : super(message);
+  VoiceConnectionFailure(super.message);
 }
 
 /// Owns one Vivox room. A successful join request is not an audio connection.

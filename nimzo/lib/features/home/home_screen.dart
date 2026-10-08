@@ -141,9 +141,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 owned?.name ?? 'My room',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontWeight: FontWeight.w700),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w700),
                               ),
-                              Text(
+                              const Text(
                                 'One account, one room',
                                 style: TextStyle(
                                   fontSize: 12,

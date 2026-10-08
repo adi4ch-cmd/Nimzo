@@ -177,8 +177,8 @@ class MeScreen extends ConsumerWidget {
                   offset: const Offset(0, -28),
                   child: Column(
                     children: [
-                      _MenuRow(
-                        items: const [
+                      const _MenuRow(
+                        items: [
                           ('Task', 'task', '/info/Task'),
                           ('Store', 'store', '/info/Store'),
                           ('Ranking', 'cup', '/ranking'),
@@ -208,8 +208,8 @@ class MeScreen extends ConsumerWidget {
                                   onTap: () => context.push('/wallet'))),
                         ],
                       ),
-                      _MenuRow(
-                        items: const [
+                      const _MenuRow(
+                        items: [
                           ('CP Zone', 'cp', '/cp'),
                           ('VIP', 'crown', '/vip'),
                           ('Settings', 'gear', '/settings'),
