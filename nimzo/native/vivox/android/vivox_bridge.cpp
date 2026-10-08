@@ -8,6 +8,8 @@
 #include <mutex>
 #include <thread>
 #include <atomic>
+#include <chrono>
+#include <algorithm>
 
 #define LOG_TAG "NimzoVivox"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -26,6 +28,8 @@ static std::atomic<bool> g_pump{false};
 static std::thread g_thread;
 
 static void emit(const char* event, int status, const char* detail) {
+  // Never log tokens, account URIs or provider response bodies.
+  if (status != 0) LOGE("%s failed (code %d)", event ? event : "native", status);
   if (!g_vm || !g_callback || !g_event_method) return;
   JNIEnv* env = nullptr;
   bool attached = false;
@@ -61,22 +65,22 @@ static void handle_message(vx_message_base_t* msg) {
   } else if (evt->type == evt_account_login_state_change) {
     auto* e = reinterpret_cast<vx_evt_account_login_state_change_t*>(msg);
     emit("loginState", e->status_code, e->status_string ? e->status_string : "");
+    if (e->state == login_state_logged_out) emit("audioDisconnected", e->status_code, "login");
   }
 }
 
 static int wait_for_response(vx_response_type wanted, int timeout_ms, vx_message_base_t** out) {
-  const int slice = 100;
-  int elapsed = 0;
-  while (elapsed < timeout_ms) {
-    vx_message_base_t* msg = vx_wait_for_message(slice);
-    if (!msg) { elapsed += slice; continue; }
+  const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+  while (std::chrono::steady_clock::now() < deadline) {
+    const auto remaining = std::chrono::duration_cast<std::chrono::milliseconds>(deadline - std::chrono::steady_clock::now()).count();
+    vx_message_base_t* msg = vx_wait_for_message(static_cast<int>(std::max<int64_t>(1, std::min<int64_t>(100, remaining))));
+    if (!msg) continue;
     if (msg->type == msg_response && reinterpret_cast<vx_resp_base_t*>(msg)->type == wanted) {
       *out = msg;
       return 0;
     }
     handle_message(msg);
     vx_destroy_message(msg);
-    elapsed += slice;
   }
   return -1;
 }

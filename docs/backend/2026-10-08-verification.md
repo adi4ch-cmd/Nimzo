@@ -1,6 +1,8 @@
 # Targeted backend verification — 8 October 2026
 
 Baseline: `8ee45c19655f71d3ce6c2bd3a3da60786373db92`, branch `feature/profile-reference-redesign`.
+
+Deployment update: the reviewed four-function repair was subsequently deployed as live migration `20261008094444` under the user-authorized voice/deployment task. See [deployment evidence](../voice/2026-10-08-repair-and-deployment.md). Statements below describe the earlier read-only verification checkpoint.
 UI development is finished. This pass changes data bindings and confirmed backend defects only; no game engine, payment simulation, catalog redesign or existing visual tests.
 
 ## What was actually checked

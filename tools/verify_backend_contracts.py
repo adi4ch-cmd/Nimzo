@@ -75,6 +75,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--snapshot', required=True, type=Path)
     parser.add_argument('--migration', type=Path)
+    parser.add_argument('--concurrent', action='store_true',
+                        help='Exercise two-session retries against an already repaired snapshot')
     args = parser.parse_args()
     snapshot = json.loads(args.snapshot.read_text())
     container = 'nimzo-contract-' + uuid.uuid4().hex[:10]
@@ -99,7 +101,7 @@ def main():
         if not sql.endswith('rollback;'):
             raise RuntimeError('Targeted fixture transaction must end in rollback')
         subprocess.run(command, input=sql[:-len('rollback;')] + 'commit;', text=True, check=True)
-        if args.migration:
+        if args.migration or args.concurrent:
             verify_concurrent_replays(command)
     finally:
         subprocess.run(['docker', 'rm', '-f', container], check=False, stdout=subprocess.DEVNULL)

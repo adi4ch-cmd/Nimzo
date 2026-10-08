@@ -235,6 +235,19 @@ jobs:
           test -s nimzo/build/app/outputs/flutter-apk/app-release.apk
           ls -lh nimzo/build/app/outputs/flutter-apk/app-release.apk
 
+      - name: Verify APK signature using existing signing configuration
+        run: |
+          python3 - <<'PY'
+          import os, subprocess
+          from pathlib import Path
+          apk = Path('nimzo/build/app/outputs/flutter-apk/app-release.apk')
+          signer = sorted(Path(os.environ['ANDROID_HOME']).glob('build-tools/*/apksigner'))[-1]
+          result = subprocess.run([str(signer), 'verify', '--verbose', '--print-certs', str(apk)], text=True, capture_output=True, check=True)
+          apk.with_suffix('.apk.signing.txt').write_text(result.stdout)
+          print(result.stdout)
+          print('APK signature verified; existing Flutter signing selection preserved.')
+          PY
+
       - name: Verify packaged Vivox and OAuth contract
         run: |
           python3 - <<'PY'
@@ -273,16 +286,20 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const tag = `nimzo-reference-test-${context.sha.slice(0, 12)}`;
+            const tag = `nimzo-voice-test-${context.sha.slice(0, 12)}`;
+            const signing = fs.readFileSync('nimzo/build/app/outputs/flutter-apk/app-release.apk.signing.txt', 'utf8');
+            const signingNote = signing.includes('CN=Android Debug')
+              ? ' Uses the existing Flutter development signing configuration; this is not a production-certificate release.'
+              : ' APK signature verified; signer details attached.';
             const release = await github.rest.repos.createRelease({
               owner: context.repo.owner, repo: context.repo.repo,
               tag_name: tag, target_commitish: context.sha,
-              name: `Nimzo reference testing APK ${context.sha.slice(0, 12)}`,
+              name: `Nimzo voice/backend testing APK ${context.sha.slice(0, 12)}`,
               prerelease: true,
-              body: 'Development testing APK. Compilation, automated tests and packaged Vivox checks passed. Final release certification remains pending: approved game settlement services, payments, full visual parity and physical-device voice/OAuth QA. Production data has not been reset.'
+              body: 'Voice/backend repair testing APK. Automated tests, signature verification and packaged Vivox checks passed. Physical-device voice is unverified; the live voice-token service requires valid Vivox secrets. Only the reviewed four-RPC backend repair was deployed; production account and transaction data were not reset.' + signingNote
             });
             const folder = 'nimzo/build/app/outputs/flutter-apk/';
-            for (const name of ['app-release.apk', 'app-release.apk.sha256']) {
+            for (const name of ['app-release.apk', 'app-release.apk.sha256', 'app-release.apk.signing.txt']) {
               const data = fs.readFileSync(folder + name);
               const asset = await github.rest.repos.uploadReleaseAsset({
                 owner: context.repo.owner, repo: context.repo.repo,

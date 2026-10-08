@@ -10,6 +10,7 @@ import '../../../core/widgets/reference_widgets.dart';
 import '../../gifts/gift_sheet.dart';
 import '../../games/games_catalog_screen.dart';
 import '../../voice/voice_controller.dart';
+import '../../voice/vivox_voice_service.dart';
 import '../data/room_chat_repository.dart';
 import '../domain/room.dart';
 import 'room_controller.dart';
@@ -71,10 +72,12 @@ class _State extends ConsumerState<RoomScreen> {
     try {
       await session.join();
       joined = session.joined;
-    } catch (_) {
+    } catch (error) {
       joined = session.joined;
       failure = joined
-          ? 'Voice could not connect. Retry voice.'
+          ? error is VoiceConnectionFailure
+              ? error.message.toString()
+              : 'Voice could not connect. Retry voice.'
           : 'Unable to enter this room. Please retry.';
     } finally {
       if (mounted) setState(() => joining = false);

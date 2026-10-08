@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/features/voice/vivox_voice_service.dart';
 
 void main() {
@@ -51,6 +52,96 @@ void main() {
     'canTransmit': true,
   };
   test(
+      'missing server configuration is actionable and does not start native login',
+      () async {
+    final methods = <String>[];
+    final voice = VivoxVoiceService(
+        tokenIssuer: (_) async => throw FunctionException(
+            status: 503,
+            details: {'error': 'Vivox voice service is not configured'}));
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      methods.add(call.method);
+      return true;
+    });
+    await expectLater(
+        voice.join('room', ''),
+        throwsA(isA<StateError>().having((error) => error.message.toString(),
+            'diagnostic', contains('not configured (HTTP 503)'))));
+    expect(methods, ['requestMicPermission']);
+    await voice.dispose();
+  });
+  test('media deadline begins after slow native login and join acceptance',
+      () async {
+    final voice = VivoxVoiceService(
+        tokenIssuer: (_) async => credentials,
+        connectionTimeout: const Duration(milliseconds: 10));
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'join') {
+        await Future<void>.delayed(const Duration(milliseconds: 40));
+        await emit('audioConnected');
+      }
+      return ['initialize', 'requestMicPermission'].contains(call.method)
+          ? true
+          : 0;
+    });
+    await voice.join('room', '');
+    await voice.dispose();
+  });
+  test(
+      'disconnect during a pending join fails immediately rather than timing out',
+      () async {
+    final voice = VivoxVoiceService(
+        tokenIssuer: (_) async => credentials,
+        connectionTimeout: const Duration(milliseconds: 20));
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'join') await emit('audioDisconnected');
+      return ['initialize', 'requestMicPermission'].contains(call.method)
+          ? true
+          : 0;
+    });
+    await expectLater(voice.join('room', ''), throwsStateError);
+    await voice.dispose();
+  });
+  test('failed initialization retains the native status code', () async {
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'initialize') {
+        await emit('error', status: 401);
+        return false;
+      }
+      return call.method == 'requestMicPermission' ? true : 0;
+    });
+    await expectLater(
+        voice.join('room', ''),
+        throwsA(isA<StateError>().having((error) => error.message.toString(),
+            'native status', contains('401'))));
+    await voice.dispose();
+  });
+  test(
+      'leave and rejoin recreate SDK state instead of reusing timed-out handles',
+      () async {
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+    final methods = <String>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      methods.add(call.method);
+      if (call.method == 'join') await emit('audioConnected');
+      return ['initialize', 'requestMicPermission'].contains(call.method)
+          ? true
+          : 0;
+    });
+    await voice.join('room', '');
+    await voice.leave();
+    await voice.join('room', '');
+    expect(methods.where((method) => method == 'initialize').length, 2);
+    expect(methods, contains('shutdown'));
+    await voice.dispose();
+  });
+  test(
     'join waits for media confirmation rather than native request acceptance',
     () async {
       final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
@@ -88,8 +179,23 @@ void main() {
           : 0;
     });
     await expectLater(voice.join('room', ''), throwsStateError);
-    expect(methods.last, 'leave');
+    expect(methods, contains('leave'));
+    expect(methods.last, 'shutdown');
     await expectLater(voice.setMicEnabled(true), throwsStateError);
+    await voice.dispose();
+  });
+  test('audio dropping during initial mute cannot report a successful join',
+      () async {
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'join') await emit('audioConnected');
+      if (call.method == 'setMic') await emit('audioDisconnected');
+      return ['initialize', 'requestMicPermission'].contains(call.method)
+          ? true
+          : 0;
+    });
+    await expectLater(voice.join('room', ''), throwsStateError);
     await voice.dispose();
   });
   test('native error clears stale speaking indicators', () async {
@@ -126,7 +232,8 @@ void main() {
           : 0;
     });
     await expectLater(voice.join('room', ''), throwsStateError);
-    expect(methods.last, 'leave');
+    expect(methods, contains('leave'));
+    expect(methods.last, 'shutdown');
     await voice.dispose();
   });
   test(
