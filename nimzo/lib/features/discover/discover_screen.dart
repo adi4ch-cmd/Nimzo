@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile.dart';
 import '../profile/profile_repository.dart';
+import '../social/follow_button.dart';
 
 class DiscoverScreen extends ConsumerStatefulWidget {
   const DiscoverScreen({super.key});
@@ -63,6 +64,7 @@ class _State extends ConsumerState<DiscoverScreen> {
                               user.displayName ?? user.username ?? 'Nimzo user',
                             ),
                             subtitle: Text('ID:${user.nimzoId}'),
+                            trailing: ReferenceFollowButton(userId: user.id),
                             onTap: () => context.push('/profile/${user.id}'),
                           ),
                       ],

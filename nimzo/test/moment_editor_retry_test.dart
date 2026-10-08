@@ -70,7 +70,7 @@ void main() {
         child: const MaterialApp(home: CreateMomentScreen())));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'New post');
-    await tester.tap(find.text('Save'));
+    await tester.tap(find.text('Post'));
     await tester.pump();
     await tester.pumpWidget(const SizedBox());
     repo.pending.complete();

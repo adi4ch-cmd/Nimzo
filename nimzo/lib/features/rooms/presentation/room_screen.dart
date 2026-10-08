@@ -15,6 +15,9 @@ import '../domain/room.dart';
 import 'room_controller.dart';
 import 'room_session.dart';
 import 'room_user_sheet.dart';
+import 'room_overlays.dart';
+import '../../../core/widgets/master_ui.dart';
+import '../../../core/utils/formatters.dart';
 
 class RoomScreen extends ConsumerStatefulWidget {
   final String roomId;
@@ -108,6 +111,17 @@ class _State extends ConsumerState<RoomScreen> {
     }
   }
 
+  Widget _artButton(String group, VoidCallback onTap) => InkWell(
+      onTap: onTap,
+      child: Container(
+          width: 46,
+          height: 46,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+              color: const Color(0xfff1e6ff),
+              borderRadius: BorderRadius.circular(14)),
+          child: ReferenceArtwork(group, 0, size: 38)));
+
   @override
   Widget build(BuildContext context) {
     final room = ref.watch(roomProvider(widget.roomId)),
@@ -151,14 +165,50 @@ class _State extends ConsumerState<RoomScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(room.valueOrNull?.name ?? 'Voice Room'),
+          titleSpacing: 0,
+          title: InkWell(
+            onTap: room.valueOrNull == null
+                ? null
+                : () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => RoomProfilePage(room: room.valueOrNull!))),
+            child: Row(children: [
+              NimzoAvatar(
+                  name: room.valueOrNull?.name ?? 'N',
+                  size: 38,
+                  url: room.valueOrNull?.avatarPath == null
+                      ? null
+                      : ref
+                          .read(supabaseProvider)
+                          .storage
+                          .from('room-images')
+                          .getPublicUrl(room.valueOrNull!.avatarPath!)),
+              const SizedBox(width: 8),
+              Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text(room.valueOrNull?.name ?? 'Voice Room',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w700)),
+                    Text(
+                        'ID:${room.valueOrNull?.roomNo ?? '—'} · ${ref.watch(onlineCountProvider(widget.roomId)).valueOrNull?.toString() ?? '—'} online',
+                        style: const TextStyle(
+                            fontSize: 12, color: NimzoStyle.muted)),
+                  ])),
+            ]),
+          ),
           actions: [
-            if (room.valueOrNull?.ownerId == me)
-              IconButton(
-                onPressed: () =>
-                    context.push('/room/${widget.roomId}/settings'),
-                icon: const Icon(LucideIcons.settings),
-              ),
+            Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: Center(
+                    child: Text(
+                        compactNumber(room.valueOrNull?.lifetimeGiftCoins ?? 0),
+                        style: const TextStyle(
+                            color: NimzoStyle.pink,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600))))
           ],
         ),
         body: SafeArea(
@@ -176,68 +226,6 @@ class _State extends ConsumerState<RoomScreen> {
                 ),
               if (failure != null)
                 DataFailure(message: failure!, onRetry: join),
-              if (room.valueOrNull != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
-                  child: Row(
-                    children: [
-                      NimzoAvatar(
-                        name: room.valueOrNull!.name,
-                        size: 52,
-                        url: room.valueOrNull!.avatarPath == null
-                            ? null
-                            : ref
-                                .watch(supabaseProvider)
-                                .storage
-                                .from('room-images')
-                                .getPublicUrl(room.valueOrNull!.avatarPath!),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              room.valueOrNull!.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            Text(
-                              'Lifetime gifts: ${room.valueOrNull!.lifetimeGiftCoins} coins',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: NimzoStyle.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'ID:${room.valueOrNull?.roomNo ?? '—'} · ${ref.watch(onlineCountProvider(widget.roomId)).valueOrNull?.toString() ?? '—'} online',
-                      ),
-                    ),
-                    Text(
-                      connected ? 'Voice connected' : 'Voice disconnected',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: NimzoStyle.muted,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
@@ -289,41 +277,38 @@ class _State extends ConsumerState<RoomScreen> {
                                               }),
                                       child: Column(
                                         children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(2),
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color:
-                                                    speaking.contains(s.userId)
-                                                        ? NimzoStyle.pink
-                                                        : NimzoStyle.primary,
-                                              ),
+                                          if (s.userId == null)
+                                            DashedCircle(
+                                                child: Icon(
+                                                    s.locked
+                                                        ? LucideIcons.lock
+                                                        : LucideIcons.mic,
+                                                    size: 22,
+                                                    color: NimzoStyle.primary))
+                                          else
+                                            Container(
+                                              padding: const EdgeInsets.all(2),
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                      color: speaking.contains(
+                                                              s.userId)
+                                                          ? NimzoStyle.primary
+                                                          : Colors.transparent,
+                                                      width: 2)),
+                                              child: NimzoAvatar(
+                                                  name: p?.displayName ?? 'N',
+                                                  size: 48,
+                                                  url: p?.avatarPath == null
+                                                      ? null
+                                                      : ref
+                                                          .read(
+                                                              supabaseProvider)
+                                                          .storage
+                                                          .from('avatars')
+                                                          .getPublicUrl(
+                                                              p!.avatarPath!)),
                                             ),
-                                            child: s.userId == null
-                                                ? const SizedBox.square(
-                                                    dimension: 48,
-                                                    child: Icon(
-                                                      LucideIcons.mic,
-                                                      color: NimzoStyle.primary,
-                                                    ),
-                                                  )
-                                                : NimzoAvatar(
-                                                    name: p?.displayName ?? 'N',
-                                                    size: 48,
-                                                    url: p?.avatarPath == null
-                                                        ? null
-                                                        : ref
-                                                            .read(
-                                                              supabaseProvider,
-                                                            )
-                                                            .storage
-                                                            .from('avatars')
-                                                            .getPublicUrl(
-                                                              p!.avatarPath!,
-                                                            ),
-                                                  ),
-                                          ),
                                           const SizedBox(height: 3),
                                           Text(
                                             p?.displayName ?? '$n',
@@ -351,43 +336,81 @@ class _State extends ConsumerState<RoomScreen> {
                   ],
                 ),
               ),
-              if (room.valueOrNull?.rules?.isNotEmpty == true)
-                Padding(
+              Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Text(room.valueOrNull!.rules!),
-                ),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 11, vertical: 7),
+                          decoration: BoxDecoration(
+                              color: const Color(0xfff1e6ff),
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Text(
+                              room.valueOrNull?.rules?.isNotEmpty == true
+                                  ? room.valueOrNull!.rules!
+                                  : 'Please respect each other and chat in a decent manner.',
+                              style: const TextStyle(fontSize: 13))))),
               Expanded(
-                child: AsyncContent(
-                  value: ref.watch(roomChatProvider(widget.roomId)),
-                  onRetry: () =>
-                      ref.invalidate(roomChatProvider(widget.roomId)),
-                  builder: (messages) => ListView(
-                    reverse: true,
-                    padding: const EdgeInsets.all(14),
-                    children: [
-                      for (final msg in messages.where(
-                        (m) => entered != null && !m.at.isBefore(entered!),
-                      ))
-                        ReferenceCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                profiles[msg.userId]?.displayName ??
-                                    'Nimzo user',
-                                style: const TextStyle(
-                                  color: NimzoStyle.primary,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
+                child: Stack(children: [
+                  Positioned.fill(
+                      child: AsyncContent(
+                    value: ref.watch(roomChatProvider(widget.roomId)),
+                    onRetry: () =>
+                        ref.invalidate(roomChatProvider(widget.roomId)),
+                    builder: (messages) => ListView(
+                      reverse: true,
+                      padding: const EdgeInsets.all(14),
+                      children: [
+                        for (final msg in messages.where(
+                          (m) => entered != null && !m.at.isBefore(entered!),
+                        ))
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.sizeOf(context).width * .85),
+                                margin: const EdgeInsets.only(bottom: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 11, vertical: 7),
+                                decoration: BoxDecoration(
+                                    color: NimzoStyle.surface,
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      profiles[msg.userId]?.displayName ??
+                                          'Nimzo user',
+                                      style: const TextStyle(
+                                        color: NimzoStyle.primary,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    Text(msg.body),
+                                  ],
                                 ),
-                              ),
-                              Text(msg.body),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+                              )),
+                      ],
+                    ),
+                  )),
+                  Positioned(
+                      right: 10,
+                      bottom: 12,
+                      child: Column(children: [
+                        _artButton(
+                            'chest',
+                            () => showReferenceSheet(
+                                context, const TreasureSheet())),
+                        const SizedBox(height: 10),
+                        _artButton(
+                            'gem',
+                            () => showReferenceSheet(
+                                context, const CrystalSheet())),
+                      ])),
+                ]),
               ),
               Padding(
                 padding: EdgeInsets.only(
@@ -395,109 +418,134 @@ class _State extends ConsumerState<RoomScreen> {
                   right: 10,
                   bottom: MediaQuery.viewInsetsOf(context).bottom > 0 ? 0 : 8,
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: text,
-                        maxLength: 500,
-                        decoration: const InputDecoration(
-                          hintText: 'Say hi…',
-                          counterText: '',
+                child: IconButtonTheme(
+                    data: IconButtonThemeData(
+                        style: IconButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(30, 34),
+                            maximumSize: const Size(30, 34),
+                            iconSize: 20,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap)),
+                    child: Row(
+                      children: [
+                        IconButton(
+                            tooltip: 'Party Tools',
+                            onPressed: () => showPartyTools(context),
+                            icon: const Icon(LucideIcons.layoutGrid)),
+                        IconButton(
+                            tooltip: 'Voice and Effect',
+                            onPressed: () => showReferenceSheet(
+                                context, VoiceEffectsSheet(micEnabled: mic)),
+                            icon: const Icon(LucideIcons.volume2)),
+                        Expanded(
+                          child: TextField(
+                            controller: text,
+                            maxLength: 500,
+                            decoration: const InputDecoration(
+                              hintText: 'Say hi…',
+                              counterText: '',
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 8),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: 'Send',
-                      onPressed: !joined || chatBusy
-                          ? null
-                          : () => action(() async {
-                                if (chatBusy) return;
-                                final submitted = text.text;
-                                if (submitted.trim().isEmpty) return;
-                                final repository =
-                                    ref.read(roomChatRepositoryProvider);
-                                setState(() => chatBusy = true);
-                                try {
-                                  await repository.send(
-                                      widget.roomId, submitted.trim());
-                                  if (mounted && text.text == submitted)
-                                    text.clear();
-                                } finally {
-                                  if (mounted) setState(() => chatBusy = false);
-                                }
-                              }),
-                      icon: const Icon(LucideIcons.send),
-                    ),
-                    IconButton(
-                      tooltip: 'Microphone',
-                      onPressed: !connected || micBusy
-                          ? null
-                          : () => action(() async {
-                                if (micBusy) return;
-                                final enabled = !mic;
-                                final voice = ref.read(voiceServiceProvider);
-                                setState(() => micBusy = true);
-                                try {
-                                  await voice.setMicEnabled(enabled);
-                                  if (mounted &&
-                                      ref
-                                              .read(voiceConnectedProvider)
-                                              .valueOrNull ==
-                                          true) {
-                                    setState(() => mic = enabled);
-                                  }
-                                } finally {
-                                  if (mounted) setState(() => micBusy = false);
-                                }
-                              }),
-                      icon: Icon(mic ? LucideIcons.mic : LucideIcons.micOff),
-                    ),
-                    IconButton(
-                      tooltip: 'Games',
-                      onPressed: () =>
-                          context.push('/games?room=${widget.roomId}'),
-                      icon: const Icon(LucideIcons.gamepad2),
-                    ),
-                    IconButton(
-                      tooltip: 'Gift',
-                      onPressed: !joined || me == null
-                          ? null
-                          : () async {
-                              final recipients = [
-                                me,
-                                ...profiles.keys.where((k) => k != me),
-                              ];
-                              final id = await showModalBottomSheet<String>(
-                                context: context,
-                                builder: (c) => SafeArea(
-                                  child: ListView(
-                                    shrinkWrap: true,
-                                    children: [
-                                      for (final id in recipients)
-                                        ListTile(
-                                          title: Text(
-                                            id == me
-                                                ? 'Myself'
-                                                : profiles[id]?.displayName ??
-                                                    'Nimzo user',
-                                          ),
-                                          onTap: () => Navigator.pop(c, id),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                              if (id != null && context.mounted)
-                                showRoomGiftSheet(context, widget.roomId, id);
-                            },
-                      icon: const Icon(
-                        LucideIcons.gift,
-                        color: NimzoStyle.pink,
-                      ),
-                    ),
-                  ],
-                ),
+                        IconButton(
+                          tooltip: 'Send',
+                          onPressed: !joined || chatBusy
+                              ? null
+                              : () => action(() async {
+                                    if (chatBusy) return;
+                                    final submitted = text.text;
+                                    if (submitted.trim().isEmpty) return;
+                                    final repository =
+                                        ref.read(roomChatRepositoryProvider);
+                                    setState(() => chatBusy = true);
+                                    try {
+                                      await repository.send(
+                                          widget.roomId, submitted.trim());
+                                      if (mounted && text.text == submitted)
+                                        text.clear();
+                                    } finally {
+                                      if (mounted)
+                                        setState(() => chatBusy = false);
+                                    }
+                                  }),
+                          icon: const Icon(LucideIcons.send),
+                        ),
+                        IconButton(
+                          tooltip: 'Microphone',
+                          onPressed: !connected || micBusy
+                              ? null
+                              : () => action(() async {
+                                    if (micBusy) return;
+                                    final enabled = !mic;
+                                    final voice =
+                                        ref.read(voiceServiceProvider);
+                                    setState(() => micBusy = true);
+                                    try {
+                                      await voice.setMicEnabled(enabled);
+                                      if (mounted &&
+                                          ref
+                                                  .read(voiceConnectedProvider)
+                                                  .valueOrNull ==
+                                              true) {
+                                        setState(() => mic = enabled);
+                                      }
+                                    } finally {
+                                      if (mounted)
+                                        setState(() => micBusy = false);
+                                    }
+                                  }),
+                          icon:
+                              Icon(mic ? LucideIcons.mic : LucideIcons.micOff),
+                        ),
+                        IconButton(
+                          tooltip: 'Games',
+                          onPressed: () =>
+                              context.push('/games?room=${widget.roomId}'),
+                          icon: const Icon(LucideIcons.gamepad2),
+                        ),
+                        IconButton(
+                          tooltip: 'Gift',
+                          onPressed: !joined || me == null
+                              ? null
+                              : () async {
+                                  final recipients = [
+                                    me,
+                                    ...profiles.keys.where((k) => k != me),
+                                  ];
+                                  final id = await showModalBottomSheet<String>(
+                                    context: context,
+                                    builder: (c) => SafeArea(
+                                      child: ListView(
+                                        shrinkWrap: true,
+                                        children: [
+                                          for (final id in recipients)
+                                            ListTile(
+                                              title: Text(
+                                                id == me
+                                                    ? 'Myself'
+                                                    : profiles[id]
+                                                            ?.displayName ??
+                                                        'Nimzo user',
+                                              ),
+                                              onTap: () => Navigator.pop(c, id),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                  if (id != null && context.mounted)
+                                    showRoomGiftSheet(
+                                        context, widget.roomId, id);
+                                },
+                          icon: const Icon(
+                            LucideIcons.gift,
+                            color: NimzoStyle.pink,
+                          ),
+                        ),
+                      ],
+                    )),
               ),
             ],
           ),

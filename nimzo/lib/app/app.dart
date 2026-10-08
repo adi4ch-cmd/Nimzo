@@ -12,5 +12,19 @@ class NimzoApp extends ConsumerWidget {
         theme: AppTheme.light(),
         routerConfig: ref.watch(routerProvider),
         debugShowCheckedModeBanner: false,
+        builder: (context, child) =>
+            LayoutBuilder(builder: (context, constraints) {
+          final width = constraints.maxWidth.clamp(0.0, 480.0);
+          return ColoredBox(
+              color: Colors.white,
+              child: Center(
+                  child: SizedBox(
+                      width: width,
+                      height: constraints.maxHeight,
+                      child: MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                              size: Size(width, constraints.maxHeight)),
+                          child: child ?? const SizedBox.shrink()))));
+        }),
       );
 }

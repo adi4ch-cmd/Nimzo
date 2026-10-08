@@ -11,6 +11,7 @@ import 'package:nimzo/features/rooms/presentation/room_controller.dart';
 import 'package:nimzo/features/rooms/presentation/room_screen.dart';
 import 'package:nimzo/features/voice/voice_service.dart';
 import 'package:nimzo/features/voice/voice_controller.dart';
+import 'package:nimzo/core/widgets/master_ui.dart';
 
 final room = Room(
     id: 'room',
@@ -85,6 +86,10 @@ class PendingRoomChat extends RoomChatRepository {
 void main() {
   testWidgets('room exposes voice reconnect without joining membership twice',
       (tester) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     final db = (await tester.runAsync(() async => SupabaseClient(
         'https://example.supabase.co', 'test-key',
         authOptions: const AuthClientOptions(autoRefreshToken: false))))!;
@@ -107,6 +112,17 @@ void main() {
       voiceServiceProvider.overrideWithValue(voice),
     ], child: const MaterialApp(home: RoomScreen(roomId: 'room'))));
     await tester.pumpAndSettle();
+    expect(find.byType(DashedCircle), findsNWidgets(10));
+    final seatCenters = find
+        .byType(DashedCircle)
+        .evaluate()
+        .map((e) => tester.getCenter(find.byWidget(e.widget)))
+        .toList();
+    expect(seatCenters.take(5).map((p) => p.dy).toSet().length, 1);
+    expect(seatCenters.skip(5).map((p) => p.dy).toSet().length, 1);
+    expect(seatCenters[5].dy, greaterThan(seatCenters[0].dy));
+    expect(seatCenters.take(5).map((p) => p.dx).toList(),
+        seatCenters.skip(5).map((p) => p.dx).toList());
     await tester.tap(find.byTooltip('Microphone'));
     await tester.pump();
     await tester.tap(find.byTooltip('Microphone'));

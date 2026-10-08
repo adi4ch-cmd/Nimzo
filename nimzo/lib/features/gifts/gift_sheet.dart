@@ -9,6 +9,7 @@ import '../profile/profile_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
 import 'gift_artwork.dart';
+import '../../core/widgets/master_ui.dart';
 import '../moments/moment_repository.dart';
 import '../rooms/presentation/room_controller.dart';
 
@@ -189,9 +190,14 @@ class _State extends ConsumerState<GiftSheet> {
                                   padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
                                     color: selected == gift
-                                        ? const Color(0xfff1e6ff)
-                                        : const Color(0xfffaf5ff),
+                                        ? const Color(0xff34144f)
+                                        : const Color(0xff14082e),
                                     borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                        color: selected == gift
+                                            ? const Color(0xfffbbf24)
+                                            : Colors.transparent,
+                                        width: 2),
                                   ),
                                   child: Column(
                                     children: [
@@ -205,11 +211,16 @@ class _State extends ConsumerState<GiftSheet> {
                                         gift.name,
                                         maxLines: 2,
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(fontSize: 12),
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
                                       ),
                                       Text(
                                         '${gift.price}',
-                                        style: const TextStyle(fontSize: 12),
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Color(0xfffde68a)),
                                       ),
                                     ],
                                   ),
@@ -236,7 +247,7 @@ class _State extends ConsumerState<GiftSheet> {
                           : (q) => setState(() => quantity = q!),
                     ),
                     const Spacer(),
-                    FilledButton(
+                    GradientButton(
                       onPressed:
                           busy || confirming || selected == null ? null : send,
                       child: Text(

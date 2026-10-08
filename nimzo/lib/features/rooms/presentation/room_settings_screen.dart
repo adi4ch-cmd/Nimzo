@@ -8,6 +8,7 @@ import '../data/room_settings_repository.dart';
 import 'room_controller.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../../../core/widgets/reference_widgets.dart';
+import '../../../core/theme/app_theme.dart';
 
 class RoomSettingsScreen extends ConsumerStatefulWidget {
   final String roomId;
@@ -55,7 +56,7 @@ class _State extends ConsumerState<RoomSettingsScreen> {
     final owner = ref.watch(roomProvider(widget.roomId)).valueOrNull?.ownerId ==
         ref.watch(currentUserIdProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Room settings')),
+      appBar: AppBar(title: const Text('Room Setting')),
       body: AsyncContent(
         value: ref.watch(roomSettingsProvider(widget.roomId)),
         onRetry: () => ref.invalidate(roomSettingsProvider(widget.roomId)),
@@ -101,7 +102,16 @@ class _State extends ConsumerState<RoomSettingsScreen> {
                 'private': settings!.isPrivate,
               }.entries)
                 SwitchListTile(
-                  title: Text(entry.key),
+                  title: Text({
+                    'mic': 'Permission to take the mic of guest',
+                    'chat': 'Send emojis to the chatting area',
+                    'guest': 'Allow guests',
+                    'gift': 'Gift Effect',
+                    'music': 'Music',
+                    'game': 'Games',
+                    'visitor': 'Visitors',
+                    'private': 'Only room members can enter'
+                  }[entry.key]!),
                   value: entry.value,
                   onChanged: !owner || busy
                       ? null
@@ -129,6 +139,30 @@ class _State extends ConsumerState<RoomSettingsScreen> {
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Room password'),
               ),
+              for (final row in [
+                ('Number of Mic', '10'),
+                ('Dice Count', '3 ›'),
+                ('Membership Fee', 'Unavailable'),
+                ('Live Mode', 'Off ›'),
+                ('Live record', '›'),
+                ('Guest send text level', 'Unavailable'),
+                ('Blocked List', '›'),
+                ('Action record', '›'),
+                ('Room Rewards', 'Unavailable'),
+                ('Room Support', '›'),
+                ('Apply for Banner', '›')
+              ])
+                Container(
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    decoration: const BoxDecoration(
+                        border:
+                            Border(bottom: BorderSide(color: NimzoStyle.line))),
+                    child: Row(children: [
+                      Expanded(child: Text(row.$1)),
+                      Text(row.$2,
+                          style: const TextStyle(color: NimzoStyle.muted))
+                    ])),
+              const SizedBox(height: 14),
               FilledButton(
                 onPressed: !owner || busy
                     ? null

@@ -8,7 +8,9 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/widgets/reference_widgets.dart';
+import '../../core/widgets/master_ui.dart';
 import '../rooms/domain/room.dart';
+import '../rooms/data/room_chat_repository.dart';
 import '../rooms/presentation/room_controller.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -70,16 +72,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               padding: const EdgeInsets.fromLTRB(16, 14, 8, 10),
               child: Row(
                 children: [
-                  const Expanded(
-                    child: Text(
-                      'NIMZO',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: NimzoStyle.primary,
-                      ),
-                    ),
-                  ),
+                  const Expanded(child: GradientText('NIMZO')),
                   IconButton(
                     tooltip: 'Search',
                     icon: const Icon(LucideIcons.search, size: 22),
@@ -89,6 +82,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     tooltip: 'Notifications',
                     icon: const Icon(LucideIcons.bell, size: 22),
                     onPressed: () => context.push('/notifications'),
+                  ),
+                  ActionChip(
+                    label: SizedBox(
+                        width: 72,
+                        child: Text('$countryName ▾',
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 12))),
+                    onPressed: () => showCountryPicker(
+                      context: context,
+                      onSelect: (c) => setState(() {
+                        country = c.countryCode;
+                        countryName = c.name;
+                      }),
+                      favorite: const ['PK', 'SA', 'IN'],
+                      countryListTheme: const CountryListThemeData(
+                        bottomSheetHeight: 500,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -107,12 +118,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     child: Row(
                       children: [
+                        const NimzoAvatar(name: 'N', size: 46),
+                        const SizedBox(width: 10),
                         const Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Create your room',
+                                'My room',
                                 style: TextStyle(fontWeight: FontWeight.w700),
                               ),
                               Text(
@@ -133,42 +146,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ActionChip(
-                      label: Text(countryName),
-                      avatar: const Icon(LucideIcons.globe, size: 16),
-                      onPressed: () => showCountryPicker(
-                        context: context,
-                        onSelect: (c) => setState(() {
-                          country = c.countryCode;
-                          countryName = c.name;
-                        }),
-                        favorite: const ['PK', 'SA', 'IN'],
-                        countryListTheme: const CountryListThemeData(
-                          bottomSheetHeight: 500,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      for (var i = 0; i < 3; i++)
-                        Expanded(
-                            child: TextButton(
-                          onPressed: () => setState(() => tab = i),
-                          child: Text(
-                            ['Popular', 'Followed', 'Recent'][i],
-                            style: TextStyle(
-                              color:
-                                  tab == i ? NimzoStyle.ink : NimzoStyle.muted,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        )),
-                    ],
-                  ),
-                  const Divider(height: 1),
+                  ReferenceTabs(
+                      labels: const ['Popular', 'Followed', 'Recent'],
+                      selected: tab,
+                      onSelected: (i) => setState(() => tab = i)),
+                  const SizedBox(height: 6),
                   AsyncContent(
                     value: rooms,
                     onRetry: retry,
@@ -225,7 +207,7 @@ class RoomTile extends ConsumerWidget {
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   Text(
-                    'ID:${room.roomNo}',
+                    'ID:${room.roomNo} · ${ref.watch(onlineCountProvider(room.id)).valueOrNull?.toString() ?? '—'} online',
                     style: const TextStyle(
                       color: NimzoStyle.muted,
                       fontSize: 12,

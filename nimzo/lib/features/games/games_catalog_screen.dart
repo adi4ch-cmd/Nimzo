@@ -1,3 +1,4 @@
+import '../../core/widgets/master_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,7 +9,7 @@ class GamesCatalogScreen extends StatelessWidget {
   const GamesCatalogScreen({super.key, this.roomId});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Games')),
+        appBar: AppBar(title: const GradientText('Games')),
         body: GridView.count(
           crossAxisCount: 3,
           padding: const EdgeInsets.all(16),
@@ -33,7 +34,11 @@ class GamesCatalogScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      g.title,
+                      g.artwork == 1
+                          ? 'Grady Pro'
+                          : g.artwork == 3
+                              ? 'Slot Jackpots'
+                              : g.title,
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 12),
                     ),

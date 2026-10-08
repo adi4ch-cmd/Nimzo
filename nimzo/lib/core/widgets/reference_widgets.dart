@@ -8,11 +8,19 @@ class NimzoAvatar extends StatelessWidget {
   final String name;
   final String? url;
   final double size;
-  const NimzoAvatar({super.key, required this.name, this.url, this.size = 46});
+  final Color backgroundColor;
+  final double borderWidth;
+  const NimzoAvatar(
+      {super.key,
+      required this.name,
+      this.url,
+      this.size = 46,
+      this.backgroundColor = NimzoStyle.primary,
+      this.borderWidth = 0});
   @override
   Widget build(BuildContext context) {
     final fallback = ColoredBox(
-      color: NimzoStyle.primary,
+      color: backgroundColor,
       child: Center(
         child: Text(
           name.trim().isEmpty
@@ -29,15 +37,19 @@ class NimzoAvatar extends StatelessWidget {
     );
     return SizedBox.square(
       dimension: size,
-      child: ClipOval(
-        child: url == null || url!.isEmpty
-            ? fallback
-            : Image.network(
-                url!,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => fallback,
-              ),
-      ),
+      child: Container(
+          padding: EdgeInsets.all(borderWidth),
+          decoration:
+              const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+          child: ClipOval(
+            child: url == null || url!.isEmpty
+                ? fallback
+                : Image.network(
+                    url!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => fallback,
+                  ),
+          )),
     );
   }
 }

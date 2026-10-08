@@ -71,6 +71,9 @@ class _NoticeState extends ConsumerState<NotificationsScreen> {
                                 : Column(children: [
                                     for (final r in rows)
                                       ListTile(
+                                        leading: NimzoAvatar(
+                                            name:
+                                                r['title']?.toString() ?? 'N'),
                                         title: Text(
                                             r['title']?.toString() ??
                                                 r['category']?.toString() ??

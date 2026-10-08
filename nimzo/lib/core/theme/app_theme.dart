@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Tokens read from nimzo-ui-1.html. Prototype balances are never design tokens.
+/// Tokens read from nimzo-ui-2.html. Prototype balances are never design tokens.
 abstract final class NimzoStyle {
   static const primary = Color(0xff9333ea);
   static const pink = Color(0xffec4899);
@@ -28,11 +28,42 @@ abstract final class AppTheme {
           onSurface: NimzoStyle.ink,
         ),
         dividerColor: NimzoStyle.line,
+        textTheme: const TextTheme(
+          bodyMedium:
+              TextStyle(fontSize: 14, height: 1.4, color: NimzoStyle.ink),
+          bodySmall: TextStyle(fontSize: 12, color: NimzoStyle.muted),
+        ),
+        bottomSheetTheme: const BottomSheetThemeData(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(18))),
+        ),
+        dialogTheme: DialogThemeData(
+          backgroundColor: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        ),
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: NimzoStyle.ink,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        ),
+        listTileTheme: const ListTileThemeData(
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 3),
+          titleTextStyle: TextStyle(
+              fontFamily: 'Roboto',
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: NimzoStyle.ink),
+          subtitleTextStyle: TextStyle(fontSize: 12, color: NimzoStyle.muted),
+        ),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
           foregroundColor: NimzoStyle.ink,
           elevation: 0,
           scrolledUnderElevation: 0,
+          shape: Border(bottom: BorderSide(color: NimzoStyle.line)),
           titleTextStyle: TextStyle(
             color: NimzoStyle.ink,
             fontSize: 16,
@@ -52,6 +83,22 @@ abstract final class AppTheme {
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(color: NimzoStyle.line),
           ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+            style: OutlinedButton.styleFrom(
+                foregroundColor: NimzoStyle.primary,
+                side: const BorderSide(color: NimzoStyle.primary),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)))),
+        switchTheme: SwitchThemeData(
+          thumbColor: const WidgetStatePropertyAll(Colors.white),
+          trackColor: WidgetStateProperty.resolveWith((states) =>
+              states.contains(WidgetState.selected)
+                  ? NimzoStyle.primary
+                  : const Color(0xffd6cce6)),
+          trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
         ),
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(

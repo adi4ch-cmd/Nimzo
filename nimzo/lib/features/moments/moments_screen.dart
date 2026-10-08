@@ -1,3 +1,4 @@
+import '../../core/widgets/master_ui.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +16,7 @@ class MomentsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
         appBar: AppBar(
-          title: const Text('Moments'),
+          title: const GradientText('Moments'),
           actions: [
             IconButton(
               onPressed: () => context.push('/moments/create'),
@@ -236,7 +237,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text(widget.id == null ? 'Create Moment' : 'Edit Moment'),
+          title: Text(widget.id == null ? 'New moment' : 'Edit Moment'),
         ),
         body: loadFailed
             ? Center(
@@ -253,8 +254,8 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                         controller: text,
                         maxLength: 2000,
                         maxLines: 5,
-                        decoration:
-                            const InputDecoration(hintText: 'Share a Moment'),
+                        decoration: const InputDecoration(
+                            hintText: 'What is on your mind?'),
                       ),
                       OutlinedButton(
                         onPressed: busy
@@ -373,7 +374,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                   if (mounted) setState(() => busy = false);
                                 }
                               },
-                        child: const Text('Save'),
+                        child: Text(widget.id == null ? 'Post' : 'Save'),
                       ),
                     ],
                   ),

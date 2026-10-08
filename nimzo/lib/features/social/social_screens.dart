@@ -5,6 +5,7 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile.dart';
 import '../profile/profile_repository.dart';
+import 'follow_button.dart';
 
 final socialListProvider =
     FutureProvider.family<List<Profile>, (String, String)>((ref, args) async {
@@ -39,7 +40,8 @@ class SocialListScreen extends ConsumerWidget {
   const SocialListScreen({super.key, required this.kind, required this.userId});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-      appBar: AppBar(title: Text(kind)),
+      appBar:
+          AppBar(title: Text('${kind[0].toUpperCase()}${kind.substring(1)}')),
       body: ListView(children: [
         AsyncContent(
             value: ref.watch(socialListProvider((kind, userId))),
@@ -61,6 +63,7 @@ class SocialListScreen extends ConsumerWidget {
                           title:
                               Text(p.displayName ?? p.username ?? 'Nimzo user'),
                           subtitle: Text('ID:${p.nimzoId}'),
+                          trailing: ReferenceFollowButton(userId: p.id),
                           onTap: () => context.push('/profile/${p.id}'))
                   ]))
       ]));
@@ -112,7 +115,7 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
     final me = ref.watch(currentUserIdProvider),
         db = ref.watch(supabaseProvider);
     return Scaffold(
-        appBar: AppBar(title: const Text('CP invitations')),
+        appBar: AppBar(title: const Text('Choose your CP')),
         body: ListView(padding: const EdgeInsets.all(16), children: [
           TextField(
               controller: query,

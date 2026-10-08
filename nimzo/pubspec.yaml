@@ -36,3 +36,19 @@ flutter:
     - assets/reference/lv/
     - assets/reference/svip/
     - assets/reference/vip/
+    - assets/reference/tool/
+    - assets/reference/gem/
+    - assets/reference/chest/
+    - assets/reference/crys/
+    - assets/reference/rmed/
+    - assets/reference/prz/
+    - assets/reference/emblems/
+  fonts:
+    - family: Cinzel
+      fonts:
+        - asset: assets/reference/fonts/Cinzel.ttf
+    - family: Poppins
+      fonts:
+        - asset: assets/reference/fonts/Poppins-Regular.ttf
+        - asset: assets/reference/fonts/Poppins-SemiBold.ttf
+          weight: 600

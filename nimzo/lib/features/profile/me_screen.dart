@@ -25,7 +25,20 @@ class MeScreen extends ConsumerWidget {
           children: [
             Container(
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 44),
-              decoration: const BoxDecoration(gradient: NimzoStyle.gradient),
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                    Color(0xff9333ea),
+                    Color(0xffc026d3),
+                    Color(0xffd946ef)
+                  ],
+                      stops: [
+                    0,
+                    .7,
+                    1
+                  ])),
               child: Column(
                 children: [
                   InkWell(
@@ -35,6 +48,8 @@ class MeScreen extends ConsumerWidget {
                         NimzoAvatar(
                           name: p.displayName ?? 'N',
                           size: 78,
+                          borderWidth: 3,
+                          backgroundColor: NimzoStyle.ink,
                           url: p.avatarPath == null
                               ? null
                               : ref
@@ -94,7 +109,7 @@ class MeScreen extends ConsumerWidget {
                           Expanded(
                             child: TextButton(
                               onPressed: () => context.push(
-                                '/info/${Uri.encodeComponent(k)}',
+                                '/social/$k/$id',
                               ),
                               child: Column(
                                 children: [
@@ -121,63 +136,70 @@ class MeScreen extends ConsumerWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  _MenuRow(
-                    items: const [
-                      ('Task', LucideIcons.listChecks, '/info/Task'),
-                      ('Store', LucideIcons.shoppingBag, '/info/Store'),
-                      ('Ranking', LucideIcons.trophy, '/ranking'),
-                      ('Honor Wall', LucideIcons.award, '/info/Honor%20Wall'),
-                    ],
-                  ),
-                  Row(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+              child: Transform.translate(
+                  offset: const Offset(0, -28),
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: ReferenceCard(
-                          child: ListTile(
-                            title: const Text('SVIP'),
-                            subtitle: const Text('Check now ›'),
-                            onTap: () => context.push('/svip'),
+                      _MenuRow(
+                        items: const [
+                          ('Task', LucideIcons.listChecks, '/info/Task'),
+                          ('Store', LucideIcons.shoppingBag, '/info/Store'),
+                          ('Ranking', LucideIcons.trophy, '/ranking'),
+                          (
+                            'Honor Wall',
+                            LucideIcons.award,
+                            '/info/Honor%20Wall'
                           ),
-                        ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ReferenceCard(
-                          child: ListTile(
-                            title: const Text('Wallet'),
-                            subtitle: const Text('My Coins ›'),
-                            onTap: () => context.push('/wallet'),
-                          ),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: _FeatureBanner(
+                                  title: 'SVIP',
+                                  subtitle: 'Check now ›',
+                                  colors: const [
+                                    Color(0xfffff3d1),
+                                    Color(0xfffff9e8)
+                                  ],
+                                  onTap: () => context.push('/svip'))),
+                          const SizedBox(width: 10),
+                          Expanded(
+                              child: _FeatureBanner(
+                                  title: 'Wallet',
+                                  subtitle: 'My Coins ›',
+                                  colors: const [
+                                    Color(0xffffe3ec),
+                                    Color(0xfffff0f4)
+                                  ],
+                                  onTap: () => context.push('/wallet'))),
+                        ],
+                      ),
+                      _MenuRow(
+                        items: const [
+                          ('CP Zone', LucideIcons.heart, '/cp'),
+                          ('VIP', LucideIcons.crown, '/vip'),
+                          ('Settings', LucideIcons.settings, '/settings'),
+                          ('Level', LucideIcons.chartNoAxesColumn, '/levels'),
+                          ('About', LucideIcons.info, '/info/About'),
+                        ],
+                      ),
+                      const ReferenceCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '1M+ Gift Live Ranking',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            EmptyContent(
+                                'Ranking service is not available yet.'),
+                          ],
                         ),
                       ),
                     ],
-                  ),
-                  _MenuRow(
-                    items: const [
-                      ('CP Zone', LucideIcons.heart, '/cp'),
-                      ('VIP', LucideIcons.crown, '/vip'),
-                      ('Settings', LucideIcons.settings, '/settings'),
-                      ('Level', LucideIcons.chartNoAxesColumn, '/levels'),
-                      ('About', LucideIcons.info, '/info/About'),
-                    ],
-                  ),
-                  const ReferenceCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '1M+ Gift Live Ranking',
-                          style: TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                        EmptyContent('Ranking service is not available yet.'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                  )),
             ),
           ],
         ),
@@ -190,7 +212,18 @@ class _MenuRow extends StatelessWidget {
   final List<(String, IconData, String)> items;
   const _MenuRow({required this.items});
   @override
-  Widget build(BuildContext context) => ReferenceCard(
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(
+                  color: Color(0x147828c8),
+                  offset: Offset(0, 2),
+                  blurRadius: 10)
+            ]),
         child: Row(
           children: [
             for (final item in items)
@@ -199,12 +232,33 @@ class _MenuRow extends StatelessWidget {
                   onTap: () => context.push(item.$3),
                   child: Column(
                     children: [
-                      Icon(item.$2, color: NimzoStyle.primary),
+                      Container(
+                          width: 52,
+                          height: 52,
+                          decoration: BoxDecoration(
+                              color: (item.$1 == 'Ranking' || item.$1 == 'VIP'
+                                      ? const Color(0xfff59e0b)
+                                      : item.$1 == 'Task' ||
+                                              item.$1 == 'CP Zone' ||
+                                              item.$1 == 'About'
+                                          ? NimzoStyle.pink
+                                          : NimzoStyle.primary)
+                                  .withValues(alpha: .12),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Icon(item.$2,
+                              size: 26,
+                              color: item.$1 == 'Ranking' || item.$1 == 'VIP'
+                                  ? const Color(0xfff59e0b)
+                                  : item.$1 == 'Task' ||
+                                          item.$1 == 'CP Zone' ||
+                                          item.$1 == 'About'
+                                      ? NimzoStyle.pink
+                                      : NimzoStyle.primary)),
                       const SizedBox(height: 6),
                       Text(
                         item.$1,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 11),
+                        style: const TextStyle(fontSize: 12),
                       ),
                     ],
                   ),
@@ -213,4 +267,40 @@ class _MenuRow extends StatelessWidget {
           ],
         ),
       );
+}
+
+class _FeatureBanner extends StatelessWidget {
+  final String title, subtitle;
+  final List<Color> colors;
+  final VoidCallback onTap;
+  const _FeatureBanner(
+      {required this.title,
+      required this.subtitle,
+      required this.colors,
+      required this.onTap});
+  @override
+  Widget build(BuildContext context) => Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+          borderRadius: BorderRadius.circular(14),
+          child: Ink(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: colors),
+                  borderRadius: BorderRadius.circular(14)),
+              child: InkWell(
+                  onTap: onTap,
+                  borderRadius: BorderRadius.circular(14),
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 18),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(title,
+                                style: const TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.w700)),
+                            Text(subtitle,
+                                style: const TextStyle(
+                                    color: NimzoStyle.muted, fontSize: 12))
+                          ]))))));
 }

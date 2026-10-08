@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/master_ui.dart';
 
 final walletProvider = FutureProvider<({int coins, int diamonds})>((ref) async {
   final db = ref.watch(supabaseProvider);
@@ -60,7 +61,7 @@ class WalletScreen extends ConsumerWidget {
               ),
             ),
             const ReferenceCard(child: Text('1 USD = 500,000 coins')),
-            FilledButton(
+            GradientButton(
               onPressed: () => context.push('/recharge'),
               child: const Text('Recharge'),
             ),

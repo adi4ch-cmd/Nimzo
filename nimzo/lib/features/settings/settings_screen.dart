@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../auth/presentation/auth_controller.dart';
 import '../voice/voice_controller.dart';
 import '../../core/widgets/reference_widgets.dart';
+import '../../core/theme/app_theme.dart';
+import 'reference_info_content.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -14,20 +16,34 @@ class SettingsScreen extends ConsumerWidget {
         body: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            for (final label in [
-              'Account',
-              'Privacy',
-              'Language',
-              'Help and feedback',
-              'About',
-            ])
-              ListTile(
-                title: Text(label),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () =>
-                    context.push('/info/${Uri.encodeComponent(label)}'),
-              ),
-            FilledButton(
+            Material(
+                color: NimzoStyle.surface,
+                borderRadius: BorderRadius.circular(14),
+                child: Column(children: [
+                  for (final label in [
+                    'Account',
+                    'Privacy',
+                    'Language',
+                    'Help and feedback',
+                    'About',
+                  ])
+                    ListTile(
+                      title: Text(label),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () =>
+                          context.push('/info/${Uri.encodeComponent(label)}'),
+                    ),
+                  const SwitchListTile(
+                      title: Text('Message notifications'),
+                      value: true,
+                      onChanged: null),
+                  const SwitchListTile(
+                      title: Text('Gift notifications'),
+                      value: true,
+                      onChanged: null),
+                ])),
+            const SizedBox(height: 14),
+            OutlinedButton(
               onPressed: ref.watch(authControllerProvider).isLoading
                   ? null
                   : () async {
@@ -72,14 +88,15 @@ class InfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(title: Text(title)),
-        body: Padding(
+        body: SingleChildScrollView(
+            child: Padding(
           padding: const EdgeInsets.all(16),
           child: title == 'About'
               ? const ReferenceCard(
                   child:
                       Text('NIMZO · 1.0.5\nVoice rooms and social connections'),
                 )
-              : const EmptyContent('This service is not available yet.'),
-        ),
+              : ReferenceInfoContent(title: title),
+        )),
       );
 }

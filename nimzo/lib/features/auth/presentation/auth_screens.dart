@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import 'auth_controller.dart';
+import '../../../core/widgets/master_ui.dart';
+import 'package:lucide_flutter/lucide_flutter.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   final bool register;
@@ -35,22 +37,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(gradient: NimzoStyle.gradient),
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+              Color(0xff5b21b6),
+              Color(0xffc026d3),
+              Color(0xffec4899)
+            ],
+                stops: [
+              0,
+              .65,
+              1
+            ])),
         child: SafeArea(
           child: Column(
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(24, 36, 24, 24),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 46, 24, 28),
                 child: Column(
                   children: [
-                    Text(
-                      'N',
-                      style: TextStyle(
-                        fontSize: 42,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+                    Container(
+                        width: 70,
+                        height: 70,
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: .2),
+                            border: Border.all(
+                                color: Colors.white.withValues(alpha: .5)),
+                            borderRadius: BorderRadius.circular(22)),
+                        child: const Center(
+                            child: Text('N',
+                                style: TextStyle(
+                                    fontSize: 34,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800)))),
                     Text(
                       'NIMZO',
                       style: TextStyle(
@@ -78,22 +100,43 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: ListView(
                     padding: const EdgeInsets.all(20),
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextButton(
-                              onPressed: () => context.go('/login'),
-                              child: const Text('Login'),
-                            ),
-                          ),
-                          Expanded(
-                            child: TextButton(
-                              onPressed: () => context.go('/register'),
-                              child: const Text('Sign up'),
-                            ),
-                          ),
-                        ],
-                      ),
+                      Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                              color: NimzoStyle.surface,
+                              borderRadius: BorderRadius.circular(14)),
+                          child: Row(children: [
+                            for (final register in [false, true])
+                              Expanded(
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          color: widget.register == register
+                                              ? Colors.white
+                                              : null,
+                                          borderRadius:
+                                              BorderRadius.circular(11),
+                                          boxShadow: widget.register == register
+                                              ? [
+                                                  const BoxShadow(
+                                                      color: Color(0x267828c8),
+                                                      blurRadius: 8)
+                                                ]
+                                              : null),
+                                      child: TextButton(
+                                          onPressed: () => context.go(register
+                                              ? '/register'
+                                              : '/login'),
+                                          child: Text(
+                                              register ? 'Sign up' : 'Login',
+                                              style: TextStyle(
+                                                  color: widget.register ==
+                                                          register
+                                                      ? NimzoStyle.primary
+                                                      : NimzoStyle.muted,
+                                                  fontWeight:
+                                                      FontWeight.w600))))),
+                          ])),
                       Form(
                         key: form,
                         child: Column(
@@ -103,7 +146,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               keyboardType: TextInputType.emailAddress,
                               autofillHints: const [AutofillHints.email],
                               decoration: const InputDecoration(
-                                labelText: 'Email address',
+                                hintText: 'Email address',
+                                prefixIcon: Icon(LucideIcons.mail, size: 22),
                               ),
                               validator: (s) => s != null &&
                                       RegExp(r'^\S+@\S+\.\S+$')
@@ -117,7 +161,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               obscureText: true,
                               autofillHints: const [AutofillHints.password],
                               decoration: const InputDecoration(
-                                labelText: 'Password',
+                                hintText: 'Password',
+                                prefixIcon: Icon(LucideIcons.lock, size: 22),
                               ),
                               validator: (s) => s != null && s.length >= 6
                                   ? null
@@ -133,7 +178,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: const Text('Forgot password?'),
                         ),
                       ),
-                      FilledButton(
+                      GradientButton(
                         onPressed: state.isLoading
                             ? null
                             : () {
@@ -176,7 +221,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   : () => ref
                                       .read(authControllerProvider.notifier)
                                       .google(),
-                              child: const Text('Google'),
+                              child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('G',
+                                        style: TextStyle(
+                                            color: Color(0xff1976d2),
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w800)),
+                                    SizedBox(width: 10),
+                                    Text('Google')
+                                  ]),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -187,11 +242,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   : () => ref
                                       .read(authControllerProvider.notifier)
                                       .facebook(),
-                              child: const Text('Facebook'),
+                              child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.facebook,
+                                        color: Color(0xff1877f2), size: 22),
+                                    SizedBox(width: 10),
+                                    Flexible(child: Text('Facebook'))
+                                  ]),
                             ),
                           ),
                         ],
                       ),
+                      const Padding(
+                          padding: EdgeInsets.only(top: 18),
+                          child: Text(
+                              'By continuing you agree to the Terms and Privacy Policy',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: NimzoStyle.muted, fontSize: 12))),
                     ],
                   ),
                 ),

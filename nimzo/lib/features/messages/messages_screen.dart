@@ -1,3 +1,4 @@
+import '../../core/widgets/master_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +13,7 @@ class MessagesScreen extends ConsumerWidget {
   const MessagesScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(title: const Text('Messages')),
+        appBar: AppBar(title: const GradientText('Messages')),
         body: RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(conversationsProvider);
@@ -70,9 +71,10 @@ class ConversationTile extends ConsumerWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: NimzoStyle.primary,
                     borderRadius: BorderRadius.circular(20)),
-                child: Text('$unread'),
+                child: Text('$unread',
+                    style: const TextStyle(color: Colors.white, fontSize: 11)),
               ))
           : null,
       onTap: () => context.push('/chat/$id'),
@@ -178,23 +180,32 @@ class _State extends ConsumerState<ConversationScreen> {
                             : Alignment.centerLeft,
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 11, vertical: 7),
                           constraints: BoxConstraints(
                             maxWidth: MediaQuery.sizeOf(context).width * .8,
                           ),
                           decoration: BoxDecoration(
-                            color: NimzoStyle.surface,
-                            borderRadius: BorderRadius.circular(14),
+                            color: m.senderId == me ? null : NimzoStyle.surface,
+                            gradient:
+                                m.senderId == me ? NimzoStyle.gradient : null,
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(m.body ?? ''),
+                              Text(m.body ?? '',
+                                  style: TextStyle(
+                                      color: m.senderId == me
+                                          ? Colors.white
+                                          : NimzoStyle.ink)),
                               Text(
                                 '${m.createdAt.toLocal().hour}:${m.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 10,
-                                  color: NimzoStyle.muted,
+                                  color: m.senderId == me
+                                      ? Colors.white70
+                                      : NimzoStyle.muted,
                                 ),
                               ),
                             ],
@@ -214,7 +225,9 @@ class _State extends ConsumerState<ConversationScreen> {
                       controller: body,
                       maxLength: 1000,
                       decoration: const InputDecoration(
-                        hintText: 'Message',
+                        hintText: 'Message…',
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         counterText: '',
                       ),
                     ),
