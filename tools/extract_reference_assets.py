@@ -5,8 +5,10 @@ from pathlib import Path
 import re
 
 root = Path(__file__).resolve().parents[1]
-html = (root / 'nimzo-ui-1.html').read_text()
+html = (root / 'nimzo-ui-2.html').read_text()
 images = json.loads(re.search(r'const IM=(\{.*?\});', html).group(1))
+images.update(json.loads(re.search(r'Object.assign\(IM,(\{.*?\})\);', html).group(1)))
+images = {group: entries if isinstance(entries, list) else [entries] for group, entries in images.items()}
 assets = []
 for group, entries in images.items():
     target = root / 'nimzo/assets/reference' / group

@@ -8,9 +8,11 @@ ROOT = Path(__file__).resolve().parents[3]
 
 class ReferenceAssetsTest(unittest.TestCase):
     def test_assets_are_exact_approved_embedded_bytes(self):
-        html = (ROOT / 'nimzo-ui-1.html').read_text()
+        html = (ROOT / 'nimzo-ui-2.html').read_text()
         images = json.loads(re.search(r'const IM=(\{.*?\});', html).group(1))
+        images.update(json.loads(re.search(r'Object.assign\(IM,(\{.*?\})\);', html).group(1)))
         for group, entries in images.items():
+            entries = entries if isinstance(entries, list) else [entries]
             for index, uri in enumerate(entries):
                 media, payload = uri.split(',', 1)
                 extension = media.split('/')[1].split(';')[0].replace('jpeg', 'jpg')
