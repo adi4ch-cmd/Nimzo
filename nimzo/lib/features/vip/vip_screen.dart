@@ -52,9 +52,9 @@ class _VipState extends ConsumerState<VipScreen> {
                 displayColor: Colors.white,
                 fontFamily: 'Poppins')),
         child: Scaffold(
-          backgroundColor: const Color(0xff0b0813),
+          backgroundColor: widget.svip ? const Color(0xff08091b) : const Color(0xff100d0b),
           appBar: AppBar(
-              backgroundColor: const Color(0xff24103f),
+              backgroundColor: widget.svip ? const Color(0xff14122e) : const Color(0xff21180f),
               foregroundColor: Colors.white,
               title: Text(widget.svip ? 'SVIP' : 'Nimzo VIP',
                   style: const TextStyle(
@@ -62,11 +62,13 @@ class _VipState extends ConsumerState<VipScreen> {
                       color: Colors.white,
                       fontSize: 16))),
           body: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                   gradient: RadialGradient(
                       center: Alignment.topCenter,
-                      radius: 1.1,
-                      colors: [Color(0xff3d1b73), Color(0xff0b0813)])),
+                      radius: 1.25,
+                      colors: widget.svip
+                          ? const [Color(0xff39316b), Color(0xff12132d), Color(0xff08091b)]
+                          : const [Color(0xff554025), Color(0xff21180f), Color(0xff100d0b)])),
               child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
                   children: widget.svip
@@ -77,7 +79,7 @@ class _VipState extends ConsumerState<VipScreen> {
                               emblem: MembershipEmblem(level: tier, size: 200),
                               title: 'VIP $tier',
                               subtitle:
-                                  'Be seen. Be heard. Stand out in every room.',
+                                  'THE ROYAL COLLECTION  •  EXCLUSIVE MEMBERSHIP',
                               color: c.first,
                               status: _pill(statusLabel)),
                           SizedBox(
@@ -261,7 +263,7 @@ class _VipState extends ConsumerState<VipScreen> {
             emblem: const MembershipEmblem(
                 level: 10, svip: true, hero: true, size: 220),
             title: 'SVIP Privileges',
-            subtitle: 'More recharge, higher level, more privileges',
+            subtitle: 'THE ELITE COLLECTION  •  EXCLUSIVE PRIVILEGES',
             color: const Color(0xfffbbf24)),
         _features(const [
           ('bolt', 'Instant upgrade'),
