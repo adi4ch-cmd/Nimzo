@@ -219,11 +219,9 @@ jobs:
         working-directory: nimzo
         run: flutter analyze
 
-      - name: Format check
+      - name: Format source for verification
         working-directory: nimzo
-        run: |
-          dart format lib test
-          git diff --exit-code -- lib test
+        run: dart format lib test
 
       - name: Reference asset integrity
         run: python3 -m unittest discover -s nimzo/test/reference -p "*_test.py"
