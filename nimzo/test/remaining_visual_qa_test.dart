@@ -530,6 +530,20 @@ void main() {
               AssetImage('assets/hilo/store/royal_$n.webp'), context);
           }
         }
+        // Eagerly decode gift controls so the golden never captures blank
+        // placeholders while Flutter is decoding first-use WebP assets.
+        if (entry.key == 'gifts') {
+          for (final filename in [
+            'video_send_gift.webp',
+            'icon_gift_modal.webp',
+            'bg_gift_selected_box.webp',
+          ]) {
+            await precacheImage(
+              AssetImage('assets/nimzo/gift_controls/$filename'),
+              context,
+            );
+          }
+        }
       });
       await tester.pump(const Duration(milliseconds: 300));
       if (entry.key == 'ranking') {
