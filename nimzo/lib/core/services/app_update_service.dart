@@ -29,19 +29,20 @@ class NimzoAppUpdateService {
   static final _checker = NimzoUpdateChecker();
   static Future<AppUpdate?> check() => _checker.check();
   static final _prompter = NimzoUpdatePrompter(checkForUpdate: check);
-  static Future<void> prompt(BuildContext context,
-          {bool showUpToDate = false}) =>
-      _prompter.prompt(context, showUpToDate: showUpToDate);
+  static Future<void> prompt(
+    BuildContext context, {
+    bool showUpToDate = false,
+  }) => _prompter.prompt(context, showUpToDate: showUpToDate);
 }
 
 class NimzoUpdatePrompter {
-  NimzoUpdatePrompter(
-      {required this.checkForUpdate,
-      bool Function()? isAndroid,
-      Future<String> Function(AppUpdate)? downloadAndInstall})
-      : isAndroid = isAndroid ?? (() => !kIsWeb && Platform.isAndroid),
-        downloadAndInstall =
-            downloadAndInstall ?? NimzoAppUpdateService.downloadAndInstall;
+  NimzoUpdatePrompter({
+    required this.checkForUpdate,
+    bool Function()? isAndroid,
+    Future<String> Function(AppUpdate)? downloadAndInstall,
+  }) : isAndroid = isAndroid ?? (() => !kIsWeb && Platform.isAndroid),
+       downloadAndInstall =
+           downloadAndInstall ?? NimzoAppUpdateService.downloadAndInstall;
   final Future<AppUpdate?> Function() checkForUpdate;
   final bool Function() isAndroid;
   final Future<String> Function(AppUpdate) downloadAndInstall;
@@ -63,7 +64,8 @@ class NimzoUpdatePrompter {
         if (showUpToDate) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content: Text('No newer compatible testing update found.')),
+              content: Text('No newer compatible testing update found.'),
+            ),
           );
         }
         return;
@@ -74,11 +76,13 @@ class NimzoUpdatePrompter {
         builder: (dialogContext) => AlertDialog(
           title: const Text('NIMZO update available'),
           content: Text(
-              '${update.title}\n\nDownload the new APK? Android will ask you to confirm installation.'),
+            '${update.title}\n\nDownload the new APK? Android will ask you to confirm installation.',
+          ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Later')),
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Later'),
+            ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
               child: const Text('Update'),
@@ -91,7 +95,8 @@ class NimzoUpdatePrompter {
       if (showUpToDate && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text('Could not check updates. Try again later.')),
+            content: Text('Could not check updates. Try again later.'),
+          ),
         );
       }
     } finally {
@@ -108,11 +113,14 @@ class NimzoUpdatePrompter {
         canPop: false,
         child: AlertDialog(
           title: Text('Updating NIMZO'),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 20),
-            Text('Downloading and verifying update…'),
-          ]),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 20),
+              Text('Downloading and verifying update…'),
+            ],
+          ),
         ),
       ),
     );
@@ -123,8 +131,7 @@ class NimzoUpdatePrompter {
       message = switch (result) {
         'installerOpened' =>
           'Android installer opened. Confirm installation to update NIMZO.',
-        'permissionRequired' =>
-          'Allow NIMZO to install apps in Android settings. Return to NIMZO to confirm installation.',
+        'permissionRequired' => 'Allow NIMZO to install apps in Android settings. Return to NIMZO to confirm installation.',
         _ => 'Could not download or verify the update. Try again later.',
       };
     } catch (_) {
@@ -166,9 +173,9 @@ class NimzoUpdateChecker {
     bool Function()? isAndroid,
     Future<PackageInfo> Function()? packageInfo,
     Future<String> Function(Uri)? fetchJson,
-  })  : _isAndroid = isAndroid ?? (() => !kIsWeb && Platform.isAndroid),
-        _packageInfo = packageInfo ?? PackageInfo.fromPlatform,
-        _fetchJson = fetchJson ?? _readJson;
+  }) : _isAndroid = isAndroid ?? (() => !kIsWeb && Platform.isAndroid),
+       _packageInfo = packageInfo ?? PackageInfo.fromPlatform,
+       _fetchJson = fetchJson ?? _readJson;
 
   final bool Function() _isAndroid;
   final Future<PackageInfo> Function() _packageInfo;
@@ -193,8 +200,8 @@ class NimzoUpdateChecker {
     final signature = _normalize(installed.buildSignature);
     if (current == null || !_digest.hasMatch(signature)) return null;
     final releases = jsonDecode(
-        await _fetchJson(Uri.parse(NimzoAppUpdateService._api))
-            .timeout(_timeout));
+      await _fetchJson(Uri.parse(NimzoAppUpdateService._api)).timeout(_timeout),
+    );
     if (releases is! List) throw const FormatException('Invalid releases');
     AppUpdate? newest;
     Object? lastFailure;
@@ -205,16 +212,19 @@ class NimzoUpdateChecker {
       if (assets is! List) continue;
       for (final asset in assets) {
         if (asset is! Map || asset['name'] != 'nimzo-update.json') continue;
-        final manifestUrl =
-            Uri.tryParse(asset['browser_download_url']?.toString() ?? '');
+        final manifestUrl = Uri.tryParse(
+          asset['browser_download_url']?.toString() ?? '',
+        );
         if (!_trusted(manifestUrl, 'nimzo-update.json')) continue;
         final remaining = deadline.difference(DateTime.now());
         if (remaining <= Duration.zero)
           throw const FormatException('Update check timed out');
         dynamic manifest;
         try {
-          manifest = jsonDecode(await _fetchJson(manifestUrl!)
-              .timeout(remaining < _timeout ? remaining : _timeout));
+          manifest = jsonDecode(
+            await _fetchJson(manifestUrl!)
+                .timeout(remaining < _timeout ? remaining : _timeout),
+          );
           if (manifest is! Map)
             throw const FormatException('Invalid update manifest');
           readManifest = true;
@@ -233,12 +243,17 @@ class NimzoUpdateChecker {
             _normalize(manifest['signingCertificateSha256']) != signature ||
             !_digest.hasMatch(_normalize(manifest['apkSha256'])) ||
             !_trusted(apk, 'app-release.apk') ||
-            apk!.pathSegments[4] != manifestUrl.pathSegments[4]) continue;
+            apk!.pathSegments[4] != manifestUrl.pathSegments[4])
+          continue;
         if (newest == null || build > newest.build)
-          newest = AppUpdate(build, 'NIMZO $version (build $build)', apk,
-              apkSha256: _normalize(manifest['apkSha256']),
-              packageName: installed.packageName,
-              signingCertificateSha256: signature);
+          newest = AppUpdate(
+            build,
+            'NIMZO $version (build $build)',
+            apk,
+            apkSha256: _normalize(manifest['apkSha256']),
+            packageName: installed.packageName,
+            signingCertificateSha256: signature,
+          );
         break;
       }
     }
@@ -255,7 +270,8 @@ class NimzoUpdateChecker {
         uri.userInfo.isNotEmpty ||
         uri.hasPort ||
         uri.hasQuery ||
-        uri.hasFragment) return false;
+        uri.hasFragment)
+      return false;
     final parts = uri.pathSegments;
     return parts.length == 6 &&
         parts[0] == 'adi4ch-cmd' &&
@@ -272,10 +288,14 @@ class NimzoUpdateChecker {
       final request = await client.getUrl(uri).timeout(_timeout);
       // GitHub release assets redirect to its asset CDN. The public entry URL is
       // strictly repository scoped before reaching this transport.
-      request.headers
-          .set(HttpHeaders.acceptHeader, 'application/vnd.github+json');
-      request.headers
-          .set(HttpHeaders.userAgentHeader, 'Nimzo-Android-Update-Checker');
+      request.headers.set(
+        HttpHeaders.acceptHeader,
+        'application/vnd.github+json',
+      );
+      request.headers.set(
+        HttpHeaders.userAgentHeader,
+        'Nimzo-Android-Update-Checker',
+      );
       final response = await request.close().timeout(_timeout);
       if (response.statusCode != 200)
         throw HttpException('Update metadata HTTP ${response.statusCode}');
@@ -288,8 +308,7 @@ class NimzoUpdateChecker {
           }
         }
         return utf8.decode(bytes);
-      })()
-          .timeout(_timeout);
+      })().timeout(_timeout);
     } finally {
       client.close(force: true);
     }

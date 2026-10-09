@@ -66,7 +66,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           !ref.read(passwordRecoveryProvider)) {
         try {
           final profile = await ref.read(profileProvider(user.id).future);
-          profileReady = (profile.displayName?.trim().isNotEmpty ?? false) &&
+          profileReady =
+              (profile.displayName?.trim().isNotEmpty ?? false) &&
               profile.gender != null &&
               profile.dateOfBirth != null &&
               profile.countryCode != null;
@@ -123,17 +124,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
       GoRoute(path: '/svip', builder: (_, __) => const VipScreen(svip: true)),
-      GoRoute(
-        path: '/cp',
-        builder: (_, __) => const CoupleRequestsScreen(),
-      ),
+      GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
       GoRoute(
-          path: '/social/:kind/:id',
-          builder: (_, s) => SocialListScreen(
-              kind: s.pathParameters['kind']!,
-              userId: s.pathParameters['id']!)),
+        path: '/social/:kind/:id',
+        builder: (_, s) => SocialListScreen(
+          kind: s.pathParameters['kind']!,
+          userId: s.pathParameters['id']!,
+        ),
+      ),
       GoRoute(
         path: '/info/:title',
         builder: (_, s) => InfoScreen(title: s.pathParameters['title']!),

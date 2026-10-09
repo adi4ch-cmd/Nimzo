@@ -31,32 +31,32 @@ class Room {
   });
 
   factory Room.fromJson(Map<String, dynamic> j) => Room(
-        id: j['id'],
-        roomNo: j['room_no'],
-        name: j['name'],
-        ownerId: j['owner_id'],
-        country: j['country'],
-        theme: j['theme'] ?? 'nimzo_white',
-        avatarPath: j['avatar_path'] as String?,
-        isPrivate: j['is_private'] ?? false,
-        micEnabled: j['perm_mic'] ?? true,
-        status: j['status'] ?? 'open',
-        lifetimeGiftCoins: (j['lifetime_gift_coins'] ?? 0) as int,
-        createdAt: DateTime.parse(j['created_at']),
-        rules: j['rules'],
-        permissions: {
-          for (final k in const [
-            'mic_permission',
-            'chat_permission',
-            'guest_permission',
-            'gift_permission',
-            'music_permission',
-            'game_permission',
-            'visitor_permission',
-          ])
-            if (j[k] != null) k: j[k] as String,
-        },
-      );
+    id: j['id'],
+    roomNo: j['room_no'],
+    name: j['name'],
+    ownerId: j['owner_id'],
+    country: j['country'],
+    theme: j['theme'] ?? 'nimzo_white',
+    avatarPath: j['avatar_path'] as String?,
+    isPrivate: j['is_private'] ?? false,
+    micEnabled: j['perm_mic'] ?? true,
+    status: j['status'] ?? 'open',
+    lifetimeGiftCoins: (j['lifetime_gift_coins'] ?? 0) as int,
+    createdAt: DateTime.parse(j['created_at']),
+    rules: j['rules'],
+    permissions: {
+      for (final k in const [
+        'mic_permission',
+        'chat_permission',
+        'guest_permission',
+        'gift_permission',
+        'music_permission',
+        'game_permission',
+        'visitor_permission',
+      ])
+        if (j[k] != null) k: j[k] as String,
+    },
+  );
 }
 
 class MicSeat {
@@ -71,9 +71,9 @@ class MicSeat {
     this.locked = false,
   });
   factory MicSeat.fromJson(Map<String, dynamic> j) => MicSeat(
-        seatNo: j['seat_no'],
-        userId: j['user_id'],
-        muted: j['muted'] ?? false,
-        locked: j['locked'] ?? false,
-      );
+    seatNo: j['seat_no'],
+    userId: j['user_id'],
+    muted: j['muted'] ?? false,
+    locked: j['locked'] ?? false,
+  );
 }

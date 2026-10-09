@@ -14,32 +14,32 @@ class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(gradient: NimzoStyle.gradient),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'NIMZO',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const Text(
-                  'Connect · Chat · Belong',
-                  style: TextStyle(color: Colors.white),
-                ),
-                const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: () => context.go('/login'),
-                  child: const Text('Continue'),
-                ),
-              ],
+    body: Container(
+      decoration: const BoxDecoration(gradient: NimzoStyle.gradient),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'NIMZO',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.w800,
+              ),
             ),
-          ),
+            const Text(
+              'Connect · Chat · Belong',
+              style: TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 24),
+            FilledButton(
+              onPressed: () => context.go('/login'),
+              child: const Text('Continue'),
+            ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }

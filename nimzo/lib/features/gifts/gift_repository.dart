@@ -39,10 +39,12 @@ class GiftRepository {
           .eq('room_id', roomId)
           .order('created_at', ascending: false)
           .limit(20)
-          .map((rows) => rows
-              .where((row) => row['scope'] == 'room')
-              .map((row) => Map<String, dynamic>.from(row))
-              .toList());
+          .map(
+            (rows) => rows
+                .where((row) => row['scope'] == 'room')
+                .map((row) => Map<String, dynamic>.from(row))
+                .toList(),
+          );
     }
     // RLS restricts country broadcasts to the signed-in user's country.
     // Room events are filtered locally after the RLS-scoped stream.
@@ -51,13 +53,17 @@ class GiftRepository {
         .stream(primaryKey: ['id'])
         .order('created_at', ascending: false)
         .limit(100)
-        .map((rows) => rows
-            .where((row) =>
-                (row['scope'] == 'room' && row['room_id'] == roomId) ||
-                (row['scope'] == 'country' &&
-                    row['country_code'] == normalized))
-            .map((row) => Map<String, dynamic>.from(row))
-            .toList());
+        .map(
+          (rows) => rows
+              .where(
+                (row) =>
+                    (row['scope'] == 'room' && row['room_id'] == roomId) ||
+                    (row['scope'] == 'country' &&
+                        row['country_code'] == normalized),
+              )
+              .map((row) => Map<String, dynamic>.from(row))
+              .toList(),
+        );
   }
 
   /// Only admin-approved HTTPS video media may be played.
@@ -184,16 +190,18 @@ final giftRepositoryProvider = Provider(
 final giftCatalogProvider = FutureProvider(
   (ref) => ref.watch(giftRepositoryProvider).catalog(),
 );
-final roomGiftEventProvider =
-    StreamProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
-  (ref, roomId) =>
-      ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
-);
+final roomGiftEventProvider = StreamProvider.autoDispose
+    .family<List<Map<String, dynamic>>, String>(
+      (ref, roomId) =>
+          ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
+    );
 
 final verifiedGiftAnimationProvider = StreamProvider.autoDispose
     .family<List<Map<String, dynamic>>, ({String roomId, String countryCode})>(
-  (ref, args) => ref.watch(giftRepositoryProvider).watchVerifiedAnimations(
-        roomId: args.roomId,
-        countryCode: args.countryCode,
-      ),
-);
+      (ref, args) => ref
+          .watch(giftRepositoryProvider)
+          .watchVerifiedAnimations(
+            roomId: args.roomId,
+            countryCode: args.countryCode,
+          ),
+    );

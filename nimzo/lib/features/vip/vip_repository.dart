@@ -68,7 +68,8 @@ final svipProgressProvider = FutureProvider<SvipProgress>((ref) async {
   if (cents is! int ||
       cents < 0 ||
       status['svip_cycle_active'] is! bool ||
-      thresholds.isEmpty) throw StateError('Recharge progress unavailable');
+      thresholds.isEmpty)
+    throw StateError('Recharge progress unavailable');
   return SvipProgress(cycleCents: cents, thresholds: thresholds);
 });
 

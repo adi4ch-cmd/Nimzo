@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+
 import 'language_choices.dart';
 import 'user_preferences.dart';
 import 'honor_wall_content.dart';
 import '../support/support_screen.dart';
 import '../social/blocked_users_screen.dart';
 import '../profile/profile_repository.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/master_ui.dart';
 import '../../core/widgets/reference_widgets.dart';
@@ -20,57 +23,90 @@ class ReferenceInfoContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (title == 'Account') {
       final id = ref.watch(currentUserIdProvider);
-      final profile =
-          id == null ? null : ref.watch(profileProvider(id)).valueOrNull;
-      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        ReferenceCard(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('Nimzo ID', style: TextStyle(fontWeight: FontWeight.w700)),
-          const SizedBox(height: 6),
-          Text(profile?.nimzoId.toString() ?? 'ID unavailable',
-              style: const TextStyle(color: NimzoStyle.muted)),
-          const Text('Permanent, cannot be changed',
-              style: TextStyle(color: NimzoStyle.muted, fontSize: 12)),
-        ])),
-        const SizedBox(height: 14),
-        GradientButton(
+      final profile = id == null
+          ? null
+          : ref.watch(profileProvider(id)).valueOrNull;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ReferenceCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Nimzo ID',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  profile?.nimzoId.toString() ?? 'ID unavailable',
+                  style: const TextStyle(color: NimzoStyle.muted),
+                ),
+                const Text(
+                  'Permanent, cannot be changed',
+                  style: TextStyle(color: NimzoStyle.muted, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          GradientButton(
             onPressed: () => context.push('/forgot'),
-            child: const Text('Change password')),
-        const SizedBox(height: 20),
-        const AccountDeletionRequestContent(),
-      ]);
+            child: const Text('Change password'),
+          ),
+          const SizedBox(height: 20),
+          const AccountDeletionRequestContent(),
+        ],
+      );
     }
     if (title == 'Task')
-      return Column(children: [
-        for (final task in [
-          ('Daily check-in', 'Rewards unavailable'),
-          ('Send a gift', 'Rewards unavailable'),
-          ('Stay in a room 10 min', 'Rewards unavailable')
-        ])
-          ReferenceCard(
-              child: Row(children: [
-            Expanded(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                  Text(task.$1,
-                      style: const TextStyle(fontWeight: FontWeight.w700)),
-                  Text(task.$2,
-                      style: const TextStyle(
-                          color: NimzoStyle.muted, fontSize: 12))
-                ])),
-            const GradientButton(onPressed: null, child: Text('Unavailable'))
-          ]))
-      ]);
+      return Column(
+        children: [
+          for (final task in [
+            ('Daily check-in', 'Rewards unavailable'),
+            ('Send a gift', 'Rewards unavailable'),
+            ('Stay in a room 10 min', 'Rewards unavailable'),
+          ])
+            ReferenceCard(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          task.$1,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        Text(
+                          task.$2,
+                          style: const TextStyle(
+                            color: NimzoStyle.muted,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const GradientButton(
+                    onPressed: null,
+                    child: Text('Unavailable'),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      );
     if (title == 'Store')
-      return Column(children: [
-        GradientButton(
+      return Column(
+        children: [
+          GradientButton(
             onPressed: () => context.push('/recharge'),
-            child: const Text('Coin packages')),
-        const SizedBox(height: 12),
-        const Text('Cosmetic previews · purchases are unavailable'),
-        GridView.count(
+            child: const Text('Coin packages'),
+          ),
+          const SizedBox(height: 12),
+          const Text('Cosmetic previews · purchases are unavailable'),
+          GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 2,
@@ -82,45 +118,62 @@ class ReferenceInfoContent extends ConsumerWidget {
                 ('Gold Frame', 50000, 'frame', 0),
                 ('VIP Frame', 500000, 'frame', 1),
                 ('Eagle Car', 200000, 'car', 0),
-                ('Jeep Car', 100000, 'car', 1)
+                ('Jeep Car', 100000, 'car', 1),
               ])
                 Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                        color: NimzoStyle.surface,
-                        borderRadius: BorderRadius.circular(14)),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ReferenceArtwork(item.$3, item.$4, size: 58),
-                          const SizedBox(height: 6),
-                          Text(item.$1,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w700)),
-                          Text('${compactNumber(item.$2)} coins',
-                              style: const TextStyle(
-                                  color: NimzoStyle.primary, fontSize: 12)),
-                          const Text('Unavailable',
-                              style: TextStyle(
-                                  color: NimzoStyle.muted, fontSize: 11))
-                        ]))
-            ])
-      ]);
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: NimzoStyle.surface,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ReferenceArtwork(item.$3, item.$4, size: 58),
+                      const SizedBox(height: 6),
+                      Text(
+                        item.$1,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      Text(
+                        '${compactNumber(item.$2)} coins',
+                        style: const TextStyle(
+                          color: NimzoStyle.primary,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const Text(
+                        'Unavailable',
+                        style: TextStyle(color: NimzoStyle.muted, fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ],
+      );
     if (title == 'Honor Wall') return const HonorWallContent();
     if (title == 'Help and feedback') return const SupportHelpContent();
     if (title == 'Privacy')
-      return Column(children: [
-        ListTile(
+      return Column(
+        children: [
+          ListTile(
             title: const Text('Blocked users'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const BlockedUsersScreen()))),
-        const PreferenceControls(privacy: true),
-        const Padding(
+              MaterialPageRoute(builder: (_) => const BlockedUsersScreen()),
+            ),
+          ),
+          const PreferenceControls(privacy: true),
+          const Padding(
             padding: EdgeInsets.all(12),
             child: Text(
-                'Visitor visibility and online-status privacy are not supported by the current server contracts.')),
-      ]);
+              'Visitor visibility and online-status privacy are not supported by the current server contracts.',
+            ),
+          ),
+        ],
+      );
     if (title == 'Language') return const LanguageChoices();
     return const EmptyContent('This service is not available yet.');
   }

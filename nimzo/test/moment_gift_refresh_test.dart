@@ -13,61 +13,71 @@ import 'package:nimzo/features/wallet/wallet_screen.dart';
 class SettledMomentGiftRepository extends MomentRepository {
   SettledMomentGiftRepository(super.db);
   @override
-  Future<void> sendGift(
-      {required String momentId,
-      required String receiverId,
-      required String giftId,
-      required int qty,
-      required String key}) async {}
+  Future<void> sendGift({
+    required String momentId,
+    required String receiverId,
+    required String giftId,
+    required int qty,
+    required String key,
+  }) async {}
 }
 
 void main() {
-  testWidgets('Moment gift refreshes detail and author Moments caches',
-      (tester) async {
-    final db = (await tester.runAsync(() async => SupabaseClient(
-          'https://example.supabase.co',
-          'test-key',
-          authOptions: const AuthClientOptions(autoRefreshToken: false),
-        )))!;
+  testWidgets('Moment gift refreshes detail and author Moments caches', (
+    tester,
+  ) async {
+    final db = (await tester.runAsync(
+      () async => SupabaseClient(
+        'https://example.supabase.co',
+        'test-key',
+        authOptions: const AuthClientOptions(autoRefreshToken: false),
+      ),
+    ))!;
     addTearDown(() => tester.runAsync(db.dispose));
     final moment = Moment(
-        id: 'moment',
-        authorId: 'author',
-        likes: 0,
-        comments: 0,
-        liked: false,
-        createdAt: DateTime(2026));
+      id: 'moment',
+      authorId: 'author',
+      likes: 0,
+      comments: 0,
+      liked: false,
+      createdAt: DateTime(2026),
+    );
     var detailLoads = 0, authorLoads = 0;
-    final container = ProviderContainer(overrides: [
-      supabaseProvider.overrideWithValue(db),
-      currentUserIdProvider.overrideWithValue(null),
-      momentRepositoryProvider
-          .overrideWithValue(SettledMomentGiftRepository(db)),
-      giftCatalogProvider.overrideWith((_) async => [
-            const Gift('gift', 'Coffee', 'Classic', 500, null),
-          ]),
-      walletProvider.overrideWith((_) async => (coins: 10000, diamonds: 0)),
-      momentsFeedProvider.overrideWith((_) async => [moment]),
-      momentDetailProvider('moment').overrideWith((_) async {
-        detailLoads++;
-        return moment;
-      }),
-      profileMomentsProvider('author').overrideWith((_) async {
-        authorLoads++;
-        return [moment];
-      }),
-    ]);
+    final container = ProviderContainer(
+      overrides: [
+        supabaseProvider.overrideWithValue(db),
+        currentUserIdProvider.overrideWithValue(null),
+        momentRepositoryProvider.overrideWithValue(
+          SettledMomentGiftRepository(db),
+        ),
+        giftCatalogProvider.overrideWith(
+          (_) async => [const Gift('gift', 'Coffee', 'Classic', 500, null)],
+        ),
+        walletProvider.overrideWith((_) async => (coins: 10000, diamonds: 0)),
+        momentsFeedProvider.overrideWith((_) async => [moment]),
+        momentDetailProvider('moment').overrideWith((_) async {
+          detailLoads++;
+          return moment;
+        }),
+        profileMomentsProvider('author').overrideWith((_) async {
+          authorLoads++;
+          return [moment];
+        }),
+      ],
+    );
     addTearDown(container.dispose);
     await container.read(momentDetailProvider('moment').future);
     await container.read(profileMomentsProvider('author').future);
-    await tester.pumpWidget(UncontrolledProviderScope(
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
         container: container,
         child: const MaterialApp(
-            home: Scaffold(
-                body: GiftSheet(
-          receiverId: 'author',
-          momentId: 'moment',
-        )))));
+          home: Scaffold(
+            body: GiftSheet(receiverId: 'author', momentId: 'moment'),
+          ),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Coffee'));
     await tester.pumpAndSettle();

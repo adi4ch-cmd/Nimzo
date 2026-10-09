@@ -1,5 +1,6 @@
 import '../vip/phoenix_widgets.dart';
 import '../vip/phoenix_entitlement.dart';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -30,23 +31,21 @@ Future<void> showRoomGiftSheet(
   BuildContext context,
   String roomId,
   String receiverId,
-) =>
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => GiftSheet(receiverId: receiverId, roomId: roomId),
-    );
+) => showModalBottomSheet<void>(
+  context: context,
+  isScrollControlled: true,
+  builder: (_) => GiftSheet(receiverId: receiverId, roomId: roomId),
+);
 
 Future<void> showMomentGiftSheet(
   BuildContext context,
   String momentId,
   String receiverId,
-) =>
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => GiftSheet(receiverId: receiverId, momentId: momentId),
-    );
+) => showModalBottomSheet<void>(
+  context: context,
+  isScrollControlled: true,
+  builder: (_) => GiftSheet(receiverId: receiverId, momentId: momentId),
+);
 
 class GiftSheet extends ConsumerStatefulWidget {
   final String receiverId;
@@ -108,7 +107,9 @@ class _State extends ConsumerState<GiftSheet> {
     try {
       final r = ref.read(giftRepositoryProvider), g = gift;
       if (widget.momentId != null) {
-        await ref.read(momentRepositoryProvider).sendGift(
+        await ref
+            .read(momentRepositoryProvider)
+            .sendGift(
               momentId: widget.momentId!,
               receiverId: receiverId,
               giftId: g.id,
@@ -147,19 +148,23 @@ class _State extends ConsumerState<GiftSheet> {
       // Play the *actual* Yo2 send animation (animated WebP) only after the
       // server RPC confirms settlement. The two Dragon gifts are out of scope.
       if (mounted && g.category.toLowerCase() != 'dragon') {
-        ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(
-          duration: const Duration(seconds: 2),
-          content: Row(children: [
-            const Yo2GiftPanelArt(
-              'anim_send_gift_v2.webp',
-              width: 42,
-              height: 42,
-              fallback: Icon(Icons.check_circle_outline, size: 28),
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 2),
+            content: Row(
+              children: [
+                const Yo2GiftPanelArt(
+                  'anim_send_gift_v2.webp',
+                  width: 42,
+                  height: 42,
+                  fallback: Icon(Icons.check_circle_outline, size: 28),
+                ),
+                const SizedBox(width: 8),
+                Expanded(child: Text('${g.name} × $requestQuantity sent')),
+              ],
             ),
-            const SizedBox(width: 8),
-            Expanded(child: Text('${g.name} × $requestQuantity sent')),
-          ]),
-        ));
+          ),
+        );
       }
       if (mounted) Navigator.pop(context);
     } catch (error) {
@@ -190,284 +195,390 @@ class _State extends ConsumerState<GiftSheet> {
         ? null
         : ref.watch(roomSeatProfilesProvider(widget.roomId!)).valueOrNull;
     final me = ref.watch(currentUserIdProvider);
-    final phoenix = me != null &&
+    final phoenix =
+        me != null &&
         ref.watch(phoenixEntitlementProvider(me)).asData?.value?.isPhoenix ==
             true;
     return PhoenixDecoration(
-        userId: me,
-        child: SafeArea(
-            child: SizedBox(
-                height: MediaQuery.sizeOf(context).height * .75,
-                child: Column(children: [
-                  if (phoenix)
-                    const Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              PhoenixMark(),
-                              SizedBox(width: 8),
-                              Text('Phoenix VIP gift tray',
-                                  style: TextStyle(
-                                      color: phoenixGold,
-                                      fontWeight: FontWeight.w700))
-                            ])),
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Row(children: [
-                            const Yo2GiftPanelArt(
-                              'ic_gift_banner.webp', width: 28, height: 28,
-                              fallback: Icon(Icons.card_giftcard, size: 24),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(child: Text(
-                              'Virtual Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${wallet.valueOrNull!.coins} coins'}',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w700, fontSize: 16))),
-                          ]))),
-                  // Room members can gift themselves even when not seated on
-                  // a microphone. The seat roster must not hide "Myself".
-                  if (widget.roomId != null &&
-                      me != null &&
-                      recipients?.values.any((p) => p.id == me) != true)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: ChoiceChip(
-                          label: const Text('Myself'),
-                          selected: receiverId == me,
-                          onSelected: busy || confirming || key != null
-                              ? null
-                              : (_) => setState(() => recipient = me),
+      userId: me,
+      child: SafeArea(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(context).height * .75,
+          child: Column(
+            children: [
+              if (phoenix)
+                const Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      PhoenixMark(),
+                      SizedBox(width: 8),
+                      Text(
+                        'Phoenix VIP gift tray',
+                        style: TextStyle(
+                          color: phoenixGold,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
+                    ],
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    children: [
+                      const Yo2GiftPanelArt(
+                        'ic_gift_banner.webp',
+                        width: 28,
+                        height: 28,
+                        fallback: Icon(Icons.card_giftcard, size: 24),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Virtual Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${wallet.valueOrNull!.coins} coins'}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Room members can gift themselves even when not seated on
+              // a microphone. The seat roster must not hide "Myself".
+              if (widget.roomId != null &&
+                  me != null &&
+                  recipients?.values.any((p) => p.id == me) != true)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ChoiceChip(
+                      label: const Text('Myself'),
+                      selected: receiverId == me,
+                      onSelected: busy || confirming || key != null
+                          ? null
+                          : (_) => setState(() => recipient = me),
                     ),
-                  if (recipients != null && recipients.isNotEmpty)
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: SizedBox(
-                            height:
-                                48 * MediaQuery.textScalerOf(context).scale(1),
-                            child: ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: [
-                                  for (final p in recipients.values)
-                                    ChoiceChip(
-                                        label: Text(p.id == me
-                                            ? 'Myself'
-                                            : p.displayName ??
-                                                p.username ??
-                                                'Nimzo user'),
-                                        selected: receiverId == p.id,
-                                        onSelected:
-                                            busy || confirming || key != null
-                                                ? null
-                                                : (_) => setState(
-                                                    () => recipient = p.id)),
-                                ]))),
-                  Expanded(
-                      child: AsyncContent(
-                          value: ref.watch(giftCatalogProvider),
-                          onRetry: () => ref.invalidate(giftCatalogProvider),
-                          builder: (gifts) => gifts.isEmpty
-                              ? const EmptyContent('No gifts available')
-                              : CustomScrollView(slivers: [
-                                  const SliverToBoxAdapter(
-                                      child: Padding(
-                                    padding:
-                                        EdgeInsets.fromLTRB(16, 16, 16, 12),
-                                    child: Text('GIFT COLLECTION',
-                                        style: TextStyle(
-                                            letterSpacing: 2,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w800,
-                                            color: Color(0xffd6ad61))),
-                                  )),
-                                  SliverToBoxAdapter(
-                                    child: SizedBox(
-                                      height: 46,
-                                      child: ListView(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                                        scrollDirection: Axis.horizontal,
-                                        children: [
-                                          for (final category in nimzoGiftCategories(
-                                              gifts.map((gift) => gift.category)))
-                                            Padding(
-                                              padding: const EdgeInsets.only(right: 8),
-                                              child: ChoiceChip(
-                                                label: Text(category),
-                                                selected: activeGiftCategory == category,
-                                                onSelected: busy || confirming || key != null
-                                                    ? null
-                                                    : (_) => setState(() {
-                                                        activeGiftCategory = category;
-                                                        if (selected != null &&
-                                                            !giftMatchesCategory(
-                                                              selected!.category, category)) {
-                                                          selected = null;
-                                                        }
-                                                      }),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  SliverPadding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                    sliver: SliverGrid(
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 3,
-                                              crossAxisSpacing: 10,
-                                              mainAxisSpacing: 10,
-                                              childAspectRatio: .82 /
-                                                  MediaQuery.textScalerOf(
-                                                          context)
-                                                      .scale(1)),
-                                      delegate: SliverChildBuilderDelegate(
-                                          (context, index) {
-                                        final gift = gifts.where((g) =>
-                                            giftMatchesCategory(g.category, activeGiftCategory))
-                                            .elementAt(index);
-                                        return _giftCard(gift,
-                                            legendary: gift.price == 35000000 ||
-                                                gift.price == 50000000);
-                                      }, childCount: gifts.where((g) =>
-                                          giftMatchesCategory(g.category, activeGiftCategory))
-                                          .length),
-                                    ),
-                                  ),
-                                  const SliverToBoxAdapter(
-                                      child: Padding(
-                                    padding: EdgeInsets.all(16),
-                                    child: Text(
-                                        'Original Yo2 gift controls are used when installed; video effects require approved media.',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: NimzoStyle.muted,
-                                            fontSize: 12)),
-                                  )),
-                                ]))),
-                  Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(children: [
-                        const Text('Quantity'),
-                        const SizedBox(width: 12),
-                        DropdownButton<int>(
-                            value: quantity,
-                            items: [
-                              for (final q in [1, 10, 50, 99, 100, 999])
-                                DropdownMenuItem(value: q, child: Text('$q'))
-                            ],
-                            onChanged: busy || confirming || key != null
+                  ),
+                ),
+              if (recipients != null && recipients.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    height: 48 * MediaQuery.textScalerOf(context).scale(1),
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        for (final p in recipients.values)
+                          ChoiceChip(
+                            label: Text(
+                              p.id == me
+                                  ? 'Myself'
+                                  : p.displayName ?? p.username ?? 'Nimzo user',
+                            ),
+                            selected: receiverId == p.id,
+                            onSelected: busy || confirming || key != null
                                 ? null
-                                : (q) => setState(() => quantity = q!)),
-                        const Spacer(),
-                        GradientButton(
-                            onPressed: busy || confirming || selected == null
-                                ? null
-                                : send,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Yo2GiftPanelArt(
-                                  'ic_gift_pannel_send_up.webp',
-                                  width: 18, height: 18,
-                                  fallback: Icon(Icons.send, size: 16),
+                                : (_) => setState(() => recipient = p.id),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              Expanded(
+                child: AsyncContent(
+                  value: ref.watch(giftCatalogProvider),
+                  onRetry: () => ref.invalidate(giftCatalogProvider),
+                  builder: (gifts) => gifts.isEmpty
+                      ? const EmptyContent('No gifts available')
+                      : CustomScrollView(
+                          slivers: [
+                            const SliverToBoxAdapter(
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+                                child: Text(
+                                  'GIFT COLLECTION',
+                                  style: TextStyle(
+                                    letterSpacing: 2,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xffd6ad61),
+                                  ),
                                 ),
-                                const SizedBox(width: 6),
-                                Text(busy
-                                    ? 'Sending…'
-                                    : key == null ? 'Send' : 'Retry'),
-                              ],
-                            )),
-                      ])),
-                ]))));
+                              ),
+                            ),
+                            SliverToBoxAdapter(
+                              child: SizedBox(
+                                height: 46,
+                                child: ListView(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    for (final category in nimzoGiftCategories(
+                                      gifts.map((gift) => gift.category),
+                                    ))
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 8,
+                                        ),
+                                        child: ChoiceChip(
+                                          label: Text(category),
+                                          selected:
+                                              activeGiftCategory == category,
+                                          onSelected:
+                                              busy || confirming || key != null
+                                              ? null
+                                              : (_) => setState(() {
+                                                  activeGiftCategory = category;
+                                                  if (selected != null &&
+                                                      !giftMatchesCategory(
+                                                        selected!.category,
+                                                        category,
+                                                      )) {
+                                                    selected = null;
+                                                  }
+                                                }),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SliverPadding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              sliver: SliverGrid(
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                      childAspectRatio:
+                                          .82 /
+                                          MediaQuery.textScalerOf(context)
+                                              .scale(1),
+                                    ),
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) {
+                                    final gift = gifts
+                                        .where(
+                                          (g) => giftMatchesCategory(
+                                            g.category,
+                                            activeGiftCategory,
+                                          ),
+                                        )
+                                        .elementAt(index);
+                                    return _giftCard(
+                                      gift,
+                                      legendary:
+                                          gift.price == 35000000 ||
+                                          gift.price == 50000000,
+                                    );
+                                  },
+                                  childCount: gifts
+                                      .where(
+                                        (g) => giftMatchesCategory(
+                                          g.category,
+                                          activeGiftCategory,
+                                        ),
+                                      )
+                                      .length,
+                                ),
+                              ),
+                            ),
+                            const SliverToBoxAdapter(
+                              child: Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Text(
+                                  'Original Yo2 gift controls are used when installed; video effects require approved media.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: NimzoStyle.muted,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    const Text('Quantity'),
+                    const SizedBox(width: 12),
+                    DropdownButton<int>(
+                      value: quantity,
+                      items: [
+                        for (final q in [1, 10, 50, 99, 100, 999])
+                          DropdownMenuItem(value: q, child: Text('$q')),
+                      ],
+                      onChanged: busy || confirming || key != null
+                          ? null
+                          : (q) => setState(() => quantity = q!),
+                    ),
+                    const Spacer(),
+                    GradientButton(
+                      onPressed: busy || confirming || selected == null
+                          ? null
+                          : send,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Yo2GiftPanelArt(
+                            'ic_gift_pannel_send_up.webp',
+                            width: 18,
+                            height: 18,
+                            fallback: Icon(Icons.send, size: 16),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            busy
+                                ? 'Sending…'
+                                : key == null
+                                ? 'Send'
+                                : 'Retry',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _giftCard(Gift gift, {bool legendary = false}) => InkWell(
-      onTap: busy || confirming
-          ? null
-          : () {
-              if (key != null && selected != gift) return;
-              setState(() => selected = gift);
-            },
-      child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-          decoration: BoxDecoration(
-              color: const Color(0xff111923),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                  color: selected == gift || legendary
-                      ? const Color(0xfffbbf24)
-                      : Colors.transparent,
-                  width: 2)),
-          child: legendary
-              ? Row(children: [
-                  Expanded(
-                      child: SizedBox(
-                          height: 76,
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: GiftArtwork(
-                                  name: gift.name,
-                                  assetPath: gift.assetPath)))),
-                  const SizedBox(width: 10),
-                  Expanded(
-                      child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Text('${gift.name} · National Legendary',
+    onTap: busy || confirming
+        ? null
+        : () {
+            if (key != null && selected != gift) return;
+            setState(() => selected = gift);
+          },
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xff111923),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: selected == gift || legendary
+              ? const Color(0xfffbbf24)
+              : Colors.transparent,
+          width: 2,
+        ),
+      ),
+      child: legendary
+          ? Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 76,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: GiftArtwork(
+                        name: gift.name,
+                        assetPath: gift.assetPath,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${gift.name} · National Legendary',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700)),
-                    Text(compactNumber(gift.price),
-                        style: const TextStyle(
-                            color: Color(0xfffde68a), fontSize: 12))
-                  ]))
-                ])
-              : Column(children: [
-                  Expanded(
-                      child: SizedBox(
-                          width: double.infinity,
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  GiftArtwork(
-                                    name: gift.name,
-                                    assetPath: gift.assetPath,
-                                  ),
-                                  if (selected == gift &&
-                                      gift.category.toLowerCase() != 'dragon')
-                                    const Positioned(
-                                      right: 2,
-                                      top: 2,
-                                      child: Yo2GiftPanelArt(
-                                        'ic_gift_pannal_sel.webp',
-                                        width: 22, height: 22,
-                                        fallback: Icon(Icons.check_circle,
-                                            color: Color(0xfffbbf24), size: 20),
-                                      ),
-                                    ),
-                                ],
-                              )))),
-                  const SizedBox(height: 2),
-                  Text(gift.name,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 12,
                           color: Colors.white,
-                          fontWeight: FontWeight.w600)),
-                  Text(compactNumber(gift.price),
-                      style: const TextStyle(
-                          fontSize: 12, color: Color(0xfffde68a)))
-                ])));
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        compactNumber(gift.price),
+                        style: const TextStyle(
+                          color: Color(0xfffde68a),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          GiftArtwork(
+                            name: gift.name,
+                            assetPath: gift.assetPath,
+                          ),
+                          if (selected == gift &&
+                              gift.category.toLowerCase() != 'dragon')
+                            const Positioned(
+                              right: 2,
+                              top: 2,
+                              child: Yo2GiftPanelArt(
+                                'ic_gift_pannal_sel.webp',
+                                width: 22,
+                                height: 22,
+                                fallback: Icon(
+                                  Icons.check_circle,
+                                  color: Color(0xfffbbf24),
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  gift.name,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  compactNumber(gift.price),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xfffde68a),
+                  ),
+                ),
+              ],
+            ),
+    ),
+  );
 }

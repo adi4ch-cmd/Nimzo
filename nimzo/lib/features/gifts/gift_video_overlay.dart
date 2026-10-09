@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -56,10 +57,14 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
     }
     if (!mounted || _finished) return;
     final controller = source.startsWith('assets/')
-        ? VideoPlayerController.asset(source,
-            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
-        : VideoPlayerController.networkUrl(uri!,
-            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
+        ? VideoPlayerController.asset(
+            source,
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+          )
+        : VideoPlayerController.networkUrl(
+            uri!,
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+          );
     _controller = controller;
     controller.addListener(_onPlaybackChanged);
     try {
@@ -152,24 +157,24 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
               IgnorePointer(
                 child: Center(
                   child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.sizeOf(context).width * 0.94,
-                    maxHeight: MediaQuery.sizeOf(context).height * 0.65,
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.sizeOf(context).width * 0.94,
+                      maxHeight: MediaQuery.sizeOf(context).height * 0.65,
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: controller.value.aspectRatio,
+                      child: VideoPlayer(controller),
+                    ),
                   ),
-                  child: AspectRatio(
-                    aspectRatio: controller.value.aspectRatio,
-                    child: VideoPlayer(controller),
-                  ),
-                ),
                 ),
               )
             else
               IgnorePointer(
                 child: Center(
                   child: Text(
-                  _error ?? 'Loading gift animation…',
-                  style: const TextStyle(color: Colors.white),
-                ),
+                    _error ?? 'Loading gift animation…',
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             Positioned(
@@ -191,8 +196,10 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
                         setState(() => _muted = !_muted);
                         unawaited(_updateSound());
                       },
-                icon: Icon(_muted ? Icons.volume_off : Icons.volume_up,
-                    color: Colors.white),
+                icon: Icon(
+                  _muted ? Icons.volume_off : Icons.volume_up,
+                  color: Colors.white,
+                ),
                 tooltip: _muted ? 'Enable gift sound' : 'Mute gift sound',
               ),
             ),
@@ -202,23 +209,23 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
               right: 16,
               child: IgnorePointer(
                 child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.56),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: const Color(0xFFDDB65E)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    '${widget.sender} sent ${widget.giftName} to ${widget.recipient}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.56),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: const Color(0xFFDDB65E)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      '${widget.sender} sent ${widget.giftName} to ${widget.recipient}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                ),
                 ),
               ),
             ),

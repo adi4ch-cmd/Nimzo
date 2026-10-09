@@ -56,8 +56,9 @@ class VivoxVoiceService implements VoiceService {
       _speakingUsers.clear();
       _speaking.add(const <String>{});
       if (_connection?.isCompleted == false) {
-        _connection!
-            .completeError(_nativeFailure = _nativeError(status, detail));
+        _connection!.completeError(
+          _nativeFailure = _nativeError(status, detail),
+        );
       } else {
         _nativeFailure = _nativeError(status, detail);
       }
@@ -78,8 +79,11 @@ class VivoxVoiceService implements VoiceService {
       _speakingUsers.clear();
       _speaking.add(const <String>{});
       if (_connection?.isCompleted == false) {
-        _connection!.completeError(VoiceConnectionFailure(
-            'Voice audio disconnected during connection. Retry voice.'));
+        _connection!.completeError(
+          VoiceConnectionFailure(
+            'Voice audio disconnected during connection. Retry voice.',
+          ),
+        );
       }
     }
     return null;
@@ -94,11 +98,12 @@ class VivoxVoiceService implements VoiceService {
       'channel-join',
       'microphone',
       'speaker',
-      'leave'
+      'leave',
     };
     final stage = stages.contains(detail) ? detail : 'native';
     return VoiceConnectionFailure(
-        'Voice $stage failed (code $code). Retry voice.');
+      'Voice $stage failed (code $code). Retry voice.',
+    );
   }
 
   Future<T?> _invokeNative<T>(String method, [Object? arguments]) async {
@@ -123,7 +128,8 @@ class VivoxVoiceService implements VoiceService {
       final code = codes.contains(error.code) ? error.code : 'PLATFORM';
       final diagnostic = types.contains(type) ? '$code, $type' : code;
       throw VoiceConnectionFailure(
-          'Voice $method failed ($diagnostic). Retry voice.');
+        'Voice $method failed ($diagnostic). Retry voice.',
+      );
     }
   }
 
@@ -159,7 +165,8 @@ class VivoxVoiceService implements VoiceService {
     // Vivox requires capture access before joining even when initially muted.
     if (await _invokeNative<bool>('requestMicPermission') != true) {
       throw VoiceConnectionFailure(
-          'Microphone permission is required for room audio.');
+        'Microphone permission is required for room audio.',
+      );
     }
     final Map<String, dynamic> data;
     try {
@@ -167,10 +174,11 @@ class VivoxVoiceService implements VoiceService {
     } on FunctionException catch (error) {
       final detail = error.details;
       final message = detail is Map ? detail['error'] : null;
-      throw VoiceConnectionFailure(message ==
-              'Vivox voice service is not configured'
-          ? 'Voice server is not configured (HTTP 503). Contact support.'
-          : 'Voice token request failed (HTTP ${error.status}). Retry voice.');
+      throw VoiceConnectionFailure(
+        message == 'Vivox voice service is not configured'
+            ? 'Voice server is not configured (HTTP 503). Contact support.'
+            : 'Voice token request failed (HTTP ${error.status}). Retry voice.',
+      );
     }
     if (generation != _sessionGeneration || _disposed)
       throw StateError('Voice join cancelled.');
@@ -179,20 +187,21 @@ class VivoxVoiceService implements VoiceService {
       'channelToken',
       'server',
       'channelUri',
-      'accountUri'
+      'accountUri',
     ]) {
       if (data[key] is! String || (data[key] as String).isEmpty) {
         throw StateError('Vivox voice-token response is incomplete.');
       }
     }
     // SDK account name must match the server-signed login token's SIP identity.
-    final identity =
-        RegExp(r'^sip:(\.[A-Za-z0-9=+_.!~()\-]+\.)@[A-Za-z0-9.-]+$')
-            .firstMatch(data['accountUri'] as String);
+    final identity = RegExp(
+      r'^sip:(\.[A-Za-z0-9=+_.!~()\-]+\.)@[A-Za-z0-9.-]+$',
+    ).firstMatch(data['accountUri'] as String);
     final accountName = identity?.group(1);
     if (accountName == null || accountName.length > 127) {
       throw VoiceConnectionFailure(
-          'Voice account configuration is invalid. Contact support.');
+        'Voice account configuration is invalid. Contact support.',
+      );
     }
     if (!_initialized) {
       _nativeFailure = null;
@@ -204,7 +213,9 @@ class VivoxVoiceService implements VoiceService {
       } catch (_) {
         try {
           await _invokeNative<int>('shutdown');
-        } catch (_) {/* Preserve the initialization diagnostic. */}
+        } catch (_) {
+          /* Preserve the initialization diagnostic. */
+        }
         rethrow;
       }
       if (ok != true) {
@@ -234,23 +245,30 @@ class VivoxVoiceService implements VoiceService {
       if (result != 0)
         throw _nativeFailure ??
             VoiceConnectionFailure(
-                'Voice native join failed (code $result). Retry voice.');
-      await connected.timeout(connectionTimeout,
-          onTimeout: () => throw VoiceConnectionFailure(
-              'Voice audio connection timed out. Retry voice.'));
+              'Voice native join failed (code $result). Retry voice.',
+            );
+      await connected.timeout(
+        connectionTimeout,
+        onTimeout: () => throw VoiceConnectionFailure(
+          'Voice audio connection timed out. Retry voice.',
+        ),
+      );
       final muted = await _invokeNative<int>('setMic', {'enabled': false});
       if (muted != 0)
         throw StateError('Vivox initial mute failed (code $muted).');
       if (!_connected || generation != _sessionGeneration || _disposed) {
         throw VoiceConnectionFailure(
-            'Voice audio disconnected during connection. Retry voice.');
+          'Voice audio disconnected during connection. Retry voice.',
+        );
       }
       _roomId = roomId;
       _canTransmit = data['canTransmit'] == true;
     } catch (_) {
       try {
         await _leave();
-      } catch (_) {/* Preserve the original connection failure. */}
+      } catch (_) {
+        /* Preserve the original connection failure. */
+      }
       rethrow;
     } finally {
       _connection = null;
@@ -290,48 +308,42 @@ class VivoxVoiceService implements VoiceService {
 
   @override
   Future<void> setMicEnabled(bool enabled) => _serialize(() async {
-        if (_disposed || !_connected)
-          throw StateError('Voice audio is not connected.');
-        if (enabled &&
-            await _invokeNative<bool>('requestMicPermission') != true) {
-          throw StateError('Microphone permission is required to speak.');
-        }
-        if (!_connected || _disposed)
-          throw StateError('Voice audio is not connected.');
-        if (enabled) {
-          final roomId = _roomId;
-          if (roomId == null) throw StateError('Voice room is not joined.');
-          final credentials = await _tokenIssuer(roomId);
-          if (!_connected || _disposed)
-            throw StateError('Voice audio is not connected.');
-          if (credentials['canTransmit'] != true) {
-            await _leave();
-            throw StateError(
-                'Your seat is not authorized to transmit room audio.');
-          }
-          // A listener's join_muted token cannot be unmuted locally. Upgrade by
-          // joining with a new server-authorized token after the seat was granted.
-          if (!_canTransmit) await _join(roomId, credentials: credentials);
-          if (!_connected || _disposed)
-            throw StateError('Voice audio is not connected.');
-        }
-        final result = await _invokeNative<int>('setMic', {
-          'enabled': enabled,
-        });
-        if (result != 0)
-          throw StateError('Vivox microphone request failed (code $result).');
-      });
+    if (_disposed || !_connected)
+      throw StateError('Voice audio is not connected.');
+    if (enabled && await _invokeNative<bool>('requestMicPermission') != true) {
+      throw StateError('Microphone permission is required to speak.');
+    }
+    if (!_connected || _disposed)
+      throw StateError('Voice audio is not connected.');
+    if (enabled) {
+      final roomId = _roomId;
+      if (roomId == null) throw StateError('Voice room is not joined.');
+      final credentials = await _tokenIssuer(roomId);
+      if (!_connected || _disposed)
+        throw StateError('Voice audio is not connected.');
+      if (credentials['canTransmit'] != true) {
+        await _leave();
+        throw StateError('Your seat is not authorized to transmit room audio.');
+      }
+      // A listener's join_muted token cannot be unmuted locally. Upgrade by
+      // joining with a new server-authorized token after the seat was granted.
+      if (!_canTransmit) await _join(roomId, credentials: credentials);
+      if (!_connected || _disposed)
+        throw StateError('Voice audio is not connected.');
+    }
+    final result = await _invokeNative<int>('setMic', {'enabled': enabled});
+    if (result != 0)
+      throw StateError('Vivox microphone request failed (code $result).');
+  });
 
   @override
   Future<void> setSpeakerEnabled(bool enabled) => _serialize(() async {
-        if (_disposed || !_connected)
-          throw StateError('Voice audio is not connected.');
-        final result = await _invokeNative<int>('setSpeaker', {
-          'enabled': enabled,
-        });
-        if (result != 0)
-          throw StateError('Vivox speaker request failed (code $result).');
-      });
+    if (_disposed || !_connected)
+      throw StateError('Voice audio is not connected.');
+    final result = await _invokeNative<int>('setSpeaker', {'enabled': enabled});
+    if (result != 0)
+      throw StateError('Vivox speaker request failed (code $result).');
+  });
 
   @override
   Future<void> dispose() async {

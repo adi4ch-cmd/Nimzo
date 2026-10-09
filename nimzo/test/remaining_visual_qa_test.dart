@@ -1,5 +1,7 @@
 import 'package:nimzo/features/vip/phoenix_room_entry.dart';
+
 import 'dart:io';
+
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,37 +56,41 @@ import 'package:nimzo/features/notifications/notification_repository.dart';
 
 // Representative data exists only in this test. No production service is called.
 final fixtureRoom = Room(
-    id: 'room',
-    roomNo: 83200,
-    name: 'FAISALABAD CAFE',
-    ownerId: 'me',
-    theme: 'nimzo_white',
-    country: 'Pakistan',
-    isPrivate: false,
-    status: 'open',
-    lifetimeGiftCoins: 739220000,
-    createdAt: DateTime(2026));
+  id: 'room',
+  roomNo: 83200,
+  name: 'FAISALABAD CAFE',
+  ownerId: 'me',
+  theme: 'nimzo_white',
+  country: 'Pakistan',
+  isPrivate: false,
+  status: 'open',
+  lifetimeGiftCoins: 739220000,
+  createdAt: DateTime(2026),
+);
 const fixtureMe = Profile(
-    id: 'me',
-    nimzoId: 11699311,
-    displayName: 'Your Name',
-    countryName: 'Pakistan',
-    wealthLevel: 18,
-    charmLevel: 11,
-    activeLevel: 26);
+  id: 'me',
+  nimzoId: 11699311,
+  displayName: 'Your Name',
+  countryName: 'Pakistan',
+  wealthLevel: 18,
+  charmLevel: 11,
+  activeLevel: 26,
+);
 const fixtureOther = Profile(
-    id: 'other',
-    nimzoId: 66321,
-    displayName: 'Ayesha',
-    countryName: 'Pakistan');
+  id: 'other',
+  nimzoId: 66321,
+  displayName: 'Ayesha',
+  countryName: 'Pakistan',
+);
 final fixtureMoment = Moment(
-    id: 'post',
-    authorId: 'other',
-    text: 'Aaj room mein maza aa gaya!',
-    likes: 12,
-    comments: 1,
-    liked: false,
-    createdAt: DateTime(2026));
+  id: 'post',
+  authorId: 'other',
+  text: 'Aaj room mein maza aa gaya!',
+  likes: 12,
+  comments: 1,
+  liked: false,
+  createdAt: DateTime(2026),
+);
 
 class FixtureRoomRepository extends RoomRepository {
   FixtureRoomRepository(super.db);
@@ -121,39 +127,44 @@ void main() {
     buildNumber: '106',
     buildSignature: '',
   );
-  testWidgets('remaining reference surfaces have reviewed phone screenshots',
-      (tester) async {
+  testWidgets('remaining reference surfaces have reviewed phone screenshots', (
+    tester,
+  ) async {
     for (final font in [
       ('Roboto', 'test/fonts/Roboto-Regular.ttf'),
       ('Cinzel', 'assets/reference/fonts/Cinzel.ttf'),
-      ('Poppins', 'assets/reference/fonts/Poppins-Regular.ttf')
+      ('Poppins', 'assets/reference/fonts/Poppins-Regular.ttf'),
     ]) {
-      await (FontLoader(font.$1)
-            ..addFont(Future.value(
-                ByteData.sublistView(File(font.$2).readAsBytesSync()))))
+      await (FontLoader(font.$1)..addFont(
+            Future.value(ByteData.sublistView(File(font.$2).readAsBytesSync())),
+          ))
           .load();
     }
-    await (FontLoader('MaterialIcons')
-          ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf')))
-        .load();
-    await (FontLoader('packages/lucide_flutter/LucideIcons')
-          ..addFont(
-              rootBundle.load('packages/lucide_flutter/assets/lucide.ttf')))
+    await (FontLoader(
+      'MaterialIcons',
+    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
+    await (FontLoader('packages/lucide_flutter/LucideIcons')..addFont(
+          rootBundle.load('packages/lucide_flutter/assets/lucide.ttf'),
+        ))
         .load();
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final db = (await tester.runAsync(() async => SupabaseClient(
-        'https://example.supabase.co', 'test-key',
-        authOptions: const AuthClientOptions(autoRefreshToken: false))))!;
+    final db = (await tester.runAsync(
+      () async => SupabaseClient(
+        'https://example.supabase.co',
+        'test-key',
+        authOptions: const AuthClientOptions(autoRefreshToken: false),
+      ),
+    ))!;
     addTearDown(() => tester.runAsync(db.dispose));
     final roots = <String, Widget>{
       'home': const HomeScreen(),
       'catalog': const GamesCatalogScreen(),
       'moments': const MomentsScreen(),
       'messages': const MessagesScreen(),
-      'me': const MeScreen()
+      'me': const MeScreen(),
     };
     final previews = <String, Widget>{
       ...roots,
@@ -168,12 +179,15 @@ void main() {
       'public_profile': const ProfileScreen(userId: 'other'),
       'room': const RoomScreen(roomId: 'room'),
       'room_profile': RoomProfilePage(room: fixtureRoom),
-      'gifts':
-          const Scaffold(body: GiftSheet(receiverId: 'other', roomId: 'room')),
+      'gifts': const Scaffold(
+        body: GiftSheet(receiverId: 'other', roomId: 'room'),
+      ),
       'comments': const Scaffold(
-          body: Padding(
-              padding: EdgeInsets.all(16),
-              child: MomentDetailScreen(id: 'post', sheet: true))),
+        body: Padding(
+          padding: EdgeInsets.all(16),
+          child: MomentDetailScreen(id: 'post', sheet: true),
+        ),
+      ),
       'conversation': const ConversationScreen(otherId: 'other'),
       'levels': const LevelsScreen(),
       'wallet': const WalletScreen(),
@@ -190,7 +204,7 @@ void main() {
         'Account',
         'Privacy',
         'Language',
-        'Help and feedback'
+        'Help and feedback',
       ])
         title.toLowerCase().replaceAll(' ', '_'): InfoScreen(title: title),
       for (final game in NimzoRoomGames.approved)
@@ -201,48 +215,63 @@ void main() {
       GoRouter? router;
       Widget app;
       if (roots.containsKey(entry.key)) {
-        router = GoRouter(initialLocation: '/${entry.key}', routes: [
-          StatefulShellRoute.indexedStack(
+        router = GoRouter(
+          initialLocation: '/${entry.key}',
+          routes: [
+            StatefulShellRoute.indexedStack(
               builder: (_, __, shell) => MainShell(shell: shell),
               branches: [
                 for (final root in roots.entries)
-                  StatefulShellBranch(routes: [
-                    GoRoute(
-                        path: '/${root.key}', builder: (_, __) => root.value)
-                  ])
-              ])
-        ]);
+                  StatefulShellBranch(
+                    routes: [
+                      GoRoute(
+                        path: '/${root.key}',
+                        builder: (_, __) => root.value,
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ],
+        );
         app = MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light(),
-            routerConfig: router);
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light(),
+          routerConfig: router,
+        );
       } else {
         app = MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light(),
-            initialRoute: entry.key == 'auth' ? '/' : '/preview',
-            routes: {
-              '/': (_) => entry.key == 'auth' ? entry.value : const SizedBox(),
-              '/preview': (_) => entry.value
-            });
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light(),
+          initialRoute: entry.key == 'auth' ? '/' : '/preview',
+          routes: {
+            '/': (_) => entry.key == 'auth' ? entry.value : const SizedBox(),
+            '/preview': (_) => entry.value,
+          },
+        );
       }
-      await tester.pumpWidget(ProviderScope(
+      await tester.pumpWidget(
+        ProviderScope(
           key: ValueKey(entry.key),
           overrides: [
-            phoenixEntriesProvider
-                .overrideWith((ref, room) => const Stream.empty()),
-            verifiedGiftAnimationProvider
-                .overrideWith((ref, args) => const Stream.empty()),
+            phoenixEntriesProvider.overrideWith(
+              (ref, room) => const Stream.empty(),
+            ),
+            verifiedGiftAnimationProvider.overrideWith(
+              (ref, args) => const Stream.empty(),
+            ),
             roomDiamondEventsProvider('room')
                 .overrideWith((_) => const Stream.empty()),
-            roomDiamondStatusProvider('room').overrideWith((_) async =>
-                RoomDiamondStatus(
-                    totalCoins: 15000000,
-                    completedStages: 2,
-                    progress: .5,
-                    cycleStart: DateTime.utc(2026, 10, 9, 20),
-                    serverNow: DateTime.utc(2026, 10, 9, 21),
-                    resetAt: DateTime.utc(2026, 10, 10, 20))),
+            roomDiamondStatusProvider('room').overrideWith(
+              (_) async => RoomDiamondStatus(
+                totalCoins: 15000000,
+                completedStages: 2,
+                progress: .5,
+                cycleStart: DateTime.utc(2026, 10, 9, 20),
+                serverNow: DateTime.utc(2026, 10, 9, 21),
+                resetAt: DateTime.utc(2026, 10, 10, 20),
+              ),
+            ),
             supabaseProvider.overrideWithValue(db),
             currentUserIdProvider.overrideWithValue('me'),
             authControllerProvider.overrideWith(AuthController.new),
@@ -251,160 +280,205 @@ void main() {
             popularRoomsProvider(null).overrideWith((_) async => [fixtureRoom]),
             roomRepositoryProvider.overrideWithValue(FixtureRoomRepository(db)),
             roomProvider('room').overrideWith((_) async => fixtureRoom),
-            roomSettingsProvider('room').overrideWith((_) async =>
-                const RoomSettings(
-                    name: 'FAISALABAD CAFE',
-                    theme: 'nimzo_white',
-                    isPrivate: false)),
-            seatsProvider('room')
-                .overrideWith((_) => Stream.value(List.generate(
-                    10,
-                    (i) => MicSeat(
-                        seatNo: i + 1,
-                        userId: i == 0
-                            ? 'me'
-                            : i == 2
-                                ? 'other'
-                                : null)))),
+            roomSettingsProvider('room').overrideWith(
+              (_) async => const RoomSettings(
+                name: 'FAISALABAD CAFE',
+                theme: 'nimzo_white',
+                isPrivate: false,
+              ),
+            ),
+            seatsProvider('room').overrideWith(
+              (_) => Stream.value(
+                List.generate(
+                  10,
+                  (i) => MicSeat(
+                    seatNo: i + 1,
+                    userId: i == 0
+                        ? 'me'
+                        : i == 2
+                        ? 'other'
+                        : null,
+                  ),
+                ),
+              ),
+            ),
             roomSeatProfilesProvider('room').overrideWith(
-                (_) async => {'me': fixtureMe, 'other': fixtureOther}),
+              (_) async => {'me': fixtureMe, 'other': fixtureOther},
+            ),
             onlineCountProvider('room').overrideWith((_) => Stream.value(128)),
-            roomChatProvider('room').overrideWith((_) => Stream.value([
-                  RoomMessage('m', 'me', 'Welcome',
-                      DateTime.now().add(const Duration(minutes: 1)))
-                ])),
+            roomChatProvider('room').overrideWith(
+              (_) => Stream.value([
+                RoomMessage(
+                  'm',
+                  'me',
+                  'Welcome',
+                  DateTime.now().add(const Duration(minutes: 1)),
+                ),
+              ]),
+            ),
             profileProvider('me').overrideWith((_) async => fixtureMe),
             profileProvider('other').overrideWith((_) async => fixtureOther),
             for (final id in ['me', 'other']) ...[
-              profileStatsProvider(id).overrideWith((_) async =>
-                  {'following': 16, 'followers': 163, 'visitors': 260}),
-              profileTagsProvider(id).overrideWith((_) async =>
-                  ['Friendly', 'Voice Chat', 'Game Lover', 'Music']),
+              profileStatsProvider(id).overrideWith(
+                (_) async => {
+                  'following': 16,
+                  'followers': 163,
+                  'visitors': 260,
+                },
+              ),
+              profileTagsProvider(id).overrideWith(
+                (_) async => ['Friendly', 'Voice Chat', 'Game Lover', 'Music'],
+              ),
               profileCoupleProvider(id).overrideWith((_) async => null),
               profileModelsProvider(id).overrideWith((_) async => []),
-              profileGiftsProvider(id).overrideWith((_) async => [
-                    {'name': 'Rose', 'quantity': 9}
-                  ]),
+              profileGiftsProvider(id).overrideWith(
+                (_) async => [
+                  {'name': 'Rose', 'quantity': 9},
+                ],
+              ),
               for (final kind in ProfileCollection.values)
-                profileCollectionProvider((id, kind))
-                    .overrideWith((_) async => [
-                          for (var i = 0;
-                              i < (kind == ProfileCollection.medal ? 5 : 2);
-                              i++)
-                            {
-                              'name': 'Owned ${kind.name} ${i + 1}',
-                              'image_path':
-                                  'assets/reference/${kind == ProfileCollection.medal ? 'med' : kind.name}/$i.jpg'
-                            }
-                        ]),
+                profileCollectionProvider((id, kind)).overrideWith(
+                  (_) async => [
+                    for (
+                      var i = 0;
+                      i < (kind == ProfileCollection.medal ? 5 : 2);
+                      i++
+                    )
+                      {
+                        'name': 'Owned ${kind.name} ${i + 1}',
+                        'image_path':
+                            'assets/reference/${kind == ProfileCollection.medal ? 'med' : kind.name}/$i.jpg',
+                      },
+                  ],
+                ),
             ],
-            walletProvider
-                .overrideWith((_) async => (coins: 14402, diamonds: 0)),
-            giftCatalogProvider.overrideWith((_) async => [
-                  for (var i = 0; i < 13; i++)
-                    Gift(
-                        '$i',
-                        [
-                          'Spark',
-                          'Eternal Rose',
-                          'Love Heart',
-                          'Wonder Box',
-                          'Star Rocket',
-                          'Golden King',
-                          'Royal Couple',
-                          'Royal Diamond',
-                          'Legend Dragon',
-                          'Emperor Crown',
-                          'Galaxy Empire',
-                          'Dream Kingdom',
-                          'World Crown'
-                        ][i],
-                        'gift',
-                        [
-                          10,
-                          100,
-                          500,
-                          1000,
-                          10000,
-                          100000,
-                          1000000,
-                          3000000,
-                          5000000,
-                          10000000,
-                          15000000,
-                          20000000,
-                          20000000
-                        ][i],
-                        null)
-                ]),
+            walletProvider.overrideWith(
+              (_) async => (coins: 14402, diamonds: 0),
+            ),
+            giftCatalogProvider.overrideWith(
+              (_) async => [
+                for (var i = 0; i < 13; i++)
+                  Gift(
+                    '$i',
+                    [
+                      'Spark',
+                      'Eternal Rose',
+                      'Love Heart',
+                      'Wonder Box',
+                      'Star Rocket',
+                      'Golden King',
+                      'Royal Couple',
+                      'Royal Diamond',
+                      'Legend Dragon',
+                      'Emperor Crown',
+                      'Galaxy Empire',
+                      'Dream Kingdom',
+                      'World Crown',
+                    ][i],
+                    'gift',
+                    [
+                      10,
+                      100,
+                      500,
+                      1000,
+                      10000,
+                      100000,
+                      1000000,
+                      3000000,
+                      5000000,
+                      10000000,
+                      15000000,
+                      20000000,
+                      20000000,
+                    ][i],
+                    null,
+                  ),
+              ],
+            ),
             momentsFeedProvider.overrideWith((_) async => [fixtureMoment]),
             momentDetailProvider('post')
                 .overrideWith((_) async => fixtureMoment),
-            commentsProvider('post').overrideWith((_) async => [
-                  {'author_id': 'me', 'body': 'Nice!'}
-                ]),
-            conversationsProvider.overrideWith((_) async => [
-                  {
-                    'other_id': 'other',
-                    'last_body': 'Thanks for the gift',
-                    'unread': 2
-                  }
-                ]),
-            chatProvider('other').overrideWith((_) => Stream.value([
-                  Message(
-                      id: 'm',
-                      senderId: 'other',
-                      receiverId: 'me',
-                      kind: 'text',
-                      body: 'Thanks for the gift',
-                      read: true,
-                      createdAt: DateTime(2026))
-                ])),
+            commentsProvider('post').overrideWith(
+              (_) async => [
+                {'author_id': 'me', 'body': 'Nice!'},
+              ],
+            ),
+            conversationsProvider.overrideWith(
+              (_) async => [
+                {
+                  'other_id': 'other',
+                  'last_body': 'Thanks for the gift',
+                  'unread': 2,
+                },
+              ],
+            ),
+            chatProvider('other').overrideWith(
+              (_) => Stream.value([
+                Message(
+                  id: 'm',
+                  senderId: 'other',
+                  receiverId: 'me',
+                  kind: 'text',
+                  body: 'Thanks for the gift',
+                  read: true,
+                  createdAt: DateTime(2026),
+                ),
+              ]),
+            ),
             isFollowingProvider('other').overrideWith((_) async => false),
             friendStateProvider('other')
                 .overrideWith((_) async => FriendState.none),
             socialListProvider(('following', 'me'))
                 .overrideWith((_) async => [fixtureOther]),
-            packagesProvider.overrideWith((_) async => [
-                  for (final d in [1, 5, 10, 50, 100, 200])
-                    {'usd_cents': d * 100, 'coins': d * 500000, 'id': '$d'}
-                ]),
+            packagesProvider.overrideWith(
+              (_) async => [
+                for (final d in [1, 5, 10, 50, 100, 200])
+                  {'usd_cents': d * 100, 'coins': d * 500000, 'id': '$d'},
+              ],
+            ),
             for (final kind in ['wealth', 'charm'])
               for (final period in ['weekly', 'monthly'])
-                leaderboardProvider((kind, period)).overrideWith((_) async => [
-                      for (var i = 0; i < 6; i++)
-                        {
-                          'id': 'other',
-                          'name': [
-                            'BROKEN',
-                            'MR CHARMING',
-                            'Ice Tatty',
-                            'Faisal',
-                            'Ayesha',
-                            'Bilal'
-                          ][i],
-                          'score': 'Lv ${22 - i}',
-                          'nimzo_id': 83200 + i
-                        }
-                    ]),
-            notificationsProvider('All').overrideWith((_) async => [
-                  {
-                    'title': 'Ayesha followed you',
-                    'body': '',
-                    'created_at': DateTime.now()
-                        .subtract(const Duration(minutes: 2))
-                        .toIso8601String()
-                  }
-                ]),
+                leaderboardProvider((kind, period)).overrideWith(
+                  (_) async => [
+                    for (var i = 0; i < 6; i++)
+                      {
+                        'id': 'other',
+                        'name': [
+                          'BROKEN',
+                          'MR CHARMING',
+                          'Ice Tatty',
+                          'Faisal',
+                          'Ayesha',
+                          'Bilal',
+                        ][i],
+                        'score': 'Lv ${22 - i}',
+                        'nimzo_id': 83200 + i,
+                      },
+                  ],
+                ),
+            notificationsProvider('All').overrideWith(
+              (_) async => [
+                {
+                  'title': 'Ayesha followed you',
+                  'body': '',
+                  'created_at': DateTime.now()
+                      .subtract(const Duration(minutes: 2))
+                      .toIso8601String(),
+                },
+              ],
+            ),
           ],
-          child: RepaintBoundary(key: key, child: app)));
+          child: RepaintBoundary(key: key, child: app),
+        ),
+      );
       await tester.pump();
       final context = tester.element(find.byKey(key));
       await tester.runAsync(() async {
-        for (final file in Directory('assets/reference')
-            .listSync(recursive: true)
-            .whereType<File>()
-            .where((f) => f.path.endsWith('.jpg'))) {
+        for (final file
+            in Directory('assets/reference')
+                .listSync(recursive: true)
+                .whereType<File>()
+                .where((f) => f.path.endsWith('.jpg'))) {
           await precacheImage(AssetImage(file.path), context);
         }
       });
@@ -416,13 +490,16 @@ void main() {
         await tester.pump();
       }
       if (entry.key == 'room_tools' || entry.key == 'room_games') {
-        await tester.tap(find
-            .byTooltip(entry.key == 'room_tools' ? 'Party Tools' : 'Games'));
+        await tester.tap(
+          find.byTooltip(entry.key == 'room_tools' ? 'Party Tools' : 'Games'),
+        );
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
       }
-      await expectLater(find.byKey(key),
-          matchesGoldenFile('goldens/remaining/${entry.key}.png'));
+      await expectLater(
+        find.byKey(key),
+        matchesGoldenFile('goldens/remaining/${entry.key}.png'),
+      );
       expect(tester.takeException(), isNull, reason: entry.key);
       await tester.pumpWidget(const SizedBox());
       await tester.pump();

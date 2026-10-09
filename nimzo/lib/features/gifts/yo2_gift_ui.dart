@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 /// Original Yo2 gift controls are loaded only when the supplied archives have
 /// been imported. Missing media is never represented as an original.
 class Yo2GiftPanelArt extends StatelessWidget {
-  const Yo2GiftPanelArt(this.filename, {
+  const Yo2GiftPanelArt(
+    this.filename, {
     super.key,
     this.width = 24,
     this.height = 24,
@@ -33,7 +34,9 @@ List<String> nimzoGiftCategories(Iterable<String> categories) {
     final clean = category.trim();
     if (clean.isNotEmpty &&
         clean.toLowerCase() != 'dragon' &&
-        !result.any((current) => current.toLowerCase() == clean.toLowerCase())) {
+        !result.any(
+          (current) => current.toLowerCase() == clean.toLowerCase(),
+        )) {
       result.add(clean);
     }
   }

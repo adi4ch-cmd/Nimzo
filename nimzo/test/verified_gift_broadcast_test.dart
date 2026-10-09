@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,21 +17,24 @@ class MediaRepository extends GiftRepository {
 }
 
 Map<String, dynamic> event(String id, String giftId) => {
-      'id': id,
-      'gift_id': giftId,
-      'unit_price': 1000000,
-      'quantity': 3,
-      'scope': 'room',
-      'created_at': '2026-10-09T01:00:00Z',
-    };
+  'id': id,
+  'gift_id': giftId,
+  'unit_price': 1000000,
+  'quantity': 3,
+  'scope': 'room',
+  'created_at': '2026-10-09T01:00:00Z',
+};
 
 void main() {
   late SupabaseClient db;
   late MediaRepository repo;
   late StreamController<List<Map<String, dynamic>>> events;
   setUp(() {
-    db = SupabaseClient('https://example.supabase.co', 'test',
-        authOptions: const AuthClientOptions(autoRefreshToken: false));
+    db = SupabaseClient(
+      'https://example.supabase.co',
+      'test',
+      authOptions: const AuthClientOptions(autoRefreshToken: false),
+    );
     repo = MediaRepository(db);
     events = StreamController<List<Map<String, dynamic>>>();
   });
@@ -40,31 +44,43 @@ void main() {
   });
 
   Future<void> mount(WidgetTester tester) async {
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        giftRepositoryProvider.overrideWithValue(repo),
-        giftCatalogProvider.overrideWith((_) async => [
-          const Gift('ce25005c-bb88-4e99-9891-e3d89e25e027',
-              'Royal Dragon', 'svip', 2500000, null),
-        ]),
-        verifiedGiftAnimationProvider((roomId: 'room', countryCode: 'PK'))
-            .overrideWith((_) async* {
-          // A real Supabase stream always starts with a history snapshot.
-          // Seed that snapshot before consuming live additions.
-          yield [event('history', 'history')];
-          yield* events.stream;
-        }),
-      ],
-      child: const MaterialApp(
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          giftRepositoryProvider.overrideWithValue(repo),
+          giftCatalogProvider.overrideWith(
+            (_) async => [
+              const Gift(
+                'ce25005c-bb88-4e99-9891-e3d89e25e027',
+                'Royal Dragon',
+                'svip',
+                2500000,
+                null,
+              ),
+            ],
+          ),
+          verifiedGiftAnimationProvider((roomId: 'room', countryCode: 'PK'))
+              .overrideWith((_) async* {
+                // A real Supabase stream always starts with a history snapshot.
+                // Seed that snapshot before consuming live additions.
+                yield [event('history', 'history')];
+                yield* events.stream;
+              }),
+        ],
+        child: const MaterialApp(
           home: Scaffold(
-              body: VerifiedGiftBroadcast(roomId: 'room', countryCode: 'PK'))),
-    ));
+            body: VerifiedGiftBroadcast(roomId: 'room', countryCode: 'PK'),
+          ),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(repo.pending, isEmpty);
   }
 
-  testWidgets('stalled approved-media lookup releases the verified queue',
-      (tester) async {
+  testWidgets('stalled approved-media lookup releases the verified queue', (
+    tester,
+  ) async {
     await mount(tester);
     events.add([event('first', 'first'), event('second', 'second')]);
     await tester.pump();
@@ -80,8 +96,9 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('backgrounding cancels queued and in-flight effects',
-      (tester) async {
+  testWidgets('backgrounding cancels queued and in-flight effects', (
+    tester,
+  ) async {
     await mount(tester);
     events.add([event('first', 'first'), event('second', 'second')]);
     await tester.pump();
@@ -101,8 +118,9 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('settled gift announcement uses quantity and total cost',
-      (tester) async {
+  testWidgets('settled gift announcement uses quantity and total cost', (
+    tester,
+  ) async {
     await mount(tester);
     events.add([event('generic', 'ce25005c-bb88-4e99-9891-e3d89e25e027')]);
     await tester.pump();
