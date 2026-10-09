@@ -54,7 +54,7 @@ class RoomSettingsRepository {
   Future<void> save(String id, RoomSettings s, {String? password}) async {
     try {
       await _db.rpc(
-        'update_room_settings',
+        'save_room_settings',
         params: {
           'p_room': id,
           'p_name': s.name,
@@ -68,17 +68,9 @@ class RoomSettingsRepository {
           'p_music': s.music,
           'p_game': s.game,
           'p_visitor': s.visitor,
+          'p_avatar_path': s.avatarPath,
         },
       );
-      if (s.avatarPath != null) {
-        await _db.rpc(
-          'update_room_settings',
-          params: {
-            'p_room': id,
-            'p_settings': {'avatar_path': s.avatarPath},
-          },
-        );
-      }
     } catch (e) {
       throw mapError(e);
     }
