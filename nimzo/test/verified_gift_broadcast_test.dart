@@ -50,7 +50,11 @@ void main() {
           home: Scaffold(
               body: VerifiedGiftBroadcast(roomId: 'room', countryCode: 'PK'))),
     ));
+    // The StreamProvider subscription and its initial AsyncData transition
+    // each need a frame before emitting the next (verified) event.
+    await tester.pump();
     events.add([event('history', 'history')]);
+    await tester.pump();
     await tester.pump();
     expect(repo.pending, isEmpty);
   }
@@ -59,6 +63,7 @@ void main() {
       (tester) async {
     await mount(tester);
     events.add([event('first', 'first'), event('second', 'second')]);
+    await tester.pump();
     await tester.pump();
     expect(repo.pending.containsKey('first'), isTrue);
     for (var tick = 0; tick < 15; tick++) {
@@ -94,6 +99,7 @@ void main() {
       (tester) async {
     await mount(tester);
     events.add([event('generic', 'ce25005c-bb88-4e99-9891-e3d89e25e027')]);
+    await tester.pump();
     await tester.pump();
     repo.pending.values.single.complete(null);
     await tester.pump();
