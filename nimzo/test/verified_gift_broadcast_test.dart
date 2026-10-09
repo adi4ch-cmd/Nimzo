@@ -56,7 +56,6 @@ void main() {
               body: VerifiedGiftBroadcast(roomId: 'room', countryCode: 'PK'))),
     ));
     await tester.pumpAndSettle();
-    await tester.pumpAndSettle();
     expect(repo.pending, isEmpty);
   }
 
@@ -82,6 +81,8 @@ void main() {
     await mount(tester);
     events.add([event('first', 'first'), event('second', 'second')]);
     await tester.pump();
+    await tester.pump();
+    expect(repo.pending.containsKey('first'), isTrue);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
     repo.pending['first']!.complete(null);
     await tester.pump();
