@@ -130,8 +130,9 @@ void main() {
     // The gift catalog FutureProvider resolves on a subsequent frame.
     await tester.pump();
     await tester.pump();
-    expect(find.textContaining('Royal Dragon × 3'), findsOneWidget);
-    expect(find.textContaining('3000000 coins'), findsOneWidget);
+    expect(find.text('Royal Dragon'), findsOneWidget);
+    expect(find.text('× 3'), findsOneWidget);
+    expect(find.text('3M coins'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
 }
