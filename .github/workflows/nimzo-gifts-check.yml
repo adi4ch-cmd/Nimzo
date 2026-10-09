@@ -7,9 +7,12 @@ on:
     paths:
       - 'nimzo/lib/features/gifts/**'
       - 'nimzo/test/gift_*.dart'
-      - 'nimzo/test/verified_gift_broadcast_test.dart'
+      - 'nimzo/test/verified_gift_broadcast_test.dart             test/yo2_gift_ui_test.dart'
       - 'nimzo/pubspec.yaml'
       - 'nimzo/assets/gifts/**'
+      - 'nimzo/assets/yo2_gifts/**'
+      - 'nimzo/test/yo2_gift_ui_test.dart'
+      - 'tools/import_yo2_gift_assets.py'
       - 'tools/import_dragon_gifts.py'
       - '.github/workflows/nimzo-gifts-check.yml'
   workflow_dispatch: {}
@@ -48,6 +51,28 @@ jobs:
                   data = folder.joinpath(name).read_bytes()
                   assert data[:4] == b'RIFF' and data[8:12] == b'WEBP', name
           print('Original MP4 asset contract OK; installed:', all(present))
+          PY
+      - name: Verify byte-identical original Yo2 gift control assets
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          root = Path('nimzo/assets/yo2_gifts/images')
+          original = {
+              'ic_gift_pannel_send_up.webp': '58f023ac68b8a629d99b624d7e932641a6f31455301c8984db8389ced07a58de',
+              'ic_gift_pannal_sel.webp': 'db624488623c2b0fbe09c31aefdbc4ccc7ea99987ba16b85baf53041fb130323',
+          }
+          for name, expected in original.items():
+              path = root / name
+              assert path.is_file(), f'Licensed Yo2 icon missing: {name}'
+              assert hashlib.sha256(path.read_bytes()).hexdigest() == expected, name
+          effects = Path('nimzo/assets/yo2_gifts/effects')
+          if effects.exists():
+              assert len(list(effects.glob('*.svga'))) == 7
+              assert (root.parent / 'GIFT_ASSET_MANIFEST.csv').exists()
+              assert not any('dragon' in p.name.lower()
+                             for p in root.parent.rglob('*') if p.is_file())
+          print('Original Yo2 gifting icons verified')
           PY
       - name: Resolve Flutter packages
         working-directory: nimzo
