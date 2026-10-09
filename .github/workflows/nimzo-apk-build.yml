@@ -221,7 +221,9 @@ jobs:
 
       - name: Format check
         working-directory: nimzo
-        run: dart format --output=none --set-exit-if-changed lib test
+        run: |
+          dart format lib test
+          git diff --exit-code -- lib test
 
       - name: Reference asset integrity
         run: python3 -m unittest discover -s nimzo/test/reference -p "*_test.py"
