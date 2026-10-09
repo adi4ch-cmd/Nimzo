@@ -26,7 +26,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/gifts/
     - assets/reference/gift/
     - assets/reference/fruit/
     - assets/reference/grady/
