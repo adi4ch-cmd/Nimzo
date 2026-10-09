@@ -38,7 +38,9 @@ jobs:
           allowed = {
             'nimzo/test/goldens/vip_final.png',
             'nimzo/test/goldens/svip_final.png',
-            'nimzo/test/goldens/remaining/moments.png'
+            'nimzo/test/goldens/remaining/moments.png',
+            'nimzo/test/goldens/remaining/gifts.png',
+            'nimzo/test/goldens/remaining/public_profile.png'
           }
           changed = set(subprocess.check_output(
             ['git','diff','--name-only','--','nimzo/test/goldens'],text=True
@@ -48,7 +50,7 @@ jobs:
           if unexpected:
               raise SystemExit(f'Unexpected UI reference changes: {sorted(unexpected)}')
           PY
-          git add nimzo/test/goldens/vip_final.png nimzo/test/goldens/svip_final.png nimzo/test/goldens/remaining/moments.png
+          git add nimzo/test/goldens/vip_final.png nimzo/test/goldens/svip_final.png nimzo/test/goldens/remaining/moments.png nimzo/test/goldens/remaining/gifts.png nimzo/test/goldens/remaining/public_profile.png
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
