@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'gift_artwork.dart';
 import 'nimzo_gift_control_art.dart';
+import '../../core/utils/formatters.dart';
 
 /// NIMZO's own non-video celebration, shown only for server-settled gifts.
 /// Does not pretend to be an unavailable foreign per-gift animation.
@@ -206,6 +207,14 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
                                     color: Colors.white,
                                     fontSize: 20,
                                     fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  '${compactNumber(widget.unitPrice * widget.quantity)} coins',
+                                  style: const TextStyle(
+                                    color: Color(0xffd5dfe1),
+                                    fontSize: 13,
                                   ),
                                 ),
                                 const SizedBox(height: 9),
