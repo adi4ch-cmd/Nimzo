@@ -129,6 +129,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   }
 
   void _receive(List<Map<String, dynamic>> rows) {
+    assert(() { debugPrint('GIFT_TEST_RECEIVE rows=${rows.length} primed=$_primed active=${_active != null}'); return true; }());
     if (!_primed) {
       _seen.addAll(rows.map((r) => '${r['id']}'));
       _primed = true;
@@ -150,6 +151,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   }
 
   Future<void> _next() async {
+    assert(() { debugPrint('GIFT_TEST_NEXT pending=${_pending.length} foreground=$_foreground'); return true; }());
     _timer?.cancel();
     if (!mounted || !_foreground) return;
     if (_pending.isEmpty) {
