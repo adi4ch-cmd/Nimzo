@@ -47,7 +47,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('SVIP tier ten remains an honest preview with live progress',
+  testWidgets('SVIP ten uses original artwork and honest live progress',
       (tester) async {
     tester.view.physicalSize = const Size(800, 1000);
     tester.view.devicePixelRatio = 1;
@@ -62,7 +62,7 @@ void main() {
     expect(find.text('Active · SVIP 3'), findsOneWidget);
     expect(find.text('Configured tier'), findsNothing);
     expect(
-        find.textContaining('tiers 9–10 are design previews'), findsOneWidget);
+        find.textContaining('server-verified account status'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

@@ -40,6 +40,7 @@ flutter:
     - assets/reference/car/
     - assets/reference/pg/
     - assets/reference/lv/
+    - assets/membership/svip/
     - assets/reference/svip/
     - assets/reference/vip/
     - assets/reference/tool/

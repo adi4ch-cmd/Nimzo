@@ -54,9 +54,12 @@ class MembershipEmblem extends StatelessWidget {
       child: ClipRRect(
           borderRadius: BorderRadius.circular(size * .14),
           child: Image.asset(
-              'assets/reference/${svip ? 'svip' : 'vip'}/${level - 1}.jpg',
+              svip
+                  ? 'assets/membership/svip/svip_medal$level.webp'
+                  : 'assets/reference/vip/${level - 1}.jpg',
               width: size,
               height: size * .915,
+              filterQuality: FilterQuality.high,
               fit: BoxFit.contain)));
 }
 

@@ -148,7 +148,7 @@ class _VipState extends ConsumerState<VipScreen> {
                                   const SizedBox(height: 8),
                                   Text(
                                       widget.svip
-                                          ? 'Artwork is available for all 10 tiers. Live membership supports 8 tiers; tiers 9–10 are design previews.'
+                                          ? 'Ten original SVIP medals are installed. Active membership and rewards depend on your server-verified account status.'
                                           : 'Reference pricing and appearance only. Purchase and cosmetic activation are not enabled here.',
                                       style: const TextStyle(
                                           color: Color(0xffbcb2c4),
@@ -202,14 +202,13 @@ class _VipState extends ConsumerState<VipScreen> {
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     const SizedBox(height: 6),
-                                    Text('Original $family $tier artwork',
+                                    Text('$family $tier · NIMZO medal',
                                         style: TextStyle(color: accent)),
                                     const SizedBox(height: 6),
                                     Text(
                                         active is num &&
-                                                active == tier &&
-                                                !widget.svip
-                                            ? 'Active VIP identity · server verified'
+                                                active == tier
+                                            ? 'Active $family identity · server verified'
                                             : 'Visual preview · cosmetics are not activated',
                                         style: const TextStyle(
                                             fontSize: 12,
