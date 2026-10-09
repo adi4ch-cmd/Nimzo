@@ -48,7 +48,9 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
     final uri = Uri.tryParse(source);
     if (!source.startsWith('assets/') &&
         (uri == null || uri.scheme != 'https' || uri.host.isEmpty)) {
-      setState(() => _error = 'Invalid gift video source');
+      if (mounted && !_finished) {
+        setState(() => _error = 'Invalid gift video source');
+      }
       scheduleMicrotask(_finish);
       return;
     }
@@ -107,7 +109,7 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
       controller.removeListener(_onPlaybackChanged);
       unawaited(controller.pause().catchError((Object _) {}));
     }
-    widget.onFinished();
+    if (mounted) widget.onFinished();
   }
 
   Future<void> _updateSound() async {
@@ -131,7 +133,9 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
   void dispose() {
     _watchdog?.cancel();
     _controller?.removeListener(_onPlaybackChanged);
-    _controller?.dispose();
+    final controller = _controller;
+    _controller = null;
+    if (controller != null) unawaited(controller.dispose());
     super.dispose();
   }
 
