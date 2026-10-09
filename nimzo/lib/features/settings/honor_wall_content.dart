@@ -91,9 +91,7 @@ class _HonorWallContentState extends ConsumerState<HonorWallContent> {
                     ? 'Checking your medals…'
                     : bag.hasError
                         ? 'Medals temporarily unavailable'
-                        : owned.length.toString() +
-                            ' owned · ' +
-                            (selected?.name ?? 'None equipped'),
+                        : '${owned.length} owned · ${selected?.name ?? 'None equipped'}',
                 style: const TextStyle(color: Color(0xfff2e8ce)),
               ),
               const SizedBox(height: 6),
@@ -141,7 +139,7 @@ class _HonorWallContentState extends ConsumerState<HonorWallContent> {
                   image: item.image,
                   detail: item.expiry == null
                       ? 'Owned'
-                      : 'Expires ' + item.expiry!.toIso8601String().split('T').first,
+                      : 'Expires ${item.expiry!.toIso8601String().split('T').first}',
                   action: item.equipped ? 'Equipped' : 'Equip',
                   enabled: !item.equipped && _equipping == null,
                   highlighted: item.equipped,
@@ -177,7 +175,7 @@ class _HonorWallContentState extends ConsumerState<HonorWallContent> {
                   image: item.image,
                   detail: ids.contains(item.id)
                       ? 'In your Bag'
-                      : compactNumber(item.price) + ' coins',
+                      : '${compactNumber(item.price)} coins'
                   action: ids.contains(item.id) ? 'Owned' : 'View in Store',
                   enabled: !ids.contains(item.id),
                   highlighted: ids.contains(item.id),
