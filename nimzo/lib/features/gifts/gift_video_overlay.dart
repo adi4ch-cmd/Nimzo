@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -31,10 +32,12 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
   VideoPlayerController? _controller;
   bool _finished = false;
   String? _error;
+  Timer? _watchdog;
 
   @override
   void initState() {
     super.initState();
+    _watchdog = Timer(const Duration(seconds: 30), _finish);
     _start();
   }
 
@@ -44,6 +47,7 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
     if (!source.startsWith('assets/') &&
         (uri == null || uri.scheme != 'https' || uri.host.isEmpty)) {
       setState(() => _error = 'Invalid gift video source');
+      _finish();
       return;
     }
     final controller = source.startsWith('assets/')
@@ -53,13 +57,16 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
     controller.addListener(_onPlaybackChanged);
     try {
       await controller.initialize();
-      if (!mounted) return;
+      if (!mounted || _finished) return;
       await controller.setLooping(false);
       await controller.setVolume(widget.muted ? 0 : 0.65);
       await controller.play();
       if (mounted) setState(() {});
     } catch (_) {
-      if (mounted) setState(() => _error = 'Gift video unavailable');
+      if (mounted && !_finished) {
+        setState(() => _error = 'Gift video unavailable');
+        _finish();
+      }
     }
   }
 
@@ -69,6 +76,7 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
     final state = controller.value;
     if (state.hasError) {
       setState(() => _error = 'Gift video unavailable');
+      _finish();
       return;
     }
     if (state.isInitialized &&
@@ -82,6 +90,7 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
   void _finish() {
     if (_finished) return;
     _finished = true;
+    _watchdog?.cancel();
     widget.onFinished();
   }
 
@@ -95,6 +104,7 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
 
   @override
   void dispose() {
+    _watchdog?.cancel();
     _controller?.removeListener(_onPlaybackChanged);
     _controller?.dispose();
     super.dispose();
