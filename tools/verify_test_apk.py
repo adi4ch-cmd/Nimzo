@@ -29,6 +29,9 @@ def verify(apk):
         assert expected in manifest, f'Missing manifest contract: {expected}'
     with zipfile.ZipFile(apk) as archive:
         assert archive.testzip() is None, 'APK ZIP integrity failure'
+        for name in ('Cinzel-OFL.txt', 'Poppins-OFL.txt'):
+            path = 'assets/reference/fonts/' + name
+            assert archive.read('assets/flutter_assets/' + path) == (root / 'nimzo' / path).read_bytes(), 'Bundled font license missing or altered'
         for abi in ('arm64-v8a', 'armeabi-v7a', 'x86_64'):
             for library in ('libvivox_bridge.so', 'libvivox-sdk.so'):
                 assert archive.read(f'lib/{abi}/{library}')[:4] == b'\x7fELF', 'Invalid native library'

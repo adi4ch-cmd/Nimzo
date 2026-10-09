@@ -1,7 +1,7 @@
 name: nimzo
 description: Nimzo social voice-room app
 publish_to: none
-version: 1.0.11+111
+version: 1.0.12+112
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:
@@ -26,6 +26,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/reference/fonts/Cinzel-OFL.txt
+    - assets/reference/fonts/Poppins-OFL.txt
     - assets/reference/gift/
     - assets/reference/fruit/
     - assets/reference/grady/

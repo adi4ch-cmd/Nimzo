@@ -13,7 +13,7 @@ Started from remote `4f6762c21ee9cf28d076bc7bfd8011c013bd31dd` on `feature/profi
 
 ## Fresh validation
 
-Flutter 3.47.6 / Dart 3.13.5 installed in this session. Dependency resolution passed without lockfile changes. Formatting: 177 files, zero pending changes. Strict analyzer: no issues. Full Flutter suite: **248 passed**. Focused voice suite: 27 passed. Edge authorization/purchase-contract suite: 16 passed using provider fixtures. Native voice contracts: 7 passed; reference integrity: 1 passed; tool workflow/publication tests: 4 passed. Native update Java test skipped locally because javac is absent; CI includes Java and runs it.
+Flutter 3.47.6 / Dart 3.13.5 installed in this session. Dependency resolution passed without lockfile changes. Formatting: 177 files, zero pending changes. Strict analyzer: no issues. Full Flutter suite: **248 passed**. Focused voice suite: 27 passed. Edge authorization/purchase-contract suite: 16 passed using provider fixtures. Native voice contracts: 7 passed; reference integrity: 1 passed; tool workflow/publication tests: 4 passed. Native update Java test: 1 passed locally using the installed JDK compiler module; 1 passed in CI with Java 17.
 
 PostgreSQL 17 disposable clones tested the room guard and actual live settings functions with rollback fixtures. The gift publication/grant repair passed metadata tests and repeat application in a disposable simplified event/media schema. These are database/contract tests, not authenticated device or Realtime transport tests. Production verification was read-only after deployment; no production account or balance fixtures were created.
 
@@ -33,4 +33,6 @@ All 52 public tables have RLS. Security advisors retain 51 notices for intention
 - Permanent release signing secrets remain absent in the observed CI run. A development-signed test artifact is installable after successful compilation, but is not a permanent-signature updater release.
 - Missing provider/product contracts for PK/music/treasure/store rewards and unsupported services remain explicit unavailable states; they are not marked complete.
 
-The initial Actions run `37888159730` stopped on the image-decode golden race; no APK was produced by that run. The next final-source run must finish successfully before an APK link is reported. Final delivery message records its actual source SHA, run status and artifact link.
+The initial Actions run `37888159730` stopped on the image-decode golden race; no APK was produced by that run. Run `37888786298` succeeded for source `f46d5affb36b89c3f1e6150059c074d538eebed9`, producing development-signed 1.0.11+111. The downloaded APK independently passed signature/package/version, ZIP integrity/16-KiB alignment, three-ABI Vivox login, retained DEX callback, and all 12 64-bit native library LOAD-alignment checks. All 208 UI/font assets were included, but two font license texts were omitted. The final 1.0.12+112 adds both license texts to asset packaging; its final source/run/artifact are reported only after successful verification.
+
+Read-only live inspection found zero closed/suspended rooms. The existing client reuses owned room IDs, but the server does not reopen closed rooms automatically. That administrative reopening policy remains undefined and is not bypassed by the ownership safeguard.
