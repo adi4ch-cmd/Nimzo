@@ -44,16 +44,17 @@ void main() {
       overrides: [
         giftRepositoryProvider.overrideWithValue(repo),
         verifiedGiftAnimationProvider((roomId: 'room', countryCode: 'PK'))
-            .overrideWith((_) => events.stream),
+            .overrideWith((_) async* {
+          // A real Supabase stream always starts with a history snapshot.
+          // Seed that snapshot before consuming live additions.
+          yield [event('history', 'history')];
+          yield* events.stream;
+        }),
       ],
       child: const MaterialApp(
           home: Scaffold(
               body: VerifiedGiftBroadcast(roomId: 'room', countryCode: 'PK'))),
     ));
-    // The StreamProvider subscription and its initial AsyncData transition
-    // each need a frame before emitting the next (verified) event.
-    await tester.pump();
-    events.add([event('history', 'history')]);
     await tester.pump();
     await tester.pump();
     expect(repo.pending, isEmpty);
