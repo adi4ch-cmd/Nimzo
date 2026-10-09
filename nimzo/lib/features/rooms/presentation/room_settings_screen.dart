@@ -53,8 +53,7 @@ class _State extends ConsumerState<RoomSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final owner =
-        ref.watch(roomProvider(widget.roomId)).valueOrNull?.ownerId ==
+    final owner = ref.watch(roomProvider(widget.roomId)).valueOrNull?.ownerId ==
         ref.watch(currentUserIdProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Room Setting')),
@@ -103,37 +102,36 @@ class _State extends ConsumerState<RoomSettingsScreen> {
                 'private': settings!.isPrivate,
               }.entries)
                 SwitchListTile(
-                  title: Text(
-                    {
-                      'mic': 'Permission to take the mic of guest',
-                      'chat': 'Send emojis to the chatting area',
-                      'guest': 'Allow guests',
-                      'gift': 'Gift Effect',
-                      'music': 'Music',
-                      'game': 'Games',
-                      'visitor': 'Visitors',
-                      'private': 'Only room members can enter',
-                    }[entry.key]!,
-                  ),
+                  title: Text({
+                    'mic': 'Permission to take the mic of guest',
+                    'chat': 'Send emojis to the chatting area',
+                    'guest': 'Allow guests',
+                    'gift': 'Gift Effect',
+                    'music': 'Music',
+                    'game': 'Games',
+                    'visitor': 'Visitors',
+                    'private': 'Only room members can enter'
+                  }[entry.key]!),
                   value: entry.value,
                   onChanged: !owner || busy
                       ? null
                       : (v) => setState(() {
-                          final x = settings!;
-                          settings = RoomSettings(
-                            name: x.name,
-                            theme: x.theme,
-                            avatarPath: x.avatarPath,
-                            isPrivate: entry.key == 'private' ? v : x.isPrivate,
-                            mic: entry.key == 'mic' ? v : x.mic,
-                            chat: entry.key == 'chat' ? v : x.chat,
-                            guest: entry.key == 'guest' ? v : x.guest,
-                            gift: entry.key == 'gift' ? v : x.gift,
-                            music: entry.key == 'music' ? v : x.music,
-                            game: entry.key == 'game' ? v : x.game,
-                            visitor: entry.key == 'visitor' ? v : x.visitor,
-                          );
-                        }),
+                            final x = settings!;
+                            settings = RoomSettings(
+                              name: x.name,
+                              theme: x.theme,
+                              avatarPath: x.avatarPath,
+                              isPrivate:
+                                  entry.key == 'private' ? v : x.isPrivate,
+                              mic: entry.key == 'mic' ? v : x.mic,
+                              chat: entry.key == 'chat' ? v : x.chat,
+                              guest: entry.key == 'guest' ? v : x.guest,
+                              gift: entry.key == 'gift' ? v : x.gift,
+                              music: entry.key == 'music' ? v : x.music,
+                              game: entry.key == 'game' ? v : x.game,
+                              visitor: entry.key == 'visitor' ? v : x.visitor,
+                            );
+                          }),
                 ),
               TextField(
                 controller: password,
@@ -152,23 +150,18 @@ class _State extends ConsumerState<RoomSettingsScreen> {
                 ('Action record', '›'),
                 ('Room Rewards', 'Unavailable'),
                 ('Room Support', '›'),
-                ('Apply for Banner', '›'),
+                ('Apply for Banner', '›')
               ])
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 13),
-                  decoration: const BoxDecoration(
-                    border: Border(bottom: BorderSide(color: NimzoStyle.line)),
-                  ),
-                  child: Row(
-                    children: [
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    decoration: const BoxDecoration(
+                        border:
+                            Border(bottom: BorderSide(color: NimzoStyle.line))),
+                    child: Row(children: [
                       Expanded(child: Text(row.$1)),
-                      Text(
-                        row.$2,
-                        style: const TextStyle(color: NimzoStyle.muted),
-                      ),
-                    ],
-                  ),
-                ),
+                      Text(row.$2,
+                          style: const TextStyle(color: NimzoStyle.muted))
+                    ])),
               const SizedBox(height: 14),
               FilledButton(
                 onPressed: !owner || busy
@@ -177,9 +170,7 @@ class _State extends ConsumerState<RoomSettingsScreen> {
                         setState(() => busy = true);
                         try {
                           final x = settings!;
-                          await ref
-                              .read(roomSettingsRepositoryProvider)
-                              .save(
+                          await ref.read(roomSettingsRepositoryProvider).save(
                                 widget.roomId,
                                 RoomSettings(
                                   name: name.text,

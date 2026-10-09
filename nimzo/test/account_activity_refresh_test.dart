@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -14,8 +13,8 @@ class Messages extends MessageRepository {
   Stream<int> changes() => events.stream;
   @override
   Future<List<Map<String, dynamic>>> conversations() async => [
-    {'unread': ++reads},
-  ];
+        {'unread': ++reads}
+      ];
 }
 
 class Notices extends NotificationRepository {
@@ -26,46 +25,38 @@ class Notices extends NotificationRepository {
   Stream<int> changes() => events.stream;
   @override
   Future<List<Map<String, dynamic>>> list(String category) async => [
-    {'id': ++reads},
-  ];
+        {'id': ++reads}
+      ];
 }
 
 void main() {
+  test('conversation activity reloads unread counts and cancels with container',
+      () async {
+    final db = SupabaseClient('https://example.supabase.co', 'test',
+        authOptions: const AuthClientOptions(autoRefreshToken: false));
+    addTearDown(db.dispose);
+    final repo = Messages(db);
+    final c = ProviderContainer(
+        overrides: [messageRepositoryProvider.overrideWithValue(repo)]);
+    final initial = await c.read(conversationsProvider.future);
+    repo.events.add(1);
+    await Future<void>.delayed(Duration.zero);
+    final next = await c.read(conversationsProvider.future);
+    expect(next.first['unread'], greaterThan(initial.first['unread'] as int));
+    c.dispose();
+    await Future<void>.delayed(Duration.zero);
+    expect(repo.events.hasListener, false);
+    await repo.events.close();
+  });
   test(
-    'conversation activity reloads unread counts and cancels with container',
-    () async {
-      final db = SupabaseClient(
-        'https://example.supabase.co',
-        'test',
-        authOptions: const AuthClientOptions(autoRefreshToken: false),
-      );
-      addTearDown(db.dispose);
-      final repo = Messages(db);
-      final c = ProviderContainer(
-        overrides: [messageRepositoryProvider.overrideWithValue(repo)],
-      );
-      final initial = await c.read(conversationsProvider.future);
-      repo.events.add(1);
-      await Future<void>.delayed(Duration.zero);
-      final next = await c.read(conversationsProvider.future);
-      expect(next.first['unread'], greaterThan(initial.first['unread'] as int));
-      c.dispose();
-      await Future<void>.delayed(Duration.zero);
-      expect(repo.events.hasListener, false);
-      await repo.events.close();
-    },
-  );
-  test('notification events refresh multiple categories from the same authorized stream', () async {
-    final db = SupabaseClient(
-      'https://example.supabase.co',
-      'test',
-      authOptions: const AuthClientOptions(autoRefreshToken: false),
-    );
+      'notification events refresh multiple categories from the same authorized stream',
+      () async {
+    final db = SupabaseClient('https://example.supabase.co', 'test',
+        authOptions: const AuthClientOptions(autoRefreshToken: false));
     addTearDown(db.dispose);
     final repo = Notices(db);
     final c = ProviderContainer(
-      overrides: [notificationRepositoryProvider.overrideWithValue(repo)],
-    );
+        overrides: [notificationRepositoryProvider.overrideWithValue(repo)]);
     addTearDown(c.dispose);
     await c.read(notificationsProvider('All').future);
     await c.read(notificationsProvider('Gifts').future);

@@ -1,6 +1,5 @@
 import '../vip/phoenix_widgets.dart';
 import '../../core/widgets/master_ui.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,33 +30,31 @@ class MeScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 44),
               decoration: BoxDecoration(
-                image: p.coverPath == null
-                    ? null
-                    : DecorationImage(
-                        image: NetworkImage(
-                          ref
+                  image: p.coverPath == null
+                      ? null
+                      : DecorationImage(
+                          image: NetworkImage(ref
                               .read(supabaseProvider)
                               .storage
                               .from('covers')
-                              .getPublicUrl(p.coverPath!),
-                        ),
-                        fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(
-                          const Color(0xff9333ea).withValues(alpha: .65),
-                          BlendMode.srcATop,
-                        ),
-                      ),
-                gradient: const LinearGradient(
-                  begin: Alignment(-.34, -1),
-                  end: Alignment(.34, 1),
-                  colors: [
-                    Color(0xff9333ea),
-                    Color(0xffc026d3),
-                    Color(0xffd946ef),
-                  ],
-                  stops: [0, .7, 1],
-                ),
-              ),
+                              .getPublicUrl(p.coverPath!)),
+                          fit: BoxFit.cover,
+                          colorFilter: ColorFilter.mode(
+                              const Color(0xff9333ea).withValues(alpha: .65),
+                              BlendMode.srcATop)),
+                  gradient: const LinearGradient(
+                      begin: Alignment(-.34, -1),
+                      end: Alignment(.34, 1),
+                      colors: [
+                        Color(0xff9333ea),
+                        Color(0xffc026d3),
+                        Color(0xffd946ef)
+                      ],
+                      stops: [
+                        0,
+                        .7,
+                        1
+                      ])),
               child: Column(
                 children: [
                   InkWell(
@@ -65,101 +62,79 @@ class MeScreen extends ConsumerWidget {
                     child: Row(
                       children: [
                         PhoenixDecoration(
-                          userId: id,
-                          avatar: true,
-                          child: NimzoAvatar(
-                            name: p.displayName ?? 'N',
-                            size: 78,
-                            online: true,
-                            borderWidth: 3,
-                            backgroundColor: NimzoStyle.ink,
-                            url: p.avatarPath == null
-                                ? null
-                                : ref
+                            userId: id,
+                            avatar: true,
+                            child: NimzoAvatar(
+                              name: p.displayName ?? 'N',
+                              size: 78,
+                              online: true,
+                              borderWidth: 3,
+                              backgroundColor: NimzoStyle.ink,
+                              url: p.avatarPath == null
+                                  ? null
+                                  : ref
                                       .read(supabaseProvider)
                                       .storage
                                       .from('avatars')
                                       .getPublicUrl(p.avatarPath!),
-                          ),
-                        ),
+                            )),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Wrap(
-                                spacing: 8,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  const ReferenceIcon(
-                                    'crown_filled',
-                                    color: Color(0xfffbbf24),
-                                  ),
-                                  PhoenixNameplate(
-                                    userId: id,
-                                    name:
-                                        p.displayName ??
-                                        p.username ??
-                                        'Nimzo user',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  if (p.dateOfBirth != null)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 9,
-                                        vertical: 1,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xff2563eb),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        '${p.gender == 'Female' ? '♀' : '♂'} ${profileAge(p.dateOfBirth!)}',
+                                  spacing: 8,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    const ReferenceIcon('crown_filled',
+                                        color: Color(0xfffbbf24)),
+                                    PhoenixNameplate(
+                                        userId: id,
+                                        name: p.displayName ??
+                                            p.username ??
+                                            'Nimzo user',
                                         style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700)),
+                                    if (p.dateOfBirth != null)
+                                      Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 9, vertical: 1),
+                                          decoration: BoxDecoration(
+                                              color: const Color(0xff2563eb),
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          child: Text(
+                                              '${p.gender == 'Female' ? '♀' : '♂'} ${profileAge(p.dateOfBirth!)}',
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 13,
+                                                  fontWeight:
+                                                      FontWeight.w700))),
+                                  ]),
                               InkWell(
                                 key: const ValueKey('me-copy-id'),
                                 onTap: () async {
                                   await Clipboard.setData(
-                                    ClipboardData(text: '${p.nimzoId}'),
-                                  );
+                                      ClipboardData(text: '${p.nimzoId}'));
                                   if (context.mounted)
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('ID copied'),
-                                      ),
-                                    );
+                                        const SnackBar(
+                                            content: Text('ID copied')));
                                 },
-                                child: Row(
-                                  children: [
-                                    Flexible(
+                                child: Row(children: [
+                                  Flexible(
                                       child: Text(
-                                        'ID:${p.nimzoId} | ${p.countryName ?? p.countryCode ?? ''}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    const Icon(
-                                      Icons.copy,
-                                      size: 13,
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                ),
+                                    'ID:${p.nimzoId} | ${p.countryName ?? p.countryCode ?? ''}',
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 13),
+                                  )),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.copy,
+                                      size: 13, color: Colors.white),
+                                ]),
                               ),
                               const SizedBox(height: 6),
                               Row(
@@ -168,34 +143,32 @@ class MeScreen extends ConsumerWidget {
                                   for (var kind = 0; kind < 3; kind++) ...[
                                     if (kind > 0) const SizedBox(width: 4),
                                     Expanded(
-                                      child: InkWell(
-                                        key: ValueKey('me-level-$kind'),
-                                        onTap: () => Navigator.of(context).push(
+                                        child: InkWell(
+                                      key: ValueKey('me-level-$kind'),
+                                      onTap: () => Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (_) => LevelsScreen(
-                                              initialKind: kind,
-                                              userId: id,
-                                            ),
-                                          ),
-                                        ),
-                                        child: LevelBadge(
+                                              builder: (_) => LevelsScreen(
+                                                  initialKind: kind,
+                                                  userId: id))),
+                                      child: LevelBadge(
                                           kind: kind,
                                           level: [
                                             p.wealthLevel,
                                             p.charmLevel,
-                                            p.activeLevel,
+                                            p.activeLevel
                                           ][kind],
-                                          showLabel: true,
-                                        ),
-                                      ),
-                                    ),
+                                          showLabel: true),
+                                    )),
                                   ],
                                 ],
                               ),
                             ],
                           ),
                         ),
-                        const ReferenceIcon('fwd', color: Colors.white),
+                        const ReferenceIcon(
+                          'fwd',
+                          color: Colors.white,
+                        ),
                       ],
                     ),
                   ),
@@ -207,7 +180,9 @@ class MeScreen extends ConsumerWidget {
                         for (final k in ['following', 'followers', 'visitors'])
                           Expanded(
                             child: TextButton(
-                              onPressed: () => context.push('/social/$k/$id'),
+                              onPressed: () => context.push(
+                                '/social/$k/$id',
+                              ),
                               child: Column(
                                 children: [
                                   Text(
@@ -235,68 +210,64 @@ class MeScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
               child: Transform.translate(
-                offset: const Offset(0, -28),
-                child: Column(
-                  children: [
-                    const _MenuRow(
-                      items: [
-                        ('Task', 'task', '/info/Task'),
-                        ('Store', 'store', '/info/Store'),
-                        ('Ranking', 'cup', '/ranking'),
-                        ('Honor Wall', 'moments', '/info/Honor%20Wall'),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _FeatureBanner(
-                            title: 'SVIP',
-                            subtitle: 'Check now ›',
-                            colors: const [
-                              Color(0xfffff3d1),
-                              Color(0xfffff9e8),
-                            ],
-                            onTap: () => context.push('/svip'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _FeatureBanner(
-                            title: 'Wallet',
-                            subtitle: 'My Coins ›',
-                            colors: const [
-                              Color(0xffffe3ec),
-                              Color(0xfffff0f4),
-                            ],
-                            onTap: () => context.push('/wallet'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const _MenuRow(
-                      items: [
-                        ('CP Zone', 'cp', '/cp'),
-                        ('VIP', 'crown', '/vip'),
-                        ('Settings', 'gear', '/settings'),
-                        ('Level', 'bars', '/levels'),
-                        ('About', 'info', '/info/About'),
-                      ],
-                    ),
-                    const ReferenceCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '1M+ Gift Live Ranking',
-                            style: TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                          EmptyContent('Ranking service is not available yet.'),
+                  offset: const Offset(0, -28),
+                  child: Column(
+                    children: [
+                      const _MenuRow(
+                        items: [
+                          ('Task', 'task', '/info/Task'),
+                          ('Store', 'store', '/info/Store'),
+                          ('Ranking', 'cup', '/ranking'),
+                          ('Honor Wall', 'moments', '/info/Honor%20Wall'),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: _FeatureBanner(
+                                  title: 'SVIP',
+                                  subtitle: 'Check now ›',
+                                  colors: const [
+                                    Color(0xfffff3d1),
+                                    Color(0xfffff9e8)
+                                  ],
+                                  onTap: () => context.push('/svip'))),
+                          const SizedBox(width: 10),
+                          Expanded(
+                              child: _FeatureBanner(
+                                  title: 'Wallet',
+                                  subtitle: 'My Coins ›',
+                                  colors: const [
+                                    Color(0xffffe3ec),
+                                    Color(0xfffff0f4)
+                                  ],
+                                  onTap: () => context.push('/wallet'))),
+                        ],
+                      ),
+                      const _MenuRow(
+                        items: [
+                          ('CP Zone', 'cp', '/cp'),
+                          ('VIP', 'crown', '/vip'),
+                          ('Settings', 'gear', '/settings'),
+                          ('Level', 'bars', '/levels'),
+                          ('About', 'info', '/info/About'),
+                        ],
+                      ),
+                      const ReferenceCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '1M+ Gift Live Ranking',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            EmptyContent(
+                                'Ranking service is not available yet.'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
             ),
           ],
         ),
@@ -310,113 +281,94 @@ class _MenuRow extends StatelessWidget {
   const _MenuRow({required this.items});
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
-    margin: const EdgeInsets.only(bottom: 10),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x147828c8),
-          offset: Offset(0, 2),
-          blurRadius: 10,
-        ),
-      ],
-    ),
-    child: Row(
-      children: [
-        for (final item in items)
-          Expanded(
-            child: InkWell(
-              onTap: () => context.push(item.$3),
-              child: Column(
-                children: [
-                  Container(
-                    width: 54,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      color:
-                          (item.$1 == 'Ranking' || item.$1 == 'VIP'
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(
+                  color: Color(0x147828c8),
+                  offset: Offset(0, 2),
+                  blurRadius: 10)
+            ]),
+        child: Row(
+          children: [
+            for (final item in items)
+              Expanded(
+                child: InkWell(
+                  onTap: () => context.push(item.$3),
+                  child: Column(
+                    children: [
+                      Container(
+                          width: 54,
+                          height: 54,
+                          decoration: BoxDecoration(
+                              color: (item.$1 == 'Ranking' || item.$1 == 'VIP'
+                                      ? const Color(0xfff59e0b)
+                                      : item.$1 == 'Task' ||
+                                              item.$1 == 'CP Zone' ||
+                                              item.$1 == 'About'
+                                          ? NimzoStyle.pink
+                                          : NimzoStyle.primary)
+                                  .withValues(alpha: .12),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: ReferenceIcon(item.$2,
+                              size: 22,
+                              color: item.$1 == 'Ranking' || item.$1 == 'VIP'
                                   ? const Color(0xfff59e0b)
                                   : item.$1 == 'Task' ||
-                                        item.$1 == 'CP Zone' ||
-                                        item.$1 == 'About'
-                                  ? NimzoStyle.pink
-                                  : NimzoStyle.primary)
-                              .withValues(alpha: .12),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ReferenceIcon(
-                      item.$2,
-                      size: 22,
-                      color: item.$1 == 'Ranking' || item.$1 == 'VIP'
-                          ? const Color(0xfff59e0b)
-                          : item.$1 == 'Task' ||
-                                item.$1 == 'CP Zone' ||
-                                item.$1 == 'About'
-                          ? NimzoStyle.pink
-                          : NimzoStyle.primary,
-                    ),
+                                          item.$1 == 'CP Zone' ||
+                                          item.$1 == 'About'
+                                      ? NimzoStyle.pink
+                                      : NimzoStyle.primary)),
+                      const SizedBox(height: 6),
+                      Text(
+                        item.$1,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    item.$1,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-      ],
-    ),
-  );
+          ],
+        ),
+      );
 }
 
 class _FeatureBanner extends StatelessWidget {
   final String title, subtitle;
   final List<Color> colors;
   final VoidCallback onTap;
-  const _FeatureBanner({
-    required this.title,
-    required this.subtitle,
-    required this.colors,
-    required this.onTap,
-  });
+  const _FeatureBanner(
+      {required this.title,
+      required this.subtitle,
+      required this.colors,
+      required this.onTap});
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 10),
-    child: Material(
-      borderRadius: BorderRadius.circular(14),
-      child: Ink(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(colors: colors),
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
           borderRadius: BorderRadius.circular(14),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(color: NimzoStyle.muted, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
+          child: Ink(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: colors),
+                  borderRadius: BorderRadius.circular(14)),
+              child: InkWell(
+                  onTap: onTap,
+                  borderRadius: BorderRadius.circular(14),
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 18),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(title,
+                                style: const TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.w700)),
+                            Text(subtitle,
+                                style: const TextStyle(
+                                    color: NimzoStyle.muted, fontSize: 12))
+                          ]))))));
 }

@@ -15,9 +15,8 @@ void main() {
         'Bounty Football',
       ];
       for (final name in approved) {
-        final matching = NimzoRoomGames.all
-            .where((g) => g.title == name)
-            .toList();
+        final matching =
+            NimzoRoomGames.all.where((g) => g.title == name).toList();
         expect(matching, hasLength(1));
         expect(matching.single.serverEnabled, isFalse);
         expect(NimzoRoomGames.canPlay(matching.single.slug), isFalse);

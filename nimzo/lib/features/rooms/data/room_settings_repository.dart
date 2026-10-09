@@ -22,18 +22,18 @@ class RoomSettings {
     this.visitor = true,
   });
   factory RoomSettings.fromJson(Map<String, dynamic> j) => RoomSettings(
-    name: j['name'],
-    theme: j['theme'],
-    avatarPath: j['avatar_path'] as String?,
-    isPrivate: j['is_private'],
-    mic: j['perm_mic'] ?? true,
-    chat: j['perm_chat'] ?? true,
-    guest: j['perm_guest'] ?? true,
-    gift: j['perm_gift'] ?? true,
-    music: j['perm_music'] ?? true,
-    game: j['perm_game'] ?? true,
-    visitor: j['perm_visitor'] ?? true,
-  );
+        name: j['name'],
+        theme: j['theme'],
+        avatarPath: j['avatar_path'] as String?,
+        isPrivate: j['is_private'],
+        mic: j['perm_mic'] ?? true,
+        chat: j['perm_chat'] ?? true,
+        guest: j['perm_guest'] ?? true,
+        gift: j['perm_gift'] ?? true,
+        music: j['perm_music'] ?? true,
+        game: j['perm_game'] ?? true,
+        visitor: j['perm_visitor'] ?? true,
+      );
 }
 
 class RoomSettingsRepository {
@@ -41,14 +41,14 @@ class RoomSettingsRepository {
   RoomSettingsRepository(this._db);
 
   Future<RoomSettings> get(String id) async => RoomSettings.fromJson(
-    await _db
-        .from('rooms')
-        .select(
-          'id,room_no,owner_id,name,country,theme,is_private,status,created_at,rules,mic_permission,chat_permission,guest_permission,gift_permission,music_permission,game_permission,visitor_permission,perm_mic,perm_chat,perm_guest,perm_gift,perm_music,perm_game,perm_visitor,last_active,avatar_path,lifetime_gift_coins',
-        )
-        .eq('id', id)
-        .single(),
-  );
+        await _db
+            .from('rooms')
+            .select(
+              'id,room_no,owner_id,name,country,theme,is_private,status,created_at,rules,mic_permission,chat_permission,guest_permission,gift_permission,music_permission,game_permission,visitor_permission,perm_mic,perm_chat,perm_guest,perm_gift,perm_music,perm_game,perm_visitor,last_active,avatar_path,lifetime_gift_coins',
+            )
+            .eq('id', id)
+            .single(),
+      );
 
   /// Owner-only, validated in Postgres. Password is hashed server-side.
   Future<void> save(String id, RoomSettings s, {String? password}) async {
@@ -113,5 +113,5 @@ final roomSettingsProvider = FutureProvider.family<RoomSettings, String>(
 );
 final roomMembersProvider =
     FutureProvider.family<List<Map<String, dynamic>>, String>(
-      (ref, id) => ref.watch(roomSettingsRepositoryProvider).members(id),
-    );
+  (ref, id) => ref.watch(roomSettingsRepositoryProvider).members(id),
+);

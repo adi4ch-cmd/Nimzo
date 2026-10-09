@@ -13,16 +13,21 @@ AppException mapGiftError(Object error) {
     final message = switch (error.message.trim().toLowerCase()) {
       'insufficient coins' =>
         'Not enough coins. Top up your wallet and retry this gift.',
-      'gift tier required' => 'This gift requires a higher active VIP or SVIP level. Choose another gift.',
+      'gift tier required' =>
+        'This gift requires a higher active VIP or SVIP level. Choose another gift.',
       'room member required' ||
       'sender is not in room' ||
-      'receiver is not in room' => 'Both you and the recipient must be in the room. Rejoin or choose someone in the room.',
-      'room unavailable or gifts disabled' => 'This room is unavailable or gifts are disabled. Check with the room owner.',
-      'gift permission required' => 'You need permission to send gifts in this room. Check with the room owner.',
+      'receiver is not in room' =>
+        'Both you and the recipient must be in the room. Rejoin or choose someone in the room.',
+      'room unavailable or gifts disabled' =>
+        'This room is unavailable or gifts are disabled. Check with the room owner.',
+      'gift permission required' =>
+        'You need permission to send gifts in this room. Check with the room owner.',
       'gift unavailable' => 'This gift is unavailable. Choose another gift.',
       'receiver unavailable' =>
         'This recipient is unavailable. Choose another recipient.',
-      'moment receiver mismatch' => 'This Moment is no longer available for this recipient. Reopen Moments and try again.',
+      'moment receiver mismatch' =>
+        'This Moment is no longer available for this recipient. Reopen Moments and try again.',
       'not authenticated' => 'Please sign in again before sending a gift.',
       'account restricted' =>
         'Gift sending is unavailable for your account. Contact support.',

@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../core/providers/supabase_provider.dart';
 
 class SupportRepository {
@@ -28,23 +27,18 @@ class SupportRepository {
 
   Future<void> submit(String category, String subject, String body) async {
     _requireSession();
-    await client.rpc(
-      'submit_support_ticket',
-      params: {
-        'p_category': category,
-        'p_subject': subject.trim(),
-        'p_body': body.trim(),
-      },
-    );
+    await client.rpc('submit_support_ticket', params: {
+      'p_category': category,
+      'p_subject': subject.trim(),
+      'p_body': body.trim(),
+    });
     _requireSession();
   }
 
   Future<void> requestDeletion(String reason) async {
     _requireSession();
-    await client.rpc(
-      'request_account_deletion',
-      params: {'p_reason': reason.trim()},
-    );
+    await client
+        .rpc('request_account_deletion', params: {'p_reason': reason.trim()});
     _requireSession();
   }
 }
@@ -54,5 +48,4 @@ final supportRepositoryProvider = Provider((ref) {
   return SupportRepository(session.client, session.userId);
 });
 final supportTicketsProvider = FutureProvider.autoDispose(
-  (ref) => ref.watch(supportRepositoryProvider).tickets(),
-);
+    (ref) => ref.watch(supportRepositoryProvider).tickets());

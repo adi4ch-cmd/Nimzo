@@ -29,9 +29,7 @@ class StorageService {
     final (extension, contentType) = profileImageFormat(bytes);
     final folder = bucket == 'room-images' ? roomId! : uid;
     final path = '$folder/${DateTime.now().microsecondsSinceEpoch}.$extension';
-    await _db.storage
-        .from(bucket)
-        .uploadBinary(
+    await _db.storage.from(bucket).uploadBinary(
           path,
           bytes,
           fileOptions: FileOptions(contentType: contentType),

@@ -3,12 +3,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/providers/supabase_provider.dart';
 
-bool confirmedPurchase(
-  dynamic data, {
-  required String store,
-  required String productId,
-  required String transactionId,
-}) =>
+bool confirmedPurchase(dynamic data,
+        {required String store,
+        required String productId,
+        required String transactionId}) =>
     data is Map &&
     data['ok'] == true &&
     ['credited', 'replayed'].contains(data['status']) &&
@@ -39,8 +37,8 @@ class RechargeRepository {
     final canonicalStore = store == 'google'
         ? 'google_play'
         : store == 'apple'
-        ? 'app_store'
-        : store;
+            ? 'app_store'
+            : store;
     final response = await _db.functions.invoke(
       'verify-purchase',
       body: {
@@ -53,18 +51,16 @@ class RechargeRepository {
     final data = response.data;
     if (response.status < 200 ||
         response.status >= 300 ||
-        !confirmedPurchase(
-          data,
-          store: canonicalStore,
-          productId: productId,
-          transactionId: canonicalStore == 'google_play'
-              ? receipt
-              : transactionId ?? '',
-        )) {
+        !confirmedPurchase(data,
+            store: canonicalStore,
+            productId: productId,
+            transactionId: canonicalStore == 'google_play'
+                ? receipt
+                : transactionId ?? '')) {
       throw StateError(
         data is Map
             ? (data['error']?.toString() ??
-                  'Purchase settlement was not confirmed')
+                'Purchase settlement was not confirmed')
             : 'Invalid purchase verification response',
       );
     }

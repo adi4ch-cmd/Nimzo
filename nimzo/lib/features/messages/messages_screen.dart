@@ -1,5 +1,4 @@
 import '../../core/widgets/master_ui.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,27 +15,29 @@ class MessagesScreen extends ConsumerWidget {
   const MessagesScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: const GradientText('Messages')),
-    body: RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(conversationsProvider);
-        await ref.read(conversationsProvider.future);
-      },
-      child: ListView(
-        children: [
-          AsyncContent(
-            value: ref.watch(conversationsProvider),
-            onRetry: () => ref.invalidate(conversationsProvider),
-            builder: (rows) => rows.isEmpty
-                ? const EmptyContent('No conversations yet')
-                : Column(
-                    children: [for (final r in rows) ConversationTile(row: r)],
-                  ),
+        appBar: AppBar(title: const GradientText('Messages')),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(conversationsProvider);
+            await ref.read(conversationsProvider.future);
+          },
+          child: ListView(
+            children: [
+              AsyncContent(
+                value: ref.watch(conversationsProvider),
+                onRetry: () => ref.invalidate(conversationsProvider),
+                builder: (rows) => rows.isEmpty
+                    ? const EmptyContent('No conversations yet')
+                    : Column(
+                        children: [
+                          for (final r in rows) ConversationTile(row: r),
+                        ],
+                      ),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }
 
 class ConversationTile extends ConsumerWidget {
@@ -47,8 +48,7 @@ class ConversationTile extends ConsumerWidget {
     final id = row['other_id']?.toString();
     if (id == null || id.isEmpty) return const SizedBox.shrink();
     final profile = ref.watch(profileProvider(id)).valueOrNull;
-    final name =
-        profile?.displayName ??
+    final name = profile?.displayName ??
         profile?.username ??
         row['display_name']?.toString() ??
         row['username']?.toString() ??
@@ -56,36 +56,28 @@ class ConversationTile extends ConsumerWidget {
     final unread = int.tryParse(row['unread']?.toString() ?? '') ?? 0;
     return ListTile(
       leading: NimzoAvatar(
-        name: name,
-        url: profile?.avatarPath == null
-            ? null
-            : ref
+          name: name,
+          url: profile?.avatarPath == null
+              ? null
+              : ref
                   .watch(supabaseProvider)
                   .storage
                   .from('avatars')
-                  .getPublicUrl(profile!.avatarPath!),
-      ),
+                  .getPublicUrl(profile!.avatarPath!)),
       title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Text(
-        row['last_body']?.toString() ?? '',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      subtitle: Text(row['last_body']?.toString() ?? '',
+          maxLines: 1, overflow: TextOverflow.ellipsis),
       trailing: unread > 0
           ? Semantics(
               label: '$unread unread messages',
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(
-                  color: NimzoStyle.primary,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '$unread',
-                  style: const TextStyle(color: Colors.white, fontSize: 11),
-                ),
-              ),
-            )
+                    color: NimzoStyle.primary,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Text('$unread',
+                    style: const TextStyle(color: Colors.white, fontSize: 11)),
+              ))
           : null,
       onTap: () => context.push('/chat/$id'),
     );
@@ -144,8 +136,7 @@ class _State extends ConsumerState<ConversationScreen> {
     } catch (_) {
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unable to update blocking. Retry.')),
-        );
+            const SnackBar(content: Text('Unable to update blocking. Retry.')));
     } finally {
       if (mounted) setState(() => blockBusy = false);
     }
@@ -174,53 +165,44 @@ class _State extends ConsumerState<ConversationScreen> {
     });
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          PopupMenuButton<String>(
-            enabled: !blockBusy,
-            onSelected: (_) => toggleBlock(),
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                value: 'block',
-                child: Text(
-                  ref
-                              .watch(blockedUserIdsProvider)
-                              .valueOrNull
-                              ?.contains(widget.otherId) ==
-                          true
-                      ? 'Unblock user'
-                      : 'Block user',
-                ),
-              ),
-            ],
-          ),
-        ],
-        title: InkWell(
-          onTap: () => context.push('/profile/${widget.otherId}'),
-          child: Row(
-            children: [
+          actions: [
+            PopupMenuButton<String>(
+              enabled: !blockBusy,
+              onSelected: (_) => toggleBlock(),
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                    value: 'block',
+                    child: Text(ref
+                                .watch(blockedUserIdsProvider)
+                                .valueOrNull
+                                ?.contains(widget.otherId) ==
+                            true
+                        ? 'Unblock user'
+                        : 'Block user'))
+              ],
+            )
+          ],
+          title: InkWell(
+            onTap: () => context.push('/profile/${widget.otherId}'),
+            child: Row(children: [
               NimzoAvatar(
-                name: other?.displayName ?? 'N',
-                size: 36,
-                url: avatar == null
-                    ? null
-                    : ref
+                  name: other?.displayName ?? 'N',
+                  size: 36,
+                  url: avatar == null
+                      ? null
+                      : ref
                           .watch(supabaseProvider)
                           .storage
                           .from('avatars')
-                          .getPublicUrl(avatar),
-              ),
+                          .getPublicUrl(avatar)),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  other?.displayName ?? other?.username ?? 'Conversation',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+                  child: Text(
+                      other?.displayName ?? other?.username ?? 'Conversation',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis)),
+            ]),
+          )),
       body: SafeArea(
         child: Column(
           children: [
@@ -240,30 +222,24 @@ class _State extends ConsumerState<ConversationScreen> {
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 11,
-                            vertical: 7,
-                          ),
+                              horizontal: 11, vertical: 7),
                           constraints: BoxConstraints(
                             maxWidth: MediaQuery.sizeOf(context).width * .8,
                           ),
                           decoration: BoxDecoration(
                             color: m.senderId == me ? null : NimzoStyle.surface,
-                            gradient: m.senderId == me
-                                ? NimzoStyle.gradient
-                                : null,
+                            gradient:
+                                m.senderId == me ? NimzoStyle.gradient : null,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                m.body ?? '',
-                                style: TextStyle(
-                                  color: m.senderId == me
-                                      ? Colors.white
-                                      : NimzoStyle.ink,
-                                ),
-                              ),
+                              Text(m.body ?? '',
+                                  style: TextStyle(
+                                      color: m.senderId == me
+                                          ? Colors.white
+                                          : NimzoStyle.ink)),
                               Text(
                                 '${m.createdAt.toLocal().hour}:${m.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
                                 style: TextStyle(
@@ -291,10 +267,8 @@ class _State extends ConsumerState<ConversationScreen> {
                       maxLength: 1000,
                       decoration: const InputDecoration(
                         hintText: 'Message…',
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         counterText: '',
                       ),
                     ),
@@ -303,13 +277,12 @@ class _State extends ConsumerState<ConversationScreen> {
                     onPressed: busy ? null : send,
                     tooltip: 'Send',
                     icon: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: NimzoStyle.gradient,
-                      ),
-                      child: const ReferenceIcon('send', color: Colors.white),
-                    ),
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: NimzoStyle.gradient),
+                        child:
+                            const ReferenceIcon('send', color: Colors.white)),
                   ),
                 ],
               ),

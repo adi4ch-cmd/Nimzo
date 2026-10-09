@@ -91,13 +91,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   ActionChip(
                     label: SizedBox(
-                      width: 72,
-                      child: Text(
-                        '$countryName ▾',
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ),
+                        width: 72,
+                        child: Text('$countryName ▾',
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 12))),
                     onPressed: () => showCountryPicker(
                       context: context,
                       onSelect: (c) => setState(() {
@@ -128,14 +125,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: Row(
                       children: [
                         ReferenceRoomAvatar(
-                          url: owned?.avatarPath == null
-                              ? null
-                              : ref
+                            url: owned?.avatarPath == null
+                                ? null
+                                : ref
                                     .read(supabaseProvider)
                                     .storage
                                     .from('room-images')
-                                    .getPublicUrl(owned!.avatarPath!),
-                        ),
+                                    .getPublicUrl(owned!.avatarPath!)),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
@@ -146,8 +142,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                                    fontWeight: FontWeight.w700),
                               ),
                               const Text(
                                 'One account, one room',
@@ -168,10 +163,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   const SizedBox(height: 14),
                   ReferenceTabs(
-                    labels: const ['Popular', 'Followed', 'Recent'],
-                    selected: tab,
-                    onSelected: (i) => setState(() => tab = i),
-                  ),
+                      labels: const ['Popular', 'Followed', 'Recent'],
+                      selected: tab,
+                      onSelected: (i) => setState(() => tab = i)),
                   const SizedBox(height: 6),
                   AsyncContent(
                     value: rooms,
@@ -203,10 +197,10 @@ class RoomTile extends ConsumerWidget {
     final url = path == null
         ? null
         : ref
-              .watch(supabaseProvider)
-              .storage
-              .from('room-images')
-              .getPublicUrl(path);
+            .watch(supabaseProvider)
+            .storage
+            .from('room-images')
+            .getPublicUrl(path);
     return InkWell(
       onTap: () => context.push('/room/${room.id}'),
       child: Container(

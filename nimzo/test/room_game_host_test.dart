@@ -5,9 +5,8 @@ import 'package:nimzo/features/games/room_game_host.dart';
 import 'package:nimzo/features/games/game_screen.dart';
 
 void main() {
-  testWidgets('minimize and restore retain room and game state', (
-    tester,
-  ) async {
+  testWidgets('minimize and restore retain room and game state',
+      (tester) async {
     var microphoneActions = 0;
     tester.view.physicalSize = const Size(320, 640);
     tester.view.devicePixelRatio = 1;
@@ -15,19 +14,15 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     final host = GlobalKey<RoomGameHostState>();
     final room = GlobalKey();
-    await tester.pumpWidget(
-      ProviderScope(
+    await tester.pumpWidget(ProviderScope(
         child: MaterialApp(
-          home: RoomGameHost(
-            key: host,
-            roomId: 'room',
-            voiceConnected: true,
-            onMic: () => microphoneActions++,
-            child: Scaffold(body: Text('Room chat', key: room)),
-          ),
-        ),
-      ),
-    );
+            home: RoomGameHost(
+      key: host,
+      roomId: 'room',
+      voiceConnected: true,
+      onMic: () => microphoneActions++,
+      child: Scaffold(body: Text('Room chat', key: room)),
+    ))));
     final roomElement = room.currentContext;
     host.currentState!.open('fruit_party_jackpot');
     await tester.pumpAndSettle();

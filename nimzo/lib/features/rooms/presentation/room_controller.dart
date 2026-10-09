@@ -1,5 +1,4 @@
 import '../../../core/providers/supabase_provider.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/room_repository.dart';
@@ -15,10 +14,8 @@ final roomProvider = FutureProvider.family<Room, String>(
 );
 
 /// Capability is scoped to the current session and remains false on lookup failure.
-final roomModerationProvider = FutureProvider.autoDispose.family<bool, String>((
-  ref,
-  roomId,
-) async {
+final roomModerationProvider =
+    FutureProvider.autoDispose.family<bool, String>((ref, roomId) async {
   if (ref.watch(currentUserIdProvider) == null) return false;
   try {
     return await ref.watch(roomRepositoryProvider).canModerate(roomId);
@@ -57,17 +54,13 @@ final roomActionsProvider = Provider((ref) => RoomActions(ref));
 
 final roomSeatProfilesProvider =
     FutureProvider.family<Map<String, Profile>, String>((ref, roomId) async {
-      final seats =
-          ref.watch(seatsProvider(roomId)).valueOrNull ?? const <MicSeat>[];
-      final ids = seats
-          .map((s) => s.userId)
-          .whereType<String>()
-          .toSet()
-          .toList();
-      if (ids.isEmpty) return const {};
-      final rows = await ref.read(roomRepositoryProvider).profilesForUsers(ids);
-      return {for (final p in rows) p.id: p};
-    });
+  final seats =
+      ref.watch(seatsProvider(roomId)).valueOrNull ?? const <MicSeat>[];
+  final ids = seats.map((s) => s.userId).whereType<String>().toSet().toList();
+  if (ids.isEmpty) return const {};
+  final rows = await ref.read(roomRepositoryProvider).profilesForUsers(ids);
+  return {for (final p in rows) p.id: p};
+});
 
 final roomOwnerProfileProvider = FutureProvider.family<Profile?, String>((
   ref,

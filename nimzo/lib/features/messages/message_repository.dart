@@ -20,14 +20,14 @@ class Message {
     required this.createdAt,
   });
   factory Message.fromJson(Map<String, dynamic> j) => Message(
-    id: j['id'],
-    senderId: j['sender_id'],
-    receiverId: j['receiver_id'],
-    kind: j['kind'] ?? 'text',
-    body: j['body'],
-    read: j['read_at'] != null,
-    createdAt: DateTime.parse(j['created_at']),
-  );
+        id: j['id'],
+        senderId: j['sender_id'],
+        receiverId: j['receiver_id'],
+        kind: j['kind'] ?? 'text',
+        body: j['body'],
+        read: j['read_at'] != null,
+        createdAt: DateTime.parse(j['created_at']),
+      );
 }
 
 class MessageRepository {
@@ -48,20 +48,17 @@ class MessageRepository {
     }
   }
 
-  Stream<List<Message>> watch(String other) => _db
-      .from('messages')
-      .stream(primaryKey: ['id'])
-      .order('created_at')
-      .map(
-        (rows) => rows
-            .where(
-              (r) =>
-                  (r['sender_id'] == _me && r['receiver_id'] == other) ||
-                  (r['sender_id'] == other && r['receiver_id'] == _me),
-            )
-            .map(Message.fromJson)
-            .toList(),
-      );
+  Stream<List<Message>> watch(String other) =>
+      _db.from('messages').stream(primaryKey: ['id']).order('created_at').map(
+            (rows) => rows
+                .where(
+                  (r) =>
+                      (r['sender_id'] == _me && r['receiver_id'] == other) ||
+                      (r['sender_id'] == other && r['receiver_id'] == _me),
+                )
+                .map(Message.fromJson)
+                .toList(),
+          );
 
   /// kind: text | emoji | gift | room_invite. Blocked-user checks happen in RLS/RPC.
   Future<void> send(String to, String body, {String kind = 'text'}) async {

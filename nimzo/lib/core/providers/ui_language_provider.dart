@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'supabase_provider.dart';
 
 /// Presentation state mirrors the existing profile language after a confirmed save.
@@ -12,5 +11,5 @@ const referenceArabicTabs = [
   'الألعاب',
   'اللحظات',
   'الرسائل',
-  'أنا',
+  'أنا'
 ];

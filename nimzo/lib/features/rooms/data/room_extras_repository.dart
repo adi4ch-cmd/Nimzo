@@ -112,5 +112,5 @@ final roomChatProvider = StreamProvider.family<List<ChatMessage>, String>(
 );
 final roomMembersProvider =
     FutureProvider.family<List<Map<String, dynamic>>, String>(
-      (ref, id) => ref.watch(roomExtrasProvider).members(id),
-    );
+  (ref, id) => ref.watch(roomExtrasProvider).members(id),
+);

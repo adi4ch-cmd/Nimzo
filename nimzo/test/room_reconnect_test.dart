@@ -1,7 +1,5 @@
 import 'package:nimzo/features/vip/phoenix_room_entry.dart';
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,15 +15,14 @@ import 'package:nimzo/features/voice/voice_controller.dart';
 import 'package:nimzo/core/widgets/master_ui.dart';
 
 final room = Room(
-  id: 'room',
-  roomNo: 123,
-  name: 'Room',
-  ownerId: 'owner',
-  theme: 'nimzo_white',
-  isPrivate: false,
-  status: 'open',
-  createdAt: DateTime(2026),
-);
+    id: 'room',
+    roomNo: 123,
+    name: 'Room',
+    ownerId: 'owner',
+    theme: 'nimzo_white',
+    isPrivate: false,
+    status: 'open',
+    createdAt: DateTime(2026));
 
 class ReconnectRepository extends RoomRepository {
   ReconnectRepository(super.db);
@@ -88,20 +85,15 @@ class PendingRoomChat extends RoomChatRepository {
 }
 
 void main() {
-  testWidgets('room exposes voice reconnect without joining membership twice', (
-    tester,
-  ) async {
+  testWidgets('room exposes voice reconnect without joining membership twice',
+      (tester) async {
     tester.view.physicalSize = const Size(320, 640);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final db = (await tester.runAsync(
-      () async => SupabaseClient(
-        'https://example.supabase.co',
-        'test-key',
-        authOptions: const AuthClientOptions(autoRefreshToken: false),
-      ),
-    ))!;
+    final db = (await tester.runAsync(() async => SupabaseClient(
+        'https://example.supabase.co', 'test-key',
+        authOptions: const AuthClientOptions(autoRefreshToken: false))))!;
     addTearDown(() => tester.runAsync(db.dispose));
     final repo = ReconnectRepository(db);
     final voice = ReconnectVoice();
@@ -109,25 +101,18 @@ void main() {
     final seats = StreamController<List<MicSeat>>.broadcast();
     addTearDown(seats.close);
     addTearDown(voice.dispose);
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          phoenixEntriesProvider.overrideWith(
-            (ref, room) => const Stream.empty(),
-          ),
-          currentUserIdProvider.overrideWithValue('viewer'),
-          roomRepositoryProvider.overrideWithValue(repo),
-          roomChatRepositoryProvider.overrideWithValue(chat),
-          roomProvider('room').overrideWith((_) async => room),
-          seatsProvider('room').overrideWith((_) => seats.stream),
-          roomSeatProfilesProvider('room').overrideWith((_) async => {}),
-          onlineCountProvider('room').overrideWith((_) => Stream.value(1)),
-          roomChatProvider('room').overrideWith((_) => Stream.value([])),
-          voiceServiceProvider.overrideWithValue(voice),
-        ],
-        child: const MaterialApp(home: RoomScreen(roomId: 'room')),
-      ),
-    );
+    await tester.pumpWidget(ProviderScope(overrides: [
+      phoenixEntriesProvider.overrideWith((ref, room) => const Stream.empty()),
+      currentUserIdProvider.overrideWithValue('viewer'),
+      roomRepositoryProvider.overrideWithValue(repo),
+      roomChatRepositoryProvider.overrideWithValue(chat),
+      roomProvider('room').overrideWith((_) async => room),
+      seatsProvider('room').overrideWith((_) => seats.stream),
+      roomSeatProfilesProvider('room').overrideWith((_) async => {}),
+      onlineCountProvider('room').overrideWith((_) => Stream.value(1)),
+      roomChatProvider('room').overrideWith((_) => Stream.value([])),
+      voiceServiceProvider.overrideWithValue(voice),
+    ], child: const MaterialApp(home: RoomScreen(roomId: 'room'))));
     await tester.pumpAndSettle();
     expect(find.byType(DashedCircle), findsNWidgets(10));
     final seatCenters = find
@@ -138,10 +123,8 @@ void main() {
     expect(seatCenters.take(5).map((p) => p.dy).toSet().length, 1);
     expect(seatCenters.skip(5).map((p) => p.dy).toSet().length, 1);
     expect(seatCenters[5].dy, greaterThan(seatCenters[0].dy));
-    expect(
-      seatCenters.take(5).map((p) => p.dx).toList(),
-      seatCenters.skip(5).map((p) => p.dx).toList(),
-    );
+    expect(seatCenters.take(5).map((p) => p.dx).toList(),
+        seatCenters.skip(5).map((p) => p.dx).toList());
     await tester.tap(find.byTooltip('Microphone'));
     await tester.pump();
     await tester.tap(find.byTooltip('Microphone'));
@@ -158,10 +141,8 @@ void main() {
     await tester.enterText(find.byType(TextField), 'Next room draft');
     chat.pending.complete();
     await tester.pumpAndSettle();
-    expect(
-      tester.widget<TextField>(find.byType(TextField)).controller!.text,
-      'Next room draft',
-    );
+    expect(tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        'Next room draft');
     seats.add(List.generate(10, (i) => MicSeat(seatNo: i + 1)));
     await tester.pumpAndSettle();
     expect(voice.leaves, 1);

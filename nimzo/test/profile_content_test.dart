@@ -91,9 +91,8 @@ void main() {
   }
 
   for (var kind = 0; kind < 3; kind++) {
-    testWidgets('public profile badge $kind opens its category', (
-      tester,
-    ) async {
+    testWidgets('public profile badge $kind opens its category',
+        (tester) async {
       await openProfile(tester);
       await tester.tap(find.byKey(ValueKey('profile-level-$kind')));
       await tester.pumpAndSettle();
@@ -105,21 +104,14 @@ void main() {
     });
   }
 
-  testWidgets('badge distinguishes unavailable total from a real zero', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      const MaterialApp(
+  testWidgets('badge distinguishes unavailable total from a real zero',
+      (tester) async {
+    await tester.pumpWidget(const MaterialApp(
         home: Scaffold(
-          body: Column(
-            children: [
-              ProfileProgressBadge(kind: 0, level: 0),
-              ProfileProgressBadge(kind: 1, level: 0, total: 0),
-            ],
-          ),
-        ),
-      ),
-    );
+            body: Column(children: [
+      ProfileProgressBadge(kind: 0, level: 0),
+      ProfileProgressBadge(kind: 1, level: 0, total: 0),
+    ]))));
     expect(find.text('Total unavailable'), findsOneWidget);
     expect(find.text('0 diamonds'), findsOneWidget);
     expect(find.text('Level unavailable'), findsNWidgets(2));
@@ -127,9 +119,8 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('profile avatar overlaps the approved 130px cover', (
-    tester,
-  ) async {
+  testWidgets('profile avatar overlaps the approved 130px cover',
+      (tester) async {
     await openProfile(tester);
     final cover = tester.getRect(find.byKey(const ValueKey('profile-cover')));
     final avatar = tester.getRect(find.byKey(const ValueKey('profile-avatar')));
@@ -178,9 +169,8 @@ void main() {
       expect(find.text('89 points'), findsOneWidget);
       expect(find.text('Level unavailable'), findsNWidgets(3));
       final id = tester.getRect(find.text('ID:101 · '));
-      final badges = tester.getRect(
-        find.byKey(const ValueKey('profile-level-badges')),
-      );
+      final badges =
+          tester.getRect(find.byKey(const ValueKey('profile-level-badges')));
       expect(badges.top, greaterThanOrEqualTo(id.bottom));
       expect(tester.takeException(), isNull);
       expect(find.byIcon(Icons.verified_rounded), findsNothing);
@@ -191,7 +181,10 @@ void main() {
       );
       await tester.tap(find.text('Gifts'));
       await tester.pumpAndSettle();
-      expect(find.text('Rose'), findsOneWidget);
+      expect(
+        find.text('Rose'),
+        findsOneWidget,
+      );
       expect(find.text('× 12'), findsOneWidget);
       expect(find.text('No gifts received yet'), findsNothing);
       await tester.scrollUntilVisible(

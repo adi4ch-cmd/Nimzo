@@ -4,12 +4,11 @@ class RoomSession {
   bool joined = false, closed = false;
   DateTime? enteredAt;
   Future<void>? _joining, _closing;
-  RoomSession({
-    required this.joinRoom,
-    required this.leaveRoom,
-    required this.joinVoice,
-    required this.leaveVoice,
-  });
+  RoomSession(
+      {required this.joinRoom,
+      required this.leaveRoom,
+      required this.joinVoice,
+      required this.leaveVoice});
   Future<void> join() {
     if (closed) throw StateError('Room session is closed');
     return _joining ??= _join().whenComplete(() => _joining = null);
@@ -36,9 +35,7 @@ class RoomSession {
     } finally {
       try {
         await _joining;
-      } catch (_) {
-        /* A cancelled voice join still needs membership cleanup. */
-      }
+      } catch (_) {/* A cancelled voice join still needs membership cleanup. */}
       if (joined) {
         await leaveRoom();
         joined = false;

@@ -1,17 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../core/providers/supabase_provider.dart';
 import 'phoenix_entitlement.dart';
 import 'phoenix_widgets.dart';
 
-bool phoenixEntryIsFresh({
-  required DateTime? serverNow,
-  required DateTime? createdAt,
-  required Duration requestTime,
-}) {
+bool phoenixEntryIsFresh(
+    {required DateTime? serverNow,
+    required DateTime? createdAt,
+    required Duration requestTime}) {
   if (serverNow == null || createdAt == null) return false;
   final age = serverNow.difference(createdAt) + requestTime;
   return age >= Duration.zero && age <= const Duration(seconds: 10);
@@ -19,15 +16,15 @@ bool phoenixEntryIsFresh({
 
 final phoenixEntriesProvider = StreamProvider.autoDispose
     .family<List<Map<String, dynamic>>, String>((ref, roomId) {
-      return ref
-          .watch(sessionSupabaseProvider)
-          .client
-          .from('phoenix_room_entries')
-          .stream(primaryKey: ['id'])
-          .eq('room_id', roomId)
-          .order('created_at', ascending: false)
-          .limit(50);
-    });
+  return ref
+      .watch(sessionSupabaseProvider)
+      .client
+      .from('phoenix_room_entries')
+      .stream(primaryKey: ['id'])
+      .eq('room_id', roomId)
+      .order('created_at', ascending: false)
+      .limit(50);
+});
 
 /// Events are written by the server only for genuine, entitled room joins.
 /// One effect at a time, bounded backlog, never replay a reconnect snapshot.
@@ -78,27 +75,22 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
       if (!mounted ||
           !foreground ||
           requestGeneration != generation ||
-          raw is! Map)
-        return;
+          raw is! Map) return;
       final json = Map<String, dynamic>.from(raw);
       final serverNow = DateTime.tryParse(json['server_now']?.toString() ?? '');
       final created = DateTime.tryParse(event['created_at']?.toString() ?? '');
-      final entitlement = PhoenixEntitlement.fromJson(
-        json,
-        requestTime: elapsed.elapsed,
-      );
+      final entitlement =
+          PhoenixEntitlement.fromJson(json, requestTime: elapsed.elapsed);
       if (!entitlement.isPhoenix ||
           !phoenixEntryIsFresh(
-            serverNow: serverNow,
-            createdAt: created,
-            requestTime: elapsed.elapsed,
-          ))
-        return;
+              serverNow: serverNow,
+              createdAt: created,
+              requestTime: elapsed.elapsed)) return;
       setState(() => current = event);
       final duration =
           entitlement.leaseRemaining < const Duration(milliseconds: 3400)
-          ? entitlement.leaseRemaining
-          : const Duration(milliseconds: 3400);
+              ? entitlement.leaseRemaining
+              : const Duration(milliseconds: 3400);
       timer = Timer(duration, () {
         if (!mounted) return;
         setState(() => current = null);
@@ -130,8 +122,7 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
         if (id == null || !seen.add(id)) continue;
         if (foreground &&
             queue.length < 5 &&
-            (baseline || event['user_id'] == me))
-          queue.add(event);
+            (baseline || event['user_id'] == me)) queue.add(event);
       }
       baseline = true;
       // Server stream keeps only the latest 50, so prune only IDs no longer in it.
@@ -141,8 +132,7 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
     });
     if (current == null) return const SizedBox.shrink();
     return PhoenixEntry(
-      key: ValueKey(current!['id']),
-      name: current!['display_name']?.toString() ?? 'Nimzo user',
-    );
+        key: ValueKey(current!['id']),
+        name: current!['display_name']?.toString() ?? 'Nimzo user');
   }
 }
