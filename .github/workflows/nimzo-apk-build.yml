@@ -8,6 +8,7 @@ on:
       - NIMZO_Dragon_Gift_Assets_Patch.zip
       - NIMZO_Yo2_Assets_Part_1_of_2.zip
       - NIMZO_Yo2_Assets_Part_2_of_2.zip
+      - NIMZO_Yo2_NonDragon_Gifts_Patch.zip
   workflow_dispatch: {}
 
 permissions:
