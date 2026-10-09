@@ -144,6 +144,23 @@ class _State extends ConsumerState<GiftSheet> {
         container.invalidate(profileProvider(me));
         container.invalidate(profileStatsProvider(me));
       }
+      // Play the *actual* Yo2 send animation (animated WebP) only after the
+      // server RPC confirms settlement. The two Dragon gifts are out of scope.
+      if (mounted && g.category.toLowerCase() != 'dragon') {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(
+          duration: const Duration(seconds: 2),
+          content: Row(children: [
+            const Yo2GiftPanelArt(
+              'anim_send_gift_v2.webp',
+              width: 42,
+              height: 42,
+              fallback: Icon(Icons.check_circle_outline, size: 28),
+            ),
+            const SizedBox(width: 8),
+            Expanded(child: Text('${g.name} × $requestQuantity sent')),
+          ]),
+        ));
+      }
       if (mounted) Navigator.pop(context);
     } catch (error) {
       // Known RPC rejections roll back settlement, so a new selection is safe.

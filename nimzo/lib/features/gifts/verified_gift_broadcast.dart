@@ -4,6 +4,7 @@ import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'gift_repository.dart';
 import 'gift_video_overlay.dart';
+import 'yo2_gift_ui.dart';
 
 /// Server-settled gift announcements. Initial history is never replayed.
 class VerifiedGiftBroadcast extends ConsumerStatefulWidget {
@@ -260,15 +261,28 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                child: Text(
-                  _loading
-                      ? 'Preparing verified gift…'
-                      : '${event['scope'] == 'country' ? 'COUNTRY GIFT' : 'ROOM GIFT'}  •  $giftName × $quantity  •  ${price * quantity} coins',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (giftName != 'Dragon' && giftName != 'Golden Dragon') ...[
+                      const Yo2GiftPanelArt(
+                        'anim_send_gift_v2.webp',
+                        width: 48,
+                        height: 48,
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Flexible(child: Text(
+                      _loading
+                          ? 'Preparing verified gift…'
+                          : '${event['scope'] == 'country' ? 'COUNTRY GIFT' : 'ROOM GIFT'}  •  $giftName × $quantity  •  ${price * quantity} coins',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                    )),
+                  ],
                 ),
               ),
             ),
