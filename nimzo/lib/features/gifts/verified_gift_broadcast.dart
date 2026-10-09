@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show AssetManifest;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'gift_repository.dart';
 import 'gift_video_overlay.dart';
@@ -33,6 +34,25 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     _mediaWait = null;
   }
 
+  // Only use originals that are actually bundled in the installed APK.
+  // Never claim that an absent file has been integrated.
+  Future<String?> _bundledDragonMedia(String giftId) async {
+    const originals = <String, String>{
+      'e1e65664-37f8-4cfd-9640-3bb035723b98':
+          'assets/gifts/dragon_1m.mp4',
+      'c3f41e6e-68d5-4e56-9253-33421ec18fc3':
+          'assets/gifts/golden_dragon_5m.mp4',
+    };
+    final path = originals[giftId];
+    if (path == null) return null;
+    try {
+      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      return manifest.listAssets().contains(path) ? path : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<String?> _lookupMedia(String giftId) {
     _cancelMediaLookup();
     final wait = Completer<String?>();
@@ -40,8 +60,10 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     _mediaTimer = Timer(const Duration(seconds: 8), () {
       if (!wait.isCompleted) wait.complete(null);
     });
-    ref.read(giftRepositoryProvider).approvedAnimationUrl(giftId).then((url) {
-      if (!wait.isCompleted) wait.complete(url);
+    ref.read(giftRepositoryProvider).approvedAnimationUrl(giftId).then((url) async {
+      // Approved remote media takes precedence; local originals are a fallback.
+      final resolved = url ?? await _bundledDragonMedia(giftId);
+      if (!wait.isCompleted) wait.complete(resolved);
     }, onError: (Object error, StackTrace trace) {
       if (!wait.isCompleted) wait.completeError(error, trace);
     });
