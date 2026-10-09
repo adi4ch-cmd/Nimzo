@@ -24,7 +24,8 @@ class RecordingRoomGiftRepository extends GiftRepository {
 }
 
 void main() {
-  testWidgets('room gift recipient can switch back to Myself', (tester) async {
+  for (final seated in [true, false]) {
+  testWidgets('room gift recipient can switch to Myself ${seated ? 'on mic' : 'off mic'}', (tester) async {
     final db = (await tester.runAsync(() async => SupabaseClient(
           'https://example.supabase.co',
           'test-key',
@@ -42,7 +43,7 @@ void main() {
               ]),
           walletProvider.overrideWith((_) async => (coins: 10000, diamonds: 0)),
           roomSeatProfilesProvider('room').overrideWith((_) async => {
-                'sender': const Profile(
+                if (seated) 'sender': const Profile(
                     id: 'sender', nimzoId: 1, displayName: 'Sender'),
                 'receiver': const Profile(
                     id: 'receiver', nimzoId: 2, displayName: 'Receiver'),
@@ -69,4 +70,5 @@ void main() {
     expect(repo.receiver, 'sender');
     expect(tester.takeException(), isNull);
   });
+  }
 }

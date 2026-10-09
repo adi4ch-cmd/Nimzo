@@ -201,6 +201,24 @@ class _State extends ConsumerState<GiftSheet> {
                               'Virtual Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${wallet.valueOrNull!.coins} coins'}',
                               style: const TextStyle(
                                   fontWeight: FontWeight.w700, fontSize: 16)))),
+                  // Room members can gift themselves even when not seated on
+                  // a microphone. The seat roster must not hide "Myself".
+                  if (widget.roomId != null &&
+                      me != null &&
+                      recipients?.values.any((p) => p.id == me) != true)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: ChoiceChip(
+                          label: const Text('Myself'),
+                          selected: receiverId == me,
+                          onSelected: busy || confirming || key != null
+                              ? null
+                              : (_) => setState(() => recipient = me),
+                        ),
+                      ),
+                    ),
                   if (recipients != null && recipients.isNotEmpty)
                     Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
