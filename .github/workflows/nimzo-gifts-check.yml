@@ -11,7 +11,7 @@ on:
       - 'nimzo/lib/features/profile/profile_screen.dart'
       - 'nimzo/lib/features/moments/moments_screen.dart'
       - 'nimzo/test/gift_*.dart'
-      - 'nimzo/test/verified_gift_broadcast_test.dart             test/yo2_gift_ui_test.dart'
+      - 'nimzo/test/verified_gift_broadcast_test.dart'
       - 'nimzo/pubspec.yaml'
       - 'nimzo/assets/gifts/**'
       - 'nimzo/assets/yo2_gifts/**'
