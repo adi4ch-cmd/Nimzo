@@ -11,7 +11,6 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/master_ui.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/utils/formatters.dart';
 
 class ReferenceInfoContent extends ConsumerWidget {
   final String title;

@@ -54,7 +54,7 @@ class GameLevelScreen extends ConsumerWidget {
                   'assets/hilo/game_levels/level_$i.webp',fit:BoxFit.contain))),
                 Text('LV $i',style:TextStyle(fontSize:11,
                   color:i<=level?NimzoStyle.primary:NimzoStyle.muted)),
-              ]))),
+              ])),
           ),
           const SizedBox(height:16),
           const Text('Only completed game rounds with verified won/lost results count. '
