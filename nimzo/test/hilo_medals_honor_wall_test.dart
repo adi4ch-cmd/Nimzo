@@ -65,7 +65,7 @@ void main() {
     expect(find.text('1 owned · None equipped'), findsOneWidget);
     expect(find.text('Royal Crest I'), findsNWidgets(2));
     expect(find.text('Equip'), findsOneWidget);
-    expect(find.text('Owned'), findsOneWidget);
+    expect(find.text('Owned'), findsNWidgets(2));
     expect(find.text('Room medal previews'), findsNothing);
     expect(tester.takeException(), isNull);
   });
