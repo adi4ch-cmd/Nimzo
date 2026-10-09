@@ -188,12 +188,16 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     if (_video == null) {
       final price = (event['unit_price'] as num?)?.toInt() ?? 0;
       _timer = Timer(
-          Duration(
-              seconds: price >= 10000000
-                  ? 5
-                  : price >= 5000000
-                      ? 4
-                      : 3),
+          price < 10000
+              ? const Duration(milliseconds: 1200)
+              : price < 1000000
+                  ? const Duration(milliseconds: 1800)
+                  : Duration(
+                      seconds: price >= 10000000
+                          ? 5
+                          : price >= 5000000
+                              ? 4
+                              : 3),
           _next);
     }
   }
