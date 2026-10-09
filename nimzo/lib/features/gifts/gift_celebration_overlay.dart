@@ -201,7 +201,7 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
                                   ),
                                 ),
                                 Text(
-                                  '× ' + widget.quantity.toString(),
+                                  '× ${widget.quantity}',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
@@ -210,7 +210,7 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
                                 ),
                                 const SizedBox(height: 9),
                                 Text(
-                                  widget.sender + '  →  ' + widget.recipient,
+                                  '${widget.sender}  →  ${widget.recipient}',
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.center,
