@@ -60,12 +60,23 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     _mediaTimer = Timer(const Duration(seconds: 8), () {
       if (!wait.isCompleted) wait.complete(null);
     });
-    ref.read(giftRepositoryProvider).approvedAnimationUrl(giftId).then((url) async {
-      // Approved remote media takes precedence; local originals are a fallback.
-      final resolved = url ?? await _bundledDragonMedia(giftId);
-      if (!wait.isCompleted) wait.complete(resolved);
-    }, onError: (Object error, StackTrace trace) {
-      if (!wait.isCompleted) wait.completeError(error, trace);
+
+    // A remote lookup failure must not suppress a bundled original. Complete
+    // with null rather than leaving an unhandled asynchronous error.
+    Future<void>(() async {
+      String? remote;
+      try {
+        remote = await ref
+            .read(giftRepositoryProvider)
+            .approvedAnimationUrl(giftId);
+      } catch (_) {
+        // Offline clients can still play a verified bundled original.
+      }
+      if (wait.isCompleted) return;
+      final local = remote == null ? await _bundledDragonMedia(giftId) : null;
+      if (!wait.isCompleted) wait.complete(remote ?? local);
+    }).catchError((Object _) {
+      if (!wait.isCompleted) wait.complete(null);
     });
     return wait.future;
   }
