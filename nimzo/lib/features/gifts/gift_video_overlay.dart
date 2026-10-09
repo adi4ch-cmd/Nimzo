@@ -145,8 +145,9 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
           fit: StackFit.expand,
           children: [
             if (controller != null && controller.value.isInitialized)
-              Center(
-                child: ConstrainedBox(
+              IgnorePointer(
+                child: Center(
+                  child: ConstrainedBox(
                   constraints: BoxConstraints(
                     maxWidth: MediaQuery.sizeOf(context).width * 0.94,
                     maxHeight: MediaQuery.sizeOf(context).height * 0.65,
@@ -156,12 +157,15 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
                     child: VideoPlayer(controller),
                   ),
                 ),
+                ),
               )
             else
-              Center(
-                child: Text(
+              IgnorePointer(
+                child: Center(
+                  child: Text(
                   _error ?? 'Loading gift animation…',
                   style: const TextStyle(color: Colors.white),
+                ),
                 ),
               ),
             Positioned(
@@ -192,7 +196,8 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
               bottom: 28,
               left: 16,
               right: 16,
-              child: DecoratedBox(
+              child: IgnorePointer(
+                child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.56),
                   borderRadius: BorderRadius.circular(18),
@@ -209,6 +214,7 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
                       fontSize: 16,
                     ),
                   ),
+                ),
                 ),
               ),
             ),
