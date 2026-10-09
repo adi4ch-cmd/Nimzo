@@ -138,7 +138,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Send gift'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Virtual Gifts'), findsOneWidget);
+    expect(find.textContaining('NIMZO Gifts'), findsOneWidget);
     expect(find.text('No gifts available'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
