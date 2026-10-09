@@ -63,8 +63,10 @@ void main() {
         await tester.runAsync(() async {
           for (final family in ['vip', 'svip']) {
             for (var i = 0; i < 10; i++) {
-              await precacheImage(
-                  AssetImage('assets/reference/$family/$i.jpg'), context);
+              final asset = family == 'svip'
+                  ? 'assets/membership/svip/svip_medal${i + 1}.webp'
+                  : 'assets/reference/vip/$i.jpg';
+              await precacheImage(AssetImage(asset), context);
             }
           }
         });

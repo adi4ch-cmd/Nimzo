@@ -24,6 +24,10 @@ class SettledMomentGiftRepository extends MomentRepository {
 void main() {
   testWidgets('Moment gift refreshes detail and author Moments caches',
       (tester) async {
+    tester.view.physicalSize = const Size(420, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     final db = (await tester.runAsync(() async => SupabaseClient(
           'https://example.supabase.co',
           'test-key',
@@ -69,7 +73,13 @@ void main() {
           momentId: 'moment',
         )))));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Coffee'));
+    // Tap the actual gift card, not the label which can be obscured by
+    // the fixed quantity/send tray on smaller viewports.
+    final coffeeCard = find.ancestor(
+        of: find.text('Coffee'), matching: find.byType(InkWell));
+    expect(coffeeCard, findsWidgets);
+    await tester.ensureVisible(coffeeCard.first);
+    await tester.tap(coffeeCard.first);
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Send'));
     await tester.pumpAndSettle();
