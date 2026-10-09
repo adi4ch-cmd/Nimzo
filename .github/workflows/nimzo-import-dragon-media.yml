@@ -1,0 +1,55 @@
+name: Import original NIMZO Dragon gift videos
+
+on:
+  push:
+    branches:
+      - feature/profile-reference-redesign
+    paths:
+      - NIMZO_Dragon_Gift_Assets_Patch.zip
+
+permissions:
+  contents: write
+
+jobs:
+  import-verified-media:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Check exactly supplied videos and SHA-256
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, zipfile
+          archive = Path('NIMZO_Dragon_Gift_Assets_Patch.zip')
+          expected = {
+              'nimzo/assets/gifts/dragon_1m.mp4': 'c2b70872477e225d720da7330fc6b5d77b8c6227c00ffc6c6bb558cb4905b2d7',
+              'nimzo/assets/gifts/golden_dragon_5m.mp4': 'b9744763526d523dfc6f155beff8510b8481919ad48ec45f778722502ba101ec',
+          }
+          if not archive.is_file():
+              raise SystemExit('Expected original ZIP at repo root')
+          with zipfile.ZipFile(archive) as z:
+              if z.testzip():
+                  raise SystemExit('Corrupt gift ZIP')
+              for name, sha in expected.items():
+                  payload = z.read(name)
+                  if hashlib.sha256(payload).hexdigest() != sha:
+                      raise SystemExit('Original gift file hash mismatch: ' + name)
+          print('Both source videos verified')
+          PY
+      - name: Install Flutter assets
+        run: python3 tools/import_dragon_gifts.py NIMZO_Dragon_Gift_Assets_Patch.zip
+      - name: Commit original videos, remove temporary ZIP
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nimzo/assets/gifts/dragon_1m.mp4 nimzo/assets/gifts/golden_dragon_5m.mp4 nimzo/pubspec.yaml
+          git rm -f NIMZO_Dragon_Gift_Assets_Patch.zip
+          if git diff --cached --quiet; then
+            echo "Assets already committed"
+            exit 0
+          fi
+          git commit -m "gifts: bundle verified Dragon MP4 originals [gifts-only]"
+          git push

@@ -93,11 +93,11 @@ void main() {
   testWidgets('settled gift announcement uses quantity and total cost',
       (tester) async {
     await mount(tester);
-    events.add([event('dragon', 'e1e65664-37f8-4cfd-9640-3bb035723b98')]);
+    events.add([event('generic', 'ce25005c-bb88-4e99-9891-e3d89e25e027')]);
     await tester.pump();
     repo.pending.values.single.complete(null);
     await tester.pump();
-    expect(find.textContaining('Dragon × 3'), findsOneWidget);
+    expect(find.textContaining('Gift × 3'), findsOneWidget);
     expect(find.textContaining('3000000 coins'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });

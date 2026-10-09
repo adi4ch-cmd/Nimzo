@@ -268,7 +268,7 @@ class _State extends ConsumerState<GiftSheet> {
                                       child: Padding(
                                     padding: EdgeInsets.all(16),
                                     child: Text(
-                                        'Cinematic gift playback is pending approved animation media.',
+                                        'Original Dragon effects play after verified settlement when their media is installed.',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             color: NimzoStyle.muted,

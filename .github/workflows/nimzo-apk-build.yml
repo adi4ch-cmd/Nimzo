@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   build:
+    if: ${{ !contains(github.event.head_commit.message, '[gifts-only]') }}
     runs-on: ubuntu-latest
     env:
       HAS_RELEASE_SIGNING: ${{ secrets.NIMZO_KEYSTORE_BASE64 != '' || secrets.NIMZO_KEYSTORE_PASSWORD != '' || secrets.NIMZO_KEY_ALIAS != '' || secrets.NIMZO_KEY_PASSWORD != '' }}

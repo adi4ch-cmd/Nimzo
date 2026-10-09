@@ -1,0 +1,57 @@
+name: NIMZO gift-only tests (no APK)
+
+on:
+  push:
+    branches:
+      - feature/profile-reference-redesign
+    paths:
+      - 'nimzo/lib/features/gifts/**'
+      - 'nimzo/test/gift_*.dart'
+      - 'nimzo/test/verified_gift_broadcast_test.dart'
+      - 'nimzo/pubspec.yaml'
+      - 'nimzo/assets/gifts/**'
+      - 'tools/import_dragon_gifts.py'
+      - '.github/workflows/nimzo-gifts-check.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate-gifts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Check original asset consistency
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          expected = {
+              'dragon_1m.mp4': 'c2b70872477e225d720da7330fc6b5d77b8c6227c00ffc6c6bb558cb4905b2d7',
+              'golden_dragon_5m.mp4': 'b9744763526d523dfc6f155beff8510b8481919ad48ec45f778722502ba101ec'
+          }
+          folder = Path('nimzo/assets/gifts')
+          present = [folder.joinpath(name).exists() for name in expected]
+          if any(present):
+              assert all(present), 'Both videos must be installed together'
+              assert '    - assets/gifts/' in Path('nimzo/pubspec.yaml').read_text()
+              for name, sha in expected.items():
+                  assert hashlib.sha256(folder.joinpath(name).read_bytes()).hexdigest() == sha, name
+          print('Original MP4 asset contract OK; installed:', all(present))
+          PY
+      - name: Resolve Flutter packages
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Analyze gift code
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/features/gifts test/gift_video_overlay_test.dart test/verified_gift_broadcast_test.dart
+      - name: Run gift-only tests
+        working-directory: nimzo
+        run: |
+          flutter test             test/gift_artwork_test.dart             test/gift_media_repository_test.dart             test/gift_rejection_test.dart             test/gift_retry_test.dart             test/gift_room_recipient_test.dart             test/gift_settlement_error_test.dart             test/gift_video_overlay_test.dart             test/verified_gift_broadcast_test.dart
