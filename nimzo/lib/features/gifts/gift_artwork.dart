@@ -33,11 +33,22 @@ class GiftArtwork extends StatelessWidget {
   const GiftArtwork({super.key, required this.name, this.assetPath});
   @override
   Widget build(BuildContext context) {
-    const unavailable = Center(
-      child: Text(
-        'Artwork unavailable',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 11),
+    // The original Yo2 APK does not bundle per-gift catalog images. Keep
+    // the real catalog name readable rather than inventing a replacement icon.
+    final unavailable = Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Text(
+          name,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: Color(0xffe6bc58),
+          ),
+        ),
       ),
     );
     final path = assetPath ?? originalDragonPoster(name) ?? referenceGiftArtwork(name);
