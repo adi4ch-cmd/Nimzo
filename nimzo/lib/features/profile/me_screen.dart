@@ -216,7 +216,7 @@ class MeScreen extends ConsumerWidget {
                       const _MenuRow(
                         items: [
                           ('Task', 'task', '/info/Task'),
-                          ('Store', 'store', '/info/Store'),
+                          ('Store', 'store', '/store'),
                           ('Ranking', 'cup', '/ranking'),
                           ('Honor Wall', 'moments', '/info/Honor%20Wall'),
                         ],

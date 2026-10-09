@@ -16,6 +16,7 @@ import 'levels_screen.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
+import '../store/store_badge.dart';
 import '../gifts/gift_artwork.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -245,6 +246,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         if (p.svipLevel > 0)
                           Chip(label: Text('SVIP ${p.svipLevel}')),
                       ]),
+                    EquippedRoyalMedal(userId: id),
                     const SizedBox(height: 8),
                     Text(p.bio?.isNotEmpty == true ? p.bio! : 'No bio yet'),
                     AsyncContent(

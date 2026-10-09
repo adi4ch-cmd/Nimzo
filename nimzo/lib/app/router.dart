@@ -20,6 +20,8 @@ import '../features/discover/discover_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/profile/me_screen.dart';
 import '../features/games/game_screen.dart';
+import '../features/games/game_level_screen.dart';
+import '../features/store/store_screen.dart';
 import '../features/games/games_catalog_screen.dart';
 import '../features/rooms/presentation/create_room_screen.dart';
 import '../features/rooms/presentation/room_settings_screen.dart';
@@ -129,6 +131,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
+      GoRoute(path: '/game-level', builder: (_, __) => const GameLevelScreen()),
+      GoRoute(path: '/store', builder: (_, __) => const RoyalStoreScreen()),
       GoRoute(
           path: '/social/:kind/:id',
           builder: (_, s) => SocialListScreen(

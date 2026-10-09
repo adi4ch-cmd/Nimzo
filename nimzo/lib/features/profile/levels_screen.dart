@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/widgets/master_ui.dart';
@@ -88,6 +89,13 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                             color: NimzoStyle.muted, fontSize: 12))
                   ]));
                 }),
+          ReferenceCard(child: ListTile(
+              leading: const Icon(Icons.emoji_events_outlined),
+              title: const Text('Game Level'),
+              subtitle: const Text('Verified settled-game progress'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/game-level'),
+            )),
           ReferenceCard(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

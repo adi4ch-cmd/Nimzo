@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/widgets/master_ui.dart';
@@ -31,6 +32,13 @@ class HonorWallContent extends ConsumerWidget {
                               textAlign: TextAlign.center)
                         ]))
                 ])),
+      const SizedBox(height: 12),
+      ListTile(
+        leading: const Icon(Icons.emoji_events_outlined),
+        title: const Text('Game Level Medals'),
+        subtitle: const Text('Only verified game results count'),
+        onTap: () => context.push('/game-level'),
+      ),
       const SizedBox(height: 20),
       const Text('Room medal previews',
           style: TextStyle(fontWeight: FontWeight.w700)),

@@ -64,48 +64,10 @@ class ReferenceInfoContent extends ConsumerWidget {
           ]))
       ]);
     if (title == 'Store')
-      return Column(children: [
-        GradientButton(
-            onPressed: () => context.push('/recharge'),
-            child: const Text('Coin packages')),
-        const SizedBox(height: 12),
-        const Text('Cosmetic previews · purchases are unavailable'),
-        GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            mainAxisExtent: 180 * MediaQuery.textScalerOf(context).scale(1),
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            children: [
-              for (final item in [
-                ('Gold Frame', 50000, 'frame', 0),
-                ('VIP Frame', 500000, 'frame', 1),
-                ('Eagle Car', 200000, 'car', 0),
-                ('Jeep Car', 100000, 'car', 1)
-              ])
-                Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                        color: NimzoStyle.surface,
-                        borderRadius: BorderRadius.circular(14)),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ReferenceArtwork(item.$3, item.$4, size: 58),
-                          const SizedBox(height: 6),
-                          Text(item.$1,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w700)),
-                          Text('${compactNumber(item.$2)} coins',
-                              style: const TextStyle(
-                                  color: NimzoStyle.primary, fontSize: 12)),
-                          const Text('Unavailable',
-                              style: TextStyle(
-                                  color: NimzoStyle.muted, fontSize: 11))
-                        ]))
-            ])
-      ]);
+      return Center(child: FilledButton(
+        onPressed: () => context.push('/store'),
+        child: const Text('Open NIMZO Store'),
+      ));
     if (title == 'Honor Wall') return const HonorWallContent();
     if (title == 'Help and feedback') return const SupportHelpContent();
     if (title == 'Privacy')
