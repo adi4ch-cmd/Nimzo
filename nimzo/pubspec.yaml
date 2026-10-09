@@ -27,6 +27,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/yo2_gifts/images/
     - assets/reference/fonts/Cinzel-OFL.txt
     - assets/reference/fonts/Poppins-OFL.txt
     - assets/reference/gift/
