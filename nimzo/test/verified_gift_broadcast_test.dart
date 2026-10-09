@@ -43,6 +43,10 @@ void main() {
     await tester.pumpWidget(ProviderScope(
       overrides: [
         giftRepositoryProvider.overrideWithValue(repo),
+        giftCatalogProvider.overrideWith((_) async => [
+          const Gift('ce25005c-bb88-4e99-9891-e3d89e25e027',
+              'Royal Dragon', 'svip', 2500000, null),
+        ]),
         verifiedGiftAnimationProvider((roomId: 'room', countryCode: 'PK'))
             .overrideWith((_) async* {
           // A real Supabase stream always starts with a history snapshot.
@@ -105,7 +109,7 @@ void main() {
     await tester.pump();
     repo.pending.values.single.complete(null);
     await tester.pump();
-    expect(find.textContaining('Gift × 3'), findsOneWidget);
+    expect(find.textContaining('Royal Dragon × 3'), findsOneWidget);
     expect(find.textContaining('3000000 coins'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
