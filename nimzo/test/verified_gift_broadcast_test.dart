@@ -57,6 +57,10 @@ void main() {
     ));
     await tester.pump();
     await tester.pump();
+    // Inspect provider state if the mocked stream has not primed yet.
+    final container = ProviderScope.containerOf(tester.element(find.byType(VerifiedGiftBroadcast)));
+    // ignore: avoid_print
+    print('GIFT_FIXTURE_INITIAL: ${container.read(verifiedGiftAnimationProvider((roomId: 'room', countryCode: 'PK')))}');
     expect(repo.pending, isEmpty);
   }
 
@@ -66,6 +70,8 @@ void main() {
     events.add([event('first', 'first'), event('second', 'second')]);
     await tester.pump();
     await tester.pump();
+    // ignore: avoid_print
+    print('GIFT_FIXTURE_LIVE: ${ProviderScope.containerOf(tester.element(find.byType(VerifiedGiftBroadcast))).read(verifiedGiftAnimationProvider((roomId: 'room', countryCode: 'PK')))}');
     expect(repo.pending.containsKey('first'), isTrue);
     for (var tick = 0; tick < 15; tick++) {
       await tester.pump(const Duration(seconds: 1));
