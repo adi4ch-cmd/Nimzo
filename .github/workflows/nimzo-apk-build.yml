@@ -12,6 +12,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      HAS_RELEASE_SIGNING: ${{ secrets.NIMZO_KEYSTORE_BASE64 != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -239,6 +241,60 @@ jobs:
         run: |
           python3 -m unittest discover -s nimzo/test/voice -p "*_test.py"
           python3 -m unittest discover -s nimzo/test/update -p "*_test.py"
+
+      # Compile a release-mode candidate even when the permanent key is unavailable.
+      # It is deliberately unsigned and cannot enter the updater/release publisher.
+      - name: Compile unsigned release candidate when signing is unavailable
+        if: env.HAS_RELEASE_SIGNING != 'true'
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp android/app/build.gradle.kts "$RUNNER_TEMP/nimzo-gradle-before-unsigned.kts"
+          python3 - <<'PY_UNSIGNED'
+          from pathlib import Path
+          gradle = Path('android/app/build.gradle.kts')
+          source = gradle.read_text()
+          expected = 'signingConfig = signingConfigs.getByName("debug")'
+          if expected not in source:
+              raise SystemExit('Generated signing selection changed; refusing to guess.')
+          gradle.write_text(source.replace(expected, 'signingConfig = null'))
+          PY_UNSIGNED
+          flutter build apk --release
+          python3 ../tools/verify_vivox_callback.py build/app/outputs/flutter-apk/app-release.apk
+          python3 ../tools/verify_vivox_login.py build/app/outputs/flutter-apk/app-release.apk
+          python3 - <<'PY_NO_SIGNATURE'
+          import os, subprocess
+          from pathlib import Path
+          signer = sorted(Path(os.environ['ANDROID_HOME']).glob('build-tools/*/apksigner'))[-1]
+          result = subprocess.run([str(signer), 'verify', 'build/app/outputs/flutter-apk/app-release.apk'], capture_output=True)
+          if result.returncode == 0:
+              raise SystemExit('Unsigned candidate unexpectedly has a signature; refusing mislabeled artifact.')
+          print('Unsigned release candidate verified; installable publication remains gated.')
+          PY_NO_SIGNATURE
+          cp "$RUNNER_TEMP/nimzo-gradle-before-unsigned.kts" android/app/build.gradle.kts
+          mkdir -p ../unsigned-release
+          cp build/app/outputs/flutter-apk/app-release.apk ../unsigned-release/nimzo-phoenix-unsigned.apk
+          printf '%s\n' "$GITHUB_SHA" > ../unsigned-release/source-sha.txt
+          sha256sum ../unsigned-release/nimzo-phoenix-unsigned.apk > ../unsigned-release/sha256.txt
+          printf '%s\n' 'Release-mode compilation candidate. UNSIGNED: cannot install or update the app. Permanent release signing secrets must be provisioned for the installable APK. Automated checks ran before compilation; physical-device behavior remains unverified.' > ../unsigned-release/README.txt
+          python3 - <<'PY_SIZE'
+          import os
+          from pathlib import Path
+          size = Path('../unsigned-release/nimzo-phoenix-unsigned.apk').stat().st_size
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write(f'Unsigned Phoenix release compilation: {size} bytes. Not installable.\n')
+          PY_SIZE
+
+      - name: Upload unsigned release compilation artifact
+        if: env.HAS_RELEASE_SIGNING != 'true'
+        id: unsigned_apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-phoenix-unsigned-release-${{ github.sha }}
+          path: unsigned-release/
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Require existing signing identity
         env:

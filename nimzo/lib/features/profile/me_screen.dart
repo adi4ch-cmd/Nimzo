@@ -1,3 +1,4 @@
+import '../vip/phoenix_widgets.dart';
 import '../../core/widgets/master_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -60,20 +61,23 @@ class MeScreen extends ConsumerWidget {
                     onTap: () => context.push('/profile/$id'),
                     child: Row(
                       children: [
-                        NimzoAvatar(
-                          name: p.displayName ?? 'N',
-                          size: 78,
-                          online: true,
-                          borderWidth: 3,
-                          backgroundColor: NimzoStyle.ink,
-                          url: p.avatarPath == null
-                              ? null
-                              : ref
-                                  .read(supabaseProvider)
-                                  .storage
-                                  .from('avatars')
-                                  .getPublicUrl(p.avatarPath!),
-                        ),
+                        PhoenixDecoration(
+                            userId: id,
+                            avatar: true,
+                            child: NimzoAvatar(
+                              name: p.displayName ?? 'N',
+                              size: 78,
+                              online: true,
+                              borderWidth: 3,
+                              backgroundColor: NimzoStyle.ink,
+                              url: p.avatarPath == null
+                                  ? null
+                                  : ref
+                                      .read(supabaseProvider)
+                                      .storage
+                                      .from('avatars')
+                                      .getPublicUrl(p.avatarPath!),
+                            )),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -85,8 +89,9 @@ class MeScreen extends ConsumerWidget {
                                   children: [
                                     const ReferenceIcon('crown_filled',
                                         color: Color(0xfffbbf24)),
-                                    Text(
-                                        p.displayName ??
+                                    PhoenixNameplate(
+                                        userId: id,
+                                        name: p.displayName ??
                                             p.username ??
                                             'Nimzo user',
                                         style: const TextStyle(

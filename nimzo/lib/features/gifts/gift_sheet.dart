@@ -1,3 +1,5 @@
+import '../vip/phoenix_widgets.dart';
+import '../vip/phoenix_entitlement.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -169,115 +171,136 @@ class _State extends ConsumerState<GiftSheet> {
         ? null
         : ref.watch(roomSeatProfilesProvider(widget.roomId!)).valueOrNull;
     final me = ref.watch(currentUserIdProvider);
-    return SafeArea(
-        child: SizedBox(
-            height: MediaQuery.sizeOf(context).height * .75,
-            child: Column(children: [
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                          'Virtual Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${wallet.valueOrNull!.coins} coins'}',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w700, fontSize: 16)))),
-              if (recipients != null && recipients.isNotEmpty)
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: SizedBox(
-                        height: 48 * MediaQuery.textScalerOf(context).scale(1),
-                        child: ListView(
-                            scrollDirection: Axis.horizontal,
+    final phoenix = me != null &&
+        ref.watch(phoenixEntitlementProvider(me)).asData?.value?.isPhoenix ==
+            true;
+    return PhoenixDecoration(
+        userId: me,
+        child: SafeArea(
+            child: SizedBox(
+                height: MediaQuery.sizeOf(context).height * .75,
+                child: Column(children: [
+                  if (phoenix)
+                    const Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              for (final p in recipients.values)
-                                ChoiceChip(
-                                    label: Text(p.id == me
-                                        ? 'Myself'
-                                        : p.displayName ??
-                                            p.username ??
-                                            'Nimzo user'),
-                                    selected: receiverId == p.id,
-                                    onSelected: busy ||
-                                            confirming ||
-                                            key != null
-                                        ? null
-                                        : (_) =>
-                                            setState(() => recipient = p.id)),
-                            ]))),
-              Expanded(
-                  child: AsyncContent(
-                      value: ref.watch(giftCatalogProvider),
-                      onRetry: () => ref.invalidate(giftCatalogProvider),
-                      builder: (gifts) => gifts.isEmpty
-                          ? const EmptyContent('No gifts available')
-                          : CustomScrollView(slivers: [
-                              const SliverToBoxAdapter(
-                                  child: Padding(
-                                padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
-                                child: Text('GIFT COLLECTION',
-                                    style: TextStyle(
-                                        letterSpacing: 2,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w800,
-                                        color: Color(0xffd6ad61))),
-                              )),
-                              SliverPadding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                sliver: SliverGrid(
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 3,
-                                          crossAxisSpacing: 10,
-                                          mainAxisSpacing: 10,
-                                          childAspectRatio: .82 /
-                                              MediaQuery.textScalerOf(context)
-                                                  .scale(1)),
-                                  delegate: SliverChildBuilderDelegate(
-                                      (context, index) {
-                                    final gift = gifts[index];
-                                    return _giftCard(gift,
-                                        legendary: gift.price == 35000000 ||
-                                            gift.price == 50000000);
-                                  }, childCount: gifts.length),
-                                ),
-                              ),
-                              const SliverToBoxAdapter(
-                                  child: Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Text(
-                                    'Cinematic gift playback is pending approved animation media.',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: NimzoStyle.muted, fontSize: 12)),
-                              )),
-                            ]))),
-              Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(children: [
-                    const Text('Quantity'),
-                    const SizedBox(width: 12),
-                    DropdownButton<int>(
-                        value: quantity,
-                        items: [
-                          for (final q in [1, 10, 99])
-                            DropdownMenuItem(value: q, child: Text('$q'))
-                        ],
-                        onChanged: busy || confirming || key != null
-                            ? null
-                            : (q) => setState(() => quantity = q!)),
-                    const Spacer(),
-                    GradientButton(
-                        onPressed: busy || confirming || selected == null
-                            ? null
-                            : send,
-                        child: Text(busy
-                            ? 'Sending…'
-                            : key == null
-                                ? 'Send'
-                                : 'Retry')),
-                  ])),
-            ])));
+                              PhoenixMark(),
+                              SizedBox(width: 8),
+                              Text('Phoenix VIP gift tray',
+                                  style: TextStyle(
+                                      color: phoenixGold,
+                                      fontWeight: FontWeight.w700))
+                            ])),
+                  Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                              'Virtual Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${wallet.valueOrNull!.coins} coins'}',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w700, fontSize: 16)))),
+                  if (recipients != null && recipients.isNotEmpty)
+                    Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: SizedBox(
+                            height:
+                                48 * MediaQuery.textScalerOf(context).scale(1),
+                            child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  for (final p in recipients.values)
+                                    ChoiceChip(
+                                        label: Text(p.id == me
+                                            ? 'Myself'
+                                            : p.displayName ??
+                                                p.username ??
+                                                'Nimzo user'),
+                                        selected: receiverId == p.id,
+                                        onSelected:
+                                            busy || confirming || key != null
+                                                ? null
+                                                : (_) => setState(
+                                                    () => recipient = p.id)),
+                                ]))),
+                  Expanded(
+                      child: AsyncContent(
+                          value: ref.watch(giftCatalogProvider),
+                          onRetry: () => ref.invalidate(giftCatalogProvider),
+                          builder: (gifts) => gifts.isEmpty
+                              ? const EmptyContent('No gifts available')
+                              : CustomScrollView(slivers: [
+                                  const SliverToBoxAdapter(
+                                      child: Padding(
+                                    padding:
+                                        EdgeInsets.fromLTRB(16, 16, 16, 12),
+                                    child: Text('GIFT COLLECTION',
+                                        style: TextStyle(
+                                            letterSpacing: 2,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w800,
+                                            color: Color(0xffd6ad61))),
+                                  )),
+                                  SliverPadding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16),
+                                    sliver: SliverGrid(
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 3,
+                                              crossAxisSpacing: 10,
+                                              mainAxisSpacing: 10,
+                                              childAspectRatio: .82 /
+                                                  MediaQuery.textScalerOf(
+                                                          context)
+                                                      .scale(1)),
+                                      delegate: SliverChildBuilderDelegate(
+                                          (context, index) {
+                                        final gift = gifts[index];
+                                        return _giftCard(gift,
+                                            legendary: gift.price == 35000000 ||
+                                                gift.price == 50000000);
+                                      }, childCount: gifts.length),
+                                    ),
+                                  ),
+                                  const SliverToBoxAdapter(
+                                      child: Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: Text(
+                                        'Cinematic gift playback is pending approved animation media.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: NimzoStyle.muted,
+                                            fontSize: 12)),
+                                  )),
+                                ]))),
+                  Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(children: [
+                        const Text('Quantity'),
+                        const SizedBox(width: 12),
+                        DropdownButton<int>(
+                            value: quantity,
+                            items: [
+                              for (final q in [1, 10, 99])
+                                DropdownMenuItem(value: q, child: Text('$q'))
+                            ],
+                            onChanged: busy || confirming || key != null
+                                ? null
+                                : (q) => setState(() => quantity = q!)),
+                        const Spacer(),
+                        GradientButton(
+                            onPressed: busy || confirming || selected == null
+                                ? null
+                                : send,
+                            child: Text(busy
+                                ? 'Sending…'
+                                : key == null
+                                    ? 'Send'
+                                    : 'Retry')),
+                      ])),
+                ]))));
   }
 
   Widget _giftCard(Gift gift, {bool legendary = false}) => InkWell(

@@ -1,3 +1,5 @@
+import '../../vip/phoenix_widgets.dart';
+import '../../vip/phoenix_room_entry.dart';
 import '../../gifts/verified_gift_broadcast.dart';
 import 'dart:async';
 
@@ -363,22 +365,25 @@ class _State extends ConsumerState<RoomScreen> {
                                                                       : Colors
                                                                           .transparent,
                                                                   width: 2)),
-                                                          child: NimzoAvatar(
-                                                              name:
-                                                                  p?.displayName ??
-                                                                      'N',
-                                                              size: 48,
-                                                              url: p?.avatarPath ==
-                                                                      null
-                                                                  ? null
-                                                                  : ref
-                                                                      .read(
-                                                                          supabaseProvider)
-                                                                      .storage
-                                                                      .from(
-                                                                          'avatars')
-                                                                      .getPublicUrl(
-                                                                          p!.avatarPath!)),
+                                                          child: PhoenixDecoration(
+                                                              userId: s.userId,
+                                                              avatar: true,
+                                                              child: NimzoAvatar(
+                                                                  name:
+                                                                      p?.displayName ??
+                                                                          'N',
+                                                                  size: 48,
+                                                                  url: p?.avatarPath ==
+                                                                          null
+                                                                      ? null
+                                                                      : ref
+                                                                          .read(
+                                                                              supabaseProvider)
+                                                                          .storage
+                                                                          .from(
+                                                                              'avatars')
+                                                                          .getPublicUrl(
+                                                                              p!.avatarPath!))),
                                                         ),
                                                       const SizedBox(height: 3),
                                                       Text(
@@ -448,38 +453,49 @@ class _State extends ConsumerState<RoomScreen> {
                                     for (final msg in messages)
                                       Align(
                                           alignment: Alignment.centerLeft,
-                                          child: Container(
-                                            constraints: BoxConstraints(
-                                                maxWidth:
-                                                    MediaQuery.sizeOf(context)
+                                          child: PhoenixDecoration(
+                                              userId: msg.userId,
+                                              child: Container(
+                                                constraints: BoxConstraints(
+                                                    maxWidth: MediaQuery.sizeOf(
+                                                                context)
                                                             .width *
                                                         .85),
-                                            margin: const EdgeInsets.only(
-                                                bottom: 6),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 11, vertical: 7),
-                                            decoration: BoxDecoration(
-                                                color: NimzoStyle.surface,
-                                                borderRadius:
-                                                    BorderRadius.circular(12)),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  profiles[msg.userId]
-                                                          ?.displayName ??
-                                                      'Nimzo user',
-                                                  style: const TextStyle(
-                                                    color: NimzoStyle.primary,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
+                                                margin: const EdgeInsets.only(
+                                                    bottom: 6),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 11,
+                                                        vertical: 7),
+                                                decoration: BoxDecoration(
+                                                    color: NimzoStyle.surface,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12)),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    PhoenixNameplate(
+                                                      userId: msg.userId,
+                                                      name: profiles[msg.userId]
+                                                              ?.displayName ??
+                                                          'Nimzo user',
+                                                      style: const TextStyle(
+                                                        color:
+                                                            NimzoStyle.primary,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                    Text(msg.body,
+                                                        style: const TextStyle(
+                                                            color: NimzoStyle
+                                                                .ink)),
+                                                  ],
                                                 ),
-                                                Text(msg.body),
-                                              ],
-                                            ),
-                                          )),
+                                              ))),
                                   ],
                                 ),
                               )),
@@ -657,6 +673,12 @@ class _State extends ConsumerState<RoomScreen> {
                       ),
                     ),
                   ),
+                  if (joined)
+                    Positioned(
+                        top: 140,
+                        left: 0,
+                        right: 0,
+                        child: PhoenixRoomEntry(roomId: widget.roomId)),
                   if (joined)
                     Positioned.fill(
                         child: VerifiedGiftBroadcast(

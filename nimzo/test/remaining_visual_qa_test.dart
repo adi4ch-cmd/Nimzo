@@ -1,3 +1,4 @@
+import 'package:nimzo/features/vip/phoenix_room_entry.dart';
 import 'dart:io';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -228,6 +229,8 @@ void main() {
       await tester.pumpWidget(ProviderScope(
           key: ValueKey(entry.key),
           overrides: [
+            phoenixEntriesProvider
+                .overrideWith((ref, room) => const Stream.empty()),
             verifiedGiftAnimationProvider
                 .overrideWith((ref, args) => const Stream.empty()),
             roomDiamondEventsProvider('room')

@@ -1,3 +1,4 @@
+import 'package:nimzo/features/vip/phoenix_room_entry.dart';
 import 'package:nimzo/features/gifts/gift_repository.dart';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,6 +35,8 @@ void main() {
     test('SVIP progress consumes server cycle active=$active cents=$cents',
         () async {
       final container = ProviderContainer(overrides: [
+        phoenixEntriesProvider
+            .overrideWith((ref, room) => const Stream.empty()),
         verifiedGiftAnimationProvider
             .overrideWith((ref, args) => const Stream.empty()),
         currentUserIdProvider.overrideWithValue('me'),
@@ -58,6 +61,7 @@ void main() {
   test('old status contract cannot present stale recharge as current progress',
       () async {
     final container = ProviderContainer(overrides: [
+      phoenixEntriesProvider.overrideWith((ref, room) => const Stream.empty()),
       verifiedGiftAnimationProvider
           .overrideWith((ref, args) => const Stream.empty()),
       currentUserIdProvider.overrideWithValue('me'),
@@ -72,6 +76,7 @@ void main() {
       'progress handles simultaneous data/catalog failure without leaking a future error',
       () async {
     final container = ProviderContainer(overrides: [
+      phoenixEntriesProvider.overrideWith((ref, room) => const Stream.empty()),
       verifiedGiftAnimationProvider
           .overrideWith((ref, args) => const Stream.empty()),
       currentUserIdProvider.overrideWithValue('me'),
@@ -84,49 +89,68 @@ void main() {
     await expectLater(
         container.read(svipProgressProvider.future), throwsA(isA<Object>()));
   });
-  testWidgets(
-      'server-visible room chat is retained when the phone clock is ahead',
-      (tester) async {
-    final db = (await tester
-        .runAsync(() async => backendClient((_) => http.Response('[]', 200))))!;
-    addTearDown(() => tester.runAsync(db.dispose));
-    await tester.pumpWidget(ProviderScope(
-        overrides: [
-          verifiedGiftAnimationProvider
-              .overrideWith((ref, args) => const Stream.empty()),
-          supabaseProvider.overrideWithValue(db),
-          currentUserIdProvider.overrideWithValue('me'),
-          roomRepositoryProvider.overrideWithValue(FixtureRoomRepository(db)),
-          roomDiamondEventsProvider('room')
-              .overrideWith((_) => const Stream.empty()),
-          roomDiamondStatusProvider('room').overrideWith((_) async =>
-              RoomDiamondStatus(
-                  totalCoins: 0,
-                  completedStages: 0,
-                  progress: 0,
-                  cycleStart: DateTime.utc(2026, 10, 9, 20),
-                  serverNow: DateTime.utc(2026, 10, 9, 21),
-                  resetAt: DateTime.utc(2026, 10, 10, 20))),
-          voiceServiceProvider.overrideWithValue(FixtureVoice()),
-          roomProvider('room').overrideWith((_) async => fixtureRoom),
-          seatsProvider('room').overrideWith((_) => Stream.value([])),
-          roomSeatProfilesProvider('room').overrideWith((_) async => {}),
-          onlineCountProvider('room').overrideWith((_) => Stream.value(1)),
-          roomChatProvider('room').overrideWith((_) => Stream.value([
-                RoomMessage('server', 'other',
-                    'Visible according to server RLS', DateTime.utc(2000)),
-              ])),
-        ],
-        child: MaterialApp(
-            theme: AppTheme.light(), home: const RoomScreen(roomId: 'room'))));
-    await tester.runAsync(() async => Future<void>.delayed(Duration.zero));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
-    expect(find.text('Visible according to server RLS'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox());
-    await tester.pump();
-  });
+  for (final phoenix in [false, true]) {
+    testWidgets(
+        'server-visible room chat is readable with phoenix=$phoenix when the phone clock is ahead',
+        (tester) async {
+      final db = (await tester
+          .runAsync(() async => backendClient((request) => http.Response(
+              phoenix && request.url.path.endsWith('/phoenix_membership')
+                  ? jsonEncode({
+                      'vip_level': 6,
+                      'server_now': '2001-01-01T00:00:00Z',
+                      'vip_expires_at': '2002-01-01T00:00:00Z'
+                    })
+                  : '[]',
+              200))))!;
+      addTearDown(() => tester.runAsync(db.dispose));
+      await tester.pumpWidget(ProviderScope(
+          overrides: [
+            phoenixEntriesProvider
+                .overrideWith((ref, room) => const Stream.empty()),
+            verifiedGiftAnimationProvider
+                .overrideWith((ref, args) => const Stream.empty()),
+            supabaseProvider.overrideWithValue(db),
+            currentUserIdProvider.overrideWithValue('me'),
+            roomRepositoryProvider.overrideWithValue(FixtureRoomRepository(db)),
+            roomDiamondEventsProvider('room')
+                .overrideWith((_) => const Stream.empty()),
+            roomDiamondStatusProvider('room').overrideWith((_) async =>
+                RoomDiamondStatus(
+                    totalCoins: 0,
+                    completedStages: 0,
+                    progress: 0,
+                    cycleStart: DateTime.utc(2026, 10, 9, 20),
+                    serverNow: DateTime.utc(2026, 10, 9, 21),
+                    resetAt: DateTime.utc(2026, 10, 10, 20))),
+            voiceServiceProvider.overrideWithValue(FixtureVoice()),
+            roomProvider('room').overrideWith((_) async => fixtureRoom),
+            seatsProvider('room').overrideWith((_) => Stream.value([])),
+            roomSeatProfilesProvider('room').overrideWith((_) async => {}),
+            onlineCountProvider('room').overrideWith((_) => Stream.value(1)),
+            roomChatProvider('room').overrideWith((_) => Stream.value([
+                  RoomMessage('server', 'other',
+                      'Visible according to server RLS', DateTime.utc(2000)),
+                ])),
+          ],
+          child: MaterialApp(
+              theme: AppTheme.light(),
+              home: const RoomScreen(roomId: 'room'))));
+      await tester.runAsync(() async => Future<void>.delayed(Duration.zero));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Visible according to server RLS'), findsOneWidget);
+      expect(
+          tester
+              .widget<Text>(find.text('Visible according to server RLS'))
+              .style
+              ?.color,
+          NimzoStyle.ink);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+    });
+  }
   test(
       'profile retains authoritative totals without inventing level thresholds',
       () {

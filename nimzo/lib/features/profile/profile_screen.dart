@@ -1,3 +1,4 @@
+import '../vip/phoenix_widgets.dart';
 import '../../core/widgets/master_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -149,12 +150,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             padding: const EdgeInsets.all(4),
                             decoration: const BoxDecoration(
                                 color: Colors.white, shape: BoxShape.circle),
-                            child: NimzoAvatar(
-                                name: p.displayName ?? p.username ?? 'N',
-                                url: image('avatars', p.avatarPath),
-                                size: 70,
-                                backgroundColor: NimzoStyle.ink,
-                                online: id == me))),
+                            child: PhoenixDecoration(
+                                userId: id,
+                                avatar: true,
+                                child: NimzoAvatar(
+                                    name: p.displayName ?? p.username ?? 'N',
+                                    url: image('avatars', p.avatarPath),
+                                    size: 70,
+                                    backgroundColor: NimzoStyle.ink,
+                                    online: id == me)))),
                   ])),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
@@ -166,8 +170,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Color(0xfff59e0b), size: 22),
                       const SizedBox(width: 8),
                       Expanded(
-                          child: Text(
-                        p.displayName ?? p.username ?? 'Nimzo user',
+                          child: PhoenixNameplate(
+                        userId: id,
+                        name: p.displayName ?? p.username ?? 'Nimzo user',
                         style: const TextStyle(
                           fontSize: 19,
                           fontWeight: FontWeight.w700,
@@ -224,7 +229,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     if (p.vipLevel > 0 || p.svipLevel > 0)
                       Wrap(spacing: 8, children: [
-                        if (p.vipLevel > 0)
+                        if (p.vipLevel > 0 && p.vipLevel != 6)
                           Chip(label: Text('VIP ${p.vipLevel}')),
                         if (p.svipLevel > 0)
                           Chip(label: Text('SVIP ${p.svipLevel}')),

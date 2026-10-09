@@ -8,6 +8,7 @@ import '../profile/profile_repository.dart';
 import 'vip_repository.dart';
 import 'vip_tiers.dart';
 import 'vip_presentation.dart';
+import 'phoenix_widgets.dart';
 import 'membership_motion.dart';
 
 final membershipNameProvider = FutureProvider<String?>((ref) async {
@@ -39,7 +40,10 @@ class _VipState extends ConsumerState<VipScreen> {
         status.valueOrNull?[widget.svip ? 'svip_level' : 'vip_level'];
     // Default to the verified live membership once, without overriding
     // the user's subsequent manual selection of preview tiers.
-    if (!_selectedFromMembership && active is num && active >= 1 && active <= 10) {
+    if (!_selectedFromMembership &&
+        active is num &&
+        active >= 1 &&
+        active <= 10) {
       _selectedFromMembership = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) setState(() => tier = active.toInt());
@@ -201,15 +205,36 @@ class _VipState extends ConsumerState<VipScreen> {
                                     Text('Original $family $tier artwork',
                                         style: TextStyle(color: accent)),
                                     const SizedBox(height: 6),
-                                    const Text(
-                                        active is num && active == tier && !widget.svip
+                                    Text(
+                                        active is num &&
+                                                active == tier &&
+                                                !widget.svip
                                             ? 'Active VIP identity · server verified'
                                             : 'Visual preview · cosmetics are not activated',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 12,
                                             color: Color(0xffbcb2c4)))
                                   ]))
                             ])),
+                            if (!widget.svip && tier == 6) ...[
+                              const MembershipHeading('Phoenix · VIP 6'),
+                              const MembershipBenefit(
+                                  preview: PhoenixFrame(
+                                      child: CircleAvatar(child: Text('N'))),
+                                  title: 'Phoenix identity',
+                                  subtitle:
+                                      'Animated red and gold frame, VIP badge and premium nameplate.'),
+                              const MembershipBenefit(
+                                  preview: PhoenixMark(size: 58),
+                                  title: 'Phoenix room entrance',
+                                  subtitle:
+                                      'Original animated wings and a VIP 6 entry announcement.'),
+                              const MembershipBenefit(
+                                  preview: PhoenixBadge(),
+                                  title: 'Premium conversations',
+                                  subtitle:
+                                      'Phoenix chat bubbles and gift tray with active membership.'),
+                            ],
                             const MembershipHeading('Membership details'),
                             MembershipBenefit(
                                 preview: MembershipEmblem(
@@ -287,9 +312,9 @@ class _VipState extends ConsumerState<VipScreen> {
                             '${widget.svip ? 'svip' : 'vip'}-tier-${i + 1}'),
                         borderRadius: BorderRadius.circular(14),
                         onTap: () => setState(() {
-                          _selectedFromMembership = true;
-                          tier = i + 1;
-                        }),
+                              _selectedFromMembership = true;
+                              tier = i + 1;
+                            }),
                         child: AnimatedContainer(
                             duration: const Duration(milliseconds: 220),
                             width: 84,

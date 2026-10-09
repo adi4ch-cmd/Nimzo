@@ -1,3 +1,4 @@
+import '../../vip/phoenix_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -68,17 +69,23 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                       onRetry: () =>
                           ref.invalidate(profileProvider(widget.userId)),
                       builder: (p) => ListTile(
-                            leading: NimzoAvatar(
-                                name: p.displayName ?? 'N',
-                                url: p.avatarPath == null
-                                    ? null
-                                    : ref
-                                        .watch(supabaseProvider)
-                                        .storage
-                                        .from('avatars')
-                                        .getPublicUrl(p.avatarPath!)),
-                            title: Text(
-                                p.displayName ?? p.username ?? 'Nimzo user'),
+                            leading: PhoenixDecoration(
+                                userId: widget.userId,
+                                avatar: true,
+                                child: NimzoAvatar(
+                                    name: p.displayName ?? 'N',
+                                    url: p.avatarPath == null
+                                        ? null
+                                        : ref
+                                            .watch(supabaseProvider)
+                                            .storage
+                                            .from('avatars')
+                                            .getPublicUrl(p.avatarPath!))),
+                            title: PhoenixNameplate(
+                                userId: widget.userId,
+                                name: p.displayName ??
+                                    p.username ??
+                                    'Nimzo user'),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
