@@ -140,7 +140,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     if (_seen.length > 200) {
       _seen.retainAll(rows.map((r) => '${r['id']}'));
     }
-    if (!_foreground) return;
+    if (!_foreground || fresh.isEmpty) return;
     _pending.addAll(fresh);
     // Keep the queue bounded during long-running room sessions.
     if (_pending.length > 100) {
@@ -199,15 +199,13 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   Widget build(BuildContext context) {
     final events = ref.watch(verifiedGiftAnimationProvider(
         (roomId: widget.roomId, countryCode: widget.countryCode)));
-    ref.listen(
-        verifiedGiftAnimationProvider(
-            (roomId: widget.roomId, countryCode: widget.countryCode)),
-        (_, next) {
-      if (next.hasValue) _receive(next.value!);
-    });
-    if (!_primed && events.hasValue) {
+    // Reconcile the current AsyncData snapshot after each stream update.
+    // The seen-ID set makes repeat rebuilds harmless, even when provider
+    // delivery and Flutter frame scheduling are coalesced.
+    if (events.hasValue) {
+      final snapshot = events.value!;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && !_primed) _receive(events.value!);
+        if (mounted) _receive(snapshot);
       });
     }
     final event = _active;
