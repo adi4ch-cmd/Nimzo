@@ -220,10 +220,22 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     if (event == null) return const SizedBox.shrink();
     final price = (event['unit_price'] as num?)?.toInt() ?? 0;
     final quantity = (event['quantity'] as num?)?.toInt() ?? 1;
+    // Verified server event contains the gift UUID, not an arbitrary
+    // client-provided label. Resolve other gift names from the live catalog.
+    String catalogName = '${event['gift_name'] ?? 'Gift'}';
+    final catalog = ref.watch(giftCatalogProvider).valueOrNull;
+    if (catalog != null) {
+      for (final gift in catalog) {
+        if (gift.id == '${event['gift_id']}') {
+          catalogName = gift.name;
+          break;
+        }
+      }
+    }
     final giftName = switch ('${event['gift_id']}') {
       'e1e65664-37f8-4cfd-9640-3bb035723b98' => 'Dragon',
       'c3f41e6e-68d5-4e56-9253-33421ec18fc3' => 'Golden Dragon',
-      _ => '${event['gift_name'] ?? 'Gift'}',
+      _ => catalogName,
     };
     if (_video != null) {
       return GiftVideoOverlay(
