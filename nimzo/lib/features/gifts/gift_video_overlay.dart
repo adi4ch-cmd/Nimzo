@@ -33,11 +33,13 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
   bool _finished = false;
   String? _error;
   Timer? _watchdog;
+  late bool _muted;
 
   @override
   void initState() {
     super.initState();
-    _watchdog = Timer(const Duration(seconds: 30), _finish);
+    _muted = widget.muted;
+    _watchdog = Timer(const Duration(seconds: 15), _finish);
     _start();
   }
 
@@ -47,21 +49,27 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
     if (!source.startsWith('assets/') &&
         (uri == null || uri.scheme != 'https' || uri.host.isEmpty)) {
       setState(() => _error = 'Invalid gift video source');
-      _finish();
+      scheduleMicrotask(_finish);
       return;
     }
     if (!mounted || _finished) return;
     final controller = source.startsWith('assets/')
-        ? VideoPlayerController.asset(source)
-        : VideoPlayerController.networkUrl(uri!);
+        ? VideoPlayerController.asset(source,
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
+        : VideoPlayerController.networkUrl(uri!,
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
     _controller = controller;
     controller.addListener(_onPlaybackChanged);
     try {
       await controller.initialize();
       if (!mounted || _finished) return;
+      // Allow the original clip to finish; still recover from a stalled decoder.
+      _watchdog?.cancel();
+      final seconds = (controller.value.duration.inSeconds + 3).clamp(3, 120);
+      _watchdog = Timer(Duration(seconds: seconds), _finish);
       await controller.setLooping(false);
       if (!mounted || _finished) return;
-      await controller.setVolume(widget.muted ? 0 : 0.65);
+      await controller.setVolume(_muted ? 0 : 0.65);
       if (!mounted || _finished) return;
       await controller.play();
       if (mounted && !_finished) setState(() {});
@@ -94,14 +102,28 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
     if (_finished) return;
     _finished = true;
     _watchdog?.cancel();
+    final controller = _controller;
+    if (controller != null) {
+      controller.removeListener(_onPlaybackChanged);
+      unawaited(controller.pause().catchError((Object _) {}));
+    }
     widget.onFinished();
+  }
+
+  Future<void> _updateSound() async {
+    try {
+      await _controller?.setVolume(_muted ? 0 : 0.65);
+    } catch (_) {
+      if (mounted) _finish();
+    }
   }
 
   @override
   void didUpdateWidget(covariant GiftVideoOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!_finished && oldWidget.muted != widget.muted) {
-      _controller?.setVolume(widget.muted ? 0 : 0.65);
+      _muted = widget.muted;
+      unawaited(_updateSound());
     }
   }
 
@@ -143,6 +165,21 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
                 onPressed: _finish,
                 icon: const Icon(Icons.close, color: Colors.white),
                 tooltip: 'Close gift animation',
+              ),
+            ),
+            Positioned(
+              top: 12,
+              left: 12,
+              child: IconButton(
+                onPressed: _finished
+                    ? null
+                    : () {
+                        setState(() => _muted = !_muted);
+                        unawaited(_updateSound());
+                      },
+                icon: Icon(_muted ? Icons.volume_off : Icons.volume_up,
+                    color: Colors.white),
+                tooltip: _muted ? 'Enable gift sound' : 'Mute gift sound',
               ),
             ),
             Positioned(

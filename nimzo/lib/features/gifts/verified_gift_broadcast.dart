@@ -13,7 +13,8 @@ class VerifiedGiftBroadcast extends ConsumerStatefulWidget {
   ConsumerState<VerifiedGiftBroadcast> createState() => _BroadcastState();
 }
 
-class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
+class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
+    with WidgetsBindingObserver {
   final Set<String> _seen = {};
   final List<Map<String, dynamic>> _pending = [];
   bool _primed = false;
@@ -21,6 +22,54 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
   Timer? _timer;
   String? _video;
   bool _loading = false;
+  bool _foreground = true;
+  Timer? _mediaTimer;
+  Completer<String?>? _mediaWait;
+
+  void _cancelMediaLookup() {
+    _mediaTimer?.cancel();
+    final wait = _mediaWait;
+    if (wait != null && !wait.isCompleted) wait.complete(null);
+    _mediaWait = null;
+  }
+
+  Future<String?> _lookupMedia(String giftId) {
+    _cancelMediaLookup();
+    final wait = Completer<String?>();
+    _mediaWait = wait;
+    _mediaTimer = Timer(const Duration(seconds: 8), () {
+      if (!wait.isCompleted) wait.complete(null);
+    });
+    ref.read(giftRepositoryProvider).approvedAnimationUrl(giftId).then((url) {
+      if (!wait.isCompleted) wait.complete(url);
+    }, onError: (Object error, StackTrace trace) {
+      if (!wait.isCompleted) wait.completeError(error, trace);
+    });
+    return wait.future;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
+    if (!_foreground) {
+      _timer?.cancel();
+      _cancelMediaLookup();
+      _pending.clear();
+      if (mounted) {
+        setState(() {
+          _active = null;
+          _video = null;
+          _loading = false;
+        });
+      }
+    }
+  }
 
   @override
   void didUpdateWidget(covariant VerifiedGiftBroadcast oldWidget) {
@@ -28,6 +77,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
     if (oldWidget.roomId != widget.roomId ||
         oldWidget.countryCode != widget.countryCode) {
       _timer?.cancel();
+      _cancelMediaLookup();
       _seen.clear();
       _pending.clear();
       _primed = false;
@@ -40,6 +90,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
   @override
   void dispose() {
     _timer?.cancel();
+    _cancelMediaLookup();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -51,6 +103,11 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
     }
     final fresh = rows.where((r) => _seen.add('${r['id']}')).toList()
       ..sort((a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'));
+    // The server stream retains 100 events. Bound deduplication memory too.
+    if (_seen.length > 200) {
+      _seen.retainAll(rows.map((r) => '${r['id']}'));
+    }
+    if (!_foreground) return;
     _pending.addAll(fresh);
     // Keep the queue bounded during long-running room sessions.
     if (_pending.length > 100) {
@@ -61,7 +118,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
 
   Future<void> _next() async {
     _timer?.cancel();
-    if (!mounted) return;
+    if (!mounted || !_foreground) return;
     if (_pending.isEmpty) {
       setState(() {
         _active = null;
@@ -77,18 +134,19 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
       _loading = true;
     });
     try {
-      final db = ref.read(giftRepositoryProvider);
       final giftId = '${event['gift_id']}';
       // Media is enabled only after its URL is approved in Supabase.
       // Do not reference unbundled assets: that breaks playback on devices.
-      final url = await db.approvedAnimationUrl(giftId);
+      final url = await _lookupMedia(giftId);
       if (!mounted || !identical(_active, event)) return;
+      _cancelMediaLookup();
       setState(() {
         _video = url;
         _loading = false;
       });
     } catch (_) {
       if (!mounted || !identical(_active, event)) return;
+      _cancelMediaLookup();
       setState(() => _loading = false);
     }
     if (_video == null) {
@@ -122,6 +180,12 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
     final event = _active;
     if (event == null) return const SizedBox.shrink();
     final price = (event['unit_price'] as num?)?.toInt() ?? 0;
+    final quantity = (event['quantity'] as num?)?.toInt() ?? 1;
+    final giftName = switch ('${event['gift_id']}') {
+      'e1e65664-37f8-4cfd-9640-3bb035723b98' => 'Dragon',
+      'c3f41e6e-68d5-4e56-9253-33421ec18fc3' => 'Golden Dragon',
+      _ => '${event['gift_name'] ?? 'Gift'}',
+    };
     if (_video != null) {
       return GiftVideoOverlay(
         key: ValueKey(event['id']),
@@ -129,11 +193,12 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
         sender: (event['sender_name'] ?? event['sender_id'] ?? '').toString(),
         recipient:
             (event['receiver_name'] ?? event['receiver_id'] ?? '').toString(),
-        giftName:
-            '${event['gift_id']}' == 'c3f41e6e-68d5-4e56-9253-33421ec18fc3'
-                ? 'Golden Dragon'
-                : '${event['gift_name'] ?? 'Gift'}',
-        onFinished: _next,
+        giftName: '$giftName × $quantity',
+        // Voice remains audible; users can enable the original video's sound.
+        muted: true,
+        onFinished: () {
+          if (mounted && identical(_active, event)) _next();
+        },
       );
     }
     final colors = price >= 10000000
@@ -160,7 +225,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
                 child: Text(
                   _loading
                       ? 'Preparing verified gift…'
-                      : '${event['scope'] == 'country' ? 'COUNTRY GIFT' : 'ROOM GIFT'}  •  ${price.toString()} coins',
+                      : '${event['scope'] == 'country' ? 'COUNTRY GIFT' : 'ROOM GIFT'}  •  $giftName × $quantity  •  ${price * quantity} coins',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                       color: Colors.white,
