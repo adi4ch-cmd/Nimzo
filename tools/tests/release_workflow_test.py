@@ -55,6 +55,23 @@ previous=[{draft:false,body:'NIMZO_BUILD_NUMBER=107'}];await assert.rejects(publ
             path.write_text('(async function(){\n' + harness + '\n})();')
             subprocess.run(['node', str(path)], check=True)
 
+    def test_missing_signing_secrets_deliver_test_apk_without_publication(self):
+        workflow = yaml.safe_load((ROOT / '.github/workflows/nimzo-apk-build.yml').read_text())
+        steps = workflow['jobs']['build']['steps']
+        fallback = next((s for s in steps if s.get('name') == 'Build installable test APK when signing is unavailable'), None)
+        self.assertIsNotNone(fallback, 'Missing secrets currently deliver only an un-installable unsigned APK')
+        self.assertEqual(fallback['if'], "env.HAS_RELEASE_SIGNING != 'true'")
+        self.assertIn('flutter build apk --release', fallback['run'])
+        self.assertIn('verify_test_apk.py', fallback['run'])
+        upload = next(s for s in steps if s.get('name') == 'Upload installable test APK')
+        self.assertEqual(upload['if'], "env.HAS_RELEASE_SIGNING != 'true'")
+        for name in ('Require existing signing identity', 'Build verification APK',
+                     'Verify APK exists', 'Verify APK signature using existing signing configuration',
+                     'Verify packaged Vivox and OAuth contract', 'Upload APK', 'APK checksum',
+                     'Publish testing APK', 'APK download link'):
+            step = next(s for s in steps if s.get('name') == name)
+            self.assertEqual(step.get('if'), "env.HAS_RELEASE_SIGNING == 'true'", name)
+
     def test_existing_signing_config_replaces_debug_selection_before_reference(self):
         spec = importlib.util.spec_from_file_location('signing', ROOT / 'tools/configure_android_signing.py')
         module = importlib.util.module_from_spec(spec)
