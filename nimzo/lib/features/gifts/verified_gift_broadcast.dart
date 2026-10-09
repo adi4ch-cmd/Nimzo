@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'gift_repository.dart';
 import 'gift_video_overlay.dart';
-import 'yo2_gift_ui.dart';
+import 'nimzo_gift_control_art.dart';
 
 /// Server-settled gift announcements. Initial history is never replayed.
 class VerifiedGiftBroadcast extends ConsumerStatefulWidget {
@@ -292,8 +292,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
                   children: [
                     if (giftName != 'Dragon' &&
                         giftName != 'Golden Dragon') ...[
-                      const Yo2GiftPanelArt(
-                        'anim_send_gift_v2.webp',
+                      const NimzoGiftControlArt(
+                        'video_send_gift.webp',
                         width: 48,
                         height: 48,
                       ),

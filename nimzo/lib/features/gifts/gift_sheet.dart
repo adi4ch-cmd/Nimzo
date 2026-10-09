@@ -14,6 +14,7 @@ import 'gift_repository.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
 import 'yo2_gift_ui.dart';
+import 'nimzo_gift_control_art.dart';
 import '../../core/widgets/master_ui.dart';
 import '../moments/moment_repository.dart';
 import '../moments/moments_screen.dart' show momentDetailProvider;
@@ -145,16 +146,16 @@ class _State extends ConsumerState<GiftSheet> {
         container.invalidate(profileProvider(me));
         container.invalidate(profileStatsProvider(me));
       }
-      // Play the *actual* Yo2 send animation (animated WebP) only after the
-      // server RPC confirms settlement. The two Dragon gifts are out of scope.
+      // Use locally bundled gift artwork after server-confirmed settlement.
+      // Room animations are driven separately by verified backend events.
       if (mounted && g.category.toLowerCase() != 'dragon') {
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(
           SnackBar(
             duration: const Duration(seconds: 2),
             content: Row(
               children: [
-                const Yo2GiftPanelArt(
-                  'anim_send_gift_v2.webp',
+                const NimzoGiftControlArt(
+                  'video_send_gift.webp',
                   width: 42,
                   height: 42,
                   fallback: Icon(Icons.check_circle_outline, size: 28),
@@ -229,16 +230,16 @@ class _State extends ConsumerState<GiftSheet> {
                   alignment: Alignment.centerLeft,
                   child: Row(
                     children: [
-                      const Yo2GiftPanelArt(
-                        'ic_gift_banner.webp',
-                        width: 28,
-                        height: 28,
+                      const NimzoGiftControlArt(
+                        'video_send_gift.webp',
+                        width: 36,
+                        height: 36,
                         fallback: Icon(Icons.card_giftcard, size: 24),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Virtual Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${wallet.valueOrNull!.coins} coins'}',
+                          'NIMZO Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${compactNumber(wallet.valueOrNull!.coins)} coins'}',
                           style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
@@ -361,10 +362,10 @@ class _State extends ConsumerState<GiftSheet> {
                               sliver: SliverGrid(
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
+                                  crossAxisCount: MediaQuery.sizeOf(context).width < 390 ? 2 : 3,
                                   crossAxisSpacing: 10,
                                   mainAxisSpacing: 10,
-                                  childAspectRatio: .82 /
+                                  childAspectRatio: .76 /
                                       MediaQuery.textScalerOf(context).scale(1),
                                 ),
                                 delegate: SliverChildBuilderDelegate(
@@ -398,7 +399,7 @@ class _State extends ConsumerState<GiftSheet> {
                               child: Padding(
                                 padding: EdgeInsets.all(16),
                                 child: Text(
-                                  'Original Yo2 gift controls are used when installed; video effects require approved media.',
+                                  'Gift prices and delivery are verified by the NIMZO server.',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: NimzoStyle.muted,
@@ -411,6 +412,34 @@ class _State extends ConsumerState<GiftSheet> {
                         ),
                 ),
               ),
+              if (selected != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.verified_outlined,
+                          color: Color(0xff0f8d59), size: 18),
+                      const SizedBox(width: 7),
+                      Expanded(
+                        child: Text(
+                          'Total · ${compactNumber(selected!.price * quantity)} coins',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff0c7650),
+                          ),
+                        ),
+                      ),
+                      if (key != null)
+                        const Text(
+                          'Retry same request',
+                          style: TextStyle(fontSize: 11, color: Color(0xff6b7280)),
+                        ),
+                    ],
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: Row(
@@ -434,8 +463,8 @@ class _State extends ConsumerState<GiftSheet> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Yo2GiftPanelArt(
-                            'ic_gift_pannel_send_up.webp',
+                          const NimzoGiftControlArt(
+                            'icon_gift_modal.webp',
                             width: 18,
                             height: 18,
                             fallback: Icon(Icons.send, size: 16),
@@ -471,12 +500,14 @@ class _State extends ConsumerState<GiftSheet> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
           decoration: BoxDecoration(
-            color: const Color(0xff111923),
+            color: const Color(0xff181723),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: selected == gift || legendary
-                  ? const Color(0xfffbbf24)
-                  : Colors.transparent,
+              color: selected == gift
+                  ? const Color(0xff9b47d7)
+                  : legendary
+                      ? const Color(0xfffbbf24)
+                      : Colors.transparent,
               width: 2,
             ),
           ),
@@ -535,19 +566,12 @@ class _State extends ConsumerState<GiftSheet> {
                                 name: gift.name,
                                 assetPath: gift.assetPath,
                               ),
-                              if (selected == gift &&
-                                  gift.category.toLowerCase() != 'dragon')
-                                const Positioned(
-                                  right: 2,
-                                  top: 2,
-                                  child: Yo2GiftPanelArt(
-                                    'ic_gift_pannal_sel.webp',
-                                    width: 22,
-                                    height: 22,
-                                    fallback: Icon(
-                                      Icons.check_circle,
-                                      color: Color(0xfffbbf24),
-                                      size: 20,
+                              if (selected == gift)
+                                Positioned.fill(
+                                  child: IgnorePointer(
+                                    child: Image.asset(
+                                      'assets/nimzo/gift_controls/bg_gift_selected_box.webp',
+                                      fit: BoxFit.fill,
                                     ),
                                   ),
                                 ),
@@ -567,12 +591,27 @@ class _State extends ConsumerState<GiftSheet> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Text(
-                      compactNumber(gift.price),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xfffde68a),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const NimzoGiftControlArt(
+                          'icon_gift_modal.webp',
+                          width: 14,
+                          height: 14,
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            compactNumber(gift.price),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Color(0xfffde68a),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
