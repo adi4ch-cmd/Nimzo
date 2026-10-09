@@ -38,16 +38,18 @@ class GiftArtwork extends StatelessWidget {
     final unavailable = Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Text(
-          name,
+        child: RichText(
+          text: TextSpan(
+            text: name,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Color(0xffe6bc58),
+            ),
+          ),
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: Color(0xffe6bc58),
-          ),
         ),
       ),
     );

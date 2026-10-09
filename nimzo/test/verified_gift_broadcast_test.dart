@@ -109,6 +109,9 @@ void main() {
     await tester.pump();
     repo.pending.values.single.complete(null);
     await tester.pump();
+    // The gift catalog FutureProvider resolves on a subsequent frame.
+    await tester.pump();
+    await tester.pump();
     expect(find.textContaining('Royal Dragon × 3'), findsOneWidget);
     expect(find.textContaining('3000000 coins'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
