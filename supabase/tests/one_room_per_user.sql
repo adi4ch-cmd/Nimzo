@@ -1,4 +1,4 @@
--- Run read-only after applying 20261007_one_room_per_user.sql to staging.
+-- Run read-only after applying 20261009052036_permanent_room_owner_guard.sql to staging.
 -- This does not create/delete rooms or touch user accounts or balances.
 do $$
 declare
