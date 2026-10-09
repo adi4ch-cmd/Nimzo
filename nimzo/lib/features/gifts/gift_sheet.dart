@@ -12,6 +12,7 @@ import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
+import 'yo2_gift_ui.dart';
 import '../../core/widgets/master_ui.dart';
 import '../moments/moment_repository.dart';
 import '../moments/moments_screen.dart' show momentDetailProvider;
@@ -68,6 +69,7 @@ class _State extends ConsumerState<GiftSheet> {
   bool busy = false;
   bool confirming = false;
   int quantity = 1;
+  String activeGiftCategory = 'All';
   String? key;
   Future<void> send() async {
     if (selected == null || busy || confirming) return;
@@ -197,10 +199,17 @@ class _State extends ConsumerState<GiftSheet> {
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                       child: Align(
                           alignment: Alignment.centerLeft,
-                          child: Text(
+                          child: Row(children: [
+                            const Yo2GiftPanelArt(
+                              'ic_gift_banner.webp', width: 28, height: 28,
+                              fallback: Icon(Icons.card_giftcard, size: 24),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(child: Text(
                               'Virtual Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${wallet.valueOrNull!.coins} coins'}',
                               style: const TextStyle(
-                                  fontWeight: FontWeight.w700, fontSize: 16)))),
+                                  fontWeight: FontWeight.w700, fontSize: 16))),
+                          ]))),
                   // Room members can gift themselves even when not seated on
                   // a microphone. The seat roster must not hide "Myself".
                   if (widget.roomId != null &&
@@ -260,6 +269,36 @@ class _State extends ConsumerState<GiftSheet> {
                                             fontWeight: FontWeight.w800,
                                             color: Color(0xffd6ad61))),
                                   )),
+                                  SliverToBoxAdapter(
+                                    child: SizedBox(
+                                      height: 46,
+                                      child: ListView(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                                        scrollDirection: Axis.horizontal,
+                                        children: [
+                                          for (final category in nimzoGiftCategories(
+                                              gifts.map((gift) => gift.category)))
+                                            Padding(
+                                              padding: const EdgeInsets.only(right: 8),
+                                              child: ChoiceChip(
+                                                label: Text(category),
+                                                selected: activeGiftCategory == category,
+                                                onSelected: busy || confirming || key != null
+                                                    ? null
+                                                    : (_) => setState(() {
+                                                        activeGiftCategory = category;
+                                                        if (selected != null &&
+                                                            !giftMatchesCategory(
+                                                              selected!.category, category)) {
+                                                          selected = null;
+                                                        }
+                                                      }),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                   SliverPadding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 16),
@@ -275,18 +314,22 @@ class _State extends ConsumerState<GiftSheet> {
                                                       .scale(1)),
                                       delegate: SliverChildBuilderDelegate(
                                           (context, index) {
-                                        final gift = gifts[index];
+                                        final gift = gifts.where((g) =>
+                                            giftMatchesCategory(g.category, activeGiftCategory))
+                                            .elementAt(index);
                                         return _giftCard(gift,
                                             legendary: gift.price == 35000000 ||
                                                 gift.price == 50000000);
-                                      }, childCount: gifts.length),
+                                      }, childCount: gifts.where((g) =>
+                                          giftMatchesCategory(g.category, activeGiftCategory))
+                                          .length),
                                     ),
                                   ),
                                   const SliverToBoxAdapter(
                                       child: Padding(
                                     padding: EdgeInsets.all(16),
                                     child: Text(
-                                        'Original Dragon effects play after verified settlement when their media is installed.',
+                                        'Original Yo2 gift controls are used when installed; video effects require approved media.',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             color: NimzoStyle.muted,
@@ -301,7 +344,7 @@ class _State extends ConsumerState<GiftSheet> {
                         DropdownButton<int>(
                             value: quantity,
                             items: [
-                              for (final q in [1, 10, 99])
+                              for (final q in [1, 10, 50, 99, 100, 999])
                                 DropdownMenuItem(value: q, child: Text('$q'))
                             ],
                             onChanged: busy || confirming || key != null
@@ -312,11 +355,20 @@ class _State extends ConsumerState<GiftSheet> {
                             onPressed: busy || confirming || selected == null
                                 ? null
                                 : send,
-                            child: Text(busy
-                                ? 'Sending…'
-                                : key == null
-                                    ? 'Send'
-                                    : 'Retry')),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Yo2GiftPanelArt(
+                                  'ic_gift_pannel_send_up.webp',
+                                  width: 18, height: 18,
+                                  fallback: Icon(Icons.send, size: 16),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(busy
+                                    ? 'Sending…'
+                                    : key == null ? 'Send' : 'Retry'),
+                              ],
+                            )),
                       ])),
                 ]))));
   }
