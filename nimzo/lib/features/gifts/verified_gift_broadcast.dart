@@ -63,7 +63,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
 
     // A remote lookup failure must not suppress a bundled original. Complete
     // with null rather than leaving an unhandled asynchronous error.
-    Future<void>(() async {
+    Future<void> resolve() async {
       String? remote;
       try {
         remote = await ref
@@ -75,9 +75,12 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       if (wait.isCompleted) return;
       final local = remote == null ? await _bundledDragonMedia(giftId) : null;
       if (!wait.isCompleted) wait.complete(remote ?? local);
-    }).catchError((Object _) {
+    }
+    // Start immediately: do not defer the server media lookup into a later
+    // event-loop turn; that delays verified effects and races widget teardown.
+    unawaited(resolve().catchError((Object _) {
       if (!wait.isCompleted) wait.complete(null);
-    });
+    }));
     return wait.future;
   }
 
@@ -129,7 +132,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   }
 
   void _receive(List<Map<String, dynamic>> rows) {
-    assert(() { debugPrint('GIFT_TEST_RECEIVE rows=${rows.length} primed=$_primed active=${_active != null}'); return true; }());
     if (!_primed) {
       _seen.addAll(rows.map((r) => '${r['id']}'));
       _primed = true;
@@ -151,7 +153,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   }
 
   Future<void> _next() async {
-    assert(() { debugPrint('GIFT_TEST_NEXT pending=${_pending.length} foreground=$_foreground'); return true; }());
     _timer?.cancel();
     if (!mounted || !_foreground) return;
     if (_pending.isEmpty) {
