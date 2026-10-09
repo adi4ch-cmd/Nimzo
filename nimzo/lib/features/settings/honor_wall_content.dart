@@ -175,7 +175,7 @@ class _HonorWallContentState extends ConsumerState<HonorWallContent> {
                   image: item.image,
                   detail: ids.contains(item.id)
                       ? 'In your Bag'
-                      : '${compactNumber(item.price)} coins'
+                      : '${compactNumber(item.price)} coins',
                   action: ids.contains(item.id) ? 'Owned' : 'View in Store',
                   enabled: !ids.contains(item.id),
                   highlighted: ids.contains(item.id),
