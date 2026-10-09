@@ -18,12 +18,12 @@ class Yo2GiftPanelArt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Image.asset(
-        'assets/yo2_gifts/images/$filename',
-        width: width,
-        height: height,
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => fallback ?? const SizedBox.shrink(),
-      );
+    'assets/yo2_gifts/images/$filename',
+    width: width,
+    height: height,
+    fit: BoxFit.contain,
+    errorBuilder: (_, __, ___) => fallback ?? const SizedBox.shrink(),
+  );
 }
 
 /// Tabs are derived from NIMZO's live catalog. The two Dragon gifts are not
@@ -34,8 +34,9 @@ List<String> nimzoGiftCategories(Iterable<String> categories) {
     final clean = category.trim();
     if (clean.isNotEmpty &&
         clean.toLowerCase() != 'dragon' &&
-        !result
-            .any((current) => current.toLowerCase() == clean.toLowerCase())) {
+        !result.any(
+          (current) => current.toLowerCase() == clean.toLowerCase(),
+        )) {
       result.add(clean);
     }
   }

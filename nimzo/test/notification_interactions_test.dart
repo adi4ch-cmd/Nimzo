@@ -16,8 +16,8 @@ class NoticeRepository extends NotificationRepository {
       {
         'title': 'Actual notice',
         'body': 'Body',
-        'read_at': read ? '2026-10-08' : null
-      }
+        'read_at': read ? '2026-10-08' : null,
+      },
     ];
   }
 
@@ -28,25 +28,34 @@ class NoticeRepository extends NotificationRepository {
 }
 
 void main() {
-  testWidgets('notification category and read action reload server-backed rows',
-      (tester) async {
-    final db = (await tester.runAsync(() async => SupabaseClient(
-        'https://example.supabase.co', 'test-key',
-        authOptions: const AuthClientOptions(autoRefreshToken: false))))!;
-    addTearDown(() => tester.runAsync(db.dispose));
-    final repo = NoticeRepository(db);
-    await tester.pumpWidget(ProviderScope(
-        overrides: [notificationRepositoryProvider.overrideWithValue(repo)],
-        child: const MaterialApp(home: NotificationsScreen())));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Gifts'));
-    await tester.pumpAndSettle();
-    expect(repo.categories, ['All', 'Gifts']);
-    await tester.tap(find.byTooltip('Mark all read'));
-    await tester.pumpAndSettle();
-    expect(repo.read, true);
-    expect(repo.categories.last, 'Gifts');
-    expect(repo.categories.where((c) => c == 'Gifts').length, 2);
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'notification category and read action reload server-backed rows',
+    (tester) async {
+      final db = (await tester.runAsync(
+        () async => SupabaseClient(
+          'https://example.supabase.co',
+          'test-key',
+          authOptions: const AuthClientOptions(autoRefreshToken: false),
+        ),
+      ))!;
+      addTearDown(() => tester.runAsync(db.dispose));
+      final repo = NoticeRepository(db);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [notificationRepositoryProvider.overrideWithValue(repo)],
+          child: const MaterialApp(home: NotificationsScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Gifts'));
+      await tester.pumpAndSettle();
+      expect(repo.categories, ['All', 'Gifts']);
+      await tester.tap(find.byTooltip('Mark all read'));
+      await tester.pumpAndSettle();
+      expect(repo.read, true);
+      expect(repo.categories.last, 'Gifts');
+      expect(repo.categories.where((c) => c == 'Gifts').length, 2);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

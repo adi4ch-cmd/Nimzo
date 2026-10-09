@@ -1,9 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+
 import '../../core/providers/supabase_provider.dart';
 import '../wallet/wallet_screen.dart';
 import 'recharge_repository.dart';
@@ -14,8 +16,11 @@ bool checkoutReady(Map<dynamic, dynamic> configuration, String store) =>
     (configuration['ready_stores'] as List).contains(store);
 
 class PurchaseSettlement {
-  PurchaseSettlement(
-      {required this.verify, required this.finish, required this.refresh});
+  PurchaseSettlement({
+    required this.verify,
+    required this.finish,
+    required this.refresh,
+  });
   final Future<void> Function() verify;
   final Future<void> Function() finish;
   final VoidCallback refresh;
@@ -28,8 +33,9 @@ class PurchaseSettlement {
 
 // Allow the stream to be supplied by a platform adapter without starting native
 // billing during construction. Native billing starts only after the server gate.
-final purchaseUpdatesProvider =
-    Provider<Stream<List<PurchaseDetails>>?>((ref) => null);
+final purchaseUpdatesProvider = Provider<Stream<List<PurchaseDetails>>?>(
+  (ref) => null,
+);
 
 String safePurchaseError(Object error) {
   const messages = {
@@ -59,11 +65,14 @@ class PurchaseController extends ChangeNotifier {
   InAppPurchase get _iap => _connection ??= InAppPurchase.instance;
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   void _listen(Stream<List<PurchaseDetails>> updates) {
-    _subscription = updates.listen(_receive, onError: (Object error) {
-      busy = false;
-      message = 'Store connection failed. Retry loading the store.';
-      notifyListeners();
-    });
+    _subscription = updates.listen(
+      _receive,
+      onError: (Object error) {
+        busy = false;
+        message = 'Store connection failed. Retry loading the store.';
+        notifyListeners();
+      },
+    );
   }
 
   final Map<String, PurchaseDetails> _retry = {};
@@ -80,10 +89,10 @@ class PurchaseController extends ChangeNotifier {
   String? get store => kIsWeb
       ? null
       : defaultTargetPlatform == TargetPlatform.android
-          ? 'google_play'
-          : defaultTargetPlatform == TargetPlatform.iOS
-              ? 'app_store'
-              : null;
+      ? 'google_play'
+      : defaultTargetPlatform == TargetPlatform.iOS
+      ? 'app_store'
+      : null;
   bool get canRetry => _retry.isNotEmpty;
   Future<void> load() async {
     if (loading) return;
@@ -96,8 +105,10 @@ class PurchaseController extends ChangeNotifier {
       if (account == null) throw StateError('Sign in to purchase coins.');
       if (store == null)
         throw StateError('Coin purchases require the Android or iOS app.');
-      final configResponse = await client.functions
-          .invoke('verify-purchase', body: {'action': 'configuration'});
+      final configResponse = await client.functions.invoke(
+        'verify-purchase',
+        body: {'action': 'configuration'},
+      );
       final config = configResponse.data;
       if (configResponse.status != 200 ||
           config is! Map ||
@@ -113,7 +124,7 @@ class PurchaseController extends ChangeNotifier {
       final rows = await ref.read(rechargeRepositoryProvider).packages();
       packages = {
         for (final row in rows)
-          if (row['product_id'] is String) row['product_id'] as String: row
+          if (row['product_id'] is String) row['product_id'] as String: row,
       };
       if (packages.isEmpty)
         throw StateError('No active coin packages are available.');
@@ -151,9 +162,12 @@ class PurchaseController extends ChangeNotifier {
     notifyListeners();
     try {
       final started = await _iap.buyConsumable(
-          purchaseParam: PurchaseParam(
-              productDetails: product, applicationUserName: account),
-          autoConsume: store != 'google_play');
+        purchaseParam: PurchaseParam(
+          productDetails: product,
+          applicationUserName: account,
+        ),
+        autoConsume: store != 'google_play',
+      );
       if (!started) {
         busy = false;
         message = 'Store checkout did not start. Please retry.';
@@ -201,14 +215,18 @@ class PurchaseController extends ChangeNotifier {
       // purchases recovered from the store after this controller was recreated.
       await PurchaseSettlement(
         verify: () async {
-          await ref.read(rechargeRepositoryProvider).verify(
-              store: store!,
-              productId: purchase.productID,
-              receipt: purchase.verificationData.serverVerificationData,
-              transactionId: purchase.purchaseID);
+          await ref
+              .read(rechargeRepositoryProvider)
+              .verify(
+                store: store!,
+                productId: purchase.productID,
+                receipt: purchase.verificationData.serverVerificationData,
+                transactionId: purchase.purchaseID,
+              );
           if (ref.read(supabaseProvider).auth.currentUser?.id != account)
             throw StateError(
-                'Account changed during verification. Retry after signing in.');
+              'Account changed during verification. Retry after signing in.',
+            );
         },
         refresh: () => ref.invalidate(walletProvider),
         finish: () async {
@@ -275,5 +293,6 @@ class PurchaseController extends ChangeNotifier {
 
 // Keep the purchase stream alive across screen navigation so a late store
 // callback is verified rather than lost when the checkout page is closed.
-final purchaseControllerProvider =
-    ChangeNotifierProvider((ref) => PurchaseController(ref));
+final purchaseControllerProvider = ChangeNotifierProvider(
+  (ref) => PurchaseController(ref),
+);

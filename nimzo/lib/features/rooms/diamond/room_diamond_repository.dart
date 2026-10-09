@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../core/providers/supabase_provider.dart';
 
 const diamondTargets = [
@@ -9,17 +11,18 @@ const diamondTargets = [
   20000000,
   30000000,
   50000000,
-  100000000
+  100000000,
 ];
 
 class RoomDiamondStatus {
-  const RoomDiamondStatus(
-      {required this.totalCoins,
-      required this.completedStages,
-      required this.progress,
-      required this.cycleStart,
-      required this.resetAt,
-      required this.serverNow});
+  const RoomDiamondStatus({
+    required this.totalCoins,
+    required this.completedStages,
+    required this.progress,
+    required this.cycleStart,
+    required this.resetAt,
+    required this.serverNow,
+  });
   final int totalCoins, completedStages;
   final double progress;
   final DateTime cycleStart, resetAt, serverNow;
@@ -31,10 +34,13 @@ class RoomDiamondStatus {
     final dates = [row['cycle_start'], row['reset_at'], row['server_now']];
     if (targets is! List ||
         targets.length != 6 ||
-        List.generate(6, (i) => targets[i] == diamondTargets[i])
-            .contains(false) ||
+        List.generate(
+          6,
+          (i) => targets[i] == diamondTargets[i],
+        ).contains(false) ||
         dates.any(
-            (date) => date is! String || DateTime.tryParse(date) == null) ||
+          (date) => date is! String || DateTime.tryParse(date) == null,
+        ) ||
         total is! int ||
         total < 0 ||
         completed is! int ||
@@ -48,21 +54,23 @@ class RoomDiamondStatus {
       throw const FormatException('Invalid server Diamond Blast status');
     }
     return RoomDiamondStatus(
-        totalCoins: total,
-        completedStages: completed,
-        progress: progress.toDouble(),
-        cycleStart: DateTime.parse(row['cycle_start'] as String).toUtc(),
-        resetAt: DateTime.parse(row['reset_at'] as String).toUtc(),
-        serverNow: DateTime.parse(row['server_now'] as String).toUtc());
+      totalCoins: total,
+      completedStages: completed,
+      progress: progress.toDouble(),
+      cycleStart: DateTime.parse(row['cycle_start'] as String).toUtc(),
+      resetAt: DateTime.parse(row['reset_at'] as String).toUtc(),
+      serverNow: DateTime.parse(row['server_now'] as String).toUtc(),
+    );
   }
 }
 
 class DiamondBlastEvent {
-  const DiamondBlastEvent(
-      {required this.id,
-      required this.roomId,
-      required this.stage,
-      required this.cycleStart});
+  const DiamondBlastEvent({
+    required this.id,
+    required this.roomId,
+    required this.stage,
+    required this.cycleStart,
+  });
   final String id, roomId;
   final int stage;
   final DateTime cycleStart;
@@ -80,10 +88,11 @@ class DiamondBlastEvent {
       throw const FormatException('Invalid server Diamond Blast event');
     }
     return DiamondBlastEvent(
-        id: row['id'] as String,
-        roomId: row['room_id'] as String,
-        stage: stage,
-        cycleStart: DateTime.parse(row['cycle_start'] as String).toUtc());
+      id: row['id'] as String,
+      roomId: row['room_id'] as String,
+      stage: stage,
+      cycleStart: DateTime.parse(row['cycle_start'] as String).toUtc(),
+    );
   }
 }
 
@@ -105,32 +114,37 @@ class RoomDiamondRepository {
     late StreamController<DiamondUpdate> stream;
     var sequence = 0;
     final channel = db.channel(
-        'room-diamond-$roomId-${DateTime.now().microsecondsSinceEpoch}');
-    stream = StreamController<DiamondUpdate>(onListen: () {
-      channel.onPostgresChanges(
+      'room-diamond-$roomId-${DateTime.now().microsecondsSinceEpoch}',
+    );
+    stream = StreamController<DiamondUpdate>(
+      onListen: () {
+        channel.onPostgresChanges(
           event: PostgresChangeEvent.insert,
           schema: 'public',
           table: 'gift_events',
           filter: PostgresChangeFilter(
-              type: PostgresChangeFilterType.eq,
-              column: 'room_id',
-              value: roomId),
+            type: PostgresChangeFilterType.eq,
+            column: 'room_id',
+            value: roomId,
+          ),
           callback: (payload) {
             if (!stream.isClosed && payload.newRecord['room_id'] == roomId) {
               // Every settled gift refreshes progress, including subthreshold gifts.
               // Only verified blast rows below enqueue an animation.
               stream.add(DiamondUpdate(++sequence));
             }
-          });
-      channel
-          .onPostgresChanges(
+          },
+        );
+        channel
+            .onPostgresChanges(
               event: PostgresChangeEvent.insert,
               schema: 'public',
               table: 'room_diamond_blast_events',
               filter: PostgresChangeFilter(
-                  type: PostgresChangeFilterType.eq,
-                  column: 'room_id',
-                  value: roomId),
+                type: PostgresChangeFilterType.eq,
+                column: 'room_id',
+                value: roomId,
+              ),
               callback: (payload) {
                 if (stream.isClosed) return;
                 try {
@@ -140,38 +154,48 @@ class RoomDiamondRepository {
                 } on FormatException {
                   /* Never animate malformed or unsupported events. */
                 }
-              })
-          .subscribe((status, error) {
-        if (status == RealtimeSubscribeStatus.subscribed && !stream.isClosed) {
-          // Refresh on reconnect, without replaying old blast animations.
-          stream.add(DiamondUpdate(++sequence));
-        }
-      });
-    }, onCancel: () async {
-      await db.removeChannel(channel);
-    });
+              },
+            )
+            .subscribe((status, error) {
+              if (status == RealtimeSubscribeStatus.subscribed &&
+                  !stream.isClosed) {
+                // Refresh on reconnect, without replaying old blast animations.
+                stream.add(DiamondUpdate(++sequence));
+              }
+            });
+      },
+      onCancel: () async {
+        await db.removeChannel(channel);
+      },
+    );
     return stream.stream;
   }
 }
 
 final roomDiamondRepositoryProvider = Provider(
-    (ref) => RoomDiamondRepository(ref.watch(sessionSupabaseProvider).client));
+  (ref) => RoomDiamondRepository(ref.watch(sessionSupabaseProvider).client),
+);
 final roomDiamondEventsProvider = StreamProvider.autoDispose
-    .family<DiamondUpdate, String>((ref, roomId) =>
-        ref.watch(roomDiamondRepositoryProvider).changes(roomId));
+    .family<DiamondUpdate, String>(
+      (ref, roomId) => ref.watch(roomDiamondRepositoryProvider).changes(roomId),
+    );
 final roomDiamondStatusProvider = FutureProvider.autoDispose
     .family<RoomDiamondStatus, String>((ref, roomId) async {
-  ref.watch(roomDiamondEventsProvider(roomId));
-  Timer? timer;
-  var disposed = false;
-  ref.onDispose(() {
-    disposed = true;
-    timer?.cancel();
-  });
-  final status = await ref.watch(roomDiamondRepositoryProvider).status(roomId);
-  if (disposed) return status;
-  final remaining = status.resetAt.difference(status.serverNow);
-  timer = Timer(remaining.isNegative ? const Duration(seconds: 1) : remaining,
-      ref.invalidateSelf);
-  return status;
-});
+      ref.watch(roomDiamondEventsProvider(roomId));
+      Timer? timer;
+      var disposed = false;
+      ref.onDispose(() {
+        disposed = true;
+        timer?.cancel();
+      });
+      final status = await ref
+          .watch(roomDiamondRepositoryProvider)
+          .status(roomId);
+      if (disposed) return status;
+      final remaining = status.resetAt.difference(status.serverNow);
+      timer = Timer(
+        remaining.isNegative ? const Duration(seconds: 1) : remaining,
+        ref.invalidateSelf,
+      );
+      return status;
+    });

@@ -37,11 +37,10 @@ final notificationRepositoryProvider = Provider(
   (ref) => NotificationRepository(ref.watch(sessionSupabaseProvider).client),
 );
 final notificationActivityProvider = StreamProvider.autoDispose(
-    (ref) => ref.watch(notificationRepositoryProvider).changes());
-final notificationsProvider =
-    FutureProvider.family<List<Map<String, dynamic>>, String>(
-  (ref, c) {
-    ref.watch(notificationActivityProvider);
-    return ref.watch(notificationRepositoryProvider).list(c);
-  },
+  (ref) => ref.watch(notificationRepositoryProvider).changes(),
 );
+final notificationsProvider =
+    FutureProvider.family<List<Map<String, dynamic>>, String>((ref, c) {
+      ref.watch(notificationActivityProvider);
+      return ref.watch(notificationRepositoryProvider).list(c);
+    });

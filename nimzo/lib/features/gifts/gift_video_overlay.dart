@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -56,10 +57,14 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
     }
     if (!mounted || _finished) return;
     final controller = source.startsWith('assets/')
-        ? VideoPlayerController.asset(source,
-            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
-        : VideoPlayerController.networkUrl(uri!,
-            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
+        ? VideoPlayerController.asset(
+            source,
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+          )
+        : VideoPlayerController.networkUrl(
+            uri!,
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+          );
     _controller = controller;
     controller.addListener(_onPlaybackChanged);
     try {
@@ -191,8 +196,10 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
                         setState(() => _muted = !_muted);
                         unawaited(_updateSound());
                       },
-                icon: Icon(_muted ? Icons.volume_off : Icons.volume_up,
-                    color: Colors.white),
+                icon: Icon(
+                  _muted ? Icons.volume_off : Icons.volume_up,
+                  color: Colors.white,
+                ),
                 tooltip: _muted ? 'Enable gift sound' : 'Mute gift sound',
               ),
             ),

@@ -1,15 +1,20 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'gift_repository.dart';
 import 'gift_video_overlay.dart';
 import 'yo2_gift_ui.dart';
 
 /// Server-settled gift announcements. Initial history is never replayed.
 class VerifiedGiftBroadcast extends ConsumerStatefulWidget {
-  const VerifiedGiftBroadcast(
-      {super.key, required this.roomId, required this.countryCode});
+  const VerifiedGiftBroadcast({
+    super.key,
+    required this.roomId,
+    required this.countryCode,
+  });
   final String roomId, countryCode;
   @override
   ConsumerState<VerifiedGiftBroadcast> createState() => _BroadcastState();
@@ -66,8 +71,9 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     Future<void> resolve() async {
       String? remote;
       try {
-        remote =
-            await ref.read(giftRepositoryProvider).approvedAnimationUrl(giftId);
+        remote = await ref
+            .read(giftRepositoryProvider)
+            .approvedAnimationUrl(giftId);
       } catch (_) {
         // Offline clients can still play a verified bundled original.
       }
@@ -78,9 +84,11 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
 
     // Start immediately: do not defer the server media lookup into a later
     // event-loop turn; that delays verified effects and races widget teardown.
-    unawaited(resolve().catchError((Object _) {
-      if (!wait.isCompleted) wait.complete(null);
-    }));
+    unawaited(
+      resolve().catchError((Object _) {
+        if (!wait.isCompleted) wait.complete(null);
+      }),
+    );
     return wait.future;
   }
 
@@ -188,24 +196,30 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     if (_video == null) {
       final price = (event['unit_price'] as num?)?.toInt() ?? 0;
       _timer = Timer(
-          price < 10000
-              ? const Duration(milliseconds: 1200)
-              : price < 1000000
-                  ? const Duration(milliseconds: 1800)
-                  : Duration(
-                      seconds: price >= 10000000
-                          ? 5
-                          : price >= 5000000
-                              ? 4
-                              : 3),
-          _next);
+        price < 10000
+            ? const Duration(milliseconds: 1200)
+            : price < 1000000
+            ? const Duration(milliseconds: 1800)
+            : Duration(
+                seconds: price >= 10000000
+                    ? 5
+                    : price >= 5000000
+                    ? 4
+                    : 3,
+              ),
+        _next,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final events = ref.watch(verifiedGiftAnimationProvider(
-        (roomId: widget.roomId, countryCode: widget.countryCode)));
+    final events = ref.watch(
+      verifiedGiftAnimationProvider((
+        roomId: widget.roomId,
+        countryCode: widget.countryCode,
+      )),
+    );
     // Reconcile the current AsyncData snapshot after each stream update.
     // The seen-ID set makes repeat rebuilds harmless, even when provider
     // delivery and Flutter frame scheduling are coalesced.
@@ -241,8 +255,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         key: ValueKey(event['id']),
         source: _video!,
         sender: (event['sender_name'] ?? event['sender_id'] ?? '').toString(),
-        recipient:
-            (event['receiver_name'] ?? event['receiver_id'] ?? '').toString(),
+        recipient: (event['receiver_name'] ?? event['receiver_id'] ?? '')
+            .toString(),
         giftName: '$giftName × $quantity',
         // Voice remains audible; users can enable the original video's sound.
         muted: true,
@@ -254,8 +268,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final colors = price >= 10000000
         ? [const Color(0xff710c19), const Color(0xffd6a347)]
         : price >= 5000000
-            ? [const Color(0xff4e277e), const Color(0xffd6a347)]
-            : [const Color(0xff8c6016), const Color(0xffe6bc58)];
+        ? [const Color(0xff4e277e), const Color(0xffd6a347)]
+        : [const Color(0xff8c6016), const Color(0xffe6bc58)];
     return IgnorePointer(
       ignoring: true,
       child: Align(
@@ -270,8 +284,10 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
                 border: Border.all(color: const Color(0xffffe3a0)),
               ),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -285,16 +301,18 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
                       const SizedBox(width: 8),
                     ],
                     Flexible(
-                        child: Text(
-                      _loading
-                          ? 'Preparing verified gift…'
-                          : '${event['scope'] == 'country' ? 'COUNTRY GIFT' : 'ROOM GIFT'}  •  $giftName × $quantity  •  ${price * quantity} coins',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      child: Text(
+                        _loading
+                            ? 'Preparing verified gift…'
+                            : '${event['scope'] == 'country' ? 'COUNTRY GIFT' : 'ROOM GIFT'}  •  $giftName × $quantity  •  ${price * quantity} coins',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    )),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

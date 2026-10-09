@@ -9,9 +9,9 @@ class AdminRepository {
   final SupabaseClient _db;
   AdminRepository(this._db);
   Future<void> setStatus(String userId, String status) => _db.rpc(
-        'admin_set_status',
-        params: {'p_user': userId, 'p_status': status},
-      );
+    'admin_set_status',
+    params: {'p_user': userId, 'p_status': status},
+  );
   Future<List<Map<String, dynamic>>> reports() async =>
       List<Map<String, dynamic>>.from(await _db.rpc('admin_reports'));
 }

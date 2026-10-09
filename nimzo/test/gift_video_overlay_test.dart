@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,10 +23,13 @@ class NativeVideo extends VideoPlayerPlatform {
   Future<int?> createWithOptions(VideoCreationOptions options) async {
     source = options.dataSource;
     if (initialize) {
-      events.add(VideoEvent(
+      events.add(
+        VideoEvent(
           eventType: VideoEventType.initialized,
           size: const Size(1920, 1080),
-          duration: duration));
+          duration: duration,
+        ),
+      );
     }
     return 1;
   }
@@ -68,17 +72,25 @@ void main() {
     unawaited(native.events.close());
   });
 
-  Future<void> show(WidgetTester tester, VoidCallback finish,
-      {String source = 'https://example.com/original.mp4'}) async {
-    await tester.pumpWidget(MaterialApp(
+  Future<void> show(
+    WidgetTester tester,
+    VoidCallback finish, {
+    String source = 'https://example.com/original.mp4',
+  }) async {
+    await tester.pumpWidget(
+      MaterialApp(
         home: Scaffold(
-            body: GiftVideoOverlay(
-                source: source,
-                sender: 'Sender',
-                recipient: 'Receiver',
-                giftName: 'Dragon × 3',
-                muted: true,
-                onFinished: finish))));
+          body: GiftVideoOverlay(
+            source: source,
+            sender: 'Sender',
+            recipient: 'Receiver',
+            giftName: 'Dragon × 3',
+            muted: true,
+            onFinished: finish,
+          ),
+        ),
+      ),
+    );
     await tester.pump();
     await tester.pump();
     await tester.runAsync(() async {
@@ -103,8 +115,9 @@ void main() {
     expect(native.disposed, isTrue);
   });
 
-  testWidgets('longer original video is not dismissed at thirty seconds',
-      (tester) async {
+  testWidgets('longer original video is not dismissed at thirty seconds', (
+    tester,
+  ) async {
     native.duration = const Duration(seconds: 45);
     var finished = 0;
     await show(tester, () => finished++);
@@ -117,12 +130,14 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('decoder failure dismisses once and releases resources',
-      (tester) async {
+  testWidgets('decoder failure dismisses once and releases resources', (
+    tester,
+  ) async {
     var finished = 0;
     await show(tester, () => finished++);
     native.events.addError(
-        PlatformException(code: 'decode-failed', message: 'Decoder failure'));
+      PlatformException(code: 'decode-failed', message: 'Decoder failure'),
+    );
     await tester.pump();
     expect(finished, 1);
     await tester.pump(const Duration(seconds: 40));
@@ -135,22 +150,29 @@ void main() {
     expect(native.disposed, isTrue);
   });
 
-  testWidgets('stalled initialization and insecure URL dismiss safely',
-      (tester) async {
+  testWidgets('stalled initialization and insecure URL dismiss safely', (
+    tester,
+  ) async {
     native.initialize = false;
     var finished = 0;
     await show(tester, () => finished++);
     await tester.pump(const Duration(seconds: 16));
     expect(finished, 1);
     // Let native initialization finish so controller disposal can complete.
-    native.events.add(VideoEvent(
+    native.events.add(
+      VideoEvent(
         eventType: VideoEventType.initialized,
         size: const Size(100, 100),
-        duration: const Duration(seconds: 1)));
+        duration: const Duration(seconds: 1),
+      ),
+    );
     await tester.pumpWidget(const SizedBox());
     await tester.pump();
-    await show(tester, () => finished++,
-        source: 'http://example.com/unsafe.mp4');
+    await show(
+      tester,
+      () => finished++,
+      source: 'http://example.com/unsafe.mp4',
+    );
     expect(finished, 2);
     await tester.pumpWidget(const SizedBox());
   });

@@ -26,8 +26,9 @@ void main() {
       'id': 'u',
       'nimzo_id': 100001,
       'vip_level': 5,
-      'vip_expires_at':
-          DateTime.now().add(const Duration(days: 1)).toIso8601String(),
+      'vip_expires_at': DateTime.now()
+          .add(const Duration(days: 1))
+          .toIso8601String(),
       'svip_level': 3,
       'svip_cycle_start': DateTime.now().toIso8601String(),
     });

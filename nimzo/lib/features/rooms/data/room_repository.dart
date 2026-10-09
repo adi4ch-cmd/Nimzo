@@ -80,8 +80,11 @@ class RoomRepository {
   Future<String?> ownedRoomId() async {
     final uid = _db.auth.currentUser?.id;
     if (uid == null) throw StateError('Please sign in again');
-    final room =
-        await _db.from('rooms').select('id').eq('owner_id', uid).maybeSingle();
+    final room = await _db
+        .from('rooms')
+        .select('id')
+        .eq('owner_id', uid)
+        .maybeSingle();
     return room?['id']?.toString();
   }
 
@@ -133,9 +136,9 @@ class RoomRepository {
   Future<void> leaveSeat(String roomId) =>
       _rpc('leave_seat', {'p_room': roomId});
   Future<void> modMuteSeat(String roomId, int seat, bool muted) => _rpc(
-        'mod_mute_seat',
-        {'p_room': roomId, 'p_seat': seat, 'p_muted': muted},
-      );
+    'mod_mute_seat',
+    {'p_room': roomId, 'p_seat': seat, 'p_muted': muted},
+  );
   Future<bool> canModerate(String roomId) async {
     try {
       return await _db.rpc('get_room_moderation', params: {'p_room': roomId}) ==
@@ -145,10 +148,15 @@ class RoomRepository {
     }
   }
 
-  Future<void> moderateMember(String roomId, String userId,
-          {required bool ban}) =>
-      _rpc('moderate_room_member',
-          {'p_room': roomId, 'p_user': userId, 'p_ban': ban});
+  Future<void> moderateMember(
+    String roomId,
+    String userId, {
+    required bool ban,
+  }) => _rpc('moderate_room_member', {
+    'p_room': roomId,
+    'p_user': userId,
+    'p_ban': ban,
+  });
 
   Future<void> kick(String roomId, String userId) =>
       _rpc('kick_member', {'p_room': roomId, 'p_user': userId});

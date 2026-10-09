@@ -45,7 +45,10 @@ class FriendRepository {
   String get _me => _db.auth.currentUser!.id;
 
   Future<FriendState> state(String other) async {
-    final rows = await _db.from('friendships').select().or(
+    final rows = await _db
+        .from('friendships')
+        .select()
+        .or(
           'and(requester_id.eq.$_me,addressee_id.eq.$other),and(requester_id.eq.$other,addressee_id.eq.$_me)',
         );
     if (rows.isEmpty) return FriendState.none;

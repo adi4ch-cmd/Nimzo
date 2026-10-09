@@ -71,14 +71,14 @@ class RoomChatRepository {
 final roomChatRepositoryProvider = Provider(
   (ref) => RoomChatRepository(ref.watch(sessionSupabaseProvider).client),
 );
-final roomChatProvider =
-    StreamProvider.autoDispose.family<List<RoomMessage>, String>(
-  (ref, id) => ref.watch(roomChatRepositoryProvider).watch(id),
-);
+final roomChatProvider = StreamProvider.autoDispose
+    .family<List<RoomMessage>, String>(
+      (ref, id) => ref.watch(roomChatRepositoryProvider).watch(id),
+    );
 final onlineCountProvider = StreamProvider.autoDispose.family<int, String>(
   (ref, id) => ref.watch(roomChatRepositoryProvider).watchOnline(id),
 );
-final roomGiftEventProvider =
-    StreamProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
-  (ref, id) => ref.watch(roomChatRepositoryProvider).watchGifts(id),
-);
+final roomGiftEventProvider = StreamProvider.autoDispose
+    .family<List<Map<String, dynamic>>, String>(
+      (ref, id) => ref.watch(roomChatRepositoryProvider).watchGifts(id),
+    );

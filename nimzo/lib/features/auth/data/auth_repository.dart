@@ -39,8 +39,8 @@ class AuthRepository {
   Future<void> resetPassword(String e) => _guard(() => _s.resetPassword(e));
 
   Future<bool> verifyEmail({String? resendTo}) => _guard(() async {
-        if (resendTo != null) await _s.resendVerification(resendTo);
-        final r = await _s.refreshUser();
-        return r.user?.emailConfirmedAt != null;
-      });
+    if (resendTo != null) await _s.resendVerification(resendTo);
+    final r = await _s.refreshUser();
+    return r.user?.emailConfirmedAt != null;
+  });
 }

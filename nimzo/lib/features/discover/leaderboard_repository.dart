@@ -47,5 +47,5 @@ final bannersProvider = FutureProvider(
 );
 final leaderboardProvider =
     FutureProvider.family<List<Map<String, dynamic>>, (String, String)>(
-  (ref, k) => ref.watch(leaderboardRepositoryProvider).top(k.$1, k.$2),
-);
+      (ref, k) => ref.watch(leaderboardRepositoryProvider).top(k.$1, k.$2),
+    );

@@ -16,7 +16,8 @@ class GameRepository {
         !NimzoRoomGames.canPlay(game) ||
         bet < 1 ||
         bet > 500000 ||
-        key.trim().isEmpty) throw StateError('Invalid game request');
+        key.trim().isEmpty)
+      throw StateError('Invalid game request');
     return Map<String, dynamic>.from(
       await db.rpc(
         'play_game',

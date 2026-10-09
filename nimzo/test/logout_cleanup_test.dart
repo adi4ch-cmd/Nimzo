@@ -32,13 +32,19 @@ class FailedVoice implements VoiceService {
 }
 
 void main() {
-  testWidgets('native voice leave failure does not prevent session logout',
-      (tester) async {
+  testWidgets('native voice leave failure does not prevent session logout', (
+    tester,
+  ) async {
     final auth = LogoutController();
-    await tester.pumpWidget(ProviderScope(overrides: [
-      authControllerProvider.overrideWith(() => auth),
-      voiceServiceProvider.overrideWithValue(FailedVoice()),
-    ], child: const MaterialApp(home: SettingsScreen())));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authControllerProvider.overrideWith(() => auth),
+          voiceServiceProvider.overrideWithValue(FailedVoice()),
+        ],
+        child: const MaterialApp(home: SettingsScreen()),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Logout'));
     await tester.pumpAndSettle();

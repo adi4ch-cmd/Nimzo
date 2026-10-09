@@ -10,8 +10,8 @@ class GameEngine {
   final Random random;
   GameEngine(int seed) : random = Random(seed);
   GameRound newRound() => GameRound(
-        List.generate(5, (_) => List.generate(5, (_) => random.nextInt(8))),
-      );
+    List.generate(5, (_) => List.generate(5, (_) => random.nextInt(8))),
+  );
   int score(List<List<int>> board) {
     final counts = <int, int>{};
     for (final row in board) {

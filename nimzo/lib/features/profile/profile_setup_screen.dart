@@ -98,7 +98,9 @@ class _State extends ConsumerState<ProfileSetupScreen> {
           id = ref.read(currentUserIdProvider);
       if (id == null) throw StateError('Sign in required');
       final path = '$id/${DateTime.now().microsecondsSinceEpoch}.${format.$1}';
-      await db.storage.from(isCover ? 'covers' : 'avatars').uploadBinary(
+      await db.storage
+          .from(isCover ? 'covers' : 'avatars')
+          .uploadBinary(
             path,
             bytes,
             fileOptions: FileOptions(contentType: format.$2),
@@ -139,7 +141,9 @@ class _State extends ConsumerState<ProfileSetupScreen> {
     }
     setState(() => busy = true);
     try {
-      await ref.read(profileRepositoryProvider).update(
+      await ref
+          .read(profileRepositoryProvider)
+          .update(
             displayName: name.text,
             bio: bio.text,
             countryCode: countryCode,
@@ -169,101 +173,91 @@ class _State extends ConsumerState<ProfileSetupScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(widget.edit ? 'Edit profile' : 'Set up your profile'),
-        ),
-        body: failure != null
-            ? DataFailure(message: failure!, onRetry: load)
-            : !loaded
-                ? const Center(child: CircularProgressIndicator())
-                : Form(
-                    key: form,
-                    child: ListView(
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        OutlinedButton(
-                          onPressed: busy ? null : () => photo(false),
-                          child: Text(
-                            avatar == null
-                                ? 'Profile photo'
-                                : 'Profile photo selected',
-                          ),
-                        ),
-                        OutlinedButton(
-                          onPressed: busy ? null : () => photo(true),
-                          child: Text(
-                            cover == null
-                                ? 'Cover photo'
-                                : 'Cover photo selected',
-                          ),
-                        ),
-                        TextFormField(
-                          controller: name,
-                          maxLength: 30,
-                          decoration:
-                              const InputDecoration(labelText: 'Display name'),
-                          validator: (s) => (s?.trim().length ?? 0) >= 2
-                              ? null
-                              : 'Name is too short',
-                        ),
-                        DropdownButtonFormField<String>(
-                          initialValue:
-                              ['Male', 'Female', 'Other'].contains(gender)
-                                  ? gender
-                                  : null,
-                          decoration:
-                              const InputDecoration(labelText: 'Gender'),
-                          items: [
-                            for (final g in ['Male', 'Female', 'Other'])
-                              DropdownMenuItem(value: g, child: Text(g)),
-                          ],
-                          onChanged: (v) => setState(() => gender = v),
-                        ),
-                        ListTile(
-                          title: const Text('Date of birth'),
-                          subtitle: Text(
-                            dob?.toIso8601String().split('T').first ??
-                                'Choose date',
-                          ),
-                          onTap: () async {
-                            final date = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime(1900),
-                              lastDate: DateTime.now(),
-                              initialDate: dob ?? DateTime(2000),
-                            );
-                            if (date != null) setState(() => dob = date);
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Country'),
-                          subtitle: Text(countryName ?? 'Choose country'),
-                          onTap: () => showCountryPicker(
-                            context: context,
-                            onSelect: (c) => setState(() {
-                              countryCode = c.countryCode;
-                              countryName = c.name;
-                            }),
-                          ),
-                        ),
-                        TextField(
-                          controller: language,
-                          decoration:
-                              const InputDecoration(labelText: 'Language'),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: bio,
-                          maxLength: 300,
-                          maxLines: 3,
-                          decoration: const InputDecoration(labelText: 'Bio'),
-                        ),
-                        FilledButton(
-                          onPressed: busy ? null : save,
-                          child: Text(busy ? 'Saving…' : 'Save'),
-                        ),
-                      ],
-                    ),
+    appBar: AppBar(
+      title: Text(widget.edit ? 'Edit profile' : 'Set up your profile'),
+    ),
+    body: failure != null
+        ? DataFailure(message: failure!, onRetry: load)
+        : !loaded
+        ? const Center(child: CircularProgressIndicator())
+        : Form(
+            key: form,
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                OutlinedButton(
+                  onPressed: busy ? null : () => photo(false),
+                  child: Text(
+                    avatar == null ? 'Profile photo' : 'Profile photo selected',
                   ),
-      );
+                ),
+                OutlinedButton(
+                  onPressed: busy ? null : () => photo(true),
+                  child: Text(
+                    cover == null ? 'Cover photo' : 'Cover photo selected',
+                  ),
+                ),
+                TextFormField(
+                  controller: name,
+                  maxLength: 30,
+                  decoration: const InputDecoration(labelText: 'Display name'),
+                  validator: (s) =>
+                      (s?.trim().length ?? 0) >= 2 ? null : 'Name is too short',
+                ),
+                DropdownButtonFormField<String>(
+                  initialValue: ['Male', 'Female', 'Other'].contains(gender)
+                      ? gender
+                      : null,
+                  decoration: const InputDecoration(labelText: 'Gender'),
+                  items: [
+                    for (final g in ['Male', 'Female', 'Other'])
+                      DropdownMenuItem(value: g, child: Text(g)),
+                  ],
+                  onChanged: (v) => setState(() => gender = v),
+                ),
+                ListTile(
+                  title: const Text('Date of birth'),
+                  subtitle: Text(
+                    dob?.toIso8601String().split('T').first ?? 'Choose date',
+                  ),
+                  onTap: () async {
+                    final date = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime.now(),
+                      initialDate: dob ?? DateTime(2000),
+                    );
+                    if (date != null) setState(() => dob = date);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Country'),
+                  subtitle: Text(countryName ?? 'Choose country'),
+                  onTap: () => showCountryPicker(
+                    context: context,
+                    onSelect: (c) => setState(() {
+                      countryCode = c.countryCode;
+                      countryName = c.name;
+                    }),
+                  ),
+                ),
+                TextField(
+                  controller: language,
+                  decoration: const InputDecoration(labelText: 'Language'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: bio,
+                  maxLength: 300,
+                  maxLines: 3,
+                  decoration: const InputDecoration(labelText: 'Bio'),
+                ),
+                FilledButton(
+                  onPressed: busy ? null : save,
+                  child: Text(busy ? 'Saving…' : 'Save'),
+                ),
+              ],
+            ),
+          ),
+  );
 }
