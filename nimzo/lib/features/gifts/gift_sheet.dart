@@ -420,9 +420,27 @@ class _State extends ConsumerState<GiftSheet> {
                           width: double.infinity,
                           child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: GiftArtwork(
-                                  name: gift.name,
-                                  assetPath: gift.assetPath)))),
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  GiftArtwork(
+                                    name: gift.name,
+                                    assetPath: gift.assetPath,
+                                  ),
+                                  if (selected == gift &&
+                                      gift.category.toLowerCase() != 'dragon')
+                                    const Positioned(
+                                      right: 2,
+                                      top: 2,
+                                      child: Yo2GiftPanelArt(
+                                        'ic_gift_pannal_sel.webp',
+                                        width: 22, height: 22,
+                                        fallback: Icon(Icons.check_circle,
+                                            color: Color(0xfffbbf24), size: 20),
+                                      ),
+                                    ),
+                                ],
+                              )))),
                   const SizedBox(height: 2),
                   Text(gift.name,
                       maxLines: 2,
