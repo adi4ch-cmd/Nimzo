@@ -260,20 +260,23 @@ class VivoxVoiceService implements VoiceService {
   Future<void> _leave() async {
     _connected = false;
     if (!_disposed) _connectedEvents.add(false);
-    if (_initialized) {
-      try {
-        await _invokeNative<int>('leave');
-      } finally {
-        // SDK teardown prevents delayed replies and fixed handles from a failed
-        // attempt being reused by a retry or a listener-to-speaker upgrade.
-        await _invokeNative<int>('shutdown');
-        _initialized = false;
+    try {
+      if (_initialized) {
+        try {
+          await _invokeNative<int>('leave');
+        } finally {
+          // Attempt teardown even when leaving fails. A platform exception must
+          // not retain handles or speaking state in the next room session.
+          await _invokeNative<int>('shutdown');
+        }
       }
+    } finally {
+      _initialized = false;
+      _roomId = null;
+      _canTransmit = false;
+      _speakingUsers.clear();
+      if (!_disposed) _speaking.add(const <String>{});
     }
-    _roomId = null;
-    _canTransmit = false;
-    _speakingUsers.clear();
-    if (!_disposed) _speaking.add(const <String>{});
   }
 
   @override

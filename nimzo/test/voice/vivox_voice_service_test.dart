@@ -53,6 +53,37 @@ void main() {
     'accountUri': 'sip:.issuer.user.@voice.example',
     'canTransmit': true,
   };
+  test('failed shutdown clears speaking state and allows a fresh SDK retry',
+      () async {
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+    var initializations = 0;
+    var shutdowns = 0;
+    final states = <Set<String>>[];
+    final subscription = voice.speaking.listen(states.add);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'initialize') initializations++;
+      if (call.method == 'join') await emit('audioConnected');
+      if (call.method == 'shutdown' && ++shutdowns == 1) {
+        throw PlatformException(code: 'VIVOX_NATIVE');
+      }
+      return ['initialize', 'requestMicPermission'].contains(call.method)
+          ? true
+          : 0;
+    });
+    await voice.join('room', '');
+    await emit('speaking',
+        detail:
+            'sip:.issuer.c3d02bfb-a0f0-4ef9-b19f-10409dcb59af.@voice.example');
+    await expectLater(voice.leave(), throwsA(isA<VoiceConnectionFailure>()));
+    await Future<void>.delayed(Duration.zero);
+    expect(states.last, isEmpty,
+        reason: 'Native teardown failure must clear stale seat activity');
+    await voice.join('room', '');
+    expect(initializations, 2);
+    await subscription.cancel();
+    await voice.dispose();
+  });
   test('server account URI supplies the SDK login account name', () async {
     final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
     Map? login;
