@@ -59,7 +59,13 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
     });
     try {
       final db = ref.read(giftRepositoryProvider);
-      final url = await db.approvedAnimationUrl('${event['gift_id']}');
+      final giftId = '${event['gift_id']}';
+      final bundled = switch (giftId) {
+        'e1e65664-37f8-4cfd-9640-3bb035723b98' => 'assets/gifts/dragon_1m.mp4',
+        'c3f41e6e-68d5-4e56-9253-33421ec18fc3' => 'assets/gifts/golden_dragon_5m.mp4',
+        _ => null,
+      };
+      final url = bundled ?? await db.approvedAnimationUrl(giftId);
       if (!mounted || !identical(_active, event)) return;
       setState(() {
         _video = url;
