@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/core/theme/app_theme.dart';
 import 'package:nimzo/features/games/game_screen.dart';
+import 'package:nimzo/features/games/game_catalog.dart';
 import 'package:nimzo/features/home/home_screen.dart';
 import 'package:nimzo/features/rooms/presentation/room_controller.dart';
 
@@ -54,8 +55,13 @@ void main() {
           : slug == 'slot'
               ? 'slot'
               : 'fruit';
-      if (slug != 'lucky_wheel_77')
-        await tester.runAsync(() async {
+      await tester.runAsync(() async {
+        // pumpAndSettle does not wait for asynchronous image decoding. The
+        // header is a separate asset family from the board and must be ready.
+        final game = NimzoRoomGames.approved.singleWhere((g) => g.slug == slug);
+        await precacheImage(
+            AssetImage('assets/reference/game/${game.artwork}.jpg'), context);
+        if (slug != 'lucky_wheel_77') {
           for (var i = 0;
               i <
                   (group == 'grady'
@@ -67,7 +73,8 @@ void main() {
             await precacheImage(
                 AssetImage('assets/reference/$group/$i.jpg'), context);
           }
-        });
+        }
+      });
       await tester.pumpAndSettle();
       await expectLater(find.byKey(const ValueKey('preview')),
           matchesGoldenFile('goldens/$slug.png'));

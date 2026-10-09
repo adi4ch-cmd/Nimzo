@@ -7,3 +7,5 @@ nimzo/build/
 nimzo/.flutter-plugins*
 nimzo/android/
 nimzo/.metadata
+
+nimzo/test/failures/

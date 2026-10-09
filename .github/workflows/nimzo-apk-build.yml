@@ -237,6 +237,14 @@ jobs:
         working-directory: nimzo
         run: flutter test
 
+      - name: Upload visual regression diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-visual-failures-${{ github.sha }}
+          path: nimzo/test/failures/
+          if-no-files-found: ignore
+
       - name: Native contract tests
         run: |
           python3 -m unittest discover -s nimzo/test/voice -p "*_test.py"
