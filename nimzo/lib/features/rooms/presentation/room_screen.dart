@@ -666,8 +666,8 @@ class _State extends ConsumerState<RoomScreen> {
                                         'ic_capsule_mic_gift.webp',
                                         width: 26,
                                         height: 26,
-                                        fallback: ReferenceIcon(
-                                          'gift', color: NimzoStyle.pink),
+                                        fallback: ReferenceIcon('gift',
+                                            color: NimzoStyle.pink),
                                       ),
                                     ),
                                   ],

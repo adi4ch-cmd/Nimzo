@@ -152,24 +152,24 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
               IgnorePointer(
                 child: Center(
                   child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.sizeOf(context).width * 0.94,
-                    maxHeight: MediaQuery.sizeOf(context).height * 0.65,
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.sizeOf(context).width * 0.94,
+                      maxHeight: MediaQuery.sizeOf(context).height * 0.65,
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: controller.value.aspectRatio,
+                      child: VideoPlayer(controller),
+                    ),
                   ),
-                  child: AspectRatio(
-                    aspectRatio: controller.value.aspectRatio,
-                    child: VideoPlayer(controller),
-                  ),
-                ),
                 ),
               )
             else
               IgnorePointer(
                 child: Center(
                   child: Text(
-                  _error ?? 'Loading gift animation…',
-                  style: const TextStyle(color: Colors.white),
-                ),
+                    _error ?? 'Loading gift animation…',
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             Positioned(
@@ -202,23 +202,23 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
               right: 16,
               child: IgnorePointer(
                 child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.56),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: const Color(0xFFDDB65E)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    '${widget.sender} sent ${widget.giftName} to ${widget.recipient}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.56),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: const Color(0xFFDDB65E)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      '${widget.sender} sent ${widget.giftName} to ${widget.recipient}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                ),
                 ),
               ),
             ),

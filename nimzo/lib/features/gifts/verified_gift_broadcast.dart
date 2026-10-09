@@ -39,8 +39,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   // Never claim that an absent file has been integrated.
   Future<String?> _bundledDragonMedia(String giftId) async {
     const originals = <String, String>{
-      'e1e65664-37f8-4cfd-9640-3bb035723b98':
-          'assets/gifts/dragon_1m.mp4',
+      'e1e65664-37f8-4cfd-9640-3bb035723b98': 'assets/gifts/dragon_1m.mp4',
       'c3f41e6e-68d5-4e56-9253-33421ec18fc3':
           'assets/gifts/golden_dragon_5m.mp4',
     };
@@ -67,9 +66,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     Future<void> resolve() async {
       String? remote;
       try {
-        remote = await ref
-            .read(giftRepositoryProvider)
-            .approvedAnimationUrl(giftId);
+        remote =
+            await ref.read(giftRepositoryProvider).approvedAnimationUrl(giftId);
       } catch (_) {
         // Offline clients can still play a verified bundled original.
       }
@@ -77,6 +75,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       final local = remote == null ? await _bundledDragonMedia(giftId) : null;
       if (!wait.isCompleted) wait.complete(remote ?? local);
     }
+
     // Start immediately: do not defer the server media lookup into a later
     // event-loop turn; that delays verified effects and races widget teardown.
     unawaited(resolve().catchError((Object _) {
@@ -276,7 +275,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (giftName != 'Dragon' && giftName != 'Golden Dragon') ...[
+                    if (giftName != 'Dragon' &&
+                        giftName != 'Golden Dragon') ...[
                       const Yo2GiftPanelArt(
                         'anim_send_gift_v2.webp',
                         width: 48,
@@ -284,15 +284,16 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
                       ),
                       const SizedBox(width: 8),
                     ],
-                    Flexible(child: Text(
+                    Flexible(
+                        child: Text(
                       _loading
                           ? 'Preparing verified gift…'
                           : '${event['scope'] == 'country' ? 'COUNTRY GIFT' : 'ROOM GIFT'}  •  $giftName × $quantity  •  ${price * quantity} coins',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
                     )),
                   ],
                 ),

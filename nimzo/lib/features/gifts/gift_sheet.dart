@@ -218,14 +218,18 @@ class _State extends ConsumerState<GiftSheet> {
                           alignment: Alignment.centerLeft,
                           child: Row(children: [
                             const Yo2GiftPanelArt(
-                              'ic_gift_banner.webp', width: 28, height: 28,
+                              'ic_gift_banner.webp',
+                              width: 28,
+                              height: 28,
                               fallback: Icon(Icons.card_giftcard, size: 24),
                             ),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(
-                              'Virtual Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${wallet.valueOrNull!.coins} coins'}',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w700, fontSize: 16))),
+                            Expanded(
+                                child: Text(
+                                    'Virtual Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${wallet.valueOrNull!.coins} coins'}',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16))),
                           ]))),
                   // Room members can gift themselves even when not seated on
                   // a microphone. The seat roster must not hide "Myself".
@@ -290,26 +294,36 @@ class _State extends ConsumerState<GiftSheet> {
                                     child: SizedBox(
                                       height: 46,
                                       child: ListView(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16),
                                         scrollDirection: Axis.horizontal,
                                         children: [
-                                          for (final category in nimzoGiftCategories(
-                                              gifts.map((gift) => gift.category)))
+                                          for (final category
+                                              in nimzoGiftCategories(gifts.map(
+                                                  (gift) => gift.category)))
                                             Padding(
-                                              padding: const EdgeInsets.only(right: 8),
+                                              padding: const EdgeInsets.only(
+                                                  right: 8),
                                               child: ChoiceChip(
                                                 label: Text(category),
-                                                selected: activeGiftCategory == category,
-                                                onSelected: busy || confirming || key != null
+                                                selected: activeGiftCategory ==
+                                                    category,
+                                                onSelected: busy ||
+                                                        confirming ||
+                                                        key != null
                                                     ? null
                                                     : (_) => setState(() {
-                                                        activeGiftCategory = category;
-                                                        if (selected != null &&
-                                                            !giftMatchesCategory(
-                                                              selected!.category, category)) {
-                                                          selected = null;
-                                                        }
-                                                      }),
+                                                          activeGiftCategory =
+                                                              category;
+                                                          if (selected !=
+                                                                  null &&
+                                                              !giftMatchesCategory(
+                                                                  selected!
+                                                                      .category,
+                                                                  category)) {
+                                                            selected = null;
+                                                          }
+                                                        }),
                                               ),
                                             ),
                                         ],
@@ -331,15 +345,19 @@ class _State extends ConsumerState<GiftSheet> {
                                                       .scale(1)),
                                       delegate: SliverChildBuilderDelegate(
                                           (context, index) {
-                                        final gift = gifts.where((g) =>
-                                            giftMatchesCategory(g.category, activeGiftCategory))
+                                        final gift = gifts
+                                            .where((g) => giftMatchesCategory(
+                                                g.category, activeGiftCategory))
                                             .elementAt(index);
                                         return _giftCard(gift,
                                             legendary: gift.price == 35000000 ||
                                                 gift.price == 50000000);
-                                      }, childCount: gifts.where((g) =>
-                                          giftMatchesCategory(g.category, activeGiftCategory))
-                                          .length),
+                                      },
+                                          childCount: gifts
+                                              .where((g) => giftMatchesCategory(
+                                                  g.category,
+                                                  activeGiftCategory))
+                                              .length),
                                     ),
                                   ),
                                   const SliverToBoxAdapter(
@@ -377,13 +395,16 @@ class _State extends ConsumerState<GiftSheet> {
                               children: [
                                 const Yo2GiftPanelArt(
                                   'ic_gift_pannel_send_up.webp',
-                                  width: 18, height: 18,
+                                  width: 18,
+                                  height: 18,
                                   fallback: Icon(Icons.send, size: 16),
                                 ),
                                 const SizedBox(width: 6),
                                 Text(busy
                                     ? 'Sending…'
-                                    : key == null ? 'Send' : 'Retry'),
+                                    : key == null
+                                        ? 'Send'
+                                        : 'Retry'),
                               ],
                             )),
                       ])),
@@ -451,7 +472,8 @@ class _State extends ConsumerState<GiftSheet> {
                                       top: 2,
                                       child: Yo2GiftPanelArt(
                                         'ic_gift_pannal_sel.webp',
-                                        width: 22, height: 22,
+                                        width: 22,
+                                        height: 22,
                                         fallback: Icon(Icons.check_circle,
                                             color: Color(0xfffbbf24), size: 20),
                                       ),

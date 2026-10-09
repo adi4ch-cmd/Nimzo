@@ -21,7 +21,8 @@ String? referenceGiftArtwork(String name) {
 }
 
 /// Actual poster frames generated from the licensed original videos.
-String? originalDragonPoster(String name) => switch (name.trim().toLowerCase()) {
+String? originalDragonPoster(String name) =>
+    switch (name.trim().toLowerCase()) {
       'dragon' => 'assets/gifts/dragon_1m_poster.webp',
       'golden dragon' => 'assets/gifts/golden_dragon_5m_poster.webp',
       _ => null,
@@ -53,7 +54,8 @@ class GiftArtwork extends StatelessWidget {
         ),
       ),
     );
-    final path = assetPath ?? originalDragonPoster(name) ?? referenceGiftArtwork(name);
+    final path =
+        assetPath ?? originalDragonPoster(name) ?? referenceGiftArtwork(name);
     if (path == null) return unavailable;
     if (Uri.tryParse(path)?.scheme == 'https')
       return Image.network(path, errorBuilder: (_, __, ___) => unavailable);

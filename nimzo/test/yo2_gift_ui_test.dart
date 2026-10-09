@@ -8,7 +8,8 @@ void main() {
     expect(categories, ['All', 'classic', 'premium', 'vip', 'svip']);
   });
 
-  test('All preserves the catalog, individual tabs match case-insensitively', () {
+  test('All preserves the catalog, individual tabs match case-insensitively',
+      () {
     expect(giftMatchesCategory('premium', 'PREMIUM'), isTrue);
     expect(giftMatchesCategory('classic', 'premium'), isFalse);
     expect(giftMatchesCategory('Dragon', 'All'), isTrue);

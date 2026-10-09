@@ -72,8 +72,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Yo2GiftPanelArt('ic_user_dialog_gift.webp',
-                        width: 18, height: 18,
-                        fallback: Icon(Icons.card_giftcard, size: 16)),
+                          width: 18,
+                          height: 18,
+                          fallback: Icon(Icons.card_giftcard, size: 16)),
                       SizedBox(width: 4),
                       Text('Gift'),
                     ],

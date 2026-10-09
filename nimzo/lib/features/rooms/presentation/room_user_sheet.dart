@@ -211,7 +211,8 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                       title: const Text('Send gift'),
                       leading: const Yo2GiftPanelArt(
                         'ic_user_dialog_gift.webp',
-                        width: 24, height: 24,
+                        width: 24,
+                        height: 24,
                         fallback: Icon(Icons.card_giftcard),
                       ),
                       onTap: busy || me == null

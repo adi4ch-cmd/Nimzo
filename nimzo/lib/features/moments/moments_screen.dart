@@ -149,8 +149,9 @@ class _MomentCardState extends ConsumerState<MomentCard> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Yo2GiftPanelArt('ic_moment_gift.webp',
-                      width: 18, height: 18,
-                      fallback: Icon(Icons.card_giftcard, size: 17)),
+                        width: 18,
+                        height: 18,
+                        fallback: Icon(Icons.card_giftcard, size: 17)),
                     SizedBox(width: 5),
                     Text('Gift'),
                   ],

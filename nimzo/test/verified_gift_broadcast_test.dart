@@ -44,9 +44,9 @@ void main() {
       overrides: [
         giftRepositoryProvider.overrideWithValue(repo),
         giftCatalogProvider.overrideWith((_) async => [
-          const Gift('ce25005c-bb88-4e99-9891-e3d89e25e027',
-              'Royal Dragon', 'svip', 2500000, null),
-        ]),
+              const Gift('ce25005c-bb88-4e99-9891-e3d89e25e027', 'Royal Dragon',
+                  'svip', 2500000, null),
+            ]),
         verifiedGiftAnimationProvider((roomId: 'room', countryCode: 'PK'))
             .overrideWith((_) async* {
           // A real Supabase stream always starts with a history snapshot.

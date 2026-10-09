@@ -206,8 +206,7 @@ class _VipState extends ConsumerState<VipScreen> {
                                         style: TextStyle(color: accent)),
                                     const SizedBox(height: 6),
                                     Text(
-                                        active is num &&
-                                                active == tier
+                                        active is num && active == tier
                                             ? 'Active $family identity · server verified'
                                             : 'Visual preview · cosmetics are not activated',
                                         style: const TextStyle(
