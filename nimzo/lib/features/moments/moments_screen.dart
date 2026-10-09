@@ -10,6 +10,7 @@ import '../../core/widgets/reference_widgets.dart';
 import '../../core/services/storage_service.dart';
 import '../profile/profile_repository.dart';
 import '../gifts/gift_sheet.dart';
+import '../gifts/yo2_gift_ui.dart';
 import 'moment_repository.dart';
 
 class MomentsScreen extends ConsumerWidget {
@@ -144,7 +145,16 @@ class _MomentCardState extends ConsumerState<MomentCard> {
               TextButton(
                 onPressed: () =>
                     showMomentGiftSheet(context, moment.id, moment.authorId),
-                child: const Text('Gift'),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Yo2GiftPanelArt('ic_moment_gift.webp',
+                      width: 18, height: 18,
+                      fallback: Icon(Icons.card_giftcard, size: 17)),
+                    SizedBox(width: 5),
+                    Text('Gift'),
+                  ],
+                ),
               ),
               if (ref.watch(currentUserIdProvider) == moment.authorId)
                 TextButton(

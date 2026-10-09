@@ -11,6 +11,7 @@ import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/reference_widgets.dart';
 import '../../gifts/gift_sheet.dart';
+import '../../gifts/yo2_gift_ui.dart';
 import '../../games/games_catalog_screen.dart';
 import '../../games/room_game_host.dart';
 import '../../voice/voice_controller.dart';
@@ -661,9 +662,12 @@ class _State extends ConsumerState<RoomScreen> {
                                                 showRoomGiftSheet(
                                                     context, widget.roomId, id);
                                             },
-                                      icon: const ReferenceIcon(
-                                        'gift',
-                                        color: NimzoStyle.pink,
+                                      icon: const Yo2GiftPanelArt(
+                                        'ic_capsule_mic_gift.webp',
+                                        width: 26,
+                                        height: 26,
+                                        fallback: ReferenceIcon(
+                                          'gift', color: NimzoStyle.pink),
                                       ),
                                     ),
                                   ],

@@ -8,6 +8,7 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../gifts/gift_sheet.dart';
+import '../gifts/yo2_gift_ui.dart';
 import '../social/social_repositories.dart';
 import '../social/friend_button.dart';
 import 'profile_repository.dart';
@@ -67,7 +68,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       backgroundColor: const Color(0xfffce7f3),
                       foregroundColor: const Color(0xffdb2777)),
                   onPressed: () => showProfileGiftSheet(context, id),
-                  child: const Text('Gift'))),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Yo2GiftPanelArt('ic_user_dialog_gift.webp',
+                        width: 18, height: 18,
+                        fallback: Icon(Icons.card_giftcard, size: 16)),
+                      SizedBox(width: 4),
+                      Text('Gift'),
+                    ],
+                  ))),
         ]);
 
   @override

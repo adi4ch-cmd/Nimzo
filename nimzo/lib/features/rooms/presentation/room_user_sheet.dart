@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../../../core/widgets/reference_widgets.dart';
 import '../../gifts/gift_sheet.dart';
+import '../../gifts/yo2_gift_ui.dart';
 import '../../profile/profile_repository.dart';
 import '../../profile/profile_screen.dart';
 import '../../profile/levels_screen.dart';
@@ -208,6 +209,11 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                 })),
                   ListTile(
                       title: const Text('Send gift'),
+                      leading: const Yo2GiftPanelArt(
+                        'ic_user_dialog_gift.webp',
+                        width: 24, height: 24,
+                        fallback: Icon(Icons.card_giftcard),
+                      ),
                       onTap: busy || me == null
                           ? null
                           : () {
