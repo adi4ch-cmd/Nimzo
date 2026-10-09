@@ -139,16 +139,22 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
   Widget build(BuildContext context) {
     final controller = _controller;
     return Material(
-      color: Colors.black.withValues(alpha: 0.92),
+      type: MaterialType.transparency,
       child: SafeArea(
         child: Stack(
           fit: StackFit.expand,
           children: [
             if (controller != null && controller.value.isInitialized)
               Center(
-                child: AspectRatio(
-                  aspectRatio: controller.value.aspectRatio,
-                  child: VideoPlayer(controller),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.sizeOf(context).width * 0.94,
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.65,
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: controller.value.aspectRatio,
+                    child: VideoPlayer(controller),
+                  ),
                 ),
               )
             else
@@ -188,7 +194,7 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
               right: 16,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.72),
+                  color: Colors.black.withValues(alpha: 0.56),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: const Color(0xFFDDB65E)),
                 ),
