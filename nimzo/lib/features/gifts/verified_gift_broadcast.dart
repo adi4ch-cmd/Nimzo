@@ -127,8 +127,12 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
         key: ValueKey(event['id']),
         source: _video!,
         sender: (event['sender_name'] ?? event['sender_id'] ?? '').toString(),
-        recipient: (event['receiver_name'] ?? event['receiver_id'] ?? '').toString(),
-        giftName: '${event['gift_id']}' == 'c3f41e6e-68d5-4e56-9253-33421ec18fc3' ? 'Golden Dragon' : '${event['gift_name'] ?? 'Gift'}',
+        recipient:
+            (event['receiver_name'] ?? event['receiver_id'] ?? '').toString(),
+        giftName:
+            '${event['gift_id']}' == 'c3f41e6e-68d5-4e56-9253-33421ec18fc3'
+                ? 'Golden Dragon'
+                : '${event['gift_name'] ?? 'Gift'}',
         onFinished: _next,
       );
     }
