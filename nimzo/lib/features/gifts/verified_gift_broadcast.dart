@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'gift_repository.dart';
 import 'gift_video_overlay.dart';
+import 'gift_celebration_overlay.dart';
 import 'nimzo_gift_control_art.dart';
 
 /// Server-settled gift announcements. Initial history is never replayed.
@@ -192,23 +193,9 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       _cancelMediaLookup();
       setState(() => _loading = false);
     }
-    if (_video == null) {
-      final price = (event['unit_price'] as num?)?.toInt() ?? 0;
-      _timer = Timer(
-        price < 10000
-            ? const Duration(milliseconds: 1200)
-            : price < 1000000
-                ? const Duration(milliseconds: 1800)
-                : Duration(
-                    seconds: price >= 10000000
-                        ? 5
-                        : price >= 5000000
-                            ? 4
-                            : 3,
-                  ),
-        _next,
-      );
-    }
+    // The branded fallback animation owns its completion callback. No
+    // synthetic timer can cut off its last frames. _next still guards
+    // widget disposal, lifecycle changes and room rejoin.
   }
 
   @override
@@ -235,11 +222,13 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     // Verified server event contains the gift UUID, not an arbitrary
     // client-provided label. Resolve other gift names from the live catalog.
     String catalogName = '${event['gift_name'] ?? 'Gift'}';
+    String? catalogArtwork;
     final catalog = ref.watch(giftCatalogProvider).valueOrNull;
     if (catalog != null) {
       for (final gift in catalog) {
         if (gift.id == '${event['gift_id']}') {
           catalogName = gift.name;
+          catalogArtwork = gift.assetPath;
           break;
         }
       }
@@ -259,6 +248,21 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         giftName: '$giftName × $quantity',
         // Voice remains audible; users can enable the original video's sound.
         muted: true,
+        onFinished: () {
+          if (mounted && identical(_active, event)) _next();
+        },
+      );
+    }
+    if (!_loading) {
+      return NimzoGiftCelebration(
+        key: ValueKey(event['id']),
+        giftName: giftName,
+        sender: (event['sender_name'] ?? 'NIMZO user').toString(),
+        recipient: (event['receiver_name'] ?? 'NIMZO user').toString(),
+        quantity: quantity,
+        unitPrice: price,
+        assetPath: catalogArtwork,
+        scope: event['scope'] == 'country' ? 'country' : 'room',
         onFinished: () {
           if (mounted && identical(_active, event)) _next();
         },

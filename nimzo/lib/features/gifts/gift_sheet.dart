@@ -13,6 +13,7 @@ import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
+import 'gift_celebration_overlay.dart';
 import 'yo2_gift_ui.dart';
 import 'nimzo_gift_control_art.dart';
 import '../../core/widgets/master_ui.dart';
@@ -165,6 +166,18 @@ class _State extends ConsumerState<GiftSheet> {
               ],
             ),
           ),
+        );
+      }
+      // Profile and Moment gifts have no room broadcast. The visual effect
+      // starts only after the server confirms debit and gifting. Room gifts
+      // are animated for all listeners by VerifiedGiftBroadcast instead.
+      if (mounted && widget.roomId == null) {
+        showSettledPersonalGiftCelebration(
+          context,
+          giftName: g.name,
+          quantity: requestQuantity,
+          unitPrice: g.price,
+          assetPath: g.assetPath,
         );
       }
       if (mounted) Navigator.pop(context);
