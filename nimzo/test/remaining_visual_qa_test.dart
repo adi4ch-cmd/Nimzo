@@ -51,6 +51,7 @@ import 'package:nimzo/features/recharge/recharge_repository.dart';
 import 'package:nimzo/features/discover/ranking_screen.dart';
 import 'package:nimzo/features/discover/leaderboard_repository.dart';
 import 'package:nimzo/features/settings/settings_screen.dart';
+import 'package:nimzo/features/store/store_repository.dart';
 import 'package:nimzo/features/notifications/notifications_screen.dart';
 import 'package:nimzo/features/notifications/notification_repository.dart';
 
@@ -214,7 +215,9 @@ void main() {
       for (final game in NimzoRoomGames.approved)
         'game_${game.artwork}': GameScreen(slug: game.slug, roomId: 'room'),
     };
+    const targetedGolden = String.fromEnvironment('NIMZO_GOLDEN_TARGET');
     for (final entry in previews.entries) {
+      if (targetedGolden.isNotEmpty && entry.key != targetedGolden) continue;
       final key = ValueKey('qa-${entry.key}');
       GoRouter? router;
       Widget app;
@@ -354,6 +357,45 @@ void main() {
                   ],
                 ),
             ],
+            if (entry.key == 'honor_wall') ...[
+              royalBagProvider('me').overrideWith((_) async => const [
+                    RoyalBagItem(
+                      id: 'crest-1',
+                      name: 'Royal Crest I',
+                      image: 'assets/hilo/store/royal_1.webp',
+                      equipped: true,
+                    ),
+                    RoyalBagItem(
+                      id: 'crest-2',
+                      name: 'Royal Crest II',
+                      image: 'assets/hilo/store/royal_2.webp',
+                      equipped: false,
+                    ),
+                  ]),
+              royalCatalogProvider.overrideWith((_) async => const [
+                    RoyalStoreItem(
+                      id: 'crest-1',
+                      name: 'Royal Crest I',
+                      image: 'assets/hilo/store/royal_1.webp',
+                      description: 'Royal collectible',
+                      price: 10000,
+                    ),
+                    RoyalStoreItem(
+                      id: 'crest-2',
+                      name: 'Royal Crest II',
+                      image: 'assets/hilo/store/royal_2.webp',
+                      description: 'Royal collectible',
+                      price: 25000,
+                    ),
+                    RoyalStoreItem(
+                      id: 'crest-3',
+                      name: 'Royal Crest III',
+                      image: 'assets/hilo/store/royal_3.webp',
+                      description: 'Royal collectible',
+                      price: 50000,
+                    ),
+                  ]),
+            ],
             walletProvider.overrideWith(
               (_) async => (coins: 14402, diamonds: 0),
             ),
@@ -481,6 +523,12 @@ void main() {
             .whereType<File>()
             .where((f) => f.path.endsWith('.jpg'))) {
           await precacheImage(AssetImage(file.path), context);
+        }
+        if (entry.key == 'honor_wall') {
+          for (final n in [1, 2, 3]) {
+            await precacheImage(
+              AssetImage('assets/hilo/store/royal_$n.webp'), context);
+          }
         }
       });
       await tester.pump(const Duration(milliseconds: 300));
