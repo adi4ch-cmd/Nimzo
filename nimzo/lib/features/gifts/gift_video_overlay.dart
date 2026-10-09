@@ -50,6 +50,7 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
       _finish();
       return;
     }
+    if (!mounted || _finished) return;
     final controller = source.startsWith('assets/')
         ? VideoPlayerController.asset(source)
         : VideoPlayerController.networkUrl(uri!);
@@ -59,9 +60,11 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
       await controller.initialize();
       if (!mounted || _finished) return;
       await controller.setLooping(false);
+      if (!mounted || _finished) return;
       await controller.setVolume(widget.muted ? 0 : 0.65);
+      if (!mounted || _finished) return;
       await controller.play();
-      if (mounted) setState(() {});
+      if (mounted && !_finished) setState(() {});
     } catch (_) {
       if (mounted && !_finished) {
         setState(() => _error = 'Gift video unavailable');
@@ -97,7 +100,7 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
   @override
   void didUpdateWidget(covariant GiftVideoOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.muted != widget.muted) {
+    if (!_finished && oldWidget.muted != widget.muted) {
       _controller?.setVolume(widget.muted ? 0 : 0.65);
     }
   }
