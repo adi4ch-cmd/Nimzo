@@ -42,6 +42,8 @@ void main() {
         child: const MaterialApp(
             home: Scaffold(body: GiftSheet(receiverId: 'receiver')))));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Coffee'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Coffee'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Send'));
