@@ -12,3 +12,5 @@ These original H.264/AAC MP4s are 720×1280; lengths approximately 6.06s and 10.
 The `nimzo-gifts-check.yml` workflow performs gift-only analysis and widget tests without producing an APK. The general APK workflow skips commits whose message includes `[gifts-only]`. Trigger a full APK build only **after** media, static checks and widget tests all pass and a real send/receive smoke test is done.
 
 Backend note: `gift_animation_media` was observed empty on 2026-10-09, so approved remote MP4 playback cannot be presumed. The bundled originals are intentionally independent of database media registration. Do not write placeholder URLs to the database.
+
+After importing original MP4 files, the workflow uses ffmpeg to generate genuine Dragon and Golden Dragon WebP catalog posters from frames of those same source videos. No stock or fake icon is used for those gifts.

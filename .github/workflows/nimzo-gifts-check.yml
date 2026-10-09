@@ -43,6 +43,10 @@ jobs:
               assert '    - assets/gifts/' in Path('nimzo/pubspec.yaml').read_text()
               for name, sha in expected.items():
                   assert hashlib.sha256(folder.joinpath(name).read_bytes()).hexdigest() == sha, name
+          if all(present):
+              for name in ('dragon_1m_poster.webp', 'golden_dragon_5m_poster.webp'):
+                  data = folder.joinpath(name).read_bytes()
+                  assert data[:4] == b'RIFF' and data[8:12] == b'WEBP', name
           print('Original MP4 asset contract OK; installed:', all(present))
           PY
       - name: Resolve Flutter packages
