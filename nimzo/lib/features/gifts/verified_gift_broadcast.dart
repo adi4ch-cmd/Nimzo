@@ -23,6 +23,21 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
   bool _loading = false;
 
   @override
+  void didUpdateWidget(covariant VerifiedGiftBroadcast oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.roomId != widget.roomId ||
+        oldWidget.countryCode != widget.countryCode) {
+      _timer?.cancel();
+      _seen.clear();
+      _pending.clear();
+      _primed = false;
+      _active = null;
+      _video = null;
+      _loading = false;
+    }
+  }
+
+  @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
@@ -37,6 +52,10 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast> {
     final fresh = rows.where((r) => _seen.add('${r['id']}')).toList()
       ..sort((a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'));
     _pending.addAll(fresh);
+    // Keep the queue bounded during long-running room sessions.
+    if (_pending.length > 100) {
+      _pending.removeRange(0, _pending.length - 100);
+    }
     if (_active == null) _next();
   }
 
