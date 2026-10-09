@@ -37,9 +37,8 @@ class RoomGameHostState extends State<RoomGameHost> {
   void _close() => setState(() => _slug = null);
   @override
   Widget build(BuildContext context) {
-    final game = NimzoRoomGames.approved
-        .where((g) => g.slug == _slug)
-        .firstOrNull;
+    final game =
+        NimzoRoomGames.approved.where((g) => g.slug == _slug).firstOrNull;
     return PopScope(
       canPop: game == null || _minimized,
       onPopInvokedWithResult: (didPop, _) {
@@ -96,9 +95,8 @@ class RoomGameHostState extends State<RoomGameHost> {
                                 tooltip: widget.micEnabled
                                     ? 'Mute microphone'
                                     : 'Enable microphone',
-                                onPressed: widget.voiceConnected
-                                    ? widget.onMic
-                                    : null,
+                                onPressed:
+                                    widget.voiceConnected ? widget.onMic : null,
                                 icon: Icon(
                                   widget.micEnabled ? Icons.mic : Icons.mic_off,
                                   color: Colors.white,

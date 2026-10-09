@@ -402,9 +402,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             avatarUrl: image('avatars', p.avatarPath),
                             onAdd: me == id ? () => context.push('/cp') : null,
                           );
-                        final partner = cp['user_a'] == id
-                            ? cp['user_b']
-                            : cp['user_a'];
+                        final partner =
+                            cp['user_a'] == id ? cp['user_b'] : cp['user_a'];
                         return AsyncContent(
                           value: ref.watch(profileProvider(partner)),
                           onRetry: () =>
@@ -416,23 +415,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               'avatars',
                               other.avatarPath,
                             ),
-                            partner:
-                                other.displayName ??
+                            partner: other.displayName ??
                                 other.username ??
                                 'Nimzo user',
-                            days:
-                                DateTime.tryParse(
+                            days: DateTime.tryParse(
                                       cp['created_at']?.toString() ?? '',
                                     ) ==
                                     null
                                 ? 0
                                 : DateTime.now()
-                                      .difference(
-                                        DateTime.parse(
-                                          cp['created_at'].toString(),
-                                        ),
-                                      )
-                                      .inDays,
+                                    .difference(
+                                      DateTime.parse(
+                                        cp['created_at'].toString(),
+                                      ),
+                                    )
+                                    .inDays,
                           ),
                         );
                       },
@@ -650,9 +647,9 @@ class _AllGifts extends StatelessWidget {
   const _AllGifts({required this.id});
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('All received gifts')),
-    body: SingleChildScrollView(child: GiftList(id: id)),
-  );
+        appBar: AppBar(title: const Text('All received gifts')),
+        body: SingleChildScrollView(child: GiftList(id: id)),
+      );
 }
 
 class ProfileProgressBadge extends StatelessWidget {
@@ -673,9 +670,9 @@ class ProfileProgressBadge extends StatelessWidget {
     final label = const ['Wealth', 'Charm', 'Active'][kind];
     final unit = const ['coins', 'diamonds', 'points'][kind];
     final amount = total?.toString().replaceAllMapped(
-      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-      (match) => '${match[1]},',
-    );
+          RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+          (match) => '${match[1]},',
+        );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
       decoration: BoxDecoration(
@@ -758,35 +755,40 @@ class LevelBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: EdgeInsets.symmetric(horizontal: showLabel ? 5 : 10, vertical: 4),
-    decoration: BoxDecoration(
-      color: color(kind, level),
-      borderRadius: BorderRadius.circular(14),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ReferenceIcon(
-          kind == 0 ? 'crown' : 'star',
-          size: showLabel ? 12 : 14,
-          color: Colors.white,
+        padding:
+            EdgeInsets.symmetric(horizontal: showLabel ? 5 : 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: color(kind, level),
+          borderRadius: BorderRadius.circular(14),
         ),
-        const SizedBox(width: 4),
-        Flexible(
-          child: Text(
-            showLabel
-                ? '${const ['Wealth', 'Charm', 'Active'][kind]} ${level > 0 ? level : '—'}'
-                : (level > 0 ? '$level' : '—'),
-            style: TextStyle(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ReferenceIcon(
+              kind == 0 ? 'crown' : 'star',
+              size: showLabel ? 12 : 14,
               color: Colors.white,
-              fontSize: showLabel ? 9 : 12,
-              fontWeight: FontWeight.w700,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                showLabel
+                    ? '${const [
+                        'Wealth',
+                        'Charm',
+                        'Active'
+                      ][kind]} ${level > 0 ? level : '—'}'
+                    : (level > 0 ? '$level' : '—'),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: showLabel ? 9 : 12,
+                  fontWeight: FontWeight.w700,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }

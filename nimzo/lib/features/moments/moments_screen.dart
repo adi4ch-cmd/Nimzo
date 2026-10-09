@@ -20,34 +20,35 @@ class MomentsScreen extends ConsumerWidget {
   const MomentsScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(
-      title: const GradientText('Moments'),
-      actions: [
-        IconButton(
-          onPressed: () => context.push('/moments/create'),
-          icon: const Icon(Icons.add),
+        appBar: AppBar(
+          title: const GradientText('Moments'),
+          actions: [
+            IconButton(
+              onPressed: () => context.push('/moments/create'),
+              icon: const Icon(Icons.add),
+            ),
+          ],
         ),
-      ],
-    ),
-    body: RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(momentsFeedProvider);
-        await ref.read(momentsFeedProvider.future);
-      },
-      child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          AsyncContent(
-            value: ref.watch(momentsFeedProvider),
-            onRetry: () => ref.invalidate(momentsFeedProvider),
-            builder: (p) => p.isEmpty
-                ? const EmptyContent('No Moments yet')
-                : Column(children: [for (final m in p) MomentCard(moment: m)]),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(momentsFeedProvider);
+            await ref.read(momentsFeedProvider.future);
+          },
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              AsyncContent(
+                value: ref.watch(momentsFeedProvider),
+                onRetry: () => ref.invalidate(momentsFeedProvider),
+                builder: (p) => p.isEmpty
+                    ? const EmptyContent('No Moments yet')
+                    : Column(
+                        children: [for (final m in p) MomentCard(moment: m)]),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }
 
 class MomentCard extends ConsumerStatefulWidget {
@@ -79,10 +80,10 @@ class _MomentCardState extends ConsumerState<MomentCard> {
               url: author?.avatarPath == null
                   ? null
                   : ref
-                        .watch(supabaseProvider)
-                        .storage
-                        .from('avatars')
-                        .getPublicUrl(author!.avatarPath!),
+                      .watch(supabaseProvider)
+                      .storage
+                      .from('avatars')
+                      .getPublicUrl(author!.avatarPath!),
             ),
             title: Tooltip(
               message: moment.createdAt.toLocal().toString().split('.').first,
@@ -283,147 +284,158 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(widget.id == null ? 'New moment' : 'Edit Moment'),
-    ),
-    body: loadFailed
-        ? Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const EmptyContent('Unable to load Moment.'),
-                OutlinedButton(onPressed: _load, child: const Text('Retry')),
-              ],
-            ),
-          )
-        : !ready
-        ? const Center(child: CircularProgressIndicator())
-        : ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              TextField(
-                controller: text,
-                maxLength: 2000,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  hintText: 'What is on your mind?',
+        appBar: AppBar(
+          title: Text(widget.id == null ? 'New moment' : 'Edit Moment'),
+        ),
+        body: loadFailed
+            ? Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const EmptyContent('Unable to load Moment.'),
+                    OutlinedButton(
+                        onPressed: _load, child: const Text('Retry')),
+                  ],
                 ),
-              ),
-              OutlinedButton(
-                onPressed: busy
-                    ? null
-                    : () async {
-                        final source = await showModalBottomSheet<ImageSource>(
-                          context: context,
-                          builder: (c) => SafeArea(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ListTile(
-                                  title: const Text('Gallery'),
-                                  onTap: () =>
-                                      Navigator.pop(c, ImageSource.gallery),
-                                ),
-                                ListTile(
-                                  title: const Text('Camera'),
-                                  onTap: () =>
-                                      Navigator.pop(c, ImageSource.camera),
-                                ),
-                              ],
-                            ),
+              )
+            : !ready
+                ? const Center(child: CircularProgressIndicator())
+                : ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      TextField(
+                        controller: text,
+                        maxLength: 2000,
+                        maxLines: 5,
+                        decoration: const InputDecoration(
+                          hintText: 'What is on your mind?',
+                        ),
+                      ),
+                      OutlinedButton(
+                        onPressed: busy
+                            ? null
+                            : () async {
+                                final source =
+                                    await showModalBottomSheet<ImageSource>(
+                                  context: context,
+                                  builder: (c) => SafeArea(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        ListTile(
+                                          title: const Text('Gallery'),
+                                          onTap: () => Navigator.pop(
+                                              c, ImageSource.gallery),
+                                        ),
+                                        ListTile(
+                                          title: const Text('Camera'),
+                                          onTap: () => Navigator.pop(
+                                              c, ImageSource.camera),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                                if (source == null || !mounted) return;
+                                setState(() => busy = true);
+                                try {
+                                  final path = await ref
+                                      .read(storageServiceProvider)
+                                      .pickAndUpload('moments', source: source);
+                                  if (path != null && mounted)
+                                    setState(() => image = path);
+                                } catch (_) {
+                                  if (context.mounted)
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                            'Image could not be uploaded.'),
+                                      ),
+                                    );
+                                } finally {
+                                  if (mounted) setState(() => busy = false);
+                                }
+                              },
+                        child: Text(
+                            image == null ? 'Choose photo' : 'Replace photo'),
+                      ),
+                      if (image != null) ...[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: Image.network(
+                            ref
+                                .watch(supabaseProvider)
+                                .storage
+                                .from('moments')
+                                .getPublicUrl(image!),
+                            height: 220,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) =>
+                                const EmptyContent('Image unavailable'),
                           ),
-                        );
-                        if (source == null || !mounted) return;
-                        setState(() => busy = true);
-                        try {
-                          final path = await ref
-                              .read(storageServiceProvider)
-                              .pickAndUpload('moments', source: source);
-                          if (path != null && mounted)
-                            setState(() => image = path);
-                        } catch (_) {
-                          if (context.mounted)
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Image could not be uploaded.'),
-                              ),
-                            );
-                        } finally {
-                          if (mounted) setState(() => busy = false);
-                        }
-                      },
-                child: Text(image == null ? 'Choose photo' : 'Replace photo'),
-              ),
-              if (image != null) ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.network(
-                    ref
-                        .watch(supabaseProvider)
-                        .storage
-                        .from('moments')
-                        .getPublicUrl(image!),
-                    height: 220,
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) =>
-                        const EmptyContent('Image unavailable'),
+                        ),
+                        TextButton(
+                          onPressed:
+                              busy ? null : () => setState(() => image = null),
+                          child: const Text('Remove photo'),
+                        ),
+                      ],
+                      FilledButton(
+                        onPressed: busy
+                            ? null
+                            : () async {
+                                if (text.text.trim().isEmpty && image == null)
+                                  return;
+                                setState(() => busy = true);
+                                try {
+                                  final r = ref.read(momentRepositoryProvider);
+                                  final container = ProviderScope.containerOf(
+                                    context,
+                                    listen: false,
+                                  );
+                                  final id = widget.id;
+                                  final body = text.text.trim();
+                                  final photo = image;
+                                  final currentUserId =
+                                      ref.read(currentUserIdProvider);
+                                  String? authorId = currentUserId;
+                                  if (id == null) {
+                                    await r.create(
+                                        text: body, imagePath: photo);
+                                  } else {
+                                    authorId ??= (await r.get(id)).authorId;
+                                    await r.update(id,
+                                        text: body, imagePath: photo);
+                                    container
+                                        .invalidate(momentDetailProvider(id));
+                                  }
+                                  container.invalidate(momentsFeedProvider);
+                                  if (authorId != null) {
+                                    container.invalidate(
+                                      profileMomentsProvider(authorId),
+                                    );
+                                    container.invalidate(
+                                      profileStatsProvider(authorId),
+                                    );
+                                  }
+                                  if (context.mounted) Navigator.pop(context);
+                                } catch (_) {
+                                  if (context.mounted)
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content:
+                                            Text('Moment could not be saved.'),
+                                      ),
+                                    );
+                                } finally {
+                                  if (mounted) setState(() => busy = false);
+                                }
+                              },
+                        child: Text(widget.id == null ? 'Post' : 'Save'),
+                      ),
+                    ],
                   ),
-                ),
-                TextButton(
-                  onPressed: busy ? null : () => setState(() => image = null),
-                  child: const Text('Remove photo'),
-                ),
-              ],
-              FilledButton(
-                onPressed: busy
-                    ? null
-                    : () async {
-                        if (text.text.trim().isEmpty && image == null) return;
-                        setState(() => busy = true);
-                        try {
-                          final r = ref.read(momentRepositoryProvider);
-                          final container = ProviderScope.containerOf(
-                            context,
-                            listen: false,
-                          );
-                          final id = widget.id;
-                          final body = text.text.trim();
-                          final photo = image;
-                          final currentUserId = ref.read(currentUserIdProvider);
-                          String? authorId = currentUserId;
-                          if (id == null) {
-                            await r.create(text: body, imagePath: photo);
-                          } else {
-                            authorId ??= (await r.get(id)).authorId;
-                            await r.update(id, text: body, imagePath: photo);
-                            container.invalidate(momentDetailProvider(id));
-                          }
-                          container.invalidate(momentsFeedProvider);
-                          if (authorId != null) {
-                            container.invalidate(
-                              profileMomentsProvider(authorId),
-                            );
-                            container.invalidate(
-                              profileStatsProvider(authorId),
-                            );
-                          }
-                          if (context.mounted) Navigator.pop(context);
-                        } catch (_) {
-                          if (context.mounted)
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Moment could not be saved.'),
-                              ),
-                            );
-                        } finally {
-                          if (mounted) setState(() => busy = false);
-                        }
-                      },
-                child: Text(widget.id == null ? 'Post' : 'Save'),
-              ),
-            ],
-          ),
-  );
+      );
 }
 
 final momentDetailProvider = FutureProvider.family<Moment, String>(
@@ -484,10 +496,8 @@ class _DetailState extends ConsumerState<MomentDetailScreen> {
                   if (comment.text.trim().isEmpty) return;
                   final submitted = comment.text;
                   final id = widget.id;
-                  final authorId = ref
-                      .read(momentDetailProvider(id))
-                      .valueOrNull
-                      ?.authorId;
+                  final authorId =
+                      ref.read(momentDetailProvider(id)).valueOrNull?.authorId;
                   final repository = ref.read(momentRepositoryProvider);
                   final container = ProviderScope.containerOf(
                     context,
@@ -542,9 +552,8 @@ class MomentCommentTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = comment['author_id'] as String?;
-    final author = id == null
-        ? null
-        : ref.watch(profileProvider(id)).valueOrNull;
+    final author =
+        id == null ? null : ref.watch(profileProvider(id)).valueOrNull;
     return InkWell(
       onTap: id == null ? null : () => context.push('/profile/$id'),
       child: Align(

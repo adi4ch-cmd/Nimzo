@@ -20,36 +20,39 @@ void main() {
     int build = 106,
     String? url,
     String? signature,
-  }) => {
-    'version': '1.0.6',
-    'buildNumber': build,
-    'packageName': 'com.nimzo.app',
-    'signingCertificateSha256': signature ?? certificate,
-    'apkSha256': List.filled(64, 'b').join(),
-    'apkUrl': url ?? 'https://github.com/adi4ch-cmd/Nimzo/releases/download/v106/app-release.apk',
-  };
+  }) =>
+      {
+        'version': '1.0.6',
+        'buildNumber': build,
+        'packageName': 'com.nimzo.app',
+        'signingCertificateSha256': signature ?? certificate,
+        'apkSha256': List.filled(64, 'b').join(),
+        'apkUrl': url ??
+            'https://github.com/adi4ch-cmd/Nimzo/releases/download/v106/app-release.apk',
+      };
   const manifestUrl =
       'https://github.com/adi4ch-cmd/Nimzo/releases/download/v106/nimzo-update.json';
   NimzoUpdateChecker checker(
     Map<String, dynamic> data, {
     bool android = true,
-  }) => NimzoUpdateChecker(
-    isAndroid: () => android,
-    packageInfo: () async => installed,
-    fetchJson: (uri) async => uri.host == 'api.github.com'
-        ? jsonEncode([
-            {
-              'draft': false,
-              'assets': [
+  }) =>
+      NimzoUpdateChecker(
+        isAndroid: () => android,
+        packageInfo: () async => installed,
+        fetchJson: (uri) async => uri.host == 'api.github.com'
+            ? jsonEncode([
                 {
-                  'name': 'nimzo-update.json',
-                  'browser_download_url': manifestUrl,
+                  'draft': false,
+                  'assets': [
+                    {
+                      'name': 'nimzo-update.json',
+                      'browser_download_url': manifestUrl,
+                    },
+                  ],
                 },
-              ],
-            },
-          ])
-        : jsonEncode(data),
-  );
+              ])
+            : jsonEncode(data),
+      );
   test('offers higher build from compatible manifest', () async {
     final update = await checker(manifest()).check();
     expect(update?.build, 106);
@@ -129,7 +132,8 @@ void main() {
             'assets': [
               {
                 'name': 'nimzo-update.json',
-                'browser_download_url': 'https://github.com/other/Nimzo/releases/download/v106/nimzo-update.json',
+                'browser_download_url':
+                    'https://github.com/other/Nimzo/releases/download/v106/nimzo-update.json',
               },
             ],
           },
@@ -142,7 +146,8 @@ void main() {
     expect(
       await checker(
         manifest(
-          url: 'https://github.com/adi4ch-cmd/Nimzo/releases/download/other/app-release.apk',
+          url:
+              'https://github.com/adi4ch-cmd/Nimzo/releases/download/other/app-release.apk',
         ),
       ).check(),
       isNull,
@@ -282,9 +287,9 @@ void main() {
     MethodCall? received;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-          received = call;
-          return 'installerOpened';
-        });
+      received = call;
+      return 'installerOpened';
+    });
     final update = AppUpdate(
       106,
       'NIMZO',

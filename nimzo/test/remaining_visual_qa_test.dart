@@ -135,17 +135,21 @@ void main() {
       ('Cinzel', 'assets/reference/fonts/Cinzel.ttf'),
       ('Poppins', 'assets/reference/fonts/Poppins-Regular.ttf'),
     ]) {
-      await (FontLoader(font.$1)..addFont(
-            Future.value(ByteData.sublistView(File(font.$2).readAsBytesSync())),
-          ))
+      await (FontLoader(font.$1)
+            ..addFont(
+              Future.value(
+                  ByteData.sublistView(File(font.$2).readAsBytesSync())),
+            ))
           .load();
     }
     await (FontLoader(
       'MaterialIcons',
-    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
-    await (FontLoader('packages/lucide_flutter/LucideIcons')..addFont(
-          rootBundle.load('packages/lucide_flutter/assets/lucide.ttf'),
-        ))
+    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf')))
+        .load();
+    await (FontLoader('packages/lucide_flutter/LucideIcons')
+          ..addFont(
+            rootBundle.load('packages/lucide_flutter/assets/lucide.ttf'),
+          ))
         .load();
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -296,8 +300,8 @@ void main() {
                     userId: i == 0
                         ? 'me'
                         : i == 2
-                        ? 'other'
-                        : null,
+                            ? 'other'
+                            : null,
                   ),
                 ),
               ),
@@ -339,11 +343,9 @@ void main() {
               for (final kind in ProfileCollection.values)
                 profileCollectionProvider((id, kind)).overrideWith(
                   (_) async => [
-                    for (
-                      var i = 0;
-                      i < (kind == ProfileCollection.medal ? 5 : 2);
-                      i++
-                    )
+                    for (var i = 0;
+                        i < (kind == ProfileCollection.medal ? 5 : 2);
+                        i++)
                       {
                         'name': 'Owned ${kind.name} ${i + 1}',
                         'image_path':
@@ -474,11 +476,10 @@ void main() {
       await tester.pump();
       final context = tester.element(find.byKey(key));
       await tester.runAsync(() async {
-        for (final file
-            in Directory('assets/reference')
-                .listSync(recursive: true)
-                .whereType<File>()
-                .where((f) => f.path.endsWith('.jpg'))) {
+        for (final file in Directory('assets/reference')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.jpg'))) {
           await precacheImage(AssetImage(file.path), context);
         }
       });

@@ -17,13 +17,13 @@ class MediaRepository extends GiftRepository {
 }
 
 Map<String, dynamic> event(String id, String giftId) => {
-  'id': id,
-  'gift_id': giftId,
-  'unit_price': 1000000,
-  'quantity': 3,
-  'scope': 'room',
-  'created_at': '2026-10-09T01:00:00Z',
-};
+      'id': id,
+      'gift_id': giftId,
+      'unit_price': 1000000,
+      'quantity': 3,
+      'scope': 'room',
+      'created_at': '2026-10-09T01:00:00Z',
+    };
 
 void main() {
   late SupabaseClient db;
@@ -61,11 +61,11 @@ void main() {
           ),
           verifiedGiftAnimationProvider((roomId: 'room', countryCode: 'PK'))
               .overrideWith((_) async* {
-                // A real Supabase stream always starts with a history snapshot.
-                // Seed that snapshot before consuming live additions.
-                yield [event('history', 'history')];
-                yield* events.stream;
-              }),
+            // A real Supabase stream always starts with a history snapshot.
+            // Seed that snapshot before consuming live additions.
+            yield [event('history', 'history')];
+            yield* events.stream;
+          }),
         ],
         child: const MaterialApp(
           home: Scaffold(

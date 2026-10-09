@@ -19,18 +19,22 @@ void main() {
       ('Cinzel', 'assets/reference/fonts/Cinzel.ttf'),
       ('Poppins', 'assets/reference/fonts/Poppins-Regular.ttf'),
     ]) {
-      await (FontLoader(font.$1)..addFont(
-            Future.value(ByteData.sublistView(File(font.$2).readAsBytesSync())),
-          ))
+      await (FontLoader(font.$1)
+            ..addFont(
+              Future.value(
+                  ByteData.sublistView(File(font.$2).readAsBytesSync())),
+            ))
           .load();
     }
-    await (FontLoader('packages/lucide_flutter/LucideIcons')..addFont(
-          rootBundle.load('packages/lucide_flutter/assets/lucide.ttf'),
-        ))
+    await (FontLoader('packages/lucide_flutter/LucideIcons')
+          ..addFont(
+            rootBundle.load('packages/lucide_flutter/assets/lucide.ttf'),
+          ))
         .load();
     await (FontLoader(
       'MaterialIcons',
-    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
+    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf')))
+        .load();
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);

@@ -85,8 +85,8 @@ class _State extends ConsumerState<RoomScreen> {
       joined = session.joined;
       failure = joined
           ? error is VoiceConnectionFailure
-                ? error.message.toString()
-                : 'Voice connection failed (${error.runtimeType}). Retry voice.'
+              ? error.message.toString()
+              : 'Voice connection failed (${error.runtimeType}). Retry voice.'
           : 'Unable to enter this room. Please retry.';
     } finally {
       if (mounted) setState(() => joining = false);
@@ -121,47 +121,47 @@ class _State extends ConsumerState<RoomScreen> {
   }
 
   Widget _artButton(String group, VoidCallback onTap) => InkWell(
-    onTap: onTap,
-    child: Container(
-      width: 46,
-      height: 46,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xfff1e6ff),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: ReferenceArtwork(group, 0, size: 38),
-    ),
-  );
+        onTap: onTap,
+        child: Container(
+          width: 46,
+          height: 46,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: const Color(0xfff1e6ff),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: ReferenceArtwork(group, 0, size: 38),
+        ),
+      );
 
   Future<void> toggleMic() => action(() async {
-    if (micBusy) return;
-    final enabled = !mic;
-    final voice = ref.read(voiceServiceProvider);
-    setState(() => micBusy = true);
-    try {
-      await voice.setMicEnabled(enabled);
-      if (mounted && ref.read(voiceConnectedProvider).valueOrNull == true) {
-        setState(() => mic = enabled);
-      }
-    } finally {
-      if (mounted) setState(() => micBusy = false);
-    }
-  });
+        if (micBusy) return;
+        final enabled = !mic;
+        final voice = ref.read(voiceServiceProvider);
+        setState(() => micBusy = true);
+        try {
+          await voice.setMicEnabled(enabled);
+          if (mounted && ref.read(voiceConnectedProvider).valueOrNull == true) {
+            setState(() => mic = enabled);
+          }
+        } finally {
+          if (mounted) setState(() => micBusy = false);
+        }
+      });
 
   Future<void> sendMessage() => action(() async {
-    if (chatBusy) return;
-    final submitted = text.text;
-    if (submitted.trim().isEmpty) return;
-    final repository = ref.read(roomChatRepositoryProvider);
-    setState(() => chatBusy = true);
-    try {
-      await repository.send(widget.roomId, submitted.trim());
-      if (mounted && text.text == submitted) text.clear();
-    } finally {
-      if (mounted) setState(() => chatBusy = false);
-    }
-  });
+        if (chatBusy) return;
+        final submitted = text.text;
+        if (submitted.trim().isEmpty) return;
+        final repository = ref.read(roomChatRepositoryProvider);
+        setState(() => chatBusy = true);
+        try {
+          await repository.send(widget.roomId, submitted.trim());
+          if (mounted && text.text == submitted) text.clear();
+        } finally {
+          if (mounted) setState(() => chatBusy = false);
+        }
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +169,7 @@ class _State extends ConsumerState<RoomScreen> {
         seats = ref.watch(seatsProvider(widget.roomId)),
         profiles =
             ref.watch(roomSeatProfilesProvider(widget.roomId)).valueOrNull ??
-            {};
+                {};
     final me = ref.watch(currentUserIdProvider),
         speaking = ref.watch(speakingProvider).valueOrNull ?? <String>{};
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
@@ -193,12 +193,9 @@ class _State extends ConsumerState<RoomScreen> {
         mic = false;
         final voice = ref.read(voiceServiceProvider);
         unawaited(
-          voice
-              .setMicEnabled(false)
-              .catchError((Object _) async {
-                await voice.leave();
-              })
-              .catchError((Object _) {}),
+          voice.setMicEnabled(false).catchError((Object _) async {
+            await voice.leave();
+          }).catchError((Object _) {}),
         );
       }
     });
@@ -225,11 +222,11 @@ class _State extends ConsumerState<RoomScreen> {
                     onTap: room.valueOrNull == null
                         ? null
                         : () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  RoomProfilePage(room: room.valueOrNull!),
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    RoomProfilePage(room: room.valueOrNull!),
+                              ),
                             ),
-                          ),
                     child: Row(
                       children: [
                         ReferenceRoomAvatar(
@@ -237,12 +234,12 @@ class _State extends ConsumerState<RoomScreen> {
                           url: room.valueOrNull?.avatarPath == null
                               ? null
                               : ref
-                                    .read(supabaseProvider)
-                                    .storage
-                                    .from('room-images')
-                                    .getPublicUrl(
-                                      room.valueOrNull!.avatarPath!,
-                                    ),
+                                  .read(supabaseProvider)
+                                  .storage
+                                  .from('room-images')
+                                  .getPublicUrl(
+                                    room.valueOrNull!.avatarPath!,
+                                  ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -325,8 +322,7 @@ class _State extends ConsumerState<RoomScreen> {
                                         child: Builder(
                                           builder: (c) {
                                             final n = row * 5 + col + 1,
-                                                s =
-                                                    seats.valueOrNull
+                                                s = seats.valueOrNull
                                                         ?.where(
                                                           (s) => s.seatNo == n,
                                                         )
@@ -334,41 +330,38 @@ class _State extends ConsumerState<RoomScreen> {
                                                     MicSeat(seatNo: n),
                                                 p = profiles[s.userId];
                                             return InkWell(
-                                              onTap:
-                                                  !joined ||
+                                              onTap: !joined ||
                                                       !seats.hasValue ||
                                                       (s.locked &&
                                                           s.userId == null)
                                                   ? null
                                                   : () => action(() async {
-                                                      if (s.userId == null) {
-                                                        await ref
-                                                            .read(
-                                                              roomRepositoryProvider,
-                                                            )
-                                                            .takeSeat(
-                                                              widget.roomId,
-                                                              n,
-                                                            );
-                                                      } else {
-                                                        await showModalBottomSheet<
-                                                          void
-                                                        >(
-                                                          context: context,
-                                                          isScrollControlled:
-                                                              true,
-                                                          builder: (_) =>
-                                                              RoomUserSheet(
-                                                                roomId: widget
-                                                                    .roomId,
-                                                                userId:
-                                                                    s.userId!,
-                                                                seatNo: n,
-                                                                muted: s.muted,
-                                                              ),
-                                                        );
-                                                      }
-                                                    }),
+                                                        if (s.userId == null) {
+                                                          await ref
+                                                              .read(
+                                                                roomRepositoryProvider,
+                                                              )
+                                                              .takeSeat(
+                                                                widget.roomId,
+                                                                n,
+                                                              );
+                                                        } else {
+                                                          await showModalBottomSheet<
+                                                              void>(
+                                                            context: context,
+                                                            isScrollControlled:
+                                                                true,
+                                                            builder: (_) =>
+                                                                RoomUserSheet(
+                                                              roomId:
+                                                                  widget.roomId,
+                                                              userId: s.userId!,
+                                                              seatNo: n,
+                                                              muted: s.muted,
+                                                            ),
+                                                          );
+                                                        }
+                                                      }),
                                               child: Column(
                                                 children: [
                                                   if (s.userId == null)
@@ -386,19 +379,19 @@ class _State extends ConsumerState<RoomScreen> {
                                                     Container(
                                                       padding:
                                                           const EdgeInsets.all(
-                                                            2,
-                                                          ),
+                                                        2,
+                                                      ),
                                                       decoration: BoxDecoration(
                                                         shape: BoxShape.circle,
                                                         border: Border.all(
-                                                          color:
-                                                              speaking.contains(
-                                                                s.userId,
-                                                              )
+                                                          color: speaking
+                                                                  .contains(
+                                                            s.userId,
+                                                          )
                                                               ? NimzoStyle
-                                                                    .primary
+                                                                  .primary
                                                               : Colors
-                                                                    .transparent,
+                                                                  .transparent,
                                                           width: 2,
                                                         ),
                                                       ),
@@ -408,23 +401,22 @@ class _State extends ConsumerState<RoomScreen> {
                                                         child: NimzoAvatar(
                                                           name:
                                                               p?.displayName ??
-                                                              'N',
+                                                                  'N',
                                                           size: 48,
-                                                          url:
-                                                              p?.avatarPath ==
+                                                          url: p?.avatarPath ==
                                                                   null
                                                               ? null
                                                               : ref
-                                                                    .read(
-                                                                      supabaseProvider,
-                                                                    )
-                                                                    .storage
-                                                                    .from(
-                                                                      'avatars',
-                                                                    )
-                                                                    .getPublicUrl(
-                                                                      p!.avatarPath!,
-                                                                    ),
+                                                                  .read(
+                                                                    supabaseProvider,
+                                                                  )
+                                                                  .storage
+                                                                  .from(
+                                                                    'avatars',
+                                                                  )
+                                                                  .getPublicUrl(
+                                                                    p!.avatarPath!,
+                                                                  ),
                                                         ),
                                                       ),
                                                     ),
@@ -506,8 +498,8 @@ class _State extends ConsumerState<RoomScreen> {
                                             constraints: BoxConstraints(
                                               maxWidth:
                                                   MediaQuery.sizeOf(context)
-                                                      .width *
-                                                  .85,
+                                                          .width *
+                                                      .85,
                                             ),
                                             margin: const EdgeInsets.only(
                                               bottom: 6,
@@ -527,8 +519,7 @@ class _State extends ConsumerState<RoomScreen> {
                                               children: [
                                                 PhoenixNameplate(
                                                   userId: msg.userId,
-                                                  name:
-                                                      profiles[msg.userId]
+                                                  name: profiles[msg.userId]
                                                           ?.displayName ??
                                                       'Nimzo user',
                                                   style: const TextStyle(
@@ -569,9 +560,10 @@ class _State extends ConsumerState<RoomScreen> {
                                     onTap: !joined
                                         ? null
                                         : () => showReferenceSheet(
-                                            context,
-                                            CrystalSheet(roomId: widget.roomId),
-                                          ),
+                                              context,
+                                              CrystalSheet(
+                                                  roomId: widget.roomId),
+                                            ),
                                     child: Container(
                                       width: 46,
                                       height: 46,
@@ -583,14 +575,14 @@ class _State extends ConsumerState<RoomScreen> {
                                       child: diamondArtwork(
                                         joined
                                             ? ref
-                                                      .watch(
-                                                        roomDiamondStatusProvider(
-                                                          widget.roomId,
-                                                        ),
-                                                      )
-                                                      .valueOrNull
-                                                      ?.activeStage ??
-                                                  0
+                                                    .watch(
+                                                      roomDiamondStatusProvider(
+                                                        widget.roomId,
+                                                      ),
+                                                    )
+                                                    .valueOrNull
+                                                    ?.activeStage ??
+                                                0
                                             : 0,
                                         size: 38,
                                       ),
@@ -658,9 +650,9 @@ class _State extends ConsumerState<RoomScreen> {
                                   decoration: InputDecoration(
                                     suffixIconConstraints:
                                         const BoxConstraints.tightFor(
-                                          width: 30,
-                                          height: 34,
-                                        ),
+                                      width: 30,
+                                      height: 34,
+                                    ),
                                     suffixIcon: IconButton(
                                       tooltip: 'Send',
                                       onPressed: !joined || chatBusy
@@ -683,9 +675,8 @@ class _State extends ConsumerState<RoomScreen> {
                               ),
                               IconButton(
                                 tooltip: 'Microphone',
-                                onPressed: !connected || micBusy
-                                    ? null
-                                    : toggleMic,
+                                onPressed:
+                                    !connected || micBusy ? null : toggleMic,
                                 icon: Icon(
                                   mic ? LucideIcons.mic : LucideIcons.micOff,
                                 ),
@@ -713,30 +704,29 @@ class _State extends ConsumerState<RoomScreen> {
                                         ];
                                         final id =
                                             await showModalBottomSheet<String>(
-                                              context: context,
-                                              builder: (c) => SafeArea(
-                                                child: ListView(
-                                                  shrinkWrap: true,
-                                                  children: [
-                                                    for (final id in recipients)
-                                                      ListTile(
-                                                        title: Text(
-                                                          id == me
-                                                              ? 'Myself'
-                                                              : profiles[id]
-                                                                        ?.displayName ??
-                                                                    'Nimzo user',
-                                                        ),
-                                                        onTap: () =>
-                                                            Navigator.pop(
-                                                              c,
-                                                              id,
-                                                            ),
-                                                      ),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
+                                          context: context,
+                                          builder: (c) => SafeArea(
+                                            child: ListView(
+                                              shrinkWrap: true,
+                                              children: [
+                                                for (final id in recipients)
+                                                  ListTile(
+                                                    title: Text(
+                                                      id == me
+                                                          ? 'Myself'
+                                                          : profiles[id]
+                                                                  ?.displayName ??
+                                                              'Nimzo user',
+                                                    ),
+                                                    onTap: () => Navigator.pop(
+                                                      c,
+                                                      id,
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
                                         if (id != null && context.mounted)
                                           showRoomGiftSheet(
                                             context,
@@ -799,17 +789,17 @@ class _PasswordState extends State<_PasswordDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Room password'),
-    content: TextField(controller: password, obscureText: true),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: const Text('Cancel'),
-      ),
-      FilledButton(
-        onPressed: () => Navigator.pop(context, password.text),
-        child: const Text('Join'),
-      ),
-    ],
-  );
+        title: const Text('Room password'),
+        content: TextField(controller: password, obscureText: true),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, password.text),
+            child: const Text('Join'),
+          ),
+        ],
+      );
 }

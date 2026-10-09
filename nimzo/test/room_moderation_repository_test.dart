@@ -46,7 +46,9 @@ void main() {
     },
   );
 
-  test('capability cache recomputes across account changes and signed out is false', () async {
+  test(
+      'capability cache recomputes across account changes and signed out is false',
+      () async {
     final account = StateProvider<String?>((_) => 'moderator');
     final repository = _Capabilities();
     final container = ProviderContainer(

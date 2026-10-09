@@ -158,8 +158,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 hintText: 'Email address',
                                 prefixIcon: ReferenceIcon('mail', size: 22),
                               ),
-                              validator: (s) =>
-                                  s != null &&
+                              validator: (s) => s != null &&
                                       RegExp(r'^\S+@\S+\.\S+$')
                                           .hasMatch(s.trim())
                                   ? null
@@ -224,8 +223,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           state.isLoading
                               ? 'Please wait…'
                               : widget.register
-                              ? 'Create account'
-                              : 'Login',
+                                  ? 'Create account'
+                                  : 'Login',
                         ),
                       ),
                       const Padding(
@@ -261,8 +260,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               onPressed: state.isLoading
                                   ? null
                                   : () => ref
-                                        .read(authControllerProvider.notifier)
-                                        .google(),
+                                      .read(authControllerProvider.notifier)
+                                      .google(),
                               child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -287,8 +286,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               onPressed: state.isLoading
                                   ? null
                                   : () => ref
-                                        .read(authControllerProvider.notifier)
-                                        .facebook(),
+                                      .read(authControllerProvider.notifier)
+                                      .facebook(),
                               child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -347,55 +346,55 @@ class _ForgotScreenState extends ConsumerState<ForgotScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Forgot password')),
-    body: ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        TextField(
-          controller: email,
-          keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(labelText: 'Email address'),
+        appBar: AppBar(title: const Text('Forgot password')),
+        body: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            TextField(
+              controller: email,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(labelText: 'Email address'),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: ref.watch(authControllerProvider).isLoading
+                  ? null
+                  : () async {
+                      if (!RegExp(r'^\S+@\S+\.\S+$')
+                          .hasMatch(email.text.trim())) return;
+                      await ref
+                          .read(authControllerProvider.notifier)
+                          .reset(email.text.trim());
+                      if (context.mounted)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              ref.read(authControllerProvider).hasError
+                                  ? 'Unable to send reset link. Retry.'
+                                  : 'Check your email for the reset link.',
+                            ),
+                          ),
+                        );
+                    },
+              child: const Text('Send reset link'),
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
-        FilledButton(
-          onPressed: ref.watch(authControllerProvider).isLoading
-              ? null
-              : () async {
-                  if (!RegExp(r'^\S+@\S+\.\S+$').hasMatch(email.text.trim()))
-                    return;
-                  await ref
-                      .read(authControllerProvider.notifier)
-                      .reset(email.text.trim());
-                  if (context.mounted)
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          ref.read(authControllerProvider).hasError
-                              ? 'Unable to send reset link. Retry.'
-                              : 'Check your email for the reset link.',
-                        ),
-                      ),
-                    );
-                },
-          child: const Text('Send reset link'),
-        ),
-      ],
-    ),
-  );
+      );
 }
 
 class VerifyScreen extends ConsumerWidget {
   const VerifyScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: const Text('Verify your email')),
-    body: Center(
-      child: FilledButton(
-        onPressed: () async {
-          await ref.read(authRepositoryProvider).verifyEmail();
-        },
-        child: const Text('I verified my email'),
-      ),
-    ),
-  );
+        appBar: AppBar(title: const Text('Verify your email')),
+        body: Center(
+          child: FilledButton(
+            onPressed: () async {
+              await ref.read(authRepositoryProvider).verifyEmail();
+            },
+            child: const Text('I verified my email'),
+          ),
+        ),
+      );
 }

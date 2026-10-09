@@ -44,69 +44,68 @@ class _MembershipLifecycle extends WidgetsBindingObserver {
 
 final phoenixEntitlementProvider = StreamProvider.autoDispose
     .family<PhoenixEntitlement?, String>((ref, userId) {
-      final session = ref.watch(sessionSupabaseProvider);
-      final me = ref.watch(currentUserIdProvider);
-      final output = StreamController<PhoenixEntitlement?>();
-      Timer? refreshTimer, expiryTimer;
-      bool disposed = false, busy = false, foreground = true;
-      int generation = 0;
-      Future<void> refresh() async {
-        if (disposed || busy || !foreground || me == null) return;
-        busy = true;
-        final requestGeneration = generation;
-        final elapsed = Stopwatch()..start();
-        try {
-          final result = await session.client.rpc(
-            'phoenix_membership',
-            params: {'p_user': userId},
-          );
-          if (disposed || !foreground || requestGeneration != generation)
-            return;
-          final entitlement = result is Map
-              ? PhoenixEntitlement.fromJson(
-                  Map<String, dynamic>.from(result),
-                  requestTime: elapsed.elapsed,
-                )
-              : null;
-          expiryTimer?.cancel();
-          output.add(entitlement?.isPhoenix == true ? entitlement : null);
-          if (entitlement?.isPhoenix == true) {
-            expiryTimer = Timer(entitlement!.leaseRemaining, () {
-              if (!disposed) output.add(null);
-            });
-          }
-        } catch (_) {
-          if (!disposed && requestGeneration == generation) {
-            expiryTimer?.cancel();
-            output.add(null);
-          }
-        } finally {
-          busy = false;
-          if (!disposed && foreground && generation != requestGeneration)
-            unawaited(refresh());
-        }
-      }
-
-      final lifecycle = _MembershipLifecycle((state) {
-        foreground = state == AppLifecycleState.resumed;
-        generation++;
-        expiryTimer?.cancel();
-        if (!disposed) output.add(null);
-        if (foreground) unawaited(refresh());
-      });
-      WidgetsBinding.instance.addObserver(lifecycle);
-      refreshTimer = Timer.periodic(
-        const Duration(seconds: 20),
-        (_) => refresh(),
+  final session = ref.watch(sessionSupabaseProvider);
+  final me = ref.watch(currentUserIdProvider);
+  final output = StreamController<PhoenixEntitlement?>();
+  Timer? refreshTimer, expiryTimer;
+  bool disposed = false, busy = false, foreground = true;
+  int generation = 0;
+  Future<void> refresh() async {
+    if (disposed || busy || !foreground || me == null) return;
+    busy = true;
+    final requestGeneration = generation;
+    final elapsed = Stopwatch()..start();
+    try {
+      final result = await session.client.rpc(
+        'phoenix_membership',
+        params: {'p_user': userId},
       );
-      if (me == null) output.add(null);
-      unawaited(refresh());
-      ref.onDispose(() {
-        disposed = true;
-        refreshTimer?.cancel();
+      if (disposed || !foreground || requestGeneration != generation) return;
+      final entitlement = result is Map
+          ? PhoenixEntitlement.fromJson(
+              Map<String, dynamic>.from(result),
+              requestTime: elapsed.elapsed,
+            )
+          : null;
+      expiryTimer?.cancel();
+      output.add(entitlement?.isPhoenix == true ? entitlement : null);
+      if (entitlement?.isPhoenix == true) {
+        expiryTimer = Timer(entitlement!.leaseRemaining, () {
+          if (!disposed) output.add(null);
+        });
+      }
+    } catch (_) {
+      if (!disposed && requestGeneration == generation) {
         expiryTimer?.cancel();
-        WidgetsBinding.instance.removeObserver(lifecycle);
-        unawaited(output.close());
-      });
-      return output.stream;
-    });
+        output.add(null);
+      }
+    } finally {
+      busy = false;
+      if (!disposed && foreground && generation != requestGeneration)
+        unawaited(refresh());
+    }
+  }
+
+  final lifecycle = _MembershipLifecycle((state) {
+    foreground = state == AppLifecycleState.resumed;
+    generation++;
+    expiryTimer?.cancel();
+    if (!disposed) output.add(null);
+    if (foreground) unawaited(refresh());
+  });
+  WidgetsBinding.instance.addObserver(lifecycle);
+  refreshTimer = Timer.periodic(
+    const Duration(seconds: 20),
+    (_) => refresh(),
+  );
+  if (me == null) output.add(null);
+  unawaited(refresh());
+  ref.onDispose(() {
+    disposed = true;
+    refreshTimer?.cancel();
+    expiryTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(lifecycle);
+    unawaited(output.close());
+  });
+  return output.stream;
+});

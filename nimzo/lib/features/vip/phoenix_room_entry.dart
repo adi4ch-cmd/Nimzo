@@ -19,15 +19,15 @@ bool phoenixEntryIsFresh({
 
 final phoenixEntriesProvider = StreamProvider.autoDispose
     .family<List<Map<String, dynamic>>, String>((ref, roomId) {
-      return ref
-          .watch(sessionSupabaseProvider)
-          .client
-          .from('phoenix_room_entries')
-          .stream(primaryKey: ['id'])
-          .eq('room_id', roomId)
-          .order('created_at', ascending: false)
-          .limit(50);
-    });
+  return ref
+      .watch(sessionSupabaseProvider)
+      .client
+      .from('phoenix_room_entries')
+      .stream(primaryKey: ['id'])
+      .eq('room_id', roomId)
+      .order('created_at', ascending: false)
+      .limit(50);
+});
 
 /// Events are written by the server only for genuine, entitled room joins.
 /// One effect at a time, bounded backlog, never replay a reconnect snapshot.
@@ -78,8 +78,7 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
       if (!mounted ||
           !foreground ||
           requestGeneration != generation ||
-          raw is! Map)
-        return;
+          raw is! Map) return;
       final json = Map<String, dynamic>.from(raw);
       final serverNow = DateTime.tryParse(json['server_now']?.toString() ?? '');
       final created = DateTime.tryParse(event['created_at']?.toString() ?? '');
@@ -92,13 +91,12 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
             serverNow: serverNow,
             createdAt: created,
             requestTime: elapsed.elapsed,
-          ))
-        return;
+          )) return;
       setState(() => current = event);
       final duration =
           entitlement.leaseRemaining < const Duration(milliseconds: 3400)
-          ? entitlement.leaseRemaining
-          : const Duration(milliseconds: 3400);
+              ? entitlement.leaseRemaining
+              : const Duration(milliseconds: 3400);
       timer = Timer(duration, () {
         if (!mounted) return;
         setState(() => current = null);
@@ -130,8 +128,7 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
         if (id == null || !seen.add(id)) continue;
         if (foreground &&
             queue.length < 5 &&
-            (baseline || event['user_id'] == me))
-          queue.add(event);
+            (baseline || event['user_id'] == me)) queue.add(event);
       }
       baseline = true;
       // Server stream keeps only the latest 50, so prune only IDs no longer in it.

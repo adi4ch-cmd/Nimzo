@@ -71,9 +71,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     Future<void> resolve() async {
       String? remote;
       try {
-        remote = await ref
-            .read(giftRepositoryProvider)
-            .approvedAnimationUrl(giftId);
+        remote =
+            await ref.read(giftRepositoryProvider).approvedAnimationUrl(giftId);
       } catch (_) {
         // Offline clients can still play a verified bundled original.
       }
@@ -199,14 +198,14 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         price < 10000
             ? const Duration(milliseconds: 1200)
             : price < 1000000
-            ? const Duration(milliseconds: 1800)
-            : Duration(
-                seconds: price >= 10000000
-                    ? 5
-                    : price >= 5000000
-                    ? 4
-                    : 3,
-              ),
+                ? const Duration(milliseconds: 1800)
+                : Duration(
+                    seconds: price >= 10000000
+                        ? 5
+                        : price >= 5000000
+                            ? 4
+                            : 3,
+                  ),
         _next,
       );
     }
@@ -255,8 +254,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         key: ValueKey(event['id']),
         source: _video!,
         sender: (event['sender_name'] ?? event['sender_id'] ?? '').toString(),
-        recipient: (event['receiver_name'] ?? event['receiver_id'] ?? '')
-            .toString(),
+        recipient:
+            (event['receiver_name'] ?? event['receiver_id'] ?? '').toString(),
         giftName: '$giftName × $quantity',
         // Voice remains audible; users can enable the original video's sound.
         muted: true,
@@ -268,8 +267,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final colors = price >= 10000000
         ? [const Color(0xff710c19), const Color(0xffd6a347)]
         : price >= 5000000
-        ? [const Color(0xff4e277e), const Color(0xffd6a347)]
-        : [const Color(0xff8c6016), const Color(0xffe6bc58)];
+            ? [const Color(0xff4e277e), const Color(0xffd6a347)]
+            : [const Color(0xff8c6016), const Color(0xffe6bc58)];
     return IgnorePointer(
       ignoring: true,
       child: Align(

@@ -190,18 +190,16 @@ final giftRepositoryProvider = Provider(
 final giftCatalogProvider = FutureProvider(
   (ref) => ref.watch(giftRepositoryProvider).catalog(),
 );
-final roomGiftEventProvider = StreamProvider.autoDispose
-    .family<List<Map<String, dynamic>>, String>(
-      (ref, roomId) =>
-          ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
-    );
+final roomGiftEventProvider =
+    StreamProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
+  (ref, roomId) =>
+      ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
+);
 
 final verifiedGiftAnimationProvider = StreamProvider.autoDispose
     .family<List<Map<String, dynamic>>, ({String roomId, String countryCode})>(
-      (ref, args) => ref
-          .watch(giftRepositoryProvider)
-          .watchVerifiedAnimations(
-            roomId: args.roomId,
-            countryCode: args.countryCode,
-          ),
-    );
+  (ref, args) => ref.watch(giftRepositoryProvider).watchVerifiedAnimations(
+        roomId: args.roomId,
+        countryCode: args.countryCode,
+      ),
+);

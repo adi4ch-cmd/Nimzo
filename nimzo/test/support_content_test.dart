@@ -9,14 +9,14 @@ import 'package:nimzo/features/support/support_screen.dart';
 
 class FakeSupportRepository extends SupportRepository {
   FakeSupportRepository()
-    : super(
-        SupabaseClient(
-          'https://fixture.invalid',
-          'fixture-public-key',
-          authOptions: const AuthClientOptions(autoRefreshToken: false),
-        ),
-        'fixture-user',
-      );
+      : super(
+          SupabaseClient(
+            'https://fixture.invalid',
+            'fixture-public-key',
+            authOptions: const AuthClientOptions(autoRefreshToken: false),
+          ),
+          'fixture-user',
+        );
   final submitted = <List<String>>[];
   @override
   Future<void> submit(String category, String subject, String body) async {
@@ -25,16 +25,16 @@ class FakeSupportRepository extends SupportRepository {
 
   @override
   Future<List<Map<String, dynamic>>> tickets() async => [
-    for (final ticket in submitted)
-      {
-        'subject': ticket[1],
-        'body': ticket[2],
-        'status': 'submitted',
-        'created_at': 'fixture date',
-        'response': 'Please update and try again.',
-        'responded_at': 'fixture reply date',
-      },
-  ];
+        for (final ticket in submitted)
+          {
+            'subject': ticket[1],
+            'body': ticket[2],
+            'status': 'submitted',
+            'created_at': 'fixture date',
+            'response': 'Please update and try again.',
+            'responded_at': 'fixture reply date',
+          },
+      ];
 }
 
 void main() {

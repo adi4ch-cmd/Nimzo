@@ -57,17 +57,13 @@ final roomActionsProvider = Provider((ref) => RoomActions(ref));
 
 final roomSeatProfilesProvider =
     FutureProvider.family<Map<String, Profile>, String>((ref, roomId) async {
-      final seats =
-          ref.watch(seatsProvider(roomId)).valueOrNull ?? const <MicSeat>[];
-      final ids = seats
-          .map((s) => s.userId)
-          .whereType<String>()
-          .toSet()
-          .toList();
-      if (ids.isEmpty) return const {};
-      final rows = await ref.read(roomRepositoryProvider).profilesForUsers(ids);
-      return {for (final p in rows) p.id: p};
-    });
+  final seats =
+      ref.watch(seatsProvider(roomId)).valueOrNull ?? const <MicSeat>[];
+  final ids = seats.map((s) => s.userId).whereType<String>().toSet().toList();
+  if (ids.isEmpty) return const {};
+  final rows = await ref.read(roomRepositoryProvider).profilesForUsers(ids);
+  return {for (final p in rows) p.id: p};
+});
 
 final roomOwnerProfileProvider = FutureProvider.family<Profile?, String>((
   ref,

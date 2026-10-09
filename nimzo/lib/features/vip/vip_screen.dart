@@ -35,9 +35,8 @@ class _VipState extends ConsumerState<VipScreen> {
   @override
   Widget build(BuildContext context) {
     final status = ref.watch(vipStatusProvider);
-    final progress = widget.svip
-        ? ref.watch(svipProgressProvider).valueOrNull
-        : null;
+    final progress =
+        widget.svip ? ref.watch(svipProgressProvider).valueOrNull : null;
     final active =
         status.valueOrNull?[widget.svip ? 'svip_level' : 'vip_level'];
     // Default to the verified live membership once, without overriding
@@ -54,10 +53,10 @@ class _VipState extends ConsumerState<VipScreen> {
     final statusLabel = status.isLoading
         ? 'Loading membership…'
         : status.hasError
-        ? 'Membership unavailable'
-        : active is num && active > 0
-        ? 'Active · $family $active'
-        : 'No active $family membership';
+            ? 'Membership unavailable'
+            : active is num && active > 0
+                ? 'Active · $family $active'
+                : 'No active $family membership';
     final threshold = progress?.thresholdFor(tier);
     final configured = widget.svip && threshold != null;
     final name = ref.watch(membershipNameProvider).valueOrNull;
@@ -65,15 +64,14 @@ class _VipState extends ConsumerState<VipScreen> {
       data: Theme.of(context).copyWith(
         iconTheme: const IconThemeData(color: Colors.white),
         textTheme: Theme.of(context).textTheme.apply(
-          bodyColor: Colors.white,
-          displayColor: Colors.white,
-          fontFamily: 'Poppins',
-        ),
+              bodyColor: Colors.white,
+              displayColor: Colors.white,
+              fontFamily: 'Poppins',
+            ),
       ),
       child: Scaffold(
-        backgroundColor: widget.svip
-            ? const Color(0xff0d0919)
-            : const Color(0xff0e0c09),
+        backgroundColor:
+            widget.svip ? const Color(0xff0d0919) : const Color(0xff0e0c09),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           foregroundColor: accent,
@@ -153,8 +151,8 @@ class _VipState extends ConsumerState<VipScreen> {
                         Text(
                           widget.svip
                               ? configured
-                                    ? 'Recorded threshold: ${_usd(threshold)}'
-                                    : 'Reference recharge: ${_usd(NimzoVipTiers.svipRechargeUsd[tier - 1] * 100)}'
+                                  ? 'Recorded threshold: ${_usd(threshold)}'
+                                  : 'Reference recharge: ${_usd(NimzoVipTiers.svipRechargeUsd[tier - 1] * 100)}'
                               : 'Reference price: ${compactNumber(NimzoVipTiers.normalVipCoins[tier - 1])} coins',
                           style: const TextStyle(
                             fontSize: 20,
@@ -201,8 +199,8 @@ class _VipState extends ConsumerState<VipScreen> {
                             progress == null
                                 ? 'Sign in and connect to retrieve your server membership.'
                                 : progress.nextLevel == null
-                                ? 'Highest configured threshold reached.'
-                                : 'Next configured level: SVIP ${progress.nextLevel} · ${_usd(progress.nextThresholdCents!)}',
+                                    ? 'Highest configured threshold reached.'
+                                    : 'Next configured level: SVIP ${progress.nextLevel} · ${_usd(progress.nextThresholdCents!)}',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Color(0xffbcb2c4),
@@ -260,17 +258,20 @@ class _VipState extends ConsumerState<VipScreen> {
                         child: CircleAvatar(child: Text('N')),
                       ),
                       title: 'Phoenix identity',
-                      subtitle: 'Animated red and gold frame, VIP badge and premium nameplate.',
+                      subtitle:
+                          'Animated red and gold frame, VIP badge and premium nameplate.',
                     ),
                     const MembershipBenefit(
                       preview: PhoenixMark(size: 58),
                       title: 'Phoenix room entrance',
-                      subtitle: 'Original animated wings and a VIP 6 entry announcement.',
+                      subtitle:
+                          'Original animated wings and a VIP 6 entry announcement.',
                     ),
                     const MembershipBenefit(
                       preview: PhoenixBadge(),
                       title: 'Premium conversations',
-                      subtitle: 'Phoenix chat bubbles and gift tray with active membership.',
+                      subtitle:
+                          'Phoenix chat bubbles and gift tray with active membership.',
                     ),
                   ],
                   const MembershipHeading('Membership details'),
@@ -282,18 +283,21 @@ class _VipState extends ConsumerState<VipScreen> {
                       size: 54,
                     ),
                     title: 'Exclusive identity',
-                    subtitle: 'Explore the supplied collection. Previewing does not change your membership.',
+                    subtitle:
+                        'Explore the supplied collection. Previewing does not change your membership.',
                   ),
                   if (widget.svip)
                     const MembershipBenefit(
                       preview: ReferenceIcon('gift', color: Color(0xffdedaff)),
                       title: 'Friday rewards',
-                      subtitle: 'Rewards and eligibility come from the live server. Reference weekly amounts are not guaranteed payouts.',
+                      subtitle:
+                          'Rewards and eligibility come from the live server. Reference weekly amounts are not guaranteed payouts.',
                     ),
                   MembershipBenefit(
                     preview: ReferenceIcon('shield', color: accent),
                     title: 'Server verified membership',
-                    subtitle: 'Your active level, expiry and enabled benefits are decided by the server.',
+                    subtitle:
+                        'Your active level, expiry and enabled benefits are decided by the server.',
                   ),
                 ],
               ),
@@ -337,95 +341,99 @@ class _VipState extends ConsumerState<VipScreen> {
   }
 
   Widget _selector() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Text(
-              'EXPLORE THE COLLECTION',
-              style: TextStyle(color: accent, fontSize: 11, letterSpacing: 1.7),
-            ),
-          ),
-          Text('01 — 10', style: TextStyle(color: accent, fontSize: 11)),
-        ],
-      ),
-      const SizedBox(height: 12),
-      SizedBox(
-        height: 108,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: 10,
-          separatorBuilder: (_, __) => const SizedBox(width: 10),
-          itemBuilder: (_, i) => Semantics(
-            label: '$family ${i + 1}',
-            selected: tier == i + 1,
-            button: true,
-            child: InkWell(
-              key: ValueKey('${widget.svip ? 'svip' : 'vip'}-tier-${i + 1}'),
-              borderRadius: BorderRadius.circular(14),
-              onTap: () => setState(() {
-                _selectedFromMembership = true;
-                tier = i + 1;
-              }),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 220),
-                width: 84,
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: tier == i + 1
-                      ? accent.withValues(alpha: .13)
-                      : Colors.black26,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: tier == i + 1
-                        ? accent
-                        : accent.withValues(alpha: .15),
-                  ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'EXPLORE THE COLLECTION',
+                  style: TextStyle(
+                      color: accent, fontSize: 11, letterSpacing: 1.7),
                 ),
-                child: Column(
-                  children: [
-                    MembershipEmblem(
-                      level: i + 1,
-                      svip: widget.svip,
-                      small: true,
-                      size: 59,
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      '$family ${i + 1}',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: tier == i + 1 ? accent : const Color(0xffbcb2c4),
+              ),
+              Text('01 — 10', style: TextStyle(color: accent, fontSize: 11)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 108,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: 10,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (_, i) => Semantics(
+                label: '$family ${i + 1}',
+                selected: tier == i + 1,
+                button: true,
+                child: InkWell(
+                  key:
+                      ValueKey('${widget.svip ? 'svip' : 'vip'}-tier-${i + 1}'),
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: () => setState(() {
+                    _selectedFromMembership = true;
+                    tier = i + 1;
+                  }),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 220),
+                    width: 84,
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: tier == i + 1
+                          ? accent.withValues(alpha: .13)
+                          : Colors.black26,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: tier == i + 1
+                            ? accent
+                            : accent.withValues(alpha: .15),
                       ),
                     ),
-                  ],
+                    child: Column(
+                      children: [
+                        MembershipEmblem(
+                          level: i + 1,
+                          svip: widget.svip,
+                          small: true,
+                          size: 59,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          '$family ${i + 1}',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: tier == i + 1
+                                ? accent
+                                : const Color(0xffbcb2c4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-    ],
-  );
+        ],
+      );
   Widget _panel({required Widget child}) => Container(
-    padding: const EdgeInsets.all(18),
-    decoration: BoxDecoration(
-      color: Colors.black.withValues(alpha: .22),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: accent.withValues(alpha: .25)),
-    ),
-    child: child,
-  );
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: .22),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: accent.withValues(alpha: .25)),
+        ),
+        child: child,
+      );
   Widget _pill(String label) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-    decoration: BoxDecoration(
-      color: accent.withValues(alpha: .09),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: accent.withValues(alpha: .3)),
-    ),
-    child: Text(label, style: TextStyle(color: accent, fontSize: 10)),
-  );
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: accent.withValues(alpha: .09),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: accent.withValues(alpha: .3)),
+        ),
+        child: Text(label, style: TextStyle(color: accent, fontSize: 10)),
+      );
   String _usd(int cents) =>
       '\$${referenceNumber(cents ~/ 100)}.${(cents % 100).toString().padLeft(2, '0')}';
 }

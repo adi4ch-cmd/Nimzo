@@ -89,10 +89,10 @@ class PurchaseController extends ChangeNotifier {
   String? get store => kIsWeb
       ? null
       : defaultTargetPlatform == TargetPlatform.android
-      ? 'google_play'
-      : defaultTargetPlatform == TargetPlatform.iOS
-      ? 'app_store'
-      : null;
+          ? 'google_play'
+          : defaultTargetPlatform == TargetPlatform.iOS
+              ? 'app_store'
+              : null;
   bool get canRetry => _retry.isNotEmpty;
   Future<void> load() async {
     if (loading) return;
@@ -215,9 +215,7 @@ class PurchaseController extends ChangeNotifier {
       // purchases recovered from the store after this controller was recreated.
       await PurchaseSettlement(
         verify: () async {
-          await ref
-              .read(rechargeRepositoryProvider)
-              .verify(
+          await ref.read(rechargeRepositoryProvider).verify(
                 store: store!,
                 productId: purchase.productID,
                 receipt: purchase.verificationData.serverVerificationData,

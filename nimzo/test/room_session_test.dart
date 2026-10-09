@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/rooms/presentation/room_session.dart';
 
 void main() {
-  test('closing during database join removes late membership and never starts voice', () async {
+  test(
+      'closing during database join removes late membership and never starts voice',
+      () async {
     final pending = Completer<void>();
     var voices = 0, leaves = 0;
     final session = RoomSession(

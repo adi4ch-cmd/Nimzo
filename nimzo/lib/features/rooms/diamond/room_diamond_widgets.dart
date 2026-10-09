@@ -10,19 +10,19 @@ import '../../../core/utils/formatters.dart';
 import 'room_diamond_repository.dart';
 
 Color diamondColor(int stage) => const [
-  Color(0xff2fc466),
-  Color(0xff3390ef),
-  Color(0xffff74ac),
-  Color(0xffad60ec),
-  Color(0xffffba33),
-  Color(0xffe0ca83),
-][stage];
+      Color(0xff2fc466),
+      Color(0xff3390ef),
+      Color(0xffff74ac),
+      Color(0xffad60ec),
+      Color(0xffffba33),
+      Color(0xffe0ca83),
+    ][stage];
 
 Widget diamondArtwork(int stage, {double size = 48}) => ReferenceArtwork(
-  stage == 5 ? 'crys' : 'gem',
-  stage == 5 ? 0 : const [0, 1, 3, 2, 4][stage],
-  size: size,
-);
+      stage == 5 ? 'crys' : 'gem',
+      stage == 5 ? 0 : const [0, 1, 3, 2, 4][stage],
+      size: size,
+    );
 
 class RoomDiamondSheet extends ConsumerWidget {
   const RoomDiamondSheet({super.key, this.roomId});
@@ -164,8 +164,7 @@ class _RoomDiamondHostState extends ConsumerState<RoomDiamondHost> {
         if (event == null ||
             event.roomId != widget.roomId ||
             _seen.contains(event.id) ||
-            (_cycle != null && event.cycleStart.isBefore(_cycle!)))
-          return;
+            (_cycle != null && event.cycleStart.isBefore(_cycle!))) return;
         if (_cycle != null && event.cycleStart.isAfter(_cycle!)) {
           // A new day's event can arrive before its status RPC completes.
           _queue.clear();
@@ -229,16 +228,14 @@ class _DiamondBurstState extends State<DiamondBurst>
   @override
   void initState() {
     super.initState();
-    _animation =
-        AnimationController(
-            vsync: this,
-            duration: const Duration(milliseconds: 2200),
-          )
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed && mounted)
-              widget.onFinished();
-          })
-          ..forward();
+    _animation = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    )
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed && mounted) widget.onFinished();
+      })
+      ..forward();
   }
 
   @override
@@ -249,73 +246,73 @@ class _DiamondBurstState extends State<DiamondBurst>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-    animation: _animation,
-    builder: (context, _) {
-      final t = _animation.value;
-      final opacity = t < .8 ? 1.0 : ((1 - t) / .2).clamp(0.0, 1.0);
-      return Opacity(
-        opacity: opacity,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              colors: [
-                diamondColor(widget.event.stage).withValues(alpha: .32),
-                Colors.transparent,
-              ],
-              radius: .8,
-            ),
-          ),
-          child: Center(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                for (var i = 0; i < 8; i++)
-                  Transform.translate(
-                    offset: Offset(
-                      math.cos(i * math.pi / 4) * t * 150,
-                      math.sin(i * math.pi / 4) * t * 150,
-                    ),
-                    child: Opacity(
-                      opacity: (1 - t).clamp(0.0, 1.0),
-                      child: diamondArtwork(widget.event.stage, size: 32),
-                    ),
-                  ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
+        animation: _animation,
+        builder: (context, _) {
+          final t = _animation.value;
+          final opacity = t < .8 ? 1.0 : ((1 - t) / .2).clamp(0.0, 1.0);
+          return Opacity(
+            opacity: opacity,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  colors: [
+                    diamondColor(widget.event.stage).withValues(alpha: .32),
+                    Colors.transparent,
+                  ],
+                  radius: .8,
+                ),
+              ),
+              child: Center(
+                child: Stack(
+                  alignment: Alignment.center,
                   children: [
-                    Transform.scale(
-                      scale:
-                          .4 + Curves.easeOutBack.transform(t.clamp(0.0, 1.0)),
-                      child: diamondArtwork(widget.event.stage, size: 128),
-                    ),
-                    const SizedBox(height: 12),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.black87,
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 12,
+                    for (var i = 0; i < 8; i++)
+                      Transform.translate(
+                        offset: Offset(
+                          math.cos(i * math.pi / 4) * t * 150,
+                          math.sin(i * math.pi / 4) * t * 150,
                         ),
-                        child: Text(
-                          'Diamond ${widget.event.stage + 1} complete!\n${diamondTargets[widget.event.stage] ~/ 1000000}M coins gifted',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
+                        child: Opacity(
+                          opacity: (1 - t).clamp(0.0, 1.0),
+                          child: diamondArtwork(widget.event.stage, size: 32),
+                        ),
+                      ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Transform.scale(
+                          scale: .4 +
+                              Curves.easeOutBack.transform(t.clamp(0.0, 1.0)),
+                          child: diamondArtwork(widget.event.stage, size: 128),
+                        ),
+                        const SizedBox(height: 12),
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 12,
+                            ),
+                            child: Text(
+                              'Diamond ${widget.event.stage + 1} complete!\n${diamondTargets[widget.event.stage] ~/ 1000000}M coins gifted',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       );
-    },
-  );
 }

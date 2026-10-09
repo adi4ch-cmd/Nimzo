@@ -10,45 +10,45 @@ class GamesCatalogScreen extends StatelessWidget {
   const GamesCatalogScreen({super.key, this.roomId});
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const GradientText('Games')),
-    body: GridView.count(
-      crossAxisCount: 3,
-      padding: const EdgeInsets.all(16),
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      children: [
-        for (final g in NimzoRoomGames.approved)
-          InkWell(
-            onTap: () => context.push(
-              '/games-play?game=${g.slug}${roomId == null ? '' : '&room=$roomId'}',
-            ),
-            child: Column(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    'assets/reference/game/${g.artwork}.jpg',
-                    height: 64,
-                    width: 64,
-                    fit: BoxFit.cover,
-                  ),
+        appBar: AppBar(title: const GradientText('Games')),
+        body: GridView.count(
+          crossAxisCount: 3,
+          padding: const EdgeInsets.all(16),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          children: [
+            for (final g in NimzoRoomGames.approved)
+              InkWell(
+                onTap: () => context.push(
+                  '/games-play?game=${g.slug}${roomId == null ? '' : '&room=$roomId'}',
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  g.artwork == 1
-                      ? 'Grady Pro'
-                      : g.artwork == 3
-                      ? 'Slot Jackpots'
-                      : g.title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 12),
+                child: Column(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/reference/game/${g.artwork}.jpg',
+                        height: 64,
+                        width: 64,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      g.artwork == 1
+                          ? 'Grady Pro'
+                          : g.artwork == 3
+                              ? 'Slot Jackpots'
+                              : g.title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-      ],
-    ),
-  );
+              ),
+          ],
+        ),
+      );
 }
 
 Future<void> showRoomGamesSheet(
@@ -95,8 +95,8 @@ Future<void> showRoomGamesSheet(
                       game.artwork == 1
                           ? 'Grady Pro'
                           : game.artwork == 3
-                          ? 'Slot Jackpots'
-                          : game.title,
+                              ? 'Slot Jackpots'
+                              : game.title,
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 12),
                     ),

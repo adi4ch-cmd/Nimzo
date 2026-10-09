@@ -308,42 +308,45 @@ class VivoxVoiceService implements VoiceService {
 
   @override
   Future<void> setMicEnabled(bool enabled) => _serialize(() async {
-    if (_disposed || !_connected)
-      throw StateError('Voice audio is not connected.');
-    if (enabled && await _invokeNative<bool>('requestMicPermission') != true) {
-      throw StateError('Microphone permission is required to speak.');
-    }
-    if (!_connected || _disposed)
-      throw StateError('Voice audio is not connected.');
-    if (enabled) {
-      final roomId = _roomId;
-      if (roomId == null) throw StateError('Voice room is not joined.');
-      final credentials = await _tokenIssuer(roomId);
-      if (!_connected || _disposed)
-        throw StateError('Voice audio is not connected.');
-      if (credentials['canTransmit'] != true) {
-        await _leave();
-        throw StateError('Your seat is not authorized to transmit room audio.');
-      }
-      // A listener's join_muted token cannot be unmuted locally. Upgrade by
-      // joining with a new server-authorized token after the seat was granted.
-      if (!_canTransmit) await _join(roomId, credentials: credentials);
-      if (!_connected || _disposed)
-        throw StateError('Voice audio is not connected.');
-    }
-    final result = await _invokeNative<int>('setMic', {'enabled': enabled});
-    if (result != 0)
-      throw StateError('Vivox microphone request failed (code $result).');
-  });
+        if (_disposed || !_connected)
+          throw StateError('Voice audio is not connected.');
+        if (enabled &&
+            await _invokeNative<bool>('requestMicPermission') != true) {
+          throw StateError('Microphone permission is required to speak.');
+        }
+        if (!_connected || _disposed)
+          throw StateError('Voice audio is not connected.');
+        if (enabled) {
+          final roomId = _roomId;
+          if (roomId == null) throw StateError('Voice room is not joined.');
+          final credentials = await _tokenIssuer(roomId);
+          if (!_connected || _disposed)
+            throw StateError('Voice audio is not connected.');
+          if (credentials['canTransmit'] != true) {
+            await _leave();
+            throw StateError(
+                'Your seat is not authorized to transmit room audio.');
+          }
+          // A listener's join_muted token cannot be unmuted locally. Upgrade by
+          // joining with a new server-authorized token after the seat was granted.
+          if (!_canTransmit) await _join(roomId, credentials: credentials);
+          if (!_connected || _disposed)
+            throw StateError('Voice audio is not connected.');
+        }
+        final result = await _invokeNative<int>('setMic', {'enabled': enabled});
+        if (result != 0)
+          throw StateError('Vivox microphone request failed (code $result).');
+      });
 
   @override
   Future<void> setSpeakerEnabled(bool enabled) => _serialize(() async {
-    if (_disposed || !_connected)
-      throw StateError('Voice audio is not connected.');
-    final result = await _invokeNative<int>('setSpeaker', {'enabled': enabled});
-    if (result != 0)
-      throw StateError('Vivox speaker request failed (code $result).');
-  });
+        if (_disposed || !_connected)
+          throw StateError('Voice audio is not connected.');
+        final result =
+            await _invokeNative<int>('setSpeaker', {'enabled': enabled});
+        if (result != 0)
+          throw StateError('Vivox speaker request failed (code $result).');
+      });
 
   @override
   Future<void> dispose() async {

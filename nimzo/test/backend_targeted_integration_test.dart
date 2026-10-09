@@ -73,8 +73,8 @@ void main() {
           cents == 0
               ? 0
               : cents == 2500
-              ? .5
-              : .4,
+                  ? .5
+                  : .4,
         );
       },
     );
@@ -102,7 +102,9 @@ void main() {
       );
     },
   );
-  test('progress handles simultaneous data/catalog failure without leaking a future error', () async {
+  test(
+      'progress handles simultaneous data/catalog failure without leaking a future error',
+      () async {
     final container = ProviderContainer(
       overrides: [
         phoenixEntriesProvider.overrideWith(

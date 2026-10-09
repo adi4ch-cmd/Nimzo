@@ -53,23 +53,18 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
   Widget build(BuildContext context) {
     final me = ref.watch(currentUserIdProvider);
     final self = widget.userId == me;
-    final roomOwner = ref
-        .watch(roomProvider(widget.roomId))
-        .valueOrNull
-        ?.ownerId;
+    final roomOwner =
+        ref.watch(roomProvider(widget.roomId)).valueOrNull?.ownerId;
     final owner = me != null && roomOwner == me;
-    final canModerate =
-        me != null &&
+    final canModerate = me != null &&
         (owner ||
             ref.watch(roomModerationProvider(widget.roomId)).valueOrNull ==
                 true);
     final removable = canModerate && !self && widget.userId != roomOwner;
-    final following = self
-        ? null
-        : ref.watch(isFollowingProvider(widget.userId));
-    final friendship = self
-        ? null
-        : ref.watch(friendStateProvider(widget.userId));
+    final following =
+        self ? null : ref.watch(isFollowingProvider(widget.userId));
+    final friendship =
+        self ? null : ref.watch(friendStateProvider(widget.userId));
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
@@ -89,10 +84,10 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                       url: p.avatarPath == null
                           ? null
                           : ref
-                                .watch(supabaseProvider)
-                                .storage
-                                .from('avatars')
-                                .getPublicUrl(p.avatarPath!),
+                              .watch(supabaseProvider)
+                              .storage
+                              .from('avatars')
+                              .getPublicUrl(p.avatarPath!),
                     ),
                   ),
                   title: PhoenixNameplate(
@@ -115,13 +110,13 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                 onTap: busy
                                     ? null
                                     : () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => LevelsScreen(
-                                            initialKind: kind,
-                                            userId: widget.userId,
+                                          MaterialPageRoute(
+                                            builder: (_) => LevelsScreen(
+                                              initialKind: kind,
+                                              userId: widget.userId,
+                                            ),
                                           ),
                                         ),
-                                      ),
                                 child: ProfileProgressBadge(
                                   kind: kind,
                                   level: [
@@ -176,19 +171,21 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                   onTap: busy
                       ? null
                       : () => run(() async {
-                          if (following?.hasValue != true) {
-                            ref.invalidate(isFollowingProvider(widget.userId));
-                            return;
-                          }
-                          final repo = ref.read(followRepositoryProvider);
-                          if (following!.valueOrNull == true) {
-                            await repo.unfollow(widget.userId);
-                          } else {
-                            await repo.follow(widget.userId);
-                          }
-                          if (mounted)
-                            ref.invalidate(isFollowingProvider(widget.userId));
-                        }),
+                            if (following?.hasValue != true) {
+                              ref.invalidate(
+                                  isFollowingProvider(widget.userId));
+                              return;
+                            }
+                            final repo = ref.read(followRepositoryProvider);
+                            if (following!.valueOrNull == true) {
+                              await repo.unfollow(widget.userId);
+                            } else {
+                              await repo.follow(widget.userId);
+                            }
+                            if (mounted)
+                              ref.invalidate(
+                                  isFollowingProvider(widget.userId));
+                          }),
                 ),
               if (!self)
                 ListTile(
@@ -198,27 +195,29 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                     FriendState.received => 'Accept friend request',
                     _ => 'Add friend',
                   }),
-                  onTap:
-                      busy ||
+                  onTap: busy ||
                           friendship?.hasValue != true ||
                           friendship?.valueOrNull == FriendState.sent
                       ? null
                       : () => run(() async {
-                          if (friendship!.valueOrNull == FriendState.friends) {
-                            final router = GoRouter.of(context);
-                            Navigator.pop(context);
-                            router.push('/chat/${widget.userId}');
-                            return;
-                          }
-                          final repo = ref.read(friendRepositoryProvider);
-                          if (friendship.valueOrNull == FriendState.received) {
-                            await repo.accept(widget.userId);
-                          } else {
-                            await repo.request(widget.userId);
-                          }
-                          if (mounted)
-                            ref.invalidate(friendStateProvider(widget.userId));
-                        }),
+                            if (friendship!.valueOrNull ==
+                                FriendState.friends) {
+                              final router = GoRouter.of(context);
+                              Navigator.pop(context);
+                              router.push('/chat/${widget.userId}');
+                              return;
+                            }
+                            final repo = ref.read(friendRepositoryProvider);
+                            if (friendship.valueOrNull ==
+                                FriendState.received) {
+                              await repo.accept(widget.userId);
+                            } else {
+                              await repo.request(widget.userId);
+                            }
+                            if (mounted)
+                              ref.invalidate(
+                                  friendStateProvider(widget.userId));
+                          }),
                 ),
               ListTile(
                 title: const Text('Send gift'),
@@ -243,16 +242,16 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                   onTap: busy
                       ? null
                       : () => run(() async {
-                          final repository = ref.read(roomRepositoryProvider);
-                          final voice = ref.read(voiceServiceProvider);
-                          await repository.leaveSeat(widget.roomId);
-                          try {
-                            await voice.setMicEnabled(false);
-                          } catch (_) {
-                            await voice.leave();
-                          }
-                          if (context.mounted) Navigator.pop(context);
-                        }),
+                            final repository = ref.read(roomRepositoryProvider);
+                            final voice = ref.read(voiceServiceProvider);
+                            await repository.leaveSeat(widget.roomId);
+                            try {
+                              await voice.setMicEnabled(false);
+                            } catch (_) {
+                              await voice.leave();
+                            }
+                            if (context.mounted) Navigator.pop(context);
+                          }),
                 ),
               if (removable)
                 ListTile(
@@ -260,15 +259,13 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                   onTap: busy
                       ? null
                       : () => run(() async {
-                          await ref
-                              .read(roomRepositoryProvider)
-                              .modMuteSeat(
-                                widget.roomId,
-                                widget.seatNo,
-                                !widget.muted,
-                              );
-                          if (context.mounted) Navigator.pop(context);
-                        }),
+                            await ref.read(roomRepositoryProvider).modMuteSeat(
+                                  widget.roomId,
+                                  widget.seatNo,
+                                  !widget.muted,
+                                );
+                            if (context.mounted) Navigator.pop(context);
+                          }),
                 ),
               if (removable)
                 for (final ban in [false, true])
@@ -277,41 +274,41 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                     onTap: busy
                         ? null
                         : () => run(() async {
-                            final confirmed = await showDialog<bool>(
-                              context: context,
-                              builder: (c) => AlertDialog(
-                                title: Text(
-                                  ban
-                                      ? 'Permanently ban this user from the room?'
-                                      : 'Remove this user from the room?',
-                                ),
-                                content: Text(
-                                  ban
-                                      ? 'This user will not be able to rejoin this room.'
-                                      : 'This user can rejoin the room.',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(c, false),
-                                    child: const Text('Cancel'),
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (c) => AlertDialog(
+                                  title: Text(
+                                    ban
+                                        ? 'Permanently ban this user from the room?'
+                                        : 'Remove this user from the room?',
                                   ),
-                                  FilledButton(
-                                    onPressed: () => Navigator.pop(c, true),
-                                    child: Text(ban ? 'Ban' : 'Remove'),
+                                  content: Text(
+                                    ban
+                                        ? 'This user will not be able to rejoin this room.'
+                                        : 'This user can rejoin the room.',
                                   ),
-                                ],
-                              ),
-                            );
-                            if (confirmed != true || !context.mounted) return;
-                            await ref
-                                .read(roomRepositoryProvider)
-                                .moderateMember(
-                                  widget.roomId,
-                                  widget.userId,
-                                  ban: ban,
-                                );
-                            if (context.mounted) Navigator.pop(context);
-                          }),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(c, false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    FilledButton(
+                                      onPressed: () => Navigator.pop(c, true),
+                                      child: Text(ban ? 'Ban' : 'Remove'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirmed != true || !context.mounted) return;
+                              await ref
+                                  .read(roomRepositoryProvider)
+                                  .moderateMember(
+                                    widget.roomId,
+                                    widget.userId,
+                                    ban: ban,
+                                  );
+                              if (context.mounted) Navigator.pop(context);
+                            }),
                   ),
             ],
           ),

@@ -91,17 +91,17 @@ class DataFailure extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Padding(
-    padding: NimzoStyle.pagePadding,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(LucideIcons.cloudOff, color: NimzoStyle.muted),
-        const SizedBox(height: 8),
-        Text(message, textAlign: TextAlign.center),
-        TextButton(onPressed: onRetry, child: const Text('Retry')),
-      ],
-    ),
-  );
+        padding: NimzoStyle.pagePadding,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(LucideIcons.cloudOff, color: NimzoStyle.muted),
+            const SizedBox(height: 8),
+            Text(message, textAlign: TextAlign.center),
+            TextButton(onPressed: onRetry, child: const Text('Retry')),
+          ],
+        ),
+      );
 }
 
 class EmptyContent extends StatelessWidget {
@@ -109,13 +109,13 @@ class EmptyContent extends StatelessWidget {
   const EmptyContent(this.message, {super.key});
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 16),
-    child: Text(
-      message,
-      textAlign: TextAlign.center,
-      style: const TextStyle(color: NimzoStyle.muted),
-    ),
-  );
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 16),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: NimzoStyle.muted),
+        ),
+      );
 }
 
 class AsyncContent<T> extends StatelessWidget {
@@ -130,13 +130,13 @@ class AsyncContent<T> extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => value.when(
-    data: builder,
-    loading: () => const Padding(
-      padding: EdgeInsets.all(32),
-      child: Center(child: CircularProgressIndicator()),
-    ),
-    error: (_, __) => DataFailure(onRetry: onRetry),
-  );
+        data: builder,
+        loading: () => const Padding(
+          padding: EdgeInsets.all(32),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+        error: (_, __) => DataFailure(onRetry: onRetry),
+      );
 }
 
 class ReferenceCard extends StatelessWidget {
@@ -144,11 +144,11 @@ class ReferenceCard extends StatelessWidget {
   const ReferenceCard({super.key, required this.child});
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 10),
-    child: Material(
-      color: NimzoStyle.surface,
-      borderRadius: BorderRadius.circular(14),
-      child: Padding(padding: const EdgeInsets.all(14), child: child),
-    ),
-  );
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Material(
+          color: NimzoStyle.surface,
+          borderRadius: BorderRadius.circular(14),
+          child: Padding(padding: const EdgeInsets.all(14), child: child),
+        ),
+      );
 }

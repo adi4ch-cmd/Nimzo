@@ -53,8 +53,7 @@ class _State extends ConsumerState<RoomSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final owner =
-        ref.watch(roomProvider(widget.roomId)).valueOrNull?.ownerId ==
+    final owner = ref.watch(roomProvider(widget.roomId)).valueOrNull?.ownerId ==
         ref.watch(currentUserIdProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Room Setting')),
@@ -119,21 +118,22 @@ class _State extends ConsumerState<RoomSettingsScreen> {
                   onChanged: !owner || busy
                       ? null
                       : (v) => setState(() {
-                          final x = settings!;
-                          settings = RoomSettings(
-                            name: x.name,
-                            theme: x.theme,
-                            avatarPath: x.avatarPath,
-                            isPrivate: entry.key == 'private' ? v : x.isPrivate,
-                            mic: entry.key == 'mic' ? v : x.mic,
-                            chat: entry.key == 'chat' ? v : x.chat,
-                            guest: entry.key == 'guest' ? v : x.guest,
-                            gift: entry.key == 'gift' ? v : x.gift,
-                            music: entry.key == 'music' ? v : x.music,
-                            game: entry.key == 'game' ? v : x.game,
-                            visitor: entry.key == 'visitor' ? v : x.visitor,
-                          );
-                        }),
+                            final x = settings!;
+                            settings = RoomSettings(
+                              name: x.name,
+                              theme: x.theme,
+                              avatarPath: x.avatarPath,
+                              isPrivate:
+                                  entry.key == 'private' ? v : x.isPrivate,
+                              mic: entry.key == 'mic' ? v : x.mic,
+                              chat: entry.key == 'chat' ? v : x.chat,
+                              guest: entry.key == 'guest' ? v : x.guest,
+                              gift: entry.key == 'gift' ? v : x.gift,
+                              music: entry.key == 'music' ? v : x.music,
+                              game: entry.key == 'game' ? v : x.game,
+                              visitor: entry.key == 'visitor' ? v : x.visitor,
+                            );
+                          }),
                 ),
               TextField(
                 controller: password,
@@ -177,9 +177,7 @@ class _State extends ConsumerState<RoomSettingsScreen> {
                         setState(() => busy = true);
                         try {
                           final x = settings!;
-                          await ref
-                              .read(roomSettingsRepositoryProvider)
-                              .save(
+                          await ref.read(roomSettingsRepositoryProvider).save(
                                 widget.roomId,
                                 RoomSettings(
                                   name: name.text,

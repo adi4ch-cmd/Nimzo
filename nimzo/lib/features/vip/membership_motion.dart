@@ -10,19 +10,19 @@ class MembershipRays extends StatelessWidget {
   const MembershipRays({super.key, required this.angle});
   @override
   Widget build(BuildContext context) => Transform.rotate(
-    angle: angle,
-    child: ShaderMask(
-      blendMode: BlendMode.dstIn,
-      shaderCallback: (rect) => const RadialGradient(
-        colors: [Colors.white, Colors.white, Colors.transparent],
-        stops: [0, .18, .68],
-      ).createShader(rect),
-      child: const SizedBox.square(
-        dimension: 320,
-        child: CustomPaint(painter: _RayPainter()),
-      ),
-    ),
-  );
+        angle: angle,
+        child: ShaderMask(
+          blendMode: BlendMode.dstIn,
+          shaderCallback: (rect) => const RadialGradient(
+            colors: [Colors.white, Colors.white, Colors.transparent],
+            stops: [0, .18, .68],
+          ).createShader(rect),
+          child: const SizedBox.square(
+            dimension: 320,
+            child: CustomPaint(painter: _RayPainter()),
+          ),
+        ),
+      );
 }
 
 class _RayPainter extends CustomPainter {
@@ -71,24 +71,24 @@ class _AuraState extends State<MembershipAura>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-    animation: motion,
-    builder: (_, __) {
-      final pulse = (1 - math.cos(motion.value * math.pi * 2)) / 2;
-      return Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: const Color(0xff1b1230),
-          boxShadow: [
-            BoxShadow(color: widget.color, spreadRadius: 3 + 3 * pulse),
-            BoxShadow(color: widget.color, blurRadius: 16 + 12 * pulse),
-          ],
-        ),
-        child: const ReferenceIcon('mic', color: Colors.white),
+        animation: motion,
+        builder: (_, __) {
+          final pulse = (1 - math.cos(motion.value * math.pi * 2)) / 2;
+          return Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xff1b1230),
+              boxShadow: [
+                BoxShadow(color: widget.color, spreadRadius: 3 + 3 * pulse),
+                BoxShadow(color: widget.color, blurRadius: 16 + 12 * pulse),
+              ],
+            ),
+            child: const ReferenceIcon('mic', color: Colors.white),
+          );
+        },
       );
-    },
-  );
 }
 
 class MembershipGoldText extends StatefulWidget {
@@ -124,27 +124,27 @@ class _GoldTextState extends State<MembershipGoldText>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-    animation: motion,
-    builder: (_, __) => ShaderMask(
-      blendMode: BlendMode.srcIn,
-      shaderCallback: (rect) => LinearGradient(
-        colors: const [
-          Color(0xffb97a14),
-          Color(0xfffff7c2),
-          Color(0xfff5c451),
-          Color(0xffb97a14),
-        ],
-        stops: const [.15, .4, .5, .8],
-        begin: Alignment(-1 + motion.value * 4.4, -.34),
-        end: Alignment(3.4 + motion.value * 4.4, .34),
-        tileMode: TileMode.repeated,
-      ).createShader(rect),
-      child: Text(
-        widget.text,
-        style: widget.style.copyWith(color: Colors.white),
-      ),
-    ),
-  );
+        animation: motion,
+        builder: (_, __) => ShaderMask(
+          blendMode: BlendMode.srcIn,
+          shaderCallback: (rect) => LinearGradient(
+            colors: const [
+              Color(0xffb97a14),
+              Color(0xfffff7c2),
+              Color(0xfff5c451),
+              Color(0xffb97a14),
+            ],
+            stops: const [.15, .4, .5, .8],
+            begin: Alignment(-1 + motion.value * 4.4, -.34),
+            end: Alignment(3.4 + motion.value * 4.4, .34),
+            tileMode: TileMode.repeated,
+          ).createShader(rect),
+          child: Text(
+            widget.text,
+            style: widget.style.copyWith(color: Colors.white),
+          ),
+        ),
+      );
 }
 
 class MembershipGoldButton extends StatefulWidget {
@@ -184,43 +184,44 @@ class _GoldButtonState extends State<MembershipGoldButton>
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: const Color(0xfff5c451).withValues(alpha: .35),
-          blurRadius: 24,
-          offset: const Offset(0, 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xfff5c451).withValues(alpha: .35),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
-      ],
-    ),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Stack(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: GradientButton(
-              gradient: membershipGold,
-              foreground: const Color(0xff3b2200),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              onPressed: widget.onPressed,
-              child: widget.child,
-            ),
-          ),
-          Positioned.fill(
-            child: IgnorePointer(
-              child: AnimatedBuilder(
-                animation: motion,
-                builder: (_, __) =>
-                    CustomPaint(painter: _SheenPainter(motion.value)),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: GradientButton(
+                  gradient: membershipGold,
+                  foreground: const Color(0xff3b2200),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  onPressed: widget.onPressed,
+                  child: widget.child,
+                ),
               ),
-            ),
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: AnimatedBuilder(
+                    animation: motion,
+                    builder: (_, __) =>
+                        CustomPaint(painter: _SheenPainter(motion.value)),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }
 
 class _SheenPainter extends CustomPainter {

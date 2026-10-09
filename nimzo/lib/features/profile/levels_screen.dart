@@ -13,7 +13,7 @@ class LevelsScreen extends ConsumerStatefulWidget {
   final int initialKind;
   final String? userId;
   const LevelsScreen({super.key, this.initialKind = 0, this.userId})
-    : assert(initialKind >= 0 && initialKind < 3);
+      : assert(initialKind >= 0 && initialKind < 3);
   @override
   ConsumerState<LevelsScreen> createState() => _LevelState();
 }
@@ -92,7 +92,11 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                       Text(
                         total == null
                             ? 'Total unavailable · next-level requirement unavailable'
-                            : '${referenceNumber(total)} ${['coins sent', 'diamonds received', 'activity points'][selected]} · next-level requirement unavailable',
+                            : '${referenceNumber(total)} ${[
+                                'coins sent',
+                                'diamonds received',
+                                'activity points'
+                              ][selected]} · next-level requirement unavailable',
                         style: const TextStyle(
                           color: NimzoStyle.muted,
                           fontSize: 12,

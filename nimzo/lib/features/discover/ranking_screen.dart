@@ -105,52 +105,52 @@ class RankingPodium extends StatelessWidget {
   const RankingPodium({super.key, required this.rows});
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 14),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        for (final i in [1, 0, 2])
-          if (i < rows.length)
-            Expanded(
-              child: InkWell(
-                onTap: () => context.push('/profile/${rows[i]['id']}'),
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: i == 0 ? 16 : 0),
-                  child: Column(
-                    children: [
-                      NimzoAvatar(
-                        name: rows[i]['name']?.toString() ?? 'N',
-                        size: i == 0 ? 68 : 54,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            for (final i in [1, 0, 2])
+              if (i < rows.length)
+                Expanded(
+                  child: InkWell(
+                    onTap: () => context.push('/profile/${rows[i]['id']}'),
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: i == 0 ? 16 : 0),
+                      child: Column(
+                        children: [
+                          NimzoAvatar(
+                            name: rows[i]['name']?.toString() ?? 'N',
+                            size: i == 0 ? 68 : 54,
+                          ),
+                          Text(
+                            '${i + 1}',
+                            style: const TextStyle(
+                              color: Color(0xfff59e0b),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            rows[i]['name']?.toString() ?? 'Nimzo user',
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          Text(
+                            '${rows[i]['score']}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: NimzoStyle.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        '${i + 1}',
-                        style: const TextStyle(
-                          color: Color(0xfff59e0b),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        rows[i]['name']?.toString() ?? 'Nimzo user',
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                      Text(
-                        '${rows[i]['score']}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: NimzoStyle.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-      ],
-    ),
-  );
+          ],
+        ),
+      );
 }

@@ -73,8 +73,8 @@ void main() {
       final group = slug == 'grady_lion'
           ? 'grady'
           : slug == 'slot'
-          ? 'slot'
-          : 'fruit';
+              ? 'slot'
+              : 'fruit';
       await tester.runAsync(() async {
         // pumpAndSettle does not wait for asynchronous image decoding. The
         // header is a separate asset family from the board and must be ready.
@@ -84,16 +84,14 @@ void main() {
           context,
         );
         if (slug != 'lucky_wheel_77') {
-          for (
-            var i = 0;
-            i <
-                (group == 'grady'
-                    ? 10
-                    : group == 'slot'
-                    ? 12
-                    : 8);
-            i++
-          ) {
+          for (var i = 0;
+              i <
+                  (group == 'grady'
+                      ? 10
+                      : group == 'slot'
+                          ? 12
+                          : 8);
+              i++) {
             await precacheImage(
               AssetImage('assets/reference/$group/$i.jpg'),
               context,

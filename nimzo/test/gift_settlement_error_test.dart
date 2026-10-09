@@ -35,25 +35,25 @@ void main() {
         final gifts = GiftRepository(db);
         final request = switch (kind) {
           'room' => gifts.send(
-            roomId: 'room',
-            receiverId: 'receiver',
-            giftId: 'gift',
-            qty: 1,
-            key: 'stable-key',
-          ),
+              roomId: 'room',
+              receiverId: 'receiver',
+              giftId: 'gift',
+              qty: 1,
+              key: 'stable-key',
+            ),
           'profile' => gifts.sendProfile(
-            receiverId: 'receiver',
-            giftId: 'gift',
-            qty: 1,
-            key: 'stable-key',
-          ),
+              receiverId: 'receiver',
+              giftId: 'gift',
+              qty: 1,
+              key: 'stable-key',
+            ),
           _ => MomentRepository(db).sendGift(
-            momentId: 'moment',
-            receiverId: 'receiver',
-            giftId: 'gift',
-            qty: 1,
-            key: 'stable-key',
-          ),
+              momentId: 'moment',
+              receiverId: 'receiver',
+              giftId: 'gift',
+              qty: 1,
+              key: 'stable-key',
+            ),
         };
         await expectLater(
           request,

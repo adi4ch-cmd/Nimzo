@@ -22,9 +22,8 @@ class ReferenceInfoContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (title == 'Account') {
       final id = ref.watch(currentUserIdProvider);
-      final profile = id == null
-          ? null
-          : ref.watch(profileProvider(id)).valueOrNull;
+      final profile =
+          id == null ? null : ref.watch(profileProvider(id)).valueOrNull;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -123,8 +123,7 @@ class _GameState extends ConsumerState<GameScreen> {
   ];
   @override
   Widget build(BuildContext context) {
-    final game =
-        NimzoRoomGames.approved
+    final game = NimzoRoomGames.approved
             .where((g) => g.slug == widget.slug)
             .firstOrNull ??
         NimzoRoomGames.approved.first;
@@ -132,19 +131,19 @@ class _GameState extends ConsumerState<GameScreen> {
         title = i == 1
             ? 'Grady Pro'
             : i == 3
-            ? 'Slot Jackpots'
-            : game.title;
+                ? 'Slot Jackpots'
+                : game.title;
     final spin = i == 3 || i == 5;
     final wallet = ref.watch(walletProvider).valueOrNull;
     final options = i == 0
         ? GameScreen.fruit
         : i == 1
-        ? GameScreen.grady
-        : i == 2
-        ? GameScreen.cars
-        : i == 4
-        ? ['Player A', 'Player B', 'Player C']
-        : ['Home', 'Draw', 'Away'];
+            ? GameScreen.grady
+            : i == 2
+                ? GameScreen.cars
+                : i == 4
+                    ? ['Player A', 'Player B', 'Player C']
+                    : ['Home', 'Draw', 'Away'];
     return Theme(
       data: Theme.of(context).copyWith(
         textTheme: Theme.of(context).textTheme.apply(bodyColor: Colors.white),
@@ -215,8 +214,8 @@ class _GameState extends ConsumerState<GameScreen> {
                               i == 4
                                   ? 'Teen Patti identity requires confirmation: the reference shows Player A/B/C. Traditional Teen Patti rules have not been approved.'
                                   : i == 6
-                                  ? 'Bounty Football is the seventh catalog entry. The reference shows Home/Draw/Away; match source and settlement rules require approval.'
-                                  : 'Round timing, outcome source, wager limits and settlement rules require an approved server contract.',
+                                      ? 'Bounty Football is the seventh catalog entry. The reference shows Home/Draw/Away; match source and settlement rules require approval.'
+                                      : 'Round timing, outcome source, wager limits and settlement rules require an approved server contract.',
                             ),
                             const SizedBox(height: 12),
                             const Text(
@@ -433,19 +432,16 @@ class _GameState extends ConsumerState<GameScreen> {
                   crossAxisCount: i == 1 ? 5 : 3,
                   mainAxisSpacing: 6,
                   crossAxisSpacing: 6,
-                  mainAxisExtent:
-                      (i == 2
+                  mainAxisExtent: (i == 2
                           ? 128.0
                           : i == 4 || i == 6
-                          ? 144.0
-                          : 112.0) *
+                              ? 144.0
+                              : 112.0) *
                       MediaQuery.textScalerOf(context).scale(1),
                   children: [
-                    for (
-                      var n = 0;
-                      n < options.length + ((i == 0 || i == 2) ? 1 : 0);
-                      n++
-                    )
+                    for (var n = 0;
+                        n < options.length + ((i == 0 || i == 2) ? 1 : 0);
+                        n++)
                       if ((i == 0 || i == 2) && n == 4)
                         Container(
                           decoration: BoxDecoration(
@@ -705,15 +701,7 @@ class _GameState extends ConsumerState<GameScreen> {
                 SizedBox(
                   height: 56,
                   child: Image.asset(
-                    'assets/reference/${game == 0
-                        ? 'fruit'
-                        : game == 1
-                        ? 'grady'
-                        : 'game'}/${game == 4
-                        ? 4
-                        : game == 6
-                        ? 6
-                        : index}.jpg',
+                    'assets/reference/${game == 0 ? 'fruit' : game == 1 ? 'grady' : 'game'}/${game == 4 ? 4 : game == 6 ? 6 : index}.jpg',
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),

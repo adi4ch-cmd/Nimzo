@@ -44,8 +44,8 @@ class _FollowState extends ConsumerState<ReferenceFollowButton> {
         busy
             ? 'Updating…'
             : following.valueOrNull == true
-            ? 'Following'
-            : 'Follow',
+                ? 'Following'
+                : 'Follow',
       ),
     );
   }

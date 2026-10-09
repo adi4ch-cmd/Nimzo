@@ -68,8 +68,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           !ref.read(passwordRecoveryProvider)) {
         try {
           final profile = await ref.read(profileProvider(user.id).future);
-          profileReady =
-              (profile.displayName?.trim().isNotEmpty ?? false) &&
+          profileReady = (profile.displayName?.trim().isNotEmpty ?? false) &&
               profile.gender != null &&
               profile.dateOfBirth != null &&
               profile.countryCode != null;

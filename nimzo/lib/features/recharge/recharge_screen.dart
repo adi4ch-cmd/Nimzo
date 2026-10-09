@@ -42,8 +42,8 @@ class _RechargeScreenState extends ConsumerState<RechargeScreen> {
             checkout.store == 'google_play'
                 ? 'Google Play checkout'
                 : checkout.store == 'app_store'
-                ? 'App Store checkout'
-                : 'Mobile store checkout',
+                    ? 'App Store checkout'
+                    : 'Mobile store checkout',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 6),
@@ -64,8 +64,7 @@ class _RechargeScreenState extends ConsumerState<RechargeScreen> {
                 ),
                 subtitle: Text(product.title),
                 trailing: FilledButton(
-                  onPressed:
-                      checkout.ready &&
+                  onPressed: checkout.ready &&
                           !checkout.busy &&
                           !checkout.loading &&
                           !checkout.canRetry

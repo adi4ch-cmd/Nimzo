@@ -23,8 +23,8 @@ class UserPreferencesRepository {
   final SupabaseClient db;
   UserPreferencesRepository(this.db);
   Future<UserPreferences> get() async => UserPreferences.fromJson(
-    Map<String, dynamic>.from(await db.rpc('user_settings')),
-  );
+        Map<String, dynamic>.from(await db.rpc('user_settings')),
+      );
   Future<UserPreferences> save(UserPreferences value) async =>
       UserPreferences.fromJson(
         Map<String, dynamic>.from(
@@ -45,8 +45,8 @@ final userPreferencesRepositoryProvider = Provider(
 );
 final userPreferencesProvider =
     AsyncNotifierProvider<UserPreferencesController, UserPreferences>(
-      UserPreferencesController.new,
-    );
+  UserPreferencesController.new,
+);
 
 class UserPreferencesController extends AsyncNotifier<UserPreferences> {
   int _generation = 0;
@@ -66,9 +66,7 @@ class UserPreferencesController extends AsyncNotifier<UserPreferences> {
     final generation = _generation;
     state = const AsyncLoading<UserPreferences>().copyWithPrevious(state);
     try {
-      final saved = await ref
-          .read(userPreferencesRepositoryProvider)
-          .save(
+      final saved = await ref.read(userPreferencesRepositoryProvider).save(
             UserPreferences(
               messages: messages ?? current.messages,
               gifts: gifts ?? current.gifts,
@@ -96,9 +94,7 @@ class PreferenceControls extends ConsumerWidget {
       bool? allowMessages,
     }) async {
       try {
-        await ref
-            .read(userPreferencesProvider.notifier)
-            .change(
+        await ref.read(userPreferencesProvider.notifier).change(
               messages: messages,
               gifts: gifts,
               allowMessages: allowMessages,

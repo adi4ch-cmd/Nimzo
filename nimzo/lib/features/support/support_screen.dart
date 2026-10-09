@@ -5,22 +5,26 @@ import '../../core/providers/supabase_provider.dart';
 import 'support_repository.dart';
 
 const supportFaqs = {
-  'How do I recharge?': 'Open Recharge and choose an available store package. The server verifies purchases before crediting coins. For a missing purchase, report the store, product, date and non-sensitive transaction reference.',
-  'How do VIP and SVIP work?': 'Open VIP or SVIP to view the current tiers and benefits. Check the displayed details before spending coins.',
-  'How do I report another user?': 'Use the report action on the relevant profile or room when available. You can also block users from their profile.',
-  'Does a deletion request delete my account?': 'No. It records a request for review. Your account remains active and no completion time is confirmed.',
+  'How do I recharge?':
+      'Open Recharge and choose an available store package. The server verifies purchases before crediting coins. For a missing purchase, report the store, product, date and non-sensitive transaction reference.',
+  'How do VIP and SVIP work?':
+      'Open VIP or SVIP to view the current tiers and benefits. Check the displayed details before spending coins.',
+  'How do I report another user?':
+      'Use the report action on the relevant profile or room when available. You can also block users from their profile.',
+  'Does a deletion request delete my account?':
+      'No. It records a request for review. Your account remains active and no completion time is confirmed.',
 };
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Help and feedback')),
-    body: const SingleChildScrollView(
-      padding: EdgeInsets.all(16),
-      child: SupportHelpContent(),
-    ),
-  );
+        appBar: AppBar(title: const Text('Help and feedback')),
+        body: const SingleChildScrollView(
+          padding: EdgeInsets.all(16),
+          child: SupportHelpContent(),
+        ),
+      );
 }
 
 class SupportHelpContent extends ConsumerStatefulWidget {
@@ -125,9 +129,8 @@ class _SupportState extends ConsumerState<SupportHelpContent> {
                         child: Text(pair.value),
                       ),
                   ],
-                  onChanged: _busy
-                      ? null
-                      : (v) => setState(() => _category = v!),
+                  onChanged:
+                      _busy ? null : (v) => setState(() => _category = v!),
                 ),
                 TextFormField(
                   controller: _subject,
@@ -145,7 +148,8 @@ class _SupportState extends ConsumerState<SupportHelpContent> {
                   maxLines: 8,
                   decoration: const InputDecoration(
                     labelText: 'Details',
-                    hintText: 'For bugs, describe what happened and how to reproduce it.',
+                    hintText:
+                        'For bugs, describe what happened and how to reproduce it.',
                   ),
                   validator: (v) =>
                       v == null || v.trim().isEmpty ? 'Enter details.' : null,
@@ -173,9 +177,7 @@ class _SupportState extends ConsumerState<SupportHelpContent> {
               ),
             ],
           ),
-          ref
-              .watch(supportTicketsProvider)
-              .when(
+          ref.watch(supportTicketsProvider).when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (_, __) => TextButton(
                   onPressed: () => ref.invalidate(supportTicketsProvider),
@@ -280,7 +282,8 @@ class _DeletionState extends ConsumerState<AccountDeletionRequestContent> {
       await ref.read(supportRepositoryProvider).requestDeletion(_reason.text);
       if (mounted && ref.read(currentUserIdProvider) == id)
         setState(
-          () => _message = 'Deletion request recorded for review. Your account remains active.',
+          () => _message =
+              'Deletion request recorded for review. Your account remains active.',
         );
     } catch (_) {
       if (mounted && ref.read(currentUserIdProvider) == id)

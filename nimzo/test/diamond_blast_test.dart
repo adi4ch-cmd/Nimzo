@@ -129,7 +129,9 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
-  test('server Diamond Blast model rejects unsupported targets and forged stage payloads', () {
+  test(
+      'server Diamond Blast model rejects unsupported targets and forged stage payloads',
+      () {
     final row = <String, dynamic>{
       'total_coins': 5000000,
       'completed_stages': 1,
@@ -211,17 +213,19 @@ void main() {
   testWidgets('six-stage live progress has a reviewed phone screenshot', (
     tester,
   ) async {
-    await (FontLoader('Roboto')..addFont(
-          Future.value(
-            ByteData.sublistView(
-              File('test/fonts/Roboto-Regular.ttf').readAsBytesSync(),
+    await (FontLoader('Roboto')
+          ..addFont(
+            Future.value(
+              ByteData.sublistView(
+                File('test/fonts/Roboto-Regular.ttf').readAsBytesSync(),
+              ),
             ),
-          ),
-        ))
+          ))
         .load();
     await (FontLoader(
       'MaterialIcons',
-    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
+    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf')))
+        .load();
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);

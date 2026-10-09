@@ -28,7 +28,6 @@ String? authRedirect({
   if (location == Routes.splash ||
       public.contains(location) ||
       location == Routes.verify ||
-      location == Routes.updatePassword)
-    return Routes.home;
+      location == Routes.updatePassword) return Routes.home;
   return null;
 }

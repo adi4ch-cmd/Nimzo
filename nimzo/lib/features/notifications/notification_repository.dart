@@ -41,6 +41,6 @@ final notificationActivityProvider = StreamProvider.autoDispose(
 );
 final notificationsProvider =
     FutureProvider.family<List<Map<String, dynamic>>, String>((ref, c) {
-      ref.watch(notificationActivityProvider);
-      return ref.watch(notificationRepositoryProvider).list(c);
-    });
+  ref.watch(notificationActivityProvider);
+  return ref.watch(notificationRepositoryProvider).list(c);
+});

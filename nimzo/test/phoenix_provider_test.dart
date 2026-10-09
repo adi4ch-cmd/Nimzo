@@ -12,12 +12,11 @@ import 'package:nimzo/features/vip/phoenix_entitlement.dart';
 import 'package:nimzo/features/vip/phoenix_widgets.dart';
 
 Map<String, dynamic> membership({int seconds = 60, int level = 6}) => {
-  'vip_level': level,
-  'server_now': '2001-01-01T00:00:00Z',
-  'vip_expires_at': DateTime.utc(2001)
-      .add(Duration(seconds: seconds))
-      .toIso8601String(),
-};
+      'vip_level': level,
+      'server_now': '2001-01-01T00:00:00Z',
+      'vip_expires_at':
+          DateTime.utc(2001).add(Duration(seconds: seconds)).toIso8601String(),
+    };
 void main() {
   testWidgets(
     'server time activates target identity and expiry removes frame',
@@ -162,16 +161,16 @@ void main() {
     'animated frame pauses when offscreen or reduced motion changes',
     (tester) async {
       Widget frame(bool enabled, bool reduced) => MaterialApp(
-        home: MediaQuery(
-          data: MediaQueryData(disableAnimations: reduced),
-          child: TickerMode(
-            enabled: enabled,
-            child: const Center(
-              child: PhoenixFrame(child: CircleAvatar(child: Text('N'))),
+            home: MediaQuery(
+              data: MediaQueryData(disableAnimations: reduced),
+              child: TickerMode(
+                enabled: enabled,
+                child: const Center(
+                  child: PhoenixFrame(child: CircleAvatar(child: Text('N'))),
+                ),
+              ),
             ),
-          ),
-        ),
-      );
+          );
       await tester.pumpWidget(frame(true, false));
       await tester.pump(const Duration(milliseconds: 100));
       expect(tester.hasRunningAnimations, isTrue);

@@ -17,10 +17,10 @@ class PhoenixMark extends StatelessWidget {
   const PhoenixMark({super.key, this.size = 32, this.spread = 1});
   @override
   Widget build(BuildContext context) => SizedBox(
-    width: size,
-    height: size,
-    child: CustomPaint(painter: _PhoenixPainter(spread)),
-  );
+        width: size,
+        height: size,
+        child: CustomPaint(painter: _PhoenixPainter(spread)),
+      );
 }
 
 class _PhoenixPainter extends CustomPainter {
@@ -106,72 +106,72 @@ class _PhoenixFrameState extends State<PhoenixFrame>
 
   @override
   Widget build(BuildContext context) => RepaintBoundary(
-    child: AnimatedBuilder(
-      animation: motion,
-      child: widget.child,
-      builder: (_, child) => Container(
-        padding: const EdgeInsets.all(3),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: phoenixGold),
-          gradient: SweepGradient(
-            transform: GradientRotation(motion.value * 2 * math.pi),
-            colors: const [
-              phoenixGold,
-              phoenixRed,
-              phoenixGold,
-              Color(0xfffff1bd),
-              phoenixRed,
-              phoenixGold,
-            ],
+        child: AnimatedBuilder(
+          animation: motion,
+          child: widget.child,
+          builder: (_, child) => Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: phoenixGold),
+              gradient: SweepGradient(
+                transform: GradientRotation(motion.value * 2 * math.pi),
+                colors: const [
+                  phoenixGold,
+                  phoenixRed,
+                  phoenixGold,
+                  Color(0xfffff1bd),
+                  phoenixRed,
+                  phoenixGold,
+                ],
+              ),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              clipBehavior: Clip.none,
+              children: [
+                child!,
+                const Positioned(
+                  right: -3,
+                  bottom: -3,
+                  child: PhoenixMark(size: 20),
+                ),
+              ],
+            ),
           ),
         ),
-        child: Stack(
-          alignment: Alignment.center,
-          clipBehavior: Clip.none,
-          children: [
-            child!,
-            const Positioned(
-              right: -3,
-              bottom: -3,
-              child: PhoenixMark(size: 20),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
+      );
 }
 
 class PhoenixBadge extends StatelessWidget {
   const PhoenixBadge({super.key});
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'VIP 6 Phoenix',
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        gradient: phoenixGradient,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: phoenixGold),
-      ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          PhoenixMark(size: 20),
-          SizedBox(width: 4),
-          Text(
-            'VIP 6',
-            style: TextStyle(
-              color: phoenixGold,
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-            ),
+        label: 'VIP 6 Phoenix',
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            gradient: phoenixGradient,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: phoenixGold),
           ),
-        ],
-      ),
-    ),
-  );
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PhoenixMark(size: 20),
+              SizedBox(width: 4),
+              Text(
+                'VIP 6',
+                style: TextStyle(
+                  color: phoenixGold,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
 }
 
 /// Decorates existing content only after a successful server verification.
@@ -187,8 +187,7 @@ class PhoenixDecoration extends ConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final active =
-        userId != null &&
+    final active = userId != null &&
         ref
                 .watch(phoenixEntitlementProvider(userId!))
                 .asData
@@ -223,8 +222,7 @@ class PhoenixNameplate extends ConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final active =
-        ref
+    final active = ref
             .watch(phoenixEntitlementProvider(userId))
             .asData
             ?.value
@@ -303,48 +301,47 @@ class _PhoenixEntryState extends State<PhoenixEntry>
 
   @override
   Widget build(BuildContext context) => IgnorePointer(
-    child: Semantics(
-      liveRegion: true,
-      child: RepaintBoundary(
-        child: AnimatedBuilder(
-          animation: motion,
-          builder: (_, __) {
-            final reduced = MediaQuery.disableAnimationsOf(context);
-            final phase = reduced ? .5 : motion.value;
-            return Opacity(
-              opacity: reduced
-                  ? 1
-                  : (math.sin(phase * math.pi) * 2).clamp(0, 1),
-              child: Container(
-                margin: const EdgeInsets.all(12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: phoenixGradient,
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: phoenixGold),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    PhoenixMark(
-                      size: reduced ? 56 : 72,
-                      spread: .7 + .3 * math.sin(phase * math.pi),
+        child: Semantics(
+          liveRegion: true,
+          child: RepaintBoundary(
+            child: AnimatedBuilder(
+              animation: motion,
+              builder: (_, __) {
+                final reduced = MediaQuery.disableAnimationsOf(context);
+                final phase = reduced ? .5 : motion.value;
+                return Opacity(
+                  opacity:
+                      reduced ? 1 : (math.sin(phase * math.pi) * 2).clamp(0, 1),
+                  child: Container(
+                    margin: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: phoenixGradient,
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: phoenixGold),
                     ),
-                    Text(
-                      '${widget.name} entered · VIP 6 Phoenix',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: phoenixGold,
-                        fontWeight: FontWeight.w800,
-                      ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        PhoenixMark(
+                          size: reduced ? 56 : 72,
+                          spread: .7 + .3 * math.sin(phase * math.pi),
+                        ),
+                        Text(
+                          '${widget.name} entered · VIP 6 Phoenix',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: phoenixGold,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            );
-          },
+                  ),
+                );
+              },
+            ),
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }

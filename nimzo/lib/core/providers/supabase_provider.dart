@@ -20,8 +20,8 @@ final sessionUserIdProvider = StreamProvider<String?>((ref) async* {
 /// Rebuild data repositories on account transitions so cached data cannot cross accounts.
 final sessionSupabaseProvider =
     Provider<({SupabaseClient client, String? userId})>(
-      (ref) => (
-        client: ref.watch(supabaseProvider),
-        userId: ref.watch(currentUserIdProvider),
-      ),
-    );
+  (ref) => (
+    client: ref.watch(supabaseProvider),
+    userId: ref.watch(currentUserIdProvider),
+  ),
+);

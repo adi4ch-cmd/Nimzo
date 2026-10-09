@@ -4,7 +4,7 @@ class SvipProgress {
   final int cycleCents;
   final Map<int, int> thresholds;
   SvipProgress({required this.cycleCents, required Map<int, int> thresholds})
-    : thresholds = Map.unmodifiable(thresholds);
+      : thresholds = Map.unmodifiable(thresholds);
 
   int? thresholdFor(int level) => thresholds[level];
   List<MapEntry<int, int>> get _ordered =>
@@ -16,6 +16,6 @@ class SvipProgress {
   double? get fraction => thresholds.isEmpty
       ? null
       : nextThresholdCents == null
-      ? 1
-      : (cycleCents / nextThresholdCents!).clamp(0.0, 1.0);
+          ? 1
+          : (cycleCents / nextThresholdCents!).clamp(0.0, 1.0);
 }

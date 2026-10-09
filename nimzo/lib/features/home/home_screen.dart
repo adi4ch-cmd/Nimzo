@@ -131,10 +131,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           url: owned?.avatarPath == null
                               ? null
                               : ref
-                                    .read(supabaseProvider)
-                                    .storage
-                                    .from('room-images')
-                                    .getPublicUrl(owned!.avatarPath!),
+                                  .read(supabaseProvider)
+                                  .storage
+                                  .from('room-images')
+                                  .getPublicUrl(owned!.avatarPath!),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
@@ -203,10 +203,10 @@ class RoomTile extends ConsumerWidget {
     final url = path == null
         ? null
         : ref
-              .watch(supabaseProvider)
-              .storage
-              .from('room-images')
-              .getPublicUrl(path);
+            .watch(supabaseProvider)
+            .storage
+            .from('room-images')
+            .getPublicUrl(path);
     return InkWell(
       onTap: () => context.push('/room/${room.id}'),
       child: Container(

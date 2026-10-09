@@ -39,8 +39,8 @@ class RechargeRepository {
     final canonicalStore = store == 'google'
         ? 'google_play'
         : store == 'apple'
-        ? 'app_store'
-        : store;
+            ? 'app_store'
+            : store;
     final response = await _db.functions.invoke(
       'verify-purchase',
       body: {
@@ -57,14 +57,13 @@ class RechargeRepository {
           data,
           store: canonicalStore,
           productId: productId,
-          transactionId: canonicalStore == 'google_play'
-              ? receipt
-              : transactionId ?? '',
+          transactionId:
+              canonicalStore == 'google_play' ? receipt : transactionId ?? '',
         )) {
       throw StateError(
         data is Map
             ? (data['error']?.toString() ??
-                  'Purchase settlement was not confirmed')
+                'Purchase settlement was not confirmed')
             : 'Invalid purchase verification response',
       );
     }

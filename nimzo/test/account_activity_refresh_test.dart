@@ -14,8 +14,8 @@ class Messages extends MessageRepository {
   Stream<int> changes() => events.stream;
   @override
   Future<List<Map<String, dynamic>>> conversations() async => [
-    {'unread': ++reads},
-  ];
+        {'unread': ++reads},
+      ];
 }
 
 class Notices extends NotificationRepository {
@@ -26,8 +26,8 @@ class Notices extends NotificationRepository {
   Stream<int> changes() => events.stream;
   @override
   Future<List<Map<String, dynamic>>> list(String category) async => [
-    {'id': ++reads},
-  ];
+        {'id': ++reads},
+      ];
 }
 
 void main() {
@@ -55,7 +55,9 @@ void main() {
       await repo.events.close();
     },
   );
-  test('notification events refresh multiple categories from the same authorized stream', () async {
+  test(
+      'notification events refresh multiple categories from the same authorized stream',
+      () async {
     final db = SupabaseClient(
       'https://example.supabase.co',
       'test',

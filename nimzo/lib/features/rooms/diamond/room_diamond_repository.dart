@@ -137,32 +137,32 @@ class RoomDiamondRepository {
         );
         channel
             .onPostgresChanges(
-              event: PostgresChangeEvent.insert,
-              schema: 'public',
-              table: 'room_diamond_blast_events',
-              filter: PostgresChangeFilter(
-                type: PostgresChangeFilterType.eq,
-                column: 'room_id',
-                value: roomId,
-              ),
-              callback: (payload) {
-                if (stream.isClosed) return;
-                try {
-                  final event = DiamondBlastEvent.fromJson(payload.newRecord);
-                  if (event.roomId == roomId)
-                    stream.add(DiamondUpdate(++sequence, event));
-                } on FormatException {
-                  /* Never animate malformed or unsupported events. */
-                }
-              },
-            )
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'room_diamond_blast_events',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'room_id',
+            value: roomId,
+          ),
+          callback: (payload) {
+            if (stream.isClosed) return;
+            try {
+              final event = DiamondBlastEvent.fromJson(payload.newRecord);
+              if (event.roomId == roomId)
+                stream.add(DiamondUpdate(++sequence, event));
+            } on FormatException {
+              /* Never animate malformed or unsupported events. */
+            }
+          },
+        )
             .subscribe((status, error) {
-              if (status == RealtimeSubscribeStatus.subscribed &&
-                  !stream.isClosed) {
-                // Refresh on reconnect, without replaying old blast animations.
-                stream.add(DiamondUpdate(++sequence));
-              }
-            });
+          if (status == RealtimeSubscribeStatus.subscribed &&
+              !stream.isClosed) {
+            // Refresh on reconnect, without replaying old blast animations.
+            stream.add(DiamondUpdate(++sequence));
+          }
+        });
       },
       onCancel: () async {
         await db.removeChannel(channel);
@@ -175,27 +175,25 @@ class RoomDiamondRepository {
 final roomDiamondRepositoryProvider = Provider(
   (ref) => RoomDiamondRepository(ref.watch(sessionSupabaseProvider).client),
 );
-final roomDiamondEventsProvider = StreamProvider.autoDispose
-    .family<DiamondUpdate, String>(
-      (ref, roomId) => ref.watch(roomDiamondRepositoryProvider).changes(roomId),
-    );
+final roomDiamondEventsProvider =
+    StreamProvider.autoDispose.family<DiamondUpdate, String>(
+  (ref, roomId) => ref.watch(roomDiamondRepositoryProvider).changes(roomId),
+);
 final roomDiamondStatusProvider = FutureProvider.autoDispose
     .family<RoomDiamondStatus, String>((ref, roomId) async {
-      ref.watch(roomDiamondEventsProvider(roomId));
-      Timer? timer;
-      var disposed = false;
-      ref.onDispose(() {
-        disposed = true;
-        timer?.cancel();
-      });
-      final status = await ref
-          .watch(roomDiamondRepositoryProvider)
-          .status(roomId);
-      if (disposed) return status;
-      final remaining = status.resetAt.difference(status.serverNow);
-      timer = Timer(
-        remaining.isNegative ? const Duration(seconds: 1) : remaining,
-        ref.invalidateSelf,
-      );
-      return status;
-    });
+  ref.watch(roomDiamondEventsProvider(roomId));
+  Timer? timer;
+  var disposed = false;
+  ref.onDispose(() {
+    disposed = true;
+    timer?.cancel();
+  });
+  final status = await ref.watch(roomDiamondRepositoryProvider).status(roomId);
+  if (disposed) return status;
+  final remaining = status.resetAt.difference(status.serverNow);
+  timer = Timer(
+    remaining.isNegative ? const Duration(seconds: 1) : remaining,
+    ref.invalidateSelf,
+  );
+  return status;
+});

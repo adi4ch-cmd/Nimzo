@@ -14,9 +14,8 @@ class AuthService {
     final response = await _auth.signInWithOAuth(
       provider,
       redirectTo: kIsWeb ? null : AppConstants.oauthRedirect,
-      authScreenLaunchMode: kIsWeb
-          ? LaunchMode.platformDefault
-          : LaunchMode.externalApplication,
+      authScreenLaunchMode:
+          kIsWeb ? LaunchMode.platformDefault : LaunchMode.externalApplication,
     );
     if (!response) throw const AuthException('Unable to start OAuth sign-in.');
   }
@@ -25,10 +24,10 @@ class AuthService {
       _auth.signInWithPassword(email: email, password: password);
 
   Future<AuthResponse> signUp(String email, String password) => _auth.signUp(
-    email: email,
-    password: password,
-    emailRedirectTo: AppConstants.oauthRedirect,
-  );
+        email: email,
+        password: password,
+        emailRedirectTo: AppConstants.oauthRedirect,
+      );
 
   Future<void> signOut() async {
     final uid = _auth.currentUser?.id;
@@ -50,9 +49,9 @@ class AuthService {
   }
 
   Future<void> resetPassword(String email) => _auth.resetPasswordForEmail(
-    email,
-    redirectTo: AppConstants.oauthRedirect,
-  );
+        email,
+        redirectTo: AppConstants.oauthRedirect,
+      );
   Future<void> resendVerification(String email) =>
       _auth.resend(type: OtpType.signup, email: email);
   Future<UserResponse> refreshUser() async {

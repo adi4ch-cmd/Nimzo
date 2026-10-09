@@ -21,15 +21,15 @@ void main() {
     final event = voice.speaking.first;
     await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .handlePlatformMessage(
-          'nimzo/vivox',
-          const StandardMethodCodec().encodeMethodCall(
-            const MethodCall('speaking', {
-              'detail': 'sip:.issuer.$id.@voice.example',
-              'status': 0,
-            }),
-          ),
-          (_) {},
-        );
+      'nimzo/vivox',
+      const StandardMethodCodec().encodeMethodCall(
+        const MethodCall('speaking', {
+          'detail': 'sip:.issuer.$id.@voice.example',
+          'status': 0,
+        }),
+      ),
+      (_) {},
+    );
     expect(await event, {id});
     await voice.dispose();
   });
@@ -40,12 +40,12 @@ void main() {
   }) async {
     await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .handlePlatformMessage(
-          'nimzo/vivox',
-          const StandardMethodCodec().encodeMethodCall(
-            MethodCall(event, {'status': status, 'detail': detail}),
-          ),
-          (_) {},
-        );
+      'nimzo/vivox',
+      const StandardMethodCodec().encodeMethodCall(
+        MethodCall(event, {'status': status, 'detail': detail}),
+      ),
+      (_) {},
+    );
   }
 
   const credentials = {
@@ -66,15 +66,15 @@ void main() {
       final subscription = voice.speaking.listen(states.add);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            if (call.method == 'initialize') initializations++;
-            if (call.method == 'join') await emit('audioConnected');
-            if (call.method == 'shutdown' && ++shutdowns == 1) {
-              throw PlatformException(code: 'VIVOX_NATIVE');
-            }
-            return ['initialize', 'requestMicPermission'].contains(call.method)
-                ? true
-                : 0;
-          });
+        if (call.method == 'initialize') initializations++;
+        if (call.method == 'join') await emit('audioConnected');
+        if (call.method == 'shutdown' && ++shutdowns == 1) {
+          throw PlatformException(code: 'VIVOX_NATIVE');
+        }
+        return ['initialize', 'requestMicPermission'].contains(call.method)
+            ? true
+            : 0;
+      });
       await voice.join('room', '');
       await emit(
         'speaking',
@@ -99,19 +99,21 @@ void main() {
     Map? login;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-          if (call.method == 'join') {
-            login = call.arguments as Map;
-            await emit('audioConnected');
-          }
-          return ['initialize', 'requestMicPermission'].contains(call.method)
-              ? true
-              : 0;
-        });
+      if (call.method == 'join') {
+        login = call.arguments as Map;
+        await emit('audioConnected');
+      }
+      return ['initialize', 'requestMicPermission'].contains(call.method)
+          ? true
+          : 0;
+    });
     await voice.join('room', '');
     expect(login?['accountName'], '.issuer.user.');
     await voice.dispose();
   });
-  test('missing server configuration is actionable and does not start native login', () async {
+  test(
+      'missing server configuration is actionable and does not start native login',
+      () async {
     final methods = <String>[];
     final voice = VivoxVoiceService(
       tokenIssuer: (_) async => throw const FunctionException(
@@ -121,9 +123,9 @@ void main() {
     );
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-          methods.add(call.method);
-          return true;
-        });
+      methods.add(call.method);
+      return true;
+    });
     await expectLater(
       voice.join('room', ''),
       throwsA(
@@ -144,17 +146,17 @@ void main() {
         final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
             .setMockMethodCallHandler(channel, (call) async {
-              if (call.method == 'join') {
-                await emit('error', status: 401, detail: stage);
-                return 401;
-              }
-              return [
-                    'initialize',
-                    'requestMicPermission',
-                  ].contains(call.method)
-                  ? true
-                  : 0;
-            });
+          if (call.method == 'join') {
+            await emit('error', status: 401, detail: stage);
+            return 401;
+          }
+          return [
+            'initialize',
+            'requestMicPermission',
+          ].contains(call.method)
+              ? true
+              : 0;
+        });
         await expectLater(
           voice.join('room', ''),
           throwsA(
@@ -175,27 +177,28 @@ void main() {
     'join',
     'setMic',
   ]) {
-    test('platform $stage failure is sanitized and identifies the method', () async {
+    test('platform $stage failure is sanitized and identifies the method',
+        () async {
       final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
       final methods = <String>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            methods.add(call.method);
-            if (call.method == stage) {
-              throw PlatformException(
-                code: 'VIVOX_NATIVE',
-                message: 'secret-token',
-                details: {
-                  'type': 'UnsatisfiedLinkError',
-                  'payload': 'secret-token',
-                },
-              );
-            }
-            if (call.method == 'join') await emit('audioConnected');
-            return ['initialize', 'requestMicPermission'].contains(call.method)
-                ? true
-                : 0;
-          });
+        methods.add(call.method);
+        if (call.method == stage) {
+          throw PlatformException(
+            code: 'VIVOX_NATIVE',
+            message: 'secret-token',
+            details: {
+              'type': 'UnsatisfiedLinkError',
+              'payload': 'secret-token',
+            },
+          );
+        }
+        if (call.method == 'join') await emit('audioConnected');
+        return ['initialize', 'requestMicPermission'].contains(call.method)
+            ? true
+            : 0;
+      });
       await expectLater(
         voice.join('room', ''),
         throwsA(
@@ -216,15 +219,15 @@ void main() {
       final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            if (call.method == 'initialize') {
-              throw PlatformException(
-                code: 'VIVOX_NATIVE',
-                message: 'secret-token',
-                details: {'type': 'NoSuchMethodError'},
-              );
-            }
-            return call.method == 'requestMicPermission' ? true : 0;
-          });
+        if (call.method == 'initialize') {
+          throw PlatformException(
+            code: 'VIVOX_NATIVE',
+            message: 'secret-token',
+            details: {'type': 'NoSuchMethodError'},
+          );
+        }
+        return call.method == 'requestMicPermission' ? true : 0;
+      });
       await expectLater(
         voice.join('room', ''),
         throwsA(
@@ -244,12 +247,12 @@ void main() {
       final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            throw PlatformException(
-              code: 'secret-token',
-              message: 'secret-token',
-              details: {'type': 'secret-token'},
-            );
-          });
+        throw PlatformException(
+          code: 'secret-token',
+          message: 'secret-token',
+          details: {'type': 'secret-token'},
+        );
+      });
       await expectLater(
         voice.join('room', ''),
         throwsA(
@@ -272,14 +275,14 @@ void main() {
       );
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            if (call.method == 'join') {
-              await Future<void>.delayed(const Duration(milliseconds: 40));
-              await emit('audioConnected');
-            }
-            return ['initialize', 'requestMicPermission'].contains(call.method)
-                ? true
-                : 0;
-          });
+        if (call.method == 'join') {
+          await Future<void>.delayed(const Duration(milliseconds: 40));
+          await emit('audioConnected');
+        }
+        return ['initialize', 'requestMicPermission'].contains(call.method)
+            ? true
+            : 0;
+      });
       await voice.join('room', '');
       await voice.dispose();
     },
@@ -293,11 +296,11 @@ void main() {
       );
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            if (call.method == 'join') await emit('audioDisconnected');
-            return ['initialize', 'requestMicPermission'].contains(call.method)
-                ? true
-                : 0;
-          });
+        if (call.method == 'join') await emit('audioDisconnected');
+        return ['initialize', 'requestMicPermission'].contains(call.method)
+            ? true
+            : 0;
+      });
       await expectLater(voice.join('room', ''), throwsStateError);
       await voice.dispose();
     },
@@ -306,12 +309,12 @@ void main() {
     final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-          if (call.method == 'initialize') {
-            await emit('error', status: 401);
-            return false;
-          }
-          return call.method == 'requestMicPermission' ? true : 0;
-        });
+      if (call.method == 'initialize') {
+        await emit('error', status: 401);
+        return false;
+      }
+      return call.method == 'requestMicPermission' ? true : 0;
+    });
     await expectLater(
       voice.join('room', ''),
       throwsA(
@@ -331,12 +334,12 @@ void main() {
       final methods = <String>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            methods.add(call.method);
-            if (call.method == 'join') await emit('audioConnected');
-            return ['initialize', 'requestMicPermission'].contains(call.method)
-                ? true
-                : 0;
-          });
+        methods.add(call.method);
+        if (call.method == 'join') await emit('audioConnected');
+        return ['initialize', 'requestMicPermission'].contains(call.method)
+            ? true
+            : 0;
+      });
       await voice.join('room', '');
       await voice.leave();
       await voice.join('room', '');
@@ -352,12 +355,12 @@ void main() {
       final methods = <String>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            methods.add(call.method);
-            return call.method == 'initialize' ||
-                    call.method == 'requestMicPermission'
-                ? true
-                : 0;
-          });
+        methods.add(call.method);
+        return call.method == 'initialize' ||
+                call.method == 'requestMicPermission'
+            ? true
+            : 0;
+      });
       var completed = false;
       final joined = voice.join('room', '').then((_) => completed = true);
       await Future<void>.delayed(Duration.zero);
@@ -374,14 +377,14 @@ void main() {
     final methods = <String>[];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-          methods.add(call.method);
-          if (call.method == 'join') await emit('audioConnected');
-          if (call.method == 'setMic') return 17;
-          return call.method == 'initialize' ||
-                  call.method == 'requestMicPermission'
-              ? true
-              : 0;
-        });
+      methods.add(call.method);
+      if (call.method == 'join') await emit('audioConnected');
+      if (call.method == 'setMic') return 17;
+      return call.method == 'initialize' ||
+              call.method == 'requestMicPermission'
+          ? true
+          : 0;
+    });
     await expectLater(voice.join('room', ''), throwsStateError);
     expect(methods, contains('leave'));
     expect(methods.last, 'shutdown');
@@ -394,12 +397,12 @@ void main() {
       final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            if (call.method == 'join') await emit('audioConnected');
-            if (call.method == 'setMic') await emit('audioDisconnected');
-            return ['initialize', 'requestMicPermission'].contains(call.method)
-                ? true
-                : 0;
-          });
+        if (call.method == 'join') await emit('audioConnected');
+        if (call.method == 'setMic') await emit('audioDisconnected');
+        return ['initialize', 'requestMicPermission'].contains(call.method)
+            ? true
+            : 0;
+      });
       await expectLater(voice.join('room', ''), throwsStateError);
       await voice.dispose();
     },
@@ -411,15 +414,15 @@ void main() {
     final subscription = voice.speaking.listen(states.add);
     await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .handlePlatformMessage(
-          'nimzo/vivox',
-          const StandardMethodCodec().encodeMethodCall(
-            const MethodCall('speaking', {
-              'detail': 'sip:.issuer.$id.@voice.example',
-              'status': 0,
-            }),
-          ),
-          (_) {},
-        );
+      'nimzo/vivox',
+      const StandardMethodCodec().encodeMethodCall(
+        const MethodCall('speaking', {
+          'detail': 'sip:.issuer.$id.@voice.example',
+          'status': 0,
+        }),
+      ),
+      (_) {},
+    );
     await emit('error', status: 500);
     await Future<void>.delayed(Duration.zero);
     expect(states, [
@@ -434,13 +437,13 @@ void main() {
     final methods = <String>[];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-          methods.add(call.method);
-          if (call.method == 'join') await emit('error', status: 403);
-          return call.method == 'initialize' ||
-                  call.method == 'requestMicPermission'
-              ? true
-              : 0;
-        });
+      methods.add(call.method);
+      if (call.method == 'join') await emit('error', status: 403);
+      return call.method == 'initialize' ||
+              call.method == 'requestMicPermission'
+          ? true
+          : 0;
+    });
     await expectLater(voice.join('room', ''), throwsStateError);
     expect(methods, contains('leave'));
     expect(methods.last, 'shutdown');
@@ -452,13 +455,12 @@ void main() {
       final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
-            channel,
-            (call) async =>
-                call.method == 'initialize' ||
-                    call.method == 'requestMicPermission'
+        channel,
+        (call) async =>
+            call.method == 'initialize' || call.method == 'requestMicPermission'
                 ? true
                 : 0,
-          );
+      );
       final joined = voice.join('room', '');
       final cancelled = expectLater(joined, throwsStateError);
       await Future<void>.delayed(Duration.zero);
@@ -474,16 +476,16 @@ void main() {
     var permissionRequests = 0;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-          if (call.method == 'join') await emit('audioConnected');
-          if (call.method == 'setMic')
-            enabledRequests.add((call.arguments as Map)['enabled'] as bool);
-          if (call.method == 'requestMicPermission')
-            return ++permissionRequests == 1;
-          return call.method == 'initialize' ||
-                  call.method == 'requestMicPermission'
-              ? true
-              : 0;
-        });
+      if (call.method == 'join') await emit('audioConnected');
+      if (call.method == 'setMic')
+        enabledRequests.add((call.arguments as Map)['enabled'] as bool);
+      if (call.method == 'requestMicPermission')
+        return ++permissionRequests == 1;
+      return call.method == 'initialize' ||
+              call.method == 'requestMicPermission'
+          ? true
+          : 0;
+    });
     await voice.join('room', '');
     await expectLater(voice.setMicEnabled(true), throwsStateError);
     expect(enabledRequests, [false]);
@@ -502,17 +504,17 @@ void main() {
       final mic = <bool>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            if (call.method == 'join') {
-              joins++;
-              await emit('audioConnected');
-            }
-            if (call.method == 'setMic')
-              mic.add((call.arguments as Map)['enabled'] as bool);
-            return call.method == 'initialize' ||
-                    call.method == 'requestMicPermission'
-                ? true
-                : 0;
-          });
+        if (call.method == 'join') {
+          joins++;
+          await emit('audioConnected');
+        }
+        if (call.method == 'setMic')
+          mic.add((call.arguments as Map)['enabled'] as bool);
+        return call.method == 'initialize' ||
+                call.method == 'requestMicPermission'
+            ? true
+            : 0;
+      });
       await voice.join('room', '');
       await voice.setMicEnabled(true);
       expect(joins, 2);
@@ -539,14 +541,14 @@ void main() {
       final mic = <bool>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-            if (call.method == 'join') await emit('audioConnected');
-            if (call.method == 'setMic')
-              mic.add((call.arguments as Map)['enabled'] as bool);
-            return call.method == 'initialize' ||
-                    call.method == 'requestMicPermission'
-                ? true
-                : 0;
-          });
+        if (call.method == 'join') await emit('audioConnected');
+        if (call.method == 'setMic')
+          mic.add((call.arguments as Map)['enabled'] as bool);
+        return call.method == 'initialize' ||
+                call.method == 'requestMicPermission'
+            ? true
+            : 0;
+      });
       await voice.join('room', '');
       await expectLater(voice.setMicEnabled(true), throwsStateError);
       expect(mic, [false]);

@@ -26,46 +26,46 @@ class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: const Text('Wallet')),
-    body: ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        AsyncContent(
-          value: ref.watch(walletProvider),
-          onRetry: () => ref.invalidate(walletProvider),
-          builder: (w) => Container(
-            padding: const EdgeInsets.all(20),
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              gradient: NimzoStyle.gradient,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Coins', style: TextStyle(color: Colors.white)),
-                Text(
-                  referenceNumber(w.coins),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w700,
-                  ),
+        appBar: AppBar(title: const Text('Wallet')),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            AsyncContent(
+              value: ref.watch(walletProvider),
+              onRetry: () => ref.invalidate(walletProvider),
+              builder: (w) => Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  gradient: NimzoStyle.gradient,
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                Text(
-                  '${w.diamonds} diamonds',
-                  style: const TextStyle(color: Colors.white),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Coins', style: TextStyle(color: Colors.white)),
+                    Text(
+                      referenceNumber(w.coins),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      '${w.diamonds} diamonds',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+            const ReferenceCard(child: Text('1 USD = 500,000 coins')),
+            GradientButton(
+              onPressed: () => context.push('/recharge'),
+              child: const Text('Recharge'),
+            ),
+          ],
         ),
-        const ReferenceCard(child: Text('1 USD = 500,000 coins')),
-        GradientButton(
-          onPressed: () => context.push('/recharge'),
-          child: const Text('Recharge'),
-        ),
-      ],
-    ),
-  );
+      );
 }

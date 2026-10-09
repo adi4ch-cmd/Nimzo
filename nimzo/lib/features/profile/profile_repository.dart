@@ -171,20 +171,20 @@ final profileTagsProvider = FutureProvider.family<List<String>, String>(
 );
 final profileCoupleProvider =
     FutureProvider.family<Map<String, dynamic>?, String>(
-      (ref, id) => ref.watch(profileRepositoryProvider).couple(id),
-    );
+  (ref, id) => ref.watch(profileRepositoryProvider).couple(id),
+);
 final profileModelsProvider =
     FutureProvider.family<List<Map<String, dynamic>>, String>(
-      (ref, id) => ref.watch(profileRepositoryProvider).models(id),
-    );
+  (ref, id) => ref.watch(profileRepositoryProvider).models(id),
+);
 
 final profileMomentsProvider = FutureProvider.family<List<Moment>, String>(
   (ref, id) => ref.watch(momentRepositoryProvider).byAuthor(id),
 );
 final profileGiftsProvider =
     FutureProvider.family<List<Map<String, dynamic>>, String>(
-      (ref, id) => ref.watch(profileRepositoryProvider).gifts(id),
-    );
+  (ref, id) => ref.watch(profileRepositoryProvider).gifts(id),
+);
 final profileAchievementsProvider = FutureProvider.family<List<String>, String>(
   (ref, id) => ref.watch(profileRepositoryProvider).achievements(id),
 );

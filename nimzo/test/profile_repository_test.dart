@@ -26,13 +26,15 @@ Future<SupabaseClient> signedClient(
   );
   final exp =
       DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/
-      1000;
+          1000;
   String encode(Object value) =>
       base64Url.encode(utf8.encode(jsonEncode(value))).replaceAll('=', '');
   await db.auth.recoverSession(
     jsonEncode({
-      'access_token':
-          '${encode({'alg': 'HS256', 'typ': 'JWT'})}.${encode({'sub': 'me', 'exp': exp})}.test-signature',
+      'access_token': '${encode({'alg': 'HS256', 'typ': 'JWT'})}.${encode({
+            'sub': 'me',
+            'exp': exp
+          })}.test-signature',
       'refresh_token': 'test-refresh',
       'token_type': 'bearer',
       'expires_at': exp,
@@ -180,7 +182,9 @@ void main() {
     );
   });
 
-  test('profile gift forwards recipient and stable key without room or client price', () async {
+  test(
+      'profile gift forwards recipient and stable key without room or client price',
+      () async {
     final db = await signedClient((request) {
       expect(request.url.path, '/rest/v1/rpc/send_profile_gift');
       expect(jsonDecode(request.body), {

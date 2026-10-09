@@ -16,27 +16,29 @@ class MessagesScreen extends ConsumerWidget {
   const MessagesScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: const GradientText('Messages')),
-    body: RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(conversationsProvider);
-        await ref.read(conversationsProvider.future);
-      },
-      child: ListView(
-        children: [
-          AsyncContent(
-            value: ref.watch(conversationsProvider),
-            onRetry: () => ref.invalidate(conversationsProvider),
-            builder: (rows) => rows.isEmpty
-                ? const EmptyContent('No conversations yet')
-                : Column(
-                    children: [for (final r in rows) ConversationTile(row: r)],
-                  ),
+        appBar: AppBar(title: const GradientText('Messages')),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(conversationsProvider);
+            await ref.read(conversationsProvider.future);
+          },
+          child: ListView(
+            children: [
+              AsyncContent(
+                value: ref.watch(conversationsProvider),
+                onRetry: () => ref.invalidate(conversationsProvider),
+                builder: (rows) => rows.isEmpty
+                    ? const EmptyContent('No conversations yet')
+                    : Column(
+                        children: [
+                          for (final r in rows) ConversationTile(row: r)
+                        ],
+                      ),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }
 
 class ConversationTile extends ConsumerWidget {
@@ -47,8 +49,7 @@ class ConversationTile extends ConsumerWidget {
     final id = row['other_id']?.toString();
     if (id == null || id.isEmpty) return const SizedBox.shrink();
     final profile = ref.watch(profileProvider(id)).valueOrNull;
-    final name =
-        profile?.displayName ??
+    final name = profile?.displayName ??
         profile?.username ??
         row['display_name']?.toString() ??
         row['username']?.toString() ??
@@ -60,10 +61,10 @@ class ConversationTile extends ConsumerWidget {
         url: profile?.avatarPath == null
             ? null
             : ref
-                  .watch(supabaseProvider)
-                  .storage
-                  .from('avatars')
-                  .getPublicUrl(profile!.avatarPath!),
+                .watch(supabaseProvider)
+                .storage
+                .from('avatars')
+                .getPublicUrl(profile!.avatarPath!),
       ),
       title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: Text(
@@ -204,10 +205,10 @@ class _State extends ConsumerState<ConversationScreen> {
                 url: avatar == null
                     ? null
                     : ref
-                          .watch(supabaseProvider)
-                          .storage
-                          .from('avatars')
-                          .getPublicUrl(avatar),
+                        .watch(supabaseProvider)
+                        .storage
+                        .from('avatars')
+                        .getPublicUrl(avatar),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -248,9 +249,8 @@ class _State extends ConsumerState<ConversationScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: m.senderId == me ? null : NimzoStyle.surface,
-                            gradient: m.senderId == me
-                                ? NimzoStyle.gradient
-                                : null,
+                            gradient:
+                                m.senderId == me ? NimzoStyle.gradient : null,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(

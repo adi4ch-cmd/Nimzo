@@ -17,36 +17,35 @@ class EquippedRoyalMedal extends ConsumerWidget {
   final String userId;
   const EquippedRoyalMedal({super.key, required this.userId});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => ref
-      .watch(equippedRoyalMedalProvider(userId))
-      .maybeWhen(
-        data: (item) => item == null
-            ? const SizedBox.shrink()
-            : Tooltip(
-                message: 'Equipped: ${item.name}',
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8, bottom: 6),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        item.image,
-                        width: 37,
-                        height: 37,
-                        fit: BoxFit.contain,
+  Widget build(BuildContext context, WidgetRef ref) =>
+      ref.watch(equippedRoyalMedalProvider(userId)).maybeWhen(
+            data: (item) => item == null
+                ? const SizedBox.shrink()
+                : Tooltip(
+                    message: 'Equipped: ${item.name}',
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8, bottom: 6),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            item.image,
+                            width: 37,
+                            height: 37,
+                            fit: BoxFit.contain,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            item.name,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        item.name,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-        orElse: () => const SizedBox.shrink(),
-      );
+            orElse: () => const SizedBox.shrink(),
+          );
 }

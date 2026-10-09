@@ -76,10 +76,10 @@ class MeScreen extends ConsumerWidget {
                             url: p.avatarPath == null
                                 ? null
                                 : ref
-                                      .read(supabaseProvider)
-                                      .storage
-                                      .from('avatars')
-                                      .getPublicUrl(p.avatarPath!),
+                                    .read(supabaseProvider)
+                                    .storage
+                                    .from('avatars')
+                                    .getPublicUrl(p.avatarPath!),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -97,8 +97,7 @@ class MeScreen extends ConsumerWidget {
                                   ),
                                   PhoenixNameplate(
                                     userId: id,
-                                    name:
-                                        p.displayName ??
+                                    name: p.displayName ??
                                         p.username ??
                                         'Nimzo user',
                                     style: const TextStyle(
@@ -310,67 +309,66 @@ class _MenuRow extends StatelessWidget {
   const _MenuRow({required this.items});
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
-    margin: const EdgeInsets.only(bottom: 10),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x147828c8),
-          offset: Offset(0, 2),
-          blurRadius: 10,
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x147828c8),
+              offset: Offset(0, 2),
+              blurRadius: 10,
+            ),
+          ],
         ),
-      ],
-    ),
-    child: Row(
-      children: [
-        for (final item in items)
-          Expanded(
-            child: InkWell(
-              onTap: () => context.push(item.$3),
-              child: Column(
-                children: [
-                  Container(
-                    width: 54,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      color:
-                          (item.$1 == 'Ranking' || item.$1 == 'VIP'
+        child: Row(
+          children: [
+            for (final item in items)
+              Expanded(
+                child: InkWell(
+                  onTap: () => context.push(item.$3),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 54,
+                        height: 54,
+                        decoration: BoxDecoration(
+                          color: (item.$1 == 'Ranking' || item.$1 == 'VIP'
                                   ? const Color(0xfff59e0b)
                                   : item.$1 == 'Task' ||
-                                        item.$1 == 'CP Zone' ||
-                                        item.$1 == 'About'
-                                  ? NimzoStyle.pink
-                                  : NimzoStyle.primary)
+                                          item.$1 == 'CP Zone' ||
+                                          item.$1 == 'About'
+                                      ? NimzoStyle.pink
+                                      : NimzoStyle.primary)
                               .withValues(alpha: .12),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ReferenceIcon(
-                      item.$2,
-                      size: 22,
-                      color: item.$1 == 'Ranking' || item.$1 == 'VIP'
-                          ? const Color(0xfff59e0b)
-                          : item.$1 == 'Task' ||
-                                item.$1 == 'CP Zone' ||
-                                item.$1 == 'About'
-                          ? NimzoStyle.pink
-                          : NimzoStyle.primary,
-                    ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: ReferenceIcon(
+                          item.$2,
+                          size: 22,
+                          color: item.$1 == 'Ranking' || item.$1 == 'VIP'
+                              ? const Color(0xfff59e0b)
+                              : item.$1 == 'Task' ||
+                                      item.$1 == 'CP Zone' ||
+                                      item.$1 == 'About'
+                                  ? NimzoStyle.pink
+                                  : NimzoStyle.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        item.$1,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    item.$1,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-      ],
-    ),
-  );
+          ],
+        ),
+      );
 }
 
 class _FeatureBanner extends StatelessWidget {
@@ -385,38 +383,40 @@ class _FeatureBanner extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 10),
-    child: Material(
-      borderRadius: BorderRadius.circular(14),
-      child: Ink(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(colors: colors),
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Material(
           borderRadius: BorderRadius.circular(14),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                  ),
+          child: Ink(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: colors),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(14),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                          color: NimzoStyle.muted, fontSize: 12),
+                    ),
+                  ],
                 ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(color: NimzoStyle.muted, fontSize: 12),
-                ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
-    ),
-  );
+      );
 }

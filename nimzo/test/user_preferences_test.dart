@@ -42,9 +42,8 @@ void main() {
         );
         addTearDown(c.dispose);
         await c.read(userPreferencesProvider.future);
-        final saving = c
-            .read(userPreferencesProvider.notifier)
-            .change(gifts: false);
+        final saving =
+            c.read(userPreferencesProvider.notifier).change(gifts: false);
         await c.read(userPreferencesProvider.notifier).change(messages: false);
         expect(repo.saves, 1);
         if (fail) {
@@ -91,9 +90,8 @@ void main() {
       );
       addTearDown(c.dispose);
       await c.read(userPreferencesProvider.future);
-      final saving = c
-          .read(userPreferencesProvider.notifier)
-          .change(gifts: false);
+      final saving =
+          c.read(userPreferencesProvider.notifier).change(gifts: false);
       c.read(identity.notifier).state = true;
       await c.read(userPreferencesProvider.future);
       first.pending.complete(

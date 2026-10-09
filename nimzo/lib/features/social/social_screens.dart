@@ -11,32 +11,32 @@ import 'social_repositories.dart';
 
 final socialListProvider =
     FutureProvider.family<List<Profile>, (String, String)>((ref, args) async {
-      final db = ref.watch(sessionSupabaseProvider).client;
-      final visitors = args.$1 == 'visitors';
-      final following = args.$1 == 'following';
-      final column = visitors
-          ? 'visitor_id'
-          : following
+  final db = ref.watch(sessionSupabaseProvider).client;
+  final visitors = args.$1 == 'visitors';
+  final following = args.$1 == 'following';
+  final column = visitors
+      ? 'visitor_id'
+      : following
           ? 'followee_id'
           : 'follower_id';
-      final rows = await db
-          .from(visitors ? 'visitors' : 'follows')
-          .select(column)
-          .eq(
-            visitors
-                ? 'profile_id'
-                : following
+  final rows = await db
+      .from(visitors ? 'visitors' : 'follows')
+      .select(column)
+      .eq(
+        visitors
+            ? 'profile_id'
+            : following
                 ? 'follower_id'
                 : 'followee_id',
-            args.$2,
-          )
-          .limit(50);
-      final ids = rows.map((r) => r[column] as String).toList();
-      if (ids.isEmpty) return [];
-      return (await db.from('profiles').select().inFilter('id', ids))
-          .map(Profile.fromJson)
-          .toList();
-    });
+        args.$2,
+      )
+      .limit(50);
+  final ids = rows.map((r) => r[column] as String).toList();
+  if (ids.isEmpty) return [];
+  return (await db.from('profiles').select().inFilter('id', ids))
+      .map(Profile.fromJson)
+      .toList();
+});
 
 final visitorTimesProvider = FutureProvider<Map<String, DateTime>>((ref) async {
   final rows = await ref.watch(visitorRepositoryProvider).mine();
@@ -61,44 +61,45 @@ class SocialListScreen extends ConsumerWidget {
   const SocialListScreen({super.key, required this.kind, required this.userId});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: Text('${kind[0].toUpperCase()}${kind.substring(1)}')),
-    body: ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      children: [
-        AsyncContent(
-          value: ref.watch(socialListProvider((kind, userId))),
-          onRetry: () => ref.invalidate(socialListProvider((kind, userId))),
-          builder: (rows) => rows.isEmpty
-              ? const EmptyContent('No users yet')
-              : Column(
-                  children: [
-                    for (final p in rows)
-                      ListTile(
-                        leading: NimzoAvatar(
-                          name: p.displayName ?? 'N',
-                          url: p.avatarPath == null
-                              ? null
-                              : ref
-                                    .watch(supabaseProvider)
-                                    .storage
-                                    .from('avatars')
-                                    .getPublicUrl(p.avatarPath!),
-                        ),
-                        title: Text(
-                          p.displayName ?? p.username ?? 'Nimzo user',
-                        ),
-                        subtitle: Text(
-                          'ID:${p.nimzoId}${kind == 'visitors' && userId == ref.watch(currentUserIdProvider) && ref.watch(visitorTimesProvider).valueOrNull?[p.id] != null ? ' · ${visitLabel(ref.watch(visitorTimesProvider).valueOrNull![p.id]!)}' : ''}',
-                        ),
-                        trailing: ReferenceFollowButton(userId: p.id),
-                        onTap: () => context.push('/profile/${p.id}'),
-                      ),
-                  ],
-                ),
+        appBar:
+            AppBar(title: Text('${kind[0].toUpperCase()}${kind.substring(1)}')),
+        body: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          children: [
+            AsyncContent(
+              value: ref.watch(socialListProvider((kind, userId))),
+              onRetry: () => ref.invalidate(socialListProvider((kind, userId))),
+              builder: (rows) => rows.isEmpty
+                  ? const EmptyContent('No users yet')
+                  : Column(
+                      children: [
+                        for (final p in rows)
+                          ListTile(
+                            leading: NimzoAvatar(
+                              name: p.displayName ?? 'N',
+                              url: p.avatarPath == null
+                                  ? null
+                                  : ref
+                                      .watch(supabaseProvider)
+                                      .storage
+                                      .from('avatars')
+                                      .getPublicUrl(p.avatarPath!),
+                            ),
+                            title: Text(
+                              p.displayName ?? p.username ?? 'Nimzo user',
+                            ),
+                            subtitle: Text(
+                              'ID:${p.nimzoId}${kind == 'visitors' && userId == ref.watch(currentUserIdProvider) && ref.watch(visitorTimesProvider).valueOrNull?[p.id] != null ? ' · ${visitLabel(ref.watch(visitorTimesProvider).valueOrNull![p.id]!)}' : ''}',
+                            ),
+                            trailing: ReferenceFollowButton(userId: p.id),
+                            onTap: () => context.push('/profile/${p.id}'),
+                          ),
+                      ],
+                    ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }
 
 final coupleRequestsProvider = FutureProvider<List<Map<String, dynamic>>>(
@@ -159,9 +160,8 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
             controller: query,
             decoration: const InputDecoration(labelText: 'Nimzo ID or name'),
             onSubmitted: (_) => run(() async {
-              final rows = await ref
-                  .read(profileRepositoryProvider)
-                  .search(query.text);
+              final rows =
+                  await ref.read(profileRepositoryProvider).search(query.text);
               if (mounted)
                 setState(
                   () => candidates = rows.where((p) => p.id != me).toList(),
@@ -176,12 +176,12 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
                 onPressed: busy
                     ? null
                     : () => run(() async {
-                        await db.from('couple_requests').insert({
-                          'requester_id': me,
-                          'addressee_id': p.id,
-                        });
-                        if (mounted) setState(() => candidates = []);
-                      }),
+                          await db.from('couple_requests').insert({
+                            'requester_id': me,
+                            'addressee_id': p.id,
+                          });
+                          if (mounted) setState(() => candidates = []);
+                        }),
                 child: const Text('Invite'),
               ),
             ),
@@ -214,20 +214,20 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
                                             onPressed: busy
                                                 ? null
                                                 : () => run(() async {
-                                                    await db.rpc(
-                                                      'respond_couple_request',
-                                                      params: {
-                                                        'p_request': r['id'],
-                                                        'p_accept': accept,
-                                                      },
-                                                    );
-                                                    if (me != null)
-                                                      ref.invalidate(
-                                                        profileCoupleProvider(
-                                                          me,
-                                                        ),
+                                                      await db.rpc(
+                                                        'respond_couple_request',
+                                                        params: {
+                                                          'p_request': r['id'],
+                                                          'p_accept': accept,
+                                                        },
                                                       );
-                                                  }),
+                                                      if (me != null)
+                                                        ref.invalidate(
+                                                          profileCoupleProvider(
+                                                            me,
+                                                          ),
+                                                        );
+                                                    }),
                                             child: Text(
                                               accept ? 'Accept' : 'Decline',
                                             ),
@@ -239,11 +239,11 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
                                       onPressed: busy
                                           ? null
                                           : () => run(() async {
-                                              await db
-                                                  .from('couple_requests')
-                                                  .delete()
-                                                  .eq('id', r['id']);
-                                            }),
+                                                await db
+                                                    .from('couple_requests')
+                                                    .delete()
+                                                    .eq('id', r['id']);
+                                              }),
                                       child: const Text('Cancel invitation'),
                                     ),
                                 ],

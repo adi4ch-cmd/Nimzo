@@ -99,13 +99,13 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
   }
 
   Widget artwork(String path) => Image.asset(
-    path,
-    width: 66,
-    height: 66,
-    fit: BoxFit.contain,
-    errorBuilder: (_, __, ___) =>
-        const Icon(Icons.image_not_supported_outlined, size: 46),
-  );
+        path,
+        width: 66,
+        height: 66,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) =>
+            const Icon(Icons.image_not_supported_outlined, size: 46),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -138,9 +138,7 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                       ),
                     ],
                   ),
-                  ref
-                      .watch(walletProvider)
-                      .when(
+                  ref.watch(walletProvider).when(
                         data: (balance) => Text(
                           '${compactNumber(balance.coins)} coins available',
                           style: const TextStyle(
@@ -171,9 +169,7 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                   ),
                   const SizedBox(height: 18),
                   if (!bag)
-                    ref
-                        .watch(royalCatalogProvider)
-                        .when(
+                    ref.watch(royalCatalogProvider).when(
                           loading: () =>
                               const Center(child: CircularProgressIndicator()),
                           error: (e, _) => _error(
@@ -198,9 +194,8 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                                       return const Center(
                                         child: CircularProgressIndicator(),
                                       );
-                                    final owned = snapshot.data!
-                                        .map((x) => x.id)
-                                        .toSet();
+                                    final owned =
+                                        snapshot.data!.map((x) => x.id).toSet();
                                     return _grid([
                                       for (final item in items)
                                         _card(
@@ -220,9 +215,7 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                                 ),
                         )
                   else
-                    ref
-                        .watch(royalBagProvider(id))
-                        .when(
+                    ref.watch(royalBagProvider(id)).when(
                           loading: () =>
                               const Center(child: CircularProgressIndicator()),
                           error: (e, _) => _error(
@@ -255,26 +248,26 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
   }
 
   Widget _error(Object error, VoidCallback retry) => Column(
-    children: [
-      Text('Store data unavailable: $error'),
-      TextButton(onPressed: retry, child: const Text('Retry')),
-    ],
-  );
+        children: [
+          Text('Store data unavailable: $error'),
+          TextButton(onPressed: retry, child: const Text('Retry')),
+        ],
+      );
 
   Widget _grid(List<Widget> cards) => LayoutBuilder(
-    builder: (context, constraints) {
-      final columns = constraints.maxWidth >= 650 ? 3 : 2;
-      return GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: columns,
-        childAspectRatio: .77,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        children: cards,
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth >= 650 ? 3 : 2;
+          return GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: columns,
+            childAspectRatio: .77,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            children: cards,
+          );
+        },
       );
-    },
-  );
 
   Widget _card(
     String name,
@@ -282,38 +275,40 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
     String detail,
     String action,
     VoidCallback? onTap,
-  ) => Container(
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: Theme.of(context).cardColor,
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: const Color(0xffd8b36b)),
-    ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(child: Center(child: artwork(image))),
-        Text(
-          name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w700),
+  ) =>
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xffd8b36b)),
         ),
-        Text(
-          detail,
-          maxLines: 2,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 11),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(child: Center(child: artwork(image))),
+            Text(
+              name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            Text(
+              detail,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 11),
+            ),
+            const SizedBox(height: 4),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: onTap,
+                child:
+                    Text(busy != null && onTap != null ? 'Working…' : action),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 4),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: onTap,
-            child: Text(busy != null && onTap != null ? 'Working…' : action),
-          ),
-        ),
-      ],
-    ),
-  );
+      );
 }

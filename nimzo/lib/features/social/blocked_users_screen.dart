@@ -13,15 +13,16 @@ class BlockedUsersScreen extends ConsumerWidget {
   const BlockedUsersScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: const Text('Blocked users')),
-    body: AsyncContent(
-      value: ref.watch(blockedUserIdsProvider),
-      onRetry: () => ref.invalidate(blockedUserIdsProvider),
-      builder: (ids) => ids.isEmpty
-          ? const EmptyContent('No blocked users.')
-          : ListView(children: [for (final id in ids) _BlockedUser(id: id)]),
-    ),
-  );
+        appBar: AppBar(title: const Text('Blocked users')),
+        body: AsyncContent(
+          value: ref.watch(blockedUserIdsProvider),
+          onRetry: () => ref.invalidate(blockedUserIdsProvider),
+          builder: (ids) => ids.isEmpty
+              ? const EmptyContent('No blocked users.')
+              : ListView(
+                  children: [for (final id in ids) _BlockedUser(id: id)]),
+        ),
+      );
 }
 
 class _BlockedUser extends ConsumerStatefulWidget {

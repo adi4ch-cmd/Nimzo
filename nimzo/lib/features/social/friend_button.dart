@@ -23,8 +23,7 @@ class _FriendState extends ConsumerState<ReferenceFriendButton> {
         backgroundColor: const Color(0xffdbeafe),
         foregroundColor: const Color(0xff2563eb),
       ),
-      onPressed:
-          busy ||
+      onPressed: busy ||
               !state.hasValue ||
               value == FriendState.sent ||
               value == FriendState.friends

@@ -36,51 +36,51 @@ class _State extends ConsumerState<DiscoverScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Search')),
-    body: ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        TextField(
-          controller: query,
-          onSubmitted: (_) => search(),
-          decoration: InputDecoration(
-            labelText: 'Nimzo ID or name',
-            suffixIcon: IconButton(
-              onPressed: search,
-              icon: const Icon(Icons.search),
-            ),
-          ),
-        ),
-        AsyncContent(
-          value: results,
-          onRetry: search,
-          builder: (p) => p.isEmpty
-              ? const EmptyContent('No results')
-              : Column(
-                  children: [
-                    for (final user in p)
-                      ListTile(
-                        leading: NimzoAvatar(
-                          name: user.displayName ?? 'N',
-                          url: user.avatarPath == null
-                              ? null
-                              : ref
-                                    .read(supabaseProvider)
-                                    .storage
-                                    .from('avatars')
-                                    .getPublicUrl(user.avatarPath!),
-                        ),
-                        title: Text(
-                          user.displayName ?? user.username ?? 'Nimzo user',
-                        ),
-                        subtitle: Text('ID:${user.nimzoId}'),
-                        trailing: ReferenceFollowButton(userId: user.id),
-                        onTap: () => context.push('/profile/${user.id}'),
-                      ),
-                  ],
+        appBar: AppBar(title: const Text('Search')),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            TextField(
+              controller: query,
+              onSubmitted: (_) => search(),
+              decoration: InputDecoration(
+                labelText: 'Nimzo ID or name',
+                suffixIcon: IconButton(
+                  onPressed: search,
+                  icon: const Icon(Icons.search),
                 ),
+              ),
+            ),
+            AsyncContent(
+              value: results,
+              onRetry: search,
+              builder: (p) => p.isEmpty
+                  ? const EmptyContent('No results')
+                  : Column(
+                      children: [
+                        for (final user in p)
+                          ListTile(
+                            leading: NimzoAvatar(
+                              name: user.displayName ?? 'N',
+                              url: user.avatarPath == null
+                                  ? null
+                                  : ref
+                                      .read(supabaseProvider)
+                                      .storage
+                                      .from('avatars')
+                                      .getPublicUrl(user.avatarPath!),
+                            ),
+                            title: Text(
+                              user.displayName ?? user.username ?? 'Nimzo user',
+                            ),
+                            subtitle: Text('ID:${user.nimzoId}'),
+                            trailing: ReferenceFollowButton(userId: user.id),
+                            onTap: () => context.push('/profile/${user.id}'),
+                          ),
+                      ],
+                    ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }

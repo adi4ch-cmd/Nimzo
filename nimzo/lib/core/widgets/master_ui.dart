@@ -18,20 +18,19 @@ class GradientText extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => ShaderMask(
-    shaderCallback: (rect) => gradient.createShader(rect),
-    blendMode: BlendMode.srcIn,
-    child: Text(
-      text,
-      style:
-          (style ??
+        shaderCallback: (rect) => gradient.createShader(rect),
+        blendMode: BlendMode.srcIn,
+        child: Text(
+          text,
+          style: (style ??
                   const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     letterSpacing: .5,
                   ))
               .copyWith(color: Colors.white),
-    ),
-  );
+        ),
+      );
 }
 
 class GradientButton extends StatelessWidget {
@@ -50,33 +49,33 @@ class GradientButton extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Opacity(
-    opacity: onPressed == null ? .5 : 1,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: FilledButton(
-        style: FilledButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          disabledBackgroundColor: Colors.transparent,
-          disabledForegroundColor: foreground,
-          foregroundColor: foreground,
-          padding: padding,
-          textStyle: const TextStyle(
-            fontFamily: 'Roboto',
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
-          ),
-          shape: RoundedRectangleBorder(
+        opacity: onPressed == null ? .5 : 1,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: gradient,
             borderRadius: BorderRadius.circular(14),
           ),
+          child: FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              disabledBackgroundColor: Colors.transparent,
+              disabledForegroundColor: foreground,
+              foregroundColor: foreground,
+              padding: padding,
+              textStyle: const TextStyle(
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            onPressed: onPressed,
+            child: child,
+          ),
         ),
-        onPressed: onPressed,
-        child: child,
-      ),
-    ),
-  );
+      );
 }
 
 class ReferenceTabs extends StatelessWidget {
@@ -93,59 +92,59 @@ class ReferenceTabs extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Container(
-    decoration: pills
-        ? null
-        : const BoxDecoration(
-            border: Border(bottom: BorderSide(color: NimzoStyle.line)),
-          ),
-    child: Row(
-      children: [
-        for (var i = 0; i < labels.length; i++)
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(
-                right: pills && i < labels.length - 1 ? 8 : 0,
+        decoration: pills
+            ? null
+            : const BoxDecoration(
+                border: Border(bottom: BorderSide(color: NimzoStyle.line)),
               ),
-              child: InkWell(
-                onTap: () => onSelected(i),
-                borderRadius: BorderRadius.circular(pills ? 20 : 0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 9),
-                  decoration: BoxDecoration(
-                    color: pills && selected != i ? NimzoStyle.surface : null,
-                    gradient: pills && selected == i
-                        ? NimzoStyle.gradient
-                        : null,
-                    borderRadius: pills ? BorderRadius.circular(20) : null,
-                    border: !pills && selected == i
-                        ? const Border(
-                            bottom: BorderSide(
-                              color: NimzoStyle.primary,
-                              width: 2,
-                            ),
-                          )
-                        : null,
+        child: Row(
+          children: [
+            for (var i = 0; i < labels.length; i++)
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: pills && i < labels.length - 1 ? 8 : 0,
                   ),
-                  child: Text(
-                    labels[i],
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                      color: pills && selected == i
-                          ? Colors.white
-                          : selected == i
-                          ? NimzoStyle.ink
-                          : NimzoStyle.muted,
+                  child: InkWell(
+                    onTap: () => onSelected(i),
+                    borderRadius: BorderRadius.circular(pills ? 20 : 0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 9),
+                      decoration: BoxDecoration(
+                        color:
+                            pills && selected != i ? NimzoStyle.surface : null,
+                        gradient:
+                            pills && selected == i ? NimzoStyle.gradient : null,
+                        borderRadius: pills ? BorderRadius.circular(20) : null,
+                        border: !pills && selected == i
+                            ? const Border(
+                                bottom: BorderSide(
+                                  color: NimzoStyle.primary,
+                                  width: 2,
+                                ),
+                              )
+                            : null,
+                      ),
+                      child: Text(
+                        labels[i],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: pills && selected == i
+                              ? Colors.white
+                              : selected == i
+                                  ? NimzoStyle.ink
+                                  : NimzoStyle.muted,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
-      ],
-    ),
-  );
+          ],
+        ),
+      );
 }
 
 class ReferenceArtwork extends StatelessWidget {
@@ -162,11 +161,11 @@ class ReferenceArtwork extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Image.asset(
-    'assets/reference/$group/$index.jpg',
-    width: size,
-    height: size,
-    fit: fit,
-  );
+        'assets/reference/$group/$index.jpg',
+        width: size,
+        height: size,
+        fit: fit,
+      );
 }
 
 class BalancePanel extends StatelessWidget {
@@ -174,28 +173,29 @@ class BalancePanel extends StatelessWidget {
   const BalancePanel({super.key, this.label = 'Coins', required this.balance});
   @override
   Widget build(BuildContext context) => Container(
-    width: double.infinity,
-    margin: const EdgeInsets.only(bottom: 12),
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      gradient: NimzoStyle.gradient,
-      borderRadius: BorderRadius.circular(16),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
-        Text(
-          balance,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 30,
-            fontWeight: FontWeight.w700,
-          ),
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: NimzoStyle.gradient,
+          borderRadius: BorderRadius.circular(16),
         ),
-      ],
-    ),
-  );
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: const TextStyle(color: Colors.white, fontSize: 12)),
+            Text(
+              balance,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      );
 }
 
 class DashedCircle extends StatelessWidget {
@@ -210,12 +210,12 @@ class DashedCircle extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => SizedBox.square(
-    dimension: size,
-    child: CustomPaint(
-      painter: _DashedCirclePainter(color),
-      child: Center(child: child),
-    ),
-  );
+        dimension: size,
+        child: CustomPaint(
+          painter: _DashedCirclePainter(color),
+          child: Center(child: child),
+        ),
+      );
 }
 
 class _DashedCirclePainter extends CustomPainter {
@@ -261,7 +261,8 @@ Future<T?> showReferenceSheet<T>(BuildContext context, Widget child) =>
       barrierColor: Colors.black.withValues(alpha: .45),
       builder: (context) => Theme(
         data: Theme.of(context).copyWith(
-          textTheme: Theme.of(context).textTheme
+          textTheme: Theme.of(context)
+              .textTheme
               .apply(bodyColor: NimzoStyle.ink, displayColor: NimzoStyle.ink),
         ),
         child: SafeArea(
@@ -298,20 +299,20 @@ class ReferenceIcon extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Align(
-    widthFactor: 1,
-    heightFactor: 1,
-    child: SvgPicture.asset(
-      'assets/reference/icons/$name.svg',
-      width: size,
-      height: size,
-      colorFilter: originalColors
-          ? null
-          : ColorFilter.mode(
-              color ?? IconTheme.of(context).color ?? NimzoStyle.ink,
-              BlendMode.srcIn,
-            ),
-    ),
-  );
+        widthFactor: 1,
+        heightFactor: 1,
+        child: SvgPicture.asset(
+          'assets/reference/icons/$name.svg',
+          width: size,
+          height: size,
+          colorFilter: originalColors
+              ? null
+              : ColorFilter.mode(
+                  color ?? IconTheme.of(context).color ?? NimzoStyle.ink,
+                  BlendMode.srcIn,
+                ),
+        ),
+      );
 }
 
 /// The reference's generated microphone room artwork is its default room image.
@@ -342,6 +343,6 @@ class ReferenceRoomAvatar extends StatelessWidget {
 }
 
 String referenceNumber(num value) => value.toString().replaceAllMapped(
-  RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-  (m) => '${m[1]},',
-);
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]},',
+    );
