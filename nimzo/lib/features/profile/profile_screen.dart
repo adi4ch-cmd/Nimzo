@@ -16,7 +16,6 @@ import 'profile_repository.dart';
 import 'levels_screen.dart';
 import 'profile_level_scale.dart';
 import 'profile_membership_status.dart';
-import '../vip/vip_presentation.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
