@@ -27,22 +27,35 @@ class RoomSession {
 
   Future<void> close() {
     closed = true;
-    return _closing ??= _close();
+    return _closing ??= _attemptClose();
+  }
+
+  Future<void> _attemptClose() async {
+    try {
+      await _close();
+    } finally {
+      // A failed network leave can be retried by the visible room page.
+      _closing = null;
+    }
   }
 
   Future<void> _close() async {
+    // Native voice may fail while the server is reachable. Always remove
+    // membership independently; a bad microphone disconnect must not keep
+    // the user's identity in room_members.
     try {
       await leaveVoice();
-    } finally {
-      try {
-        await _joining;
-      } catch (_) {
-        /* A cancelled voice join still needs membership cleanup. */
-      }
-      if (joined) {
-        await leaveRoom();
-        joined = false;
-      }
+    } catch (_) {
+      // Room membership cleanup remains authoritative.
+    }
+    try {
+      await _joining;
+    } catch (_) {
+      // A failed/cancelled join still needs any late DB membership cleaned.
+    }
+    if (joined) {
+      await leaveRoom();
+      joined = false;
     }
   }
 }
