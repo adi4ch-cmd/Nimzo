@@ -29,6 +29,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/gifts/free/
+    - assets/nimzo_custom_gifts/
     - assets/nimzo/gift_controls/
     - assets/yo2_gifts/images/
     - assets/reference/fonts/Cinzel-OFL.txt

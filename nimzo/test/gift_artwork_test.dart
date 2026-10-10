@@ -31,6 +31,16 @@ void main() {
     expect(freeGiftArtwork('Golden Palace'), isNull);
     expect(freeGiftArtwork('Phoenix'), isNull);
   });
+  test('all fourteen original NIMZO gift names have unique SVG artwork', () {
+    const names = [
+      'Kiss','Coffee','Cat','Birthday Cake','Teddy Bear','Gift Box',
+      'Panda','Diamond Ring','Golden Palace','Private Jet',
+      'Luxury Yacht','Dragon','Golden Dragon','Phoenix'
+    ];
+    final paths = names.map(originalNimzoGiftArtwork).toList();
+    expect(paths.every((p) => p != null && p.endsWith('.svg')), isTrue);
+    expect(paths.toSet().length, names.length);
+  });
   test('unmatched gifts do not invent artwork', () {
     expect(referenceGiftArtwork('Coffee'), isNull);
     expect(referenceGiftArtwork('Unknown'), isNull);

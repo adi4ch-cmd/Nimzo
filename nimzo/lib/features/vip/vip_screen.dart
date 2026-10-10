@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/widgets/master_ui.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../profile/profile_repository.dart';
 import 'vip_repository.dart';
 import 'vip_tiers.dart';
 import 'vip_presentation.dart';
-import 'phoenix_widgets.dart';
-import 'membership_motion.dart';
+import 'royal_lion_entry.dart';
 
 final membershipNameProvider = FutureProvider<String?>((ref) async {
   final id = ref.watch(currentUserIdProvider);
@@ -27,310 +25,362 @@ class VipScreen extends ConsumerStatefulWidget {
 }
 
 class _VipState extends ConsumerState<VipScreen> {
-  int tier = 5;
-  bool _selectedFromMembership = false;
-  Color get accent =>
-      widget.svip ? const Color(0xffdedaff) : const Color(0xffe8c277);
+  int tier = 1;
+  bool _membershipSelected = false;
+  bool _purchasing = false;
+  String? _purchaseKey;
   String get family => widget.svip ? 'SVIP' : 'VIP';
+  Color get accent => widget.svip
+      ? const Color(0xffecae70) : const Color(0xff7be6b8);
+  Color get surface => widget.svip
+      ? const Color(0xff21131a) : const Color(0xff102b24);
+
+  Future<void> _buyNormalVip() async {
+    if (_purchasing || widget.svip) return;
+    final selected = tier;
+    final cost = NimzoVipTiers.normalVipCoins[selected - 1];
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Activate VIP ' + selected.toString()),
+        content: Text('Pay ' + compactNumber(cost) +
+            ' coins for 30 days of VIP membership? ' +
+            'Your balance will be debited by the secure server.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Confirm with coins'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _purchasing = true);
+    // Keep this idempotency key for uncertain network retries.
+    _purchaseKey ??=
+        'vip-' + DateTime.now().microsecondsSinceEpoch.toString() +
+        '-' + selected.toString();
+    try {
+      await ref.read(vipRepositoryProvider).purchaseNormalVip(
+        tier: selected, key: _purchaseKey!,
+      );
+      _purchaseKey = null;
+      ref.invalidate(vipStatusProvider);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('VIP ' + selected.toString() +
+          ' verified by NIMZO server')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('VIP purchase failed: ' + error.toString())),
+      );
+    } finally {
+      if (mounted) setState(() => _purchasing = false);
+    }
+  }
+
+  void _selectTier(int nextTier) {
+    if (nextTier == tier) return;
+    setState(() {
+      tier = nextTier;
+      _membershipSelected = true;
+      _purchaseKey = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final status = ref.watch(vipStatusProvider);
-    final progress =
-        widget.svip ? ref.watch(svipProgressProvider).valueOrNull : null;
-    final active =
-        status.valueOrNull?[widget.svip ? 'svip_level' : 'vip_level'];
-    // Default to the verified live membership once, without overriding
-    // the user's subsequent manual selection of preview tiers.
-    if (!_selectedFromMembership &&
-        active is num &&
-        active >= 1 &&
-        active <= 10) {
-      _selectedFromMembership = true;
+    final progress = widget.svip
+        ? ref.watch(svipProgressProvider).valueOrNull : null;
+    final active = status.valueOrNull?[
+      widget.svip ? 'svip_level' : 'vip_level'
+    ];
+    if (!_membershipSelected && active is num &&
+        active >= 1 && active <= 10) {
+      _membershipSelected = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) setState(() => tier = active.toInt());
       });
     }
-    final statusLabel = status.isLoading
+    final name = ref.watch(membershipNameProvider).valueOrNull ??
+      'Your NIMZO identity';
+    final label = status.isLoading
         ? 'Loading membership…'
         : status.hasError
             ? 'Membership unavailable'
             : active is num && active > 0
-                ? 'Active · $family $active'
-                : 'No active $family membership';
+                ? 'Active · ' + family + ' ' + active.toString()
+                : 'No active ' + family + ' membership';
+    final price = NimzoVipTiers.normalVipCoins[tier - 1];
+    final usd = NimzoVipTiers.svipRechargeUsd[tier - 1] * 100;
     final threshold = progress?.thresholdFor(tier);
-    final configured = widget.svip && threshold != null;
-    final name = ref.watch(membershipNameProvider).valueOrNull;
     return Theme(
       data: Theme.of(context).copyWith(
         iconTheme: const IconThemeData(color: Colors.white),
         textTheme: Theme.of(context).textTheme.apply(
-              bodyColor: Colors.white,
-              displayColor: Colors.white,
-              fontFamily: 'Poppins',
-            ),
+          bodyColor: Colors.white, displayColor: Colors.white,
+          fontFamily: 'Poppins',
+        ),
       ),
       child: Scaffold(
-        backgroundColor:
-            widget.svip ? const Color(0xff0d0919) : const Color(0xff0e0c09),
+        backgroundColor: widget.svip
+            ? const Color(0xff0e0a0d) : const Color(0xff071a15),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           foregroundColor: accent,
-          title: Text(
-            widget.svip
-                ? 'SVIP · Diamond collection'
-                : 'VIP · Royal collection',
-            style: TextStyle(fontSize: 15, color: accent),
-          ),
+          title: Text(widget.svip
+            ? 'NIMZO · SVIP COLLECTION'
+            : 'NIMZO · ROYAL VIP'),
           centerTitle: true,
         ),
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment.topCenter,
-              radius: 1.1,
-              colors: widget.svip
-                  ? const [
-                      Color(0xff372349),
-                      Color(0xff160e24),
-                      Color(0xff0d0919),
-                    ]
-                  : const [
-                      Color(0xff49351a),
-                      Color(0xff21190e),
-                      Color(0xff0e0c09),
-                    ],
-            ),
-          ),
-          child: Center(
-            heightFactor: 1,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 760),
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-                children: [
-                  MembershipHero(
-                    platinum: widget.svip,
-                    emblem: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
+        body: Center(
+          heightFactor: 1,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 30),
+              children: [
+                Container(
+                  padding: const EdgeInsets.fromLTRB(16, 22, 16, 24),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: accent.withValues(alpha: .45)),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: widget.svip
+                        ? [const Color(0xff402529),
+                           const Color(0xff100c13)]
+                        : [const Color(0xff1c5540),
+                           const Color(0xff0c2820)],
+                    ),
+                  ),
+                  child: Column(children: [
+                    Text(widget.svip
+                      ? 'DIAMOND MEMBERSHIP'
+                      : 'THE ROYAL COLLECTION',
+                      style: TextStyle(
+                        color: accent,
+                        fontSize: 11, letterSpacing: 2.1,
+                        fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 14),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 220),
                       child: MembershipEmblem(
-                        key: ValueKey('$family-$tier'),
-                        level: tier,
-                        svip: widget.svip,
-                        size: 176,
-                      ),
+                        key: ValueKey(family + '-' + tier.toString()),
+                        level: tier, svip: widget.svip, size: 154),
                     ),
-                    title: '$family $tier',
-                    subtitle: widget.svip
-                        ? 'THE DIAMOND COLLECTION'
-                        : 'THE ROYAL COLLECTION',
-                    color: accent,
-                    status: _pill(statusLabel),
-                  ),
-                  const SizedBox(height: 22),
-                  _selector(),
-                  const SizedBox(height: 18),
-                  _panel(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '$family $tier · Collection preview',
+                    const SizedBox(height: 12),
+                    Text(family + ' ' + tier.toString(),
+                      style: const TextStyle(
+                        fontFamily: 'Cinzel', fontSize: 30,
+                        letterSpacing: 1.4, fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 8),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xff061913),
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: accent.withValues(alpha: .35))),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,horizontal: 18),
+                        child: Text(label, style: TextStyle(
+                          color: accent, fontSize: 12))),
+                    ),
+                  ]),
+                ),
+                const SizedBox(height: 22),
+                Text('EXPLORE THE COLLECTION',
+                  style: TextStyle(
+                    color: accent, letterSpacing: 1.4,
+                    fontWeight: FontWeight.w800, fontSize: 12)),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 114,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 10,
+                    separatorBuilder: (_, __) => const SizedBox(width: 9),
+                    itemBuilder: (context, i) {
+                      final n = i + 1;
+                      return Semantics(
+                        selected: tier == n, button: true,
+                        label: family + ' ' + n.toString(),
+                        child: InkWell(
+                          key: ValueKey(
+                            (widget.svip ? 'svip' : 'vip') + '-tier-' + n.toString()),
+                          onTap: () => _selectTier(n),
+                          borderRadius: BorderRadius.circular(16),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 210),
+                            width: 82,
+                            padding: const EdgeInsets.fromLTRB(5,8,5,5),
+                            decoration: BoxDecoration(
+                              color: tier == n ? surface : const Color(0xff14231f),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: tier == n ? accent :
+                                  accent.withValues(alpha: .18)),
+                            ),
+                            child: Column(children: [
+                              MembershipEmblem(
+                                level: n,svip:widget.svip,
+                                small:true,size:67),
+                              const SizedBox(height: 3),
+                              Text(family + ' ' + n.toString(),
                                 style: TextStyle(
-                                  color: accent,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            _pill(configured ? 'Configured tier' : 'Preview'),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          widget.svip
-                              ? configured
-                                  ? 'Recorded threshold: ${_usd(threshold)}'
-                                  : 'Reference recharge: ${_usd(NimzoVipTiers.svipRechargeUsd[tier - 1] * 100)}'
-                              : 'Reference price: ${compactNumber(NimzoVipTiers.normalVipCoins[tier - 1])} coins',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
+                                  fontSize: 10, color: tier == n
+                                    ? accent : const Color(0xffb3c3bb))),
+                            ]),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.svip
-                              ? 'Ten original SVIP medals are installed. Active membership and rewards depend on your server-verified account status.'
-                              : 'Reference pricing and appearance only. Purchase and cosmetic activation are not enabled here.',
-                          style: const TextStyle(
-                            color: Color(0xffbcb2c4),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                  if (widget.svip) ...[
-                    const MembershipHeading('Your recharge progress'),
-                    _panel(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            progress == null
-                                ? 'Recharge progress unavailable'
-                                : 'Recorded cycle · ${_usd(progress.cycleCents)}',
-                            style: TextStyle(color: accent),
-                          ),
-                          const SizedBox(height: 14),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: LinearProgressIndicator(
-                              value: progress?.fraction ?? 0,
-                              minHeight: 7,
-                              color: accent,
-                              backgroundColor: const Color(0xff35283e),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            progress == null
-                                ? 'Sign in and connect to retrieve your server membership.'
-                                : progress.nextLevel == null
-                                    ? 'Highest configured threshold reached.'
-                                    : 'Next configured level: SVIP ${progress.nextLevel} · ${_usd(progress.nextThresholdCents!)}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xffbcb2c4),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                ),
+                const SizedBox(height: 18),
+                _card(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      Expanded(child: Text(
+                        family + ' ' + tier.toString() + ' · Collection preview',
+                        style: TextStyle(color: accent,
+                          fontWeight: FontWeight.w700))),
+                      Text(widget.svip && threshold != null
+                        ? 'Configured tier' : 'Preview',
+                        style: const TextStyle(
+                          color: Color(0xffa7b9af),fontSize: 11)),
+                    ]),
+                    const SizedBox(height: 10),
+                    Text(widget.svip
+                      ? threshold != null
+                        ? 'Recorded threshold: ' + _usd(threshold)
+                        : 'Reference recharge: ' + _usd(usd)
+                      : compactNumber(price) + ' coins / 30 days',
+                      style: const TextStyle(
+                        fontSize: 22,fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 10),
+                    Text(widget.svip
+                      ? 'Ten original SVIP medals are installed. Active membership and rewards depend on your server-verified account status.'
+                      : 'Premium tier purchase is processed by the NIMZO server. Selecting a tier here never grants membership.',
+                      style: const TextStyle(
+                        color: Color(0xffa7b9af),fontSize: 12)),
                   ],
-                  MembershipHeading('Your $family $tier look'),
-                  _panel(
-                    child: Row(
-                      children: [
-                        MembershipEmblem(
-                          level: tier,
-                          svip: widget.svip,
-                          size: 80,
-                        ),
-                        const SizedBox(width: 18),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                name ?? 'Your membership identity',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                '$family $tier · NIMZO medal',
-                                style: TextStyle(color: accent),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                active is num && active == tier
-                                    ? 'Active $family identity · server verified'
-                                    : 'Visual preview · cosmetics are not activated',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xffbcb2c4),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (!widget.svip && tier == 6) ...[
-                    const MembershipHeading('Phoenix · VIP 6'),
-                    const MembershipBenefit(
-                      preview: PhoenixFrame(
-                        child: CircleAvatar(child: Text('N')),
-                      ),
-                      title: 'Phoenix identity',
-                      subtitle:
-                          'Animated red and gold frame, VIP badge and premium nameplate.',
-                    ),
-                    const MembershipBenefit(
-                      preview: PhoenixMark(size: 58),
-                      title: 'Phoenix room entrance',
-                      subtitle:
-                          'Original animated wings and a VIP 6 entry announcement.',
-                    ),
-                    const MembershipBenefit(
-                      preview: PhoenixBadge(),
-                      title: 'Premium conversations',
-                      subtitle:
-                          'Phoenix chat bubbles and gift tray with active membership.',
-                    ),
-                  ],
-                  const MembershipHeading('Membership details'),
-                  MembershipBenefit(
-                    preview: MembershipEmblem(
-                      level: tier,
-                      svip: widget.svip,
-                      small: true,
-                      size: 54,
-                    ),
-                    title: 'Exclusive identity',
-                    subtitle:
-                        'Explore the supplied collection. Previewing does not change your membership.',
-                  ),
-                  if (widget.svip)
-                    const MembershipBenefit(
-                      preview: ReferenceIcon('gift', color: Color(0xffdedaff)),
-                      title: 'Friday rewards',
-                      subtitle:
-                          'Rewards and eligibility come from the live server. Reference weekly amounts are not guaranteed payouts.',
-                    ),
-                  MembershipBenefit(
-                    preview: ReferenceIcon('shield', color: accent),
-                    title: 'Server verified membership',
-                    subtitle:
-                        'Your active level, expiry and enabled benefits are decided by the server.',
-                  ),
+                )),
+                if (widget.svip) ...[
+                  _heading('Verified recharge progress'),
+                  _card(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(progress == null ? 'Recharge progress unavailable' :
+                        'Recorded cycle · ' + _usd(progress.cycleCents),
+                        style: TextStyle(color:accent)),
+                      const SizedBox(height: 10),
+                      LinearProgressIndicator(
+                        value:progress?.fraction ?? 0,minHeight:6,
+                        color:accent,backgroundColor:const Color(0xff39262a)),
+                      const SizedBox(height: 10),
+                      Text(progress == null
+                        ? 'Sign in to retrieve server membership.'
+                        : progress.nextLevel == null
+                          ? 'Highest configured tier reached.'
+                          : 'Next SVIP ' + progress.nextLevel.toString() +
+                            ' · ' + _usd(progress.nextThresholdCents!),
+                        style: const TextStyle(
+                          color:Color(0xffa7b9af),fontSize:12)),
+                    ],
+                  )),
                 ],
-              ),
+                _heading('Your premium identity'),
+                _card(child: Row(children: [
+                  MembershipEmblem(
+                    level:tier,svip:widget.svip,size:80),
+                  const SizedBox(width:16),
+                  Expanded(child:Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children:[
+                      Text(name,style:const TextStyle(
+                        fontWeight:FontWeight.w700)),
+                      const SizedBox(height:5),
+                      Text(family + ' ' + tier.toString() + ' · NIMZO',
+                        style:TextStyle(color:accent)),
+                      const SizedBox(height:5),
+                      Text(active == tier
+                        ? 'Server-verified active membership'
+                        : 'Tier preview; no activated cosmetics',
+                        style:const TextStyle(
+                          color:Color(0xffa7b9af),fontSize:11)),
+                    ],
+                  )),
+                ])),
+                if (!widget.svip && tier >= 6) ...[
+                  _heading('Royal Lion entrance preview'),
+                  _card(child: Column(children: [
+                    const SizedBox(height: 350,
+                      child: RoyalLionEntry(name: 'NIMZO KING')),
+                    const SizedBox(height: 8),
+                    Text('Original Royal Lion · 5.5-second room arrival',
+                      style:TextStyle(color:accent,fontSize:13)),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Room entry requires a live server-verified VIP benefit. Preview does not activate it.',
+                      textAlign:TextAlign.center,
+                      style:TextStyle(
+                        color:Color(0xffa7b9af),fontSize:12)),
+                  ])),
+                ],
+                _heading('Your privileges'),
+                _benefit(Icons.workspace_premium_outlined,
+                  'New royal profile emblem',
+                  'NIMZO original VIP identity, not an old reference image.'),
+                _benefit(Icons.verified_user_outlined,
+                  'Secure membership status',
+                  'Eligibility is verified from your account on the server.'),
+                if (!widget.svip)
+                  _benefit(Icons.auto_awesome_outlined,
+                    'Royal Lion room entry',
+                    'A genuine eligible room join triggers one entrance.'),
+                if (widget.svip)
+                  _benefit(Icons.card_giftcard_outlined,
+                    'SVIP weekly rewards',
+                    'Rewards depend on your server-verified account status.'),
+              ],
             ),
           ),
         ),
         bottomNavigationBar: SafeArea(
-          top: false,
-          child: Center(
-            heightFactor: 1,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 760),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: widget.svip
-                      ? FilledButton(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: accent,
-                            foregroundColor: const Color(0xff20132f),
-                            padding: const EdgeInsets.all(17),
-                          ),
-                          onPressed: () => context.push('/recharge'),
-                          child: const Text('View recharge options'),
-                        )
-                      : MembershipGoldButton(
-                          onPressed: () =>
-                              showUiUnavailable(context, 'VIP purchase'),
-                          child: Text(
-                            'Preview VIP $tier · Purchase unavailable',
-                          ),
-                        ),
+          top:false,
+          child: Padding(
+            padding:const EdgeInsets.fromLTRB(16,8,16,12),
+            child:ConstrainedBox(
+              constraints:const BoxConstraints(maxWidth:700),
+              child: SizedBox(
+                height:54,
+                child: FilledButton(
+                  onPressed: widget.svip
+                    ? () => context.push('/recharge')
+                    : (status.isLoading || status.hasError || _purchasing)
+                      ? null : _buyNormalVip,
+                  style:FilledButton.styleFrom(
+                    backgroundColor:accent,
+                    foregroundColor:const Color(0xff09251c),
+                    shape:RoundedRectangleBorder(
+                      borderRadius:BorderRadius.circular(16))),
+                  child:Text(widget.svip
+                    ? 'View recharge options'
+                    : _purchasing
+                      ? 'Confirming securely…'
+                      : 'Activate VIP ' + tier.toString() +
+                        ' · ' + compactNumber(price) + ' coins',
+                    style:const TextStyle(fontWeight:FontWeight.w800)),
                 ),
               ),
             ),
@@ -340,100 +390,37 @@ class _VipState extends ConsumerState<VipScreen> {
     );
   }
 
-  Widget _selector() => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'EXPLORE THE COLLECTION',
-                  style: TextStyle(
-                      color: accent, fontSize: 11, letterSpacing: 1.7),
-                ),
-              ),
-              Text('01 — 10', style: TextStyle(color: accent, fontSize: 11)),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 108,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: 10,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (_, i) => Semantics(
-                label: '$family ${i + 1}',
-                selected: tier == i + 1,
-                button: true,
-                child: InkWell(
-                  key:
-                      ValueKey('${widget.svip ? 'svip' : 'vip'}-tier-${i + 1}'),
-                  borderRadius: BorderRadius.circular(14),
-                  onTap: () => setState(() {
-                    _selectedFromMembership = true;
-                    tier = i + 1;
-                  }),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 220),
-                    width: 84,
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: tier == i + 1
-                          ? accent.withValues(alpha: .13)
-                          : Colors.black26,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: tier == i + 1
-                            ? accent
-                            : accent.withValues(alpha: .15),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        MembershipEmblem(
-                          level: i + 1,
-                          svip: widget.svip,
-                          small: true,
-                          size: 59,
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          '$family ${i + 1}',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: tier == i + 1
-                                ? accent
-                                : const Color(0xffbcb2c4),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+  Widget _card({required Widget child}) => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+      color: surface,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: accent.withValues(alpha: .22)),
+    ),
+    child: child,
+  );
+  Widget _heading(String value) => Padding(
+    padding:const EdgeInsets.only(top:21,bottom:11),
+    child:Text(value.toUpperCase(),style:TextStyle(
+      color:accent,fontSize:12,fontWeight:FontWeight.w800,letterSpacing:1.4)),
+  );
+  Widget _benefit(IconData icon,String title,String subtitle) => Padding(
+    padding:const EdgeInsets.only(bottom:9),
+    child:_card(child:Row(children:[
+      Icon(icon,color:accent,size:27),
+      const SizedBox(width:14),
+      Expanded(child:Column(
+        crossAxisAlignment:CrossAxisAlignment.start,
+        children:[
+          Text(title,style:const TextStyle(
+            color:Colors.white,fontWeight:FontWeight.w700)),
+          const SizedBox(height:4),
+          Text(subtitle,style:const TextStyle(
+            color:Color(0xffb3c3bb),fontSize:12)),
         ],
-      );
-  Widget _panel({required Widget child}) => Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: .22),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: accent.withValues(alpha: .25)),
-        ),
-        child: child,
-      );
-  Widget _pill(String label) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: accent.withValues(alpha: .09),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: accent.withValues(alpha: .3)),
-        ),
-        child: Text(label, style: TextStyle(color: accent, fontSize: 10)),
-      );
-  String _usd(int cents) =>
-      '\$${referenceNumber(cents ~/ 100)}.${(cents % 100).toString().padLeft(2, '0')}';
+      )),
+    ])),
+  );
+  String _usd(int cents) => '\u0024' + (cents/100).toStringAsFixed(0);
 }

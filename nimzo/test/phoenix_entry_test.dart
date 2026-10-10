@@ -9,7 +9,7 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/features/vip/phoenix_room_entry.dart';
-import 'package:nimzo/features/vip/phoenix_widgets.dart';
+import 'package:nimzo/features/vip/royal_lion_entry.dart';
 
 void main() {
   test('entry freshness includes time spent waiting for server response', () {
@@ -98,13 +98,13 @@ void main() {
       );
       await tester.pump();
       expect(
-        find.textContaining('New arrival entered · VIP 6 Phoenix'),
+        find.textContaining('THE KING HAS ARRIVED'),
         findsOneWidget,
       );
-      await tester.pump(const Duration(milliseconds: 3500));
+      await tester.pump(const Duration(milliseconds: 5600));
       events.add([fresh, old]);
       await tester.pump();
-      expect(find.byType(PhoenixEntry), findsNothing);
+      expect(find.byType(RoyalLionEntry), findsNothing);
       expect(requests, 1);
       // A newly delivered stale event is still rejected using server time.
       events.add([

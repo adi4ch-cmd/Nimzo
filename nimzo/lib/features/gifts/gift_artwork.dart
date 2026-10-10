@@ -1,3 +1,4 @@
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svga/flutter_svga.dart';
 
@@ -36,6 +37,31 @@ String? freeGiftArtwork(String name) => switch (name.trim().toLowerCase()) {
       _ => null,
     };
 
+/// All fourteen newly illustrated NIMZO gifts use original branded vectors.
+/// Keeping this whitelist explicit prevents unrelated catalog entries from
+/// showing another gift's picture.
+String? originalNimzoGiftArtwork(String name) {
+  final slug = switch (name.trim().toLowerCase()) {
+    'kiss' => 'kiss',
+    'coffee' => 'coffee',
+    'cat' => 'cat',
+    'birthday cake' => 'birthday_cake',
+    'teddy bear' => 'teddy_bear',
+    'gift box' => 'gift_box',
+    'panda' => 'panda',
+    'diamond ring' => 'diamond_ring',
+    'golden palace' => 'golden_palace',
+    'private jet' => 'private_jet',
+    'luxury yacht' => 'luxury_yacht',
+    'dragon' => 'dragon',
+    'golden dragon' => 'golden_dragon',
+    'phoenix' => 'phoenix',
+    _ => null,
+  };
+  return slug == null ? null
+      : 'assets/nimzo_custom_gifts/' + slug + '.svg';
+}
+
 /// Actual poster frames generated from the licensed original videos.
 String? originalDragonPoster(String name) =>
     switch (name.trim().toLowerCase()) {
@@ -71,11 +97,14 @@ class GiftArtwork extends StatelessWidget {
       ),
     );
     final path =
-        assetPath ?? freeGiftArtwork(name) ?? originalDragonPoster(name) ?? referenceGiftArtwork(name);
+        assetPath ?? originalNimzoGiftArtwork(name) ?? freeGiftArtwork(name) ?? originalDragonPoster(name) ?? referenceGiftArtwork(name);
     if (path == null) {
       final svga = freeGiftAnimationForName(name);
       if (svga != null) return SVGAEasyPlayer(assetsName: svga, fit: BoxFit.contain);
       return unavailable;
+    }
+    if (path.endsWith('.svg')) {
+      return SvgPicture.asset(path, fit: BoxFit.contain);
     }
     if (path.endsWith('.svga')) {
       return SVGAEasyPlayer(assetsName: path, fit: BoxFit.contain);

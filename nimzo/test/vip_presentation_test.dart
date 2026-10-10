@@ -54,7 +54,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 350));
       expect(find.text('VIP 2 · Collection preview'), findsOneWidget);
       expect(find.text('Active · VIP 2'), findsOneWidget);
-      expect(find.text('Preview VIP 2 · Purchase unavailable'), findsOneWidget);
+      expect(find.textContaining('Activate VIP 2'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

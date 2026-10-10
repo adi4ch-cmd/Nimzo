@@ -6,6 +6,12 @@ on:
       - feature/profile-reference-redesign
     paths:
       - 'nimzo/lib/features/gifts/**'
+      - 'nimzo/lib/features/vip/**'
+      - 'nimzo/test/vip_*.dart'
+      - 'nimzo/test/phoenix_*.dart'
+      - 'nimzo/test/royal_lion_*.dart'
+      - 'nimzo/test/custom_gift_*.dart'
+      - 'nimzo/assets/nimzo_custom_gifts/**'
       - 'nimzo/lib/features/rooms/presentation/room_screen.dart'
       - 'nimzo/lib/features/rooms/presentation/room_user_sheet.dart'
       - 'nimzo/lib/features/profile/profile_screen.dart'

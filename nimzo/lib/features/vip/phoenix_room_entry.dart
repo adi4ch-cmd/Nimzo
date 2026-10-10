@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import 'phoenix_entitlement.dart';
-import 'phoenix_widgets.dart';
+import 'royal_lion_entry.dart';
 
 bool phoenixEntryIsFresh({
   required DateTime? serverNow,
@@ -94,9 +94,9 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
           )) return;
       setState(() => current = event);
       final duration =
-          entitlement.leaseRemaining < const Duration(milliseconds: 3400)
+          entitlement.leaseRemaining < const Duration(milliseconds: 5500)
               ? entitlement.leaseRemaining
-              : const Duration(milliseconds: 3400);
+              : const Duration(milliseconds: 5500);
       timer = Timer(duration, () {
         if (!mounted) return;
         setState(() => current = null);
@@ -137,9 +137,15 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
       unawaited(next());
     });
     if (current == null) return const SizedBox.shrink();
-    return PhoenixEntry(
+    return RoyalLionEntry(
       key: ValueKey(current!['id']),
       name: current!['display_name']?.toString() ?? 'Nimzo user',
+      onFinished: () {
+        timer?.cancel();
+        if (!mounted) return;
+        setState(() => current = null);
+        unawaited(next());
+      },
     );
   }
 }

@@ -34,6 +34,28 @@ class VipRepository {
     return thresholds;
   }
 
+  /// Server-authoritative VIP purchase. Never grant levels or coins locally.
+  Future<Map<String, dynamic>> purchaseNormalVip({
+    required int tier,
+    required String key,
+  }) async {
+    if (tier < 1 || tier > 10 || key.trim().length < 8) {
+      throw ArgumentError('Invalid membership purchase');
+    }
+    final result = await _db.rpc(
+      'purchase_normal_vip',
+      params: {'p_tier': tier, 'p_key': key},
+    );
+    if (result is! Map) {
+      throw StateError('VIP purchase response unavailable');
+    }
+    final payload = Map<String, dynamic>.from(result);
+    if (payload['status'] != 'ok' && payload['status'] != 'replayed') {
+      throw StateError('VIP purchase was not confirmed');
+    }
+    return payload;
+  }
+
   Future<void> claimDaily() => _db.rpc('claim_vip_daily');
   Future<void> claimSvipFriday() => _db.rpc('claim_svip_friday');
   Future<List<Map<String, dynamic>>> vipDailyRewards() async {

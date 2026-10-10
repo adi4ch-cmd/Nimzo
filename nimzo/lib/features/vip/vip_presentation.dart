@@ -54,19 +54,19 @@ class MembershipEmblem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
         image: true,
-        label: '${svip ? 'SVIP' : 'VIP'} $level official artwork',
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(size * .14),
-          child: Image.asset(
-            svip
-                ? 'assets/membership/svip/svip_medal$level.webp'
-                : 'assets/reference/vip/${level - 1}.jpg',
-            width: size,
-            height: size * .915,
-            filterQuality: FilterQuality.high,
-            fit: BoxFit.contain,
-          ),
-        ),
+        label: (svip ? 'SVIP ' : 'VIP ') + level.toString() + ' membership medal',
+        child: svip
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(size * .14),
+                child: Image.asset(
+                  'assets/membership/svip/svip_medal' + level.toString() + '.webp',
+                  width: size,
+                  height: size * .915,
+                  filterQuality: FilterQuality.high,
+                  fit: BoxFit.contain,
+                ),
+              )
+            : NimzoRoyalVipSeal(level: level, size: size),
       );
 }
 
@@ -357,4 +357,82 @@ class MembershipFrame extends StatelessWidget {
           ),
         ),
       );
+}
+
+
+/// New NIMZO-only vector medal; the obsolete reference VIP JPG is never read.
+/// Emerald/metal finish is retained across all ten normal VIP tiers.
+class NimzoRoyalVipSeal extends StatelessWidget {
+  const NimzoRoyalVipSeal({super.key,required this.level,this.size=100});
+  final int level;
+  final double size;
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width:size,height:size,
+    child: Stack(alignment:Alignment.center,children:[
+      CustomPaint(
+        size:Size.square(size),
+        painter:_NimzoRoyalSealPainter(level),
+      ),
+      Positioned(
+        bottom:size*.17,
+        child: Text('VIP ' + level.toString(),
+          style:TextStyle(
+            fontSize:size*.13,
+            color:const Color(0xffffebba),
+            fontWeight:FontWeight.w800,
+            letterSpacing:1,
+          ),
+        ),
+      ),
+    ]),
+  );
+}
+
+class _NimzoRoyalSealPainter extends CustomPainter {
+  const _NimzoRoyalSealPainter(this.level);
+  final int level;
+  @override
+  void paint(Canvas canvas,Size size){
+    final s=math.min(size.width,size.height);
+    canvas.save();
+    canvas.translate(size.width/2,size.height/2);
+    canvas.scale(s/100);
+    final light=Color.lerp(
+      const Color(0xff74e8aa),
+      const Color(0xffeed28d),
+      (level-1)/9,
+    )!;
+    final outer=Paint()..shader=SweepGradient(
+      colors:[const Color(0xff6c4620),light,const Color(0xffffdf98),
+        const Color(0xff956025),const Color(0xff6c4620)],
+    ).createShader(const Rect.fromLTWH(-48,-48,96,96));
+    canvas.drawCircle(Offset.zero,47,outer);
+    canvas.drawCircle(Offset.zero,40,Paint()..color=const Color(0xff042c23));
+    canvas.drawCircle(Offset.zero,38,Paint()
+      ..color=light.withValues(alpha:.5)
+      ..style=PaintingStyle.stroke..strokeWidth=1.8);
+    for(var i=0;i<12;i++){
+      final a=i*math.pi/6;
+      canvas.drawCircle(Offset(math.cos(a)*43,math.sin(a)*43),1.15,
+        Paint()..color=const Color(0xffffe0a5));
+    }
+    final crown=Path()
+      ..moveTo(-25,-5)..lineTo(-28,-26)..lineTo(-13,-15)
+      ..lineTo(0,-34)..lineTo(13,-15)..lineTo(28,-26)
+      ..lineTo(25,-5)..close();
+    canvas.drawPath(crown,Paint()..shader=const LinearGradient(
+      colors:[Color(0xffa86822),Color(0xfffff0b6),Color(0xffe6ad46)],
+      begin:Alignment.topLeft,end:Alignment.bottomRight,
+    ).createShader(const Rect.fromLTWH(-30,-35,60,33)));
+    canvas.drawRect(const Rect.fromLTWH(-25,-4,50,8),
+      Paint()..color=const Color(0xffae7225));
+    canvas.drawCircle(const Offset(0,-13),4.8,
+      Paint()..color=light);
+    canvas.drawCircle(const Offset(0,-13),2.2,
+      Paint()..color=Colors.white);
+    canvas.restore();
+  }
+  @override
+  bool shouldRepaint(_NimzoRoyalSealPainter old)=>old.level!=level;
 }
