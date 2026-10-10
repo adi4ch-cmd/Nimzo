@@ -697,8 +697,10 @@ class ProfileProgressBadge extends StatelessWidget {
                 fontWeight: FontWeight.w700))),
           ]),
           const SizedBox(height: 3),
-          Text(level > 0 ? 'Lv $level' : '—',
-            style: TextStyle(color: accent, fontSize: 16,
+          Text(level > 0 ? 'Lv $level' : 'Level unavailable',
+            maxLines: 1, overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: accent,
+              fontSize: level > 0 ? 16 : 9,
               fontWeight: FontWeight.w800)),
           const SizedBox(height: 3),
           Text(
