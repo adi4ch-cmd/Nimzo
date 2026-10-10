@@ -15,6 +15,7 @@ import '../social/friend_button.dart';
 import 'profile_repository.dart';
 import 'levels_screen.dart';
 import 'profile_level_scale.dart';
+import 'profile_membership_status.dart';
 import '../vip/vip_presentation.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
@@ -302,16 +303,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ],
                       ],
                     ),
-                    if (p.vipLevel > 0 || p.svipLevel > 0)
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          if (p.vipLevel > 0 && p.vipLevel != 6)
-                            Chip(label: Text('VIP ${p.vipLevel}')),
-                          if (p.svipLevel > 0)
-                            Chip(label: Text('SVIP ${p.svipLevel}')),
-                        ],
-                      ),
+                    const SizedBox(height: 8),
+                    ProfileMembershipStatus(
+                      profile: p,
+                      editable: me == id,
+                    ),
+                    const SizedBox(height: 8),
                     EquippedRoyalMedal(userId: id),
                     const SizedBox(height: 8),
                     Text(p.bio?.isNotEmpty == true ? p.bio! : 'No bio yet'),
