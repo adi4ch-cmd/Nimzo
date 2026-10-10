@@ -115,7 +115,7 @@ class GiftRepository {
             : username != null && username.isNotEmpty
                 ? username
                 : number is num
-                    ? 'ID ' + number.toString()
+                    ? 'ID ${number.toString()}'
                     : '';
         if (name.isNotEmpty) names[id] = name;
       }
