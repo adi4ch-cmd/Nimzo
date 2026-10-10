@@ -521,7 +521,8 @@ void main() {
         for (final file in Directory('assets/reference')
             .listSync(recursive: true)
             .whereType<File>()
-            .where((f) => f.path.endsWith('.jpg'))) {
+            .where((f) => f.path.endsWith('.jpg') &&
+                !f.path.replaceAll('\\', '/').contains('/vip/'))) {
           await precacheImage(AssetImage(file.path), context);
         }
         if (entry.key == 'honor_wall') {

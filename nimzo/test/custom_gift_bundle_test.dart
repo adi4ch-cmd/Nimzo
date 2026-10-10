@@ -30,6 +30,19 @@ void main() {
     expect(hasOriginalNimzoGiftEffect('Unverified Gift'),isFalse);
   });
 
+  testWidgets('all fourteen original SVGs actually decode on Flutter',
+      (tester) async {
+    for (final gift in gifts) {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(body:SizedBox(width:240,height:240,
+          child:GiftArtwork(name:gift))),
+      ));
+      await tester.pump(const Duration(milliseconds:100));
+      expect(tester.takeException(),isNull,reason:gift);
+    }
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('custom gift effect has actual moving artwork and can skip',
       (tester) async {
     var finished=0;

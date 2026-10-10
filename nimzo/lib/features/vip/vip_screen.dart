@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/utils/formatters.dart';
 import '../../core/providers/supabase_provider.dart';
+import '../../core/errors/error_handler.dart';
 import '../profile/profile_repository.dart';
 import 'vip_repository.dart';
 import 'vip_tiers.dart';
@@ -78,8 +79,11 @@ class _VipState extends ConsumerState<VipScreen> {
       );
     } catch (error) {
       if (!mounted) return;
+      final message = error.toString().toLowerCase().contains('insufficient coins')
+          ? 'Not enough coins for this VIP tier.'
+          : mapError(error).message;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('VIP purchase failed: ' + error.toString())),
+        SnackBar(content: Text(message)),
       );
     } finally {
       if (mounted) setState(() => _purchasing = false);
