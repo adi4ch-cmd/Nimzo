@@ -91,7 +91,9 @@ void main() {
         ),
       ),
     ));
-    await tester.pump();
+    // Wait for the bundled AssetManifest FutureBuilder before asserting
+    // which licensed stage image was rendered by the Flutter asset pipeline.
+    await tester.pumpAndSettle();
     expect(find.byType(InkWell), findsNothing);
     expect(find.byType(ElevatedButton), findsNothing);
     if (bundled.contains('assets/haza_membership/vip/ic_vip_bg_3.webp')) {
