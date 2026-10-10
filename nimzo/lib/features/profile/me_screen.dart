@@ -14,6 +14,7 @@ import 'profile_screen.dart';
 import 'profile_presentation.dart';
 import 'profile_membership_status.dart';
 import 'levels_screen.dart';
+import '../store/store_badge.dart';
 
 class MeScreen extends ConsumerWidget {
   const MeScreen({super.key});
@@ -104,6 +105,11 @@ class MeScreen extends ConsumerWidget {
                                       fontSize: 18,
                                       fontWeight: FontWeight.w700,
                                     ),
+                                  ),
+                                  EquippedRoyalMedal(
+                                    userId: id,
+                                    compact: true,
+                                    onDark: true,
                                   ),
                                   if (p.dateOfBirth != null)
                                     Container(
