@@ -85,7 +85,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'New post');
-    await tester.tap(find.text('Post'));
+    await tester.tap(find.text('Publish moment'));
     await tester.pump();
     await tester.pumpWidget(const SizedBox());
     repo.pending.complete();
@@ -118,8 +118,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Choose photo'));
     await tester.pumpAndSettle();
-    expect(find.text('Camera'), findsOneWidget);
-    expect(find.text('Gallery'), findsOneWidget);
+    expect(find.text('Take a photo'), findsOneWidget);
+    expect(find.text('Choose from gallery'), findsOneWidget);
     await tester.tap(find.text('Camera'));
     await tester.pumpAndSettle();
     expect(storage.selected, ImageSource.camera);
