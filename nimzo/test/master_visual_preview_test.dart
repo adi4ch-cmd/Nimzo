@@ -84,7 +84,14 @@ void main() {
         });
       }
       await tester.pump(const Duration(milliseconds: 300));
-      if (preview.$1 == 'crystal_final') {
+      if (preview.$1 == 'vip_final' || preview.$1 == 'svip_final') {
+        // Active membership screens now include verified rewards and claim
+        // state. Old static VIP screenshots should never hide those controls.
+        expect(find.textContaining('NIMZO'), findsWidgets);
+        expect(find.byKey(ValueKey(preview.$1 == 'vip_final'
+          ? 'vip-reward-panel' : 'svip-reward-panel')), findsOneWidget);
+        expect(find.textContaining('VIP'), findsWidgets);
+      } else if (preview.$1 == 'crystal_final') {
         // The original Diamond screenshot was deliberately retired. Validate
         // the active six-stage Rocket UI rather than asserting old pixels.
         expect(find.text('ROOM ROCKET'), findsOneWidget);
