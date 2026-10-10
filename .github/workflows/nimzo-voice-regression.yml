@@ -7,6 +7,8 @@ on:
     paths:
       - nimzo/lib/features/voice/**
       - nimzo/test/voice/**
+      - supabase/functions/voice-token/**
+      - nimzo/supabase/functions/voice-token/**
       - .github/workflows/nimzo-voice-regression.yml
   workflow_dispatch:
 
@@ -29,5 +31,10 @@ jobs:
       - name: Verify Vivox error handling
         working-directory: nimzo
         run: flutter test test/voice/vivox_voice_service_test.dart
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate server-side Vivox Production token signatures
+        run: node --test supabase/functions/voice-token/tests/authorization.test.mjs
       - name: Check native voice contract tests
         run: python3 -m unittest discover -s nimzo/test/voice -p '*_test.py'
