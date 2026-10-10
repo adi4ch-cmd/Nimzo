@@ -8,6 +8,7 @@ import '../../core/widgets/master_ui.dart';
 import '../../core/theme/app_theme.dart';
 import 'profile_repository.dart';
 import 'profile_screen.dart';
+import 'profile_level_scale.dart';
 
 class LevelsScreen extends ConsumerStatefulWidget {
   final int initialKind;
@@ -69,6 +70,10 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                 final band = bands
                     .where((b) => level >= b.$1 && level <= b.$2)
                     .firstOrNull;
+                final next = total == null || level >= 120 || level < 1
+                    ? null
+                    : (ProfileLevelScale.nextRequirement(selected, level) - total)
+                        .clamp(0, 1 << 62);
                 return ReferenceCard(
                   child: Column(
                     children: [
@@ -88,15 +93,22 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                         level > 0 ? 'Level $level / 120' : 'Level unavailable',
                         style: const TextStyle(color: NimzoStyle.muted),
                       ),
-                      const SizedBox(height: 6),
+                      if (total != null && level > 0) ...[
+                        const SizedBox(height: 10),
+                        LinearProgressIndicator(
+                          key: const ValueKey('verified-level-progress'),
+                          value: ProfileLevelScale.fraction(selected, level, total),
+                          minHeight: 6,
+                          color: ProfileLevelScale.color(selected, level),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ],
+                      const SizedBox(height: 8),
                       Text(
                         total == null
-                            ? 'Total unavailable · next-level requirement unavailable'
-                            : '${referenceNumber(total)} ${[
-                                'coins sent',
-                                'diamonds received',
-                                'activity points'
-                              ][selected]} · next-level requirement unavailable',
+                            ? 'Earned progress unavailable'
+                            : '${referenceNumber(total)} ${ProfileLevelScale.units[selected]}'
+                              '${next == null ? ' · Maximum tier or unavailable' : ' · ${referenceNumber(next)} to next level'}',
                         style: const TextStyle(
                           color: NimzoStyle.muted,
                           fontSize: 12,
@@ -135,16 +147,14 @@ class _LevelState extends ConsumerState<LevelsScreen> {
               ],
             ),
           ),
-          if (selected == 0)
-            const Padding(
+          const Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 'Tier colors',
                 style: TextStyle(fontWeight: FontWeight.w700),
               ),
             ),
-          if (selected == 0)
-            for (final band in bands)
+          for (final band in bands)
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 13),
                 decoration: const BoxDecoration(
@@ -157,7 +167,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                       height: 14,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: band.$4,
+                        color: ProfileLevelScale.color(selected, band.$1),
                       ),
                     ),
                     const SizedBox(width: 10),
