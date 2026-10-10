@@ -38,6 +38,21 @@ String? freeGiftArtwork(String name) => switch (name.trim().toLowerCase()) {
       _ => null,
     };
 
+/// Exact-name premium artwork already bundled in NIMZO.
+/// These are real named gift images, never an unrelated catalog placeholder.
+/// The Dragon reference is a genuine 3D dragon image; the old
+/// assets/gifts/dragon_1m_poster.webp path was never bundled.
+String? cinematicGiftArtwork(String name) => switch (name.trim().toLowerCase()) {
+      'rose' => 'assets/reference/gift/1.jpg',
+      'heart' => 'assets/reference/gift/2.jpg',
+      'gift box' => 'assets/reference/gift/3.jpg',
+      'dragon' => 'assets/reference/gift/8.jpg',
+      'crown' => 'assets/reference/gift/9.jpg',
+      'diamond' => 'assets/reference/gift/7.jpg',
+      'rocket' => 'assets/reference/gift/4.jpg',
+      _ => null,
+    };
+
 /// All fourteen newly illustrated NIMZO gifts use original branded vectors.
 /// Keeping this whitelist explicit prevents unrelated catalog entries from
 /// showing another gift's picture.
@@ -98,7 +113,11 @@ class GiftArtwork extends StatelessWidget {
       ),
     );
     final path =
-        assetPath ?? originalNimzoGiftArtwork(name) ?? freeGiftArtwork(name) ?? originalDragonPoster(name) ?? referenceGiftArtwork(name);
+        cinematicGiftArtwork(name) ??
+        freeGiftArtwork(name) ??
+        assetPath ??
+        originalNimzoGiftArtwork(name) ??
+        referenceGiftArtwork(name);
     if (path == null) {
       final svga = freeGiftAnimationForName(name);
       if (svga != null) return SVGAEasyPlayer(assetsName: svga, fit: BoxFit.contain);
