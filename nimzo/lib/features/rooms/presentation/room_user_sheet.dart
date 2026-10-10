@@ -11,6 +11,7 @@ import '../../gifts/yo2_gift_ui.dart';
 import '../../profile/profile_repository.dart';
 import '../../profile/profile_screen.dart';
 import '../../profile/levels_screen.dart';
+import '../../profile/profile_membership_status.dart';
 import '../../social/social_repositories.dart';
 import 'room_controller.dart';
 import '../../voice/voice_controller.dart';
@@ -98,6 +99,9 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('ID:${p.nimzoId}'),
+                      const SizedBox(height: 7),
+                      ProfileMembershipStatus(
+                        profile: p, editable: self, compact: true),
                       const SizedBox(height: 6),
                       Row(
                         key: const ValueKey('room-user-level-badges'),
