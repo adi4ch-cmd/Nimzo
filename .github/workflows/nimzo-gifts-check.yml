@@ -1,0 +1,134 @@
+name: NIMZO gift-only tests (no APK)
+
+on:
+  push:
+    branches:
+      - feature/profile-reference-redesign
+    paths:
+      - 'nimzo/lib/features/gifts/**'
+      - 'nimzo/lib/features/rooms/rocket/**'
+      - 'nimzo/test/room_rocket_*.dart'
+      - 'nimzo/test/remaining_visual_qa_test.dart'
+      - 'nimzo/assets/room_rocket/**'
+      - 'tools/verify_room_rocket_media.py'
+      - 'nimzo/lib/features/vip/**'
+      - 'nimzo/assets/haza_membership/**'
+      - 'nimzo/test/haza_vip_artwork_test.dart'
+      - 'tools/install_haza_vip_assets.py'
+      - 'nimzo/test/vip_*.dart'
+      - 'nimzo/test/phoenix_*.dart'
+      - 'nimzo/test/royal_lion_*.dart'
+      - 'nimzo/test/custom_gift_*.dart'
+      - 'nimzo/assets/nimzo_custom_gifts/**'
+      - 'nimzo/lib/features/rooms/presentation/room_screen.dart'
+      - 'nimzo/lib/features/rooms/rocket/**'
+      - 'nimzo/lib/features/rooms/diamond/**'
+      - 'nimzo/assets/room_rocket/**'
+      - 'nimzo/test/room_rocket_test.dart'
+      - 'nimzo/test/diamond_blast_test.dart'
+      - 'nimzo/test/master_visual_preview_test.dart'
+      - 'tools/install_room_rocket_assets.py'
+      - 'nimzo/lib/features/rooms/presentation/room_user_sheet.dart'
+      - 'nimzo/lib/features/rooms/presentation/room_overlays.dart'
+      - 'nimzo/lib/features/profile/me_screen.dart'
+      - 'nimzo/lib/features/store/store_badge.dart'
+      - 'nimzo/test/equipped_medal_visibility_test.dart'
+      - 'nimzo/lib/features/profile/profile_screen.dart'
+      - 'nimzo/lib/features/moments/moments_screen.dart'
+      - 'nimzo/test/gift_*.dart'
+      - 'nimzo/test/verified_gift_broadcast_test.dart'
+      - 'nimzo/pubspec.yaml'
+      - 'nimzo/assets/gifts/**'
+      - 'nimzo/assets/yo2_gifts/**'
+      - 'nimzo/test/yo2_gift_ui_test.dart'
+      - 'tools/import_yo2_gift_assets.py'
+      - 'tools/import_dragon_gifts.py'
+      - '.github/workflows/nimzo-gifts-check.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate-gifts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Check original asset consistency
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          expected = {
+              'dragon_1m.mp4': 'c2b70872477e225d720da7330fc6b5d77b8c6227c00ffc6c6bb558cb4905b2d7',
+              'golden_dragon_5m.mp4': 'b9744763526d523dfc6f155beff8510b8481919ad48ec45f778722502ba101ec'
+          }
+          folder = Path('nimzo/assets/gifts')
+          present = [folder.joinpath(name).exists() for name in expected]
+          if any(present):
+              assert all(present), 'Both videos must be installed together'
+              assert '    - assets/gifts/' in Path('nimzo/pubspec.yaml').read_text()
+              for name, sha in expected.items():
+                  assert hashlib.sha256(folder.joinpath(name).read_bytes()).hexdigest() == sha, name
+          if all(present):
+              for name in ('dragon_1m_poster.webp', 'golden_dragon_5m_poster.webp'):
+                  data = folder.joinpath(name).read_bytes()
+                  assert data[:4] == b'RIFF' and data[8:12] == b'WEBP', name
+          print('Original MP4 asset contract OK; installed:', all(present))
+          PY
+      - name: Verify byte-identical original Yo2 gift control assets
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          root = Path('nimzo/assets/yo2_gifts/images')
+          original = {
+              'ic_gift_pannel_send_up.webp': '58f023ac68b8a629d99b624d7e932641a6f31455301c8984db8389ced07a58de',
+              'ic_gift_pannal_sel.webp': 'db624488623c2b0fbe09c31aefdbc4ccc7ea99987ba16b85baf53041fb130323',
+          }
+          for name, expected in original.items():
+              path = root / name
+              assert path.is_file(), f'Licensed Yo2 icon missing: {name}'
+              assert hashlib.sha256(path.read_bytes()).hexdigest() == expected, name
+          effects = Path('nimzo/assets/yo2_gifts/effects')
+          if effects.exists():
+              assert len(list(effects.glob('*.svga'))) == 7
+              assert (root.parent / 'GIFT_ASSET_MANIFEST.csv').exists()
+              assert not any('dragon' in p.name.lower()
+                             for p in root.parent.rglob('*') if p.is_file())
+          print('Original Yo2 gifting icons verified')
+          PY
+      - name: Resolve Flutter packages
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Analyze gift code
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/features/gifts test/gift_video_overlay_test.dart test/verified_gift_broadcast_test.dart test/yo2_gift_ui_test.dart lib/features/rooms/presentation/room_screen.dart lib/features/rooms/presentation/room_user_sheet.dart lib/features/profile/profile_screen.dart lib/features/moments/moments_screen.dart
+      - name: Full analysis before final APK
+        working-directory: nimzo
+        run: flutter analyze
+      - name: Validate Rocket media installation scripts (no APK)
+        run: |
+          python3 -m py_compile tools/verify_room_rocket_media.py tools/install_room_rocket_media.py
+          if test -f nimzo/assets/room_rocket/vap_rocket_reward_1.mp4; then
+            python3 tools/verify_room_rocket_media.py
+          else
+            echo "::notice::Rocket VAP assets not committed yet. Release APK is blocked until 12 originals are installed."
+          fi
+
+      - name: Check room Rocket naming and server event compatibility (no media build)
+        working-directory: nimzo
+        run: flutter test test/room_rocket_test.dart
+
+      - name: Full regression before final APK
+        working-directory: nimzo
+        run: flutter test
+      - name: Run gift-only tests
+        working-directory: nimzo
+        run: |
+          flutter test             test/gift_free_animated_catalog_test.dart             test/gift_artwork_test.dart             test/gift_media_repository_test.dart             test/gift_rejection_test.dart             test/gift_retry_test.dart             test/gift_room_recipient_test.dart             test/gift_settlement_error_test.dart             test/gift_video_overlay_test.dart             test/verified_gift_broadcast_test.dart             test/yo2_gift_ui_test.dart

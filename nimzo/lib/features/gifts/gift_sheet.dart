@@ -1,277 +1,501 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../vip/phoenix_widgets.dart';
+import '../vip/phoenix_entitlement.dart';
 
+import 'dart:math';
 
 import 'package:flutter/material.dart';
-
-import '../wallet/wallet_screen.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../core/widgets/empty_view.dart';
-import '../../core/widgets/error_view.dart';
-import '../../core/widgets/shimmer_view.dart';
-import '../../core/utils/helpers.dart';
+import '../../core/providers/supabase_provider.dart';
+import '../../core/widgets/reference_widgets.dart';
+import '../profile/profile_repository.dart';
+import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
+import 'gift_error.dart';
+import 'gift_artwork.dart';
+import 'gift_svga_overlay.dart';
+import 'gift_celebration_overlay.dart';
+import 'yo2_gift_ui.dart';
+import 'nimzo_gift_control_art.dart';
+import '../../core/widgets/master_ui.dart';
+import '../moments/moment_repository.dart';
+import '../moments/moments_screen.dart' show momentDetailProvider;
+import '../rooms/presentation/room_controller.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/utils/formatters.dart';
 
-const giftCategories = ['All', 'Classic', 'Premium', 'VIP', 'SVIP'];
+Future<void> showProfileGiftSheet(BuildContext context, String receiverId) =>
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => GiftSheet(receiverId: receiverId),
+    );
+Future<void> showRoomGiftSheet(
+  BuildContext context,
+  String roomId,
+  String receiverId,
+) =>
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => GiftSheet(receiverId: receiverId, roomId: roomId),
+    );
 
-final myCoinBalanceProvider = FutureProvider.autoDispose<int>((ref) async {
-  return (await ref.watch(walletProvider.future)).coins;
-});
-
-void showGiftSheet(BuildContext c, String roomId, String receiverId) {
-  showModalBottomSheet(
-    context: c,
-    isScrollControlled: true,
-    builder: (_) => GiftSheet(roomId: roomId, receiverId: receiverId),
-  );
-}
+Future<void> showMomentGiftSheet(
+  BuildContext context,
+  String momentId,
+  String receiverId,
+) =>
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => GiftSheet(receiverId: receiverId, momentId: momentId),
+    );
 
 class GiftSheet extends ConsumerStatefulWidget {
-  final String roomId, receiverId;
-  const GiftSheet({super.key, required this.roomId, required this.receiverId});
+  final String receiverId;
+  final String? roomId;
+  final String? momentId;
+  const GiftSheet({
+    super.key,
+    required this.receiverId,
+    this.roomId,
+    this.momentId,
+  });
   @override
-  ConsumerState<GiftSheet> createState() => _S();
+  ConsumerState<GiftSheet> createState() => _State();
 }
 
-class _S extends ConsumerState<GiftSheet> {
-  int qty = 1;
-  String cat = 'All';
+class _State extends ConsumerState<GiftSheet> {
   Gift? selected;
+  String? recipient;
+  String get receiverId => recipient ?? widget.receiverId;
   bool busy = false;
-  String? _pendingKey, _pendingPayload;
-  final _custom = TextEditingController();
-  @override
-  void dispose() {
-    _custom.dispose();
-    super.dispose();
-  }
-
-  Future<void> _send() async {
-    final g = selected;
-    if (g == null) return;
-    final n = _custom.text.isNotEmpty ? int.tryParse(_custom.text) ?? 0 : qty;
-    if (n < 1 || n > 9999) {
-      _snack('Enter a quantity from 1 to 9999');
-      return;
-    }
-    if (busy) return;
-    final ok = await showDialog<bool>(
+  bool confirming = false;
+  int quantity = 1;
+  String activeGiftCategory = 'All';
+  String? key;
+  Future<void> send() async {
+    if (selected == null || busy || confirming) return;
+    final gift = selected!;
+    final requestQuantity = quantity;
+    setState(() => confirming = true);
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (d) => AlertDialog(
-        title: const Text('Confirm gift'),
-        content: Text('Send $n x ${g.name} for ${g.price * n} coins?'),
+      builder: (c) => AlertDialog(
+        title: const Text('Send gift?'),
+        content: Text(
+          '${gift.name} × $requestQuantity · ${gift.price * requestQuantity} coins',
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(d, false),
+            onPressed: () => Navigator.pop(c, false),
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(d, true),
+            onPressed: () => Navigator.pop(c, true),
             child: const Text('Send'),
           ),
         ],
       ),
     );
-    if (ok != true || !mounted) return;
-    final payload = '${g.id}:$n';
-    if (_pendingPayload != payload) {
-      _pendingPayload = payload;
-      _pendingKey = '${DateTime.now().microsecondsSinceEpoch}-${g.id}';
-    }
+    if (!mounted) return;
+    setState(() => confirming = false);
+    if (confirmed != true) return;
+    final container = ProviderScope.containerOf(context, listen: false);
+    final me = ref.read(currentUserIdProvider);
+    key ??= List.generate(
+      16,
+      (_) => Random.secure().nextInt(256).toRadixString(16).padLeft(2, '0'),
+    ).join();
     setState(() => busy = true);
     try {
-      await ref
-          .read(giftRepositoryProvider)
-          .send(
-            roomId: widget.roomId,
-            receiverId: widget.receiverId,
-            giftId: g.id,
-            qty: n,
-            key: _pendingKey!,
-          );
-      ref.invalidate(walletProvider);
-      ref.invalidate(myCoinBalanceProvider);
+      final r = ref.read(giftRepositoryProvider), g = gift;
+      if (widget.momentId != null) {
+        await ref.read(momentRepositoryProvider).sendGift(
+              momentId: widget.momentId!,
+              receiverId: receiverId,
+              giftId: g.id,
+              qty: requestQuantity,
+              key: key!,
+            );
+        container.invalidate(momentsFeedProvider);
+        container.invalidate(momentDetailProvider(widget.momentId!));
+        container.invalidate(profileMomentsProvider(receiverId));
+      } else if (widget.roomId == null) {
+        await r.sendProfile(
+          receiverId: receiverId,
+          giftId: g.id,
+          qty: requestQuantity,
+          key: key!,
+        );
+      } else {
+        await r.send(
+          roomId: widget.roomId!,
+          receiverId: receiverId,
+          giftId: g.id,
+          qty: requestQuantity,
+          key: key!,
+        );
+      }
+      container.invalidate(walletProvider);
+      container.invalidate(profileProvider(receiverId));
+      container.invalidate(profileStatsProvider(receiverId));
+      if (widget.roomId != null)
+        container.invalidate(roomProvider(widget.roomId!));
+      container.invalidate(profileGiftsProvider(receiverId));
+      if (me != null) {
+        container.invalidate(profileProvider(me));
+        container.invalidate(profileStatsProvider(me));
+      }
+      // Use locally bundled gift artwork after server-confirmed settlement.
+      // Room animations are driven separately by verified backend events.
+      if (mounted && g.category.toLowerCase() != 'dragon') {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 2),
+            content: Row(
+              children: [
+                const NimzoGiftControlArt(
+                  'video_send_gift.webp',
+                  width: 42,
+                  height: 42,
+                  fallback: Icon(Icons.check_circle_outline, size: 28),
+                ),
+                const SizedBox(width: 8),
+                Expanded(child: Text('${g.name} × $requestQuantity sent')),
+              ],
+            ),
+          ),
+        );
+      }
+      // Profile and Moment gifts have no room broadcast. The visual effect
+      // starts only after the server confirms debit and gifting. Room gifts
+      // are animated for all listeners by VerifiedGiftBroadcast instead.
+      if (mounted && widget.roomId == null) {
+        showSettledPersonalGiftCelebration(
+          context,
+          giftName: g.name,
+          quantity: requestQuantity,
+          unitPrice: g.price,
+          assetPath: g.assetPath,
+          recipientName: ref.read(profileProvider(receiverId)).valueOrNull
+                  ?.displayName ??
+              ref.read(profileProvider(receiverId)).valueOrNull?.username,
+        );
+      }
       if (mounted) Navigator.pop(context);
-    } catch (e) {
-      _snack('$e');
+    } catch (error) {
+      // Known RPC rejections roll back settlement, so a new selection is safe.
+      // Uncertain responses keep the original key and payload for retry.
+      if (mounted && error is GiftRejectedException) {
+        setState(() => key = null);
+      }
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              error is GiftRejectedException
+                  ? error.message
+                  : 'Gift was not confirmed. Retry to check this same request.',
+            ),
+          ),
+        );
     } finally {
       if (mounted) setState(() => busy = false);
     }
   }
 
-  void _snack(String s) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s)));
-
   @override
   Widget build(BuildContext context) {
-    final catalog = ref.watch(giftCatalogProvider);
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.viewInsetsOf(context).bottom,
-        ),
+    final wallet = ref.watch(walletProvider);
+    final recipients = widget.roomId == null
+        ? null
+        : ref.watch(roomSeatProfilesProvider(widget.roomId!)).valueOrNull;
+    final me = ref.watch(currentUserIdProvider);
+    final phoenix = me != null &&
+        ref.watch(phoenixEntitlementProvider(me)).asData?.value?.isPhoenix ==
+            true;
+    return PhoenixDecoration(
+      userId: me,
+      child: SafeArea(
         child: SizedBox(
-          height: MediaQuery.sizeOf(context).height * 0.72,
+          height: MediaQuery.sizeOf(context).height * .75,
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        'Send a gift',
+              if (phoenix)
+                const Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      PhoenixMark(),
+                      SizedBox(width: 8),
+                      Text(
+                        'NIMZO Royal VIP gift tray',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
+                          color: phoenixGold,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                    ),
-                    ref
-                        .watch(myCoinBalanceProvider)
-                        .when(
-                          loading: () => const SizedBox(
-                            width: 54,
-                            height: 28,
-                            child: Center(
-                              child: SizedBox(
-                                width: 14,
-                                height: 14,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                            ),
-                          ),
-                          error: (_, __) => const Text('Balance unavailable'),
-                          data: (coins) => _CoinPill(value: coins),
-                        ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 48,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  children: [
-                    for (final c in giftCategories)
-                      Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: ChoiceChip(
-                          label: Text(c),
-                          selected: cat == c,
-                          onSelected: (_) => setState(() => cat = c),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: catalog.when(
-                  loading: () => const ShimmerView(rows: 4),
-                  error: (e, _) => ErrorView(
-                    message: '$e',
-                    onRetry: () => ref.invalidate(giftCatalogProvider),
+                    ],
                   ),
-                  data: (all) {
-                    final list = cat == 'All'
-                        ? all
-                        : all
-                              .where(
-                                (g) =>
-                                    g.category.toLowerCase() ==
-                                    cat.toLowerCase(),
-                              )
-                              .toList();
-                    if (list.isEmpty)
-                      return const EmptyView(
-                        title: 'No gifts in this category',
-                      );
-                    return GridView.count(
-                      crossAxisCount: MediaQuery.sizeOf(context).width < 360
-                          ? 3
-                          : 4,
-                      mainAxisExtent: 118,
-                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    children: [
+                      const NimzoGiftControlArt(
+                        'video_send_gift.webp',
+                        width: 36,
+                        height: 36,
+                        fallback: Icon(Icons.card_giftcard, size: 24),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'NIMZO Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${compactNumber(wallet.valueOrNull!.coins)} coins'}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Room members can gift themselves even when not seated on
+              // a microphone. The seat roster must not hide "Myself".
+              if (widget.roomId != null &&
+                  me != null &&
+                  recipients?.values.any((p) => p.id == me) != true)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ChoiceChip(
+                      label: const Text('Myself'),
+                      selected: receiverId == me,
+                      onSelected: busy || confirming || key != null
+                          ? null
+                          : (_) => setState(() => recipient = me),
+                    ),
+                  ),
+                ),
+              if (recipients != null && recipients.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    height: 48 * MediaQuery.textScalerOf(context).scale(1),
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
                       children: [
-                        for (final g in list)
-                          InkWell(
-                            onTap: () => setState(() => selected = g),
-                            child: Container(
-                              margin: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: selected?.id == g.id
-                                      ? const Color(0xFF22C55E)
-                                      : const Color(0xFFE2E8F0),
-                                  width: selected?.id == g.id ? 2 : 1,
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  _GiftVisual(
-                                    gift: g,
-                                    selected: selected?.id == g.id,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    g.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  _CoinPrice(value: g.price),
-                                ],
-                              ),
+                        for (final p in recipients.values)
+                          ChoiceChip(
+                            label: Text(
+                              p.id == me
+                                  ? 'Myself'
+                                  : p.displayName ?? p.username ?? 'Nimzo user',
                             ),
+                            selected: receiverId == p.id,
+                            onSelected: busy || confirming || key != null
+                                ? null
+                                : (_) => setState(() => recipient = p.id),
                           ),
                       ],
-                    );
-                  },
+                    ),
+                  ),
+                ),
+              Expanded(
+                child: AsyncContent(
+                  value: ref.watch(giftCatalogProvider),
+                  onRetry: () => ref.invalidate(giftCatalogProvider),
+                  builder: (gifts) => gifts.isEmpty
+                      ? const EmptyContent('No gifts available')
+                      : CustomScrollView(
+                          slivers: [
+                            const SliverToBoxAdapter(
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+                                child: Text(
+                                  'GIFT COLLECTION',
+                                  style: TextStyle(
+                                    letterSpacing: 2,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xffd6ad61),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SliverToBoxAdapter(
+                              child: SizedBox(
+                                height: 46,
+                                child: ListView(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    for (final category in nimzoGiftCategories(
+                                      gifts.map((gift) => gift.category),
+                                    ))
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 8,
+                                        ),
+                                        child: ChoiceChip(
+                                          label: Text(category),
+                                          selected:
+                                              activeGiftCategory == category,
+                                          onSelected: busy ||
+                                                  confirming ||
+                                                  key != null
+                                              ? null
+                                              : (_) => setState(() {
+                                                    activeGiftCategory =
+                                                        category;
+                                                    if (selected != null &&
+                                                        !giftMatchesCategory(
+                                                          selected!.category,
+                                                          category,
+                                                        )) {
+                                                      selected = null;
+                                                    }
+                                                  }),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SliverPadding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              sliver: SliverGrid(
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: MediaQuery.sizeOf(context).width < 390 ? 2 : 3,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                  childAspectRatio: .76 /
+                                      MediaQuery.textScalerOf(context).scale(1),
+                                ),
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) {
+                                    final gift = gifts
+                                        .where(
+                                          (g) => giftMatchesCategory(
+                                            g.category,
+                                            activeGiftCategory,
+                                          ),
+                                        )
+                                        .elementAt(index);
+                                    return _giftCard(
+                                      gift,
+                                      legendary: gift.price == 35000000 ||
+                                          gift.price == 50000000,
+                                    );
+                                  },
+                                  childCount: gifts
+                                      .where(
+                                        (g) => giftMatchesCategory(
+                                          g.category,
+                                          activeGiftCategory,
+                                        ),
+                                      )
+                                      .length,
+                                ),
+                              ),
+                            ),
+                            const SliverToBoxAdapter(
+                              child: Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Text(
+                                  'Gift prices and delivery are verified by the NIMZO server.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: NimzoStyle.muted,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
               ),
+              if (selected != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.verified_outlined,
+                          color: Color(0xff0f8d59), size: 18),
+                      const SizedBox(width: 7),
+                      Expanded(
+                        child: Text(
+                          'Total · ${compactNumber(selected!.price * quantity)} coins',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff0c7650),
+                          ),
+                        ),
+                      ),
+                      if (key != null)
+                        const Text(
+                          'Retry same request',
+                          style: TextStyle(fontSize: 11, color: Color(0xff6b7280)),
+                        ),
+                    ],
+                  ),
+                ),
               Padding(
-                padding: const EdgeInsets.all(8),
-                child: Wrap(
-                  spacing: 4,
-                  runSpacing: 4,
-                  crossAxisAlignment: WrapCrossAlignment.center,
+                padding: const EdgeInsets.all(12),
+                child: Row(
                   children: [
-                    for (final q in [1, 2, 5, 10])
-                      Padding(
-                        padding: const EdgeInsets.only(right: 4),
-                        child: ChoiceChip(
-                          label: Text('$q'),
-                          selected: qty == q && _custom.text.isEmpty,
-                          onSelected: (_) => setState(() {
-                            qty = q;
-                            _custom.clear();
-                          }),
-                        ),
-                      ),
-                    SizedBox(
-                      width: 64,
-                      child: TextField(
-                        controller: _custom,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          hintText: 'Custom',
-                          isDense: true,
-                        ),
-                        onChanged: (_) => setState(() {}),
-                      ),
+                    const Text('Quantity'),
+                    const SizedBox(width: 12),
+                    DropdownButton<int>(
+                      value: quantity,
+                      items: [
+                        for (final q in [1, 10, 50, 99, 100, 999])
+                          DropdownMenuItem(value: q, child: Text('$q')),
+                      ],
+                      onChanged: busy || confirming || key != null
+                          ? null
+                          : (q) => setState(() => quantity = q!),
                     ),
-                    FilledButton(
-                      onPressed: busy || selected == null ? null : _send,
-                      child: const Text('Send'),
+                    const Spacer(),
+                    GradientButton(
+                      onPressed:
+                          busy || confirming || selected == null ? null : send,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const NimzoGiftControlArt(
+                            'icon_gift_modal.webp',
+                            width: 18,
+                            height: 18,
+                            fallback: Icon(Icons.send, size: 16),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            busy
+                                ? 'Sending…'
+                                : key == null
+                                    ? 'Send'
+                                    : 'Retry',
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -282,121 +506,132 @@ class _S extends ConsumerState<GiftSheet> {
       ),
     );
   }
-}
 
-class _GiftVisual extends StatelessWidget {
-  final Gift gift;
-  final bool selected;
-  const _GiftVisual({required this.gift, required this.selected});
-
-  static const _local = <String, String>{
-    'Rose': 'assets/gifts/rose.svg',
-    'Heart': 'assets/gifts/heart.svg',
-    'Kiss': 'assets/gifts/kiss.svg',
-    'Coffee': 'assets/gifts/coffee.svg',
-    'Crown': 'assets/gifts/crown.svg',
-    'Diamond': 'assets/gifts/diamond.svg',
-    'Rocket': 'assets/gifts/rocket.svg',
-    'Sports Car': 'assets/gifts/car.svg',
-    'Luxury Yacht': 'assets/gifts/yacht.svg',
-    'Private Jet': 'assets/gifts/jet.svg',
-    'Golden Palace': 'assets/gifts/palace.svg',
-    'Royal Dragon': 'assets/gifts/dragon.svg',
-    'Phoenix': 'assets/gifts/phoenix.svg',
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final fallback = switch (gift.category.toLowerCase()) {
-      'classic' => Icons.favorite_rounded,
-      'premium' => Icons.diamond_rounded,
-      'vip' => Icons.workspace_premium_rounded,
-      'svip' => Icons.auto_awesome_rounded,
-      _ => Icons.card_giftcard_rounded,
-    };
-    final color = selected ? const Color(0xFF16A34A) : const Color(0xFF64748B);
-    final local = _local[gift.name];
-
-    if (local != null) {
-      return AnimatedScale(
-        scale: selected ? 1.08 : 1,
-        duration: const Duration(milliseconds: 160),
-        child: SvgPicture.asset(
-          local,
-          width: 46,
-          height: 46,
-          fit: BoxFit.contain,
-        ),
-      );
-    }
-
-    if (gift.assetPath != null && gift.assetPath!.trim().isNotEmpty) {
-      final url = storageUrl(Supabase.instance.client, 'gifts', gift.assetPath);
-      if (url != null) {
-        return SizedBox(
-          width: 46,
-          height: 46,
-          child: Image.network(
-            url,
-            fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) =>
-                Icon(fallback, size: 30, color: color),
+  /// Premium, accurately labelled artwork for the 20 real server catalog
+  /// gifts. Only Rocket and Sports Car have verified original SVGA playback.
+  /// All other icons are illustrations, never pretend video stills.
+  Widget _giftCard(Gift gift, {bool legendary = false}) {
+    final highlighted = selected?.id == gift.id;
+    final realAnimation = freeGiftAnimationForName(gift.name) != null;
+    final accent = gift.category.toLowerCase() == 'dragon'
+        ? const Color(0xffffd08a)
+        : gift.price >= 1000000
+            ? const Color(0xffd6b8ff)
+            : const Color(0xffa8e3cb);
+    return Semantics(
+      label: '${gift.name}, ${gift.price} coins${realAnimation ? ', original animated gift' : ''}',
+      button: true,
+      child: InkWell(
+        key: ValueKey('gift-card-${gift.id}'),
+        borderRadius: BorderRadius.circular(15),
+        onTap: busy || confirming
+            ? null
+            : () {
+                if (key != null && selected?.id != gift.id) return;
+                setState(() => selected = gift);
+              },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          padding: const EdgeInsets.fromLTRB(7, 7, 7, 10),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: highlighted
+                  ? const [Color(0xff264b3e), Color(0xff0f2929)]
+                  : const [Color(0xff1b2831), Color(0xff111923)],
+            ),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: highlighted ? const Color(0xff6fdda9)
+                  : legendary ? const Color(0xffd8b26c)
+                  : const Color(0xff374550),
+              width: highlighted ? 1.5 : 1,
+            ),
           ),
-        );
-      }
-    }
-    return Icon(fallback, size: 30, color: color);
+          child: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xff24343a),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(7),
+                        child: GiftArtwork(
+                          name: gift.name,
+                          assetPath: gift.assetPath,
+                        ),
+                      ),
+                    ),
+                    if (realAnimation)
+                      Positioned(
+                        top: 2,
+                        right: 2,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: const Color(0xff0d573f),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 2),
+                            child: Text('SVGA',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                                fontWeight: FontWeight.w800)),
+                          ),
+                        ),
+                      ),
+                    if (highlighted)
+                      const Positioned(
+                        bottom: 3,
+                        right: 3,
+                        child: Icon(Icons.check_circle,
+                            color: Color(0xff7df1bd), size: 19),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 7),
+              Text(
+                gift.name,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const NimzoGiftControlArt(
+                    'icon_gift_modal.webp', width: 13, height: 13),
+                  const SizedBox(width: 3),
+                  Flexible(
+                    child: Text(
+                      compactNumber(gift.price),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 11,
+                        color: accent, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
-}
-
-class _CoinPill extends StatelessWidget {
-  final int value;
-  const _CoinPill({required this.value});
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-    decoration: BoxDecoration(
-      color: const Color(0xFFFFF7D6),
-      borderRadius: BorderRadius.circular(999),
-      border: Border.all(color: const Color(0xFFF1D77A)),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(
-          Icons.monetization_on_rounded,
-          size: 17,
-          color: Color(0xFFD59B00),
-        ),
-        const SizedBox(width: 5),
-        Text(
-          value.toString(),
-          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
-        ),
-      ],
-    ),
-  );
-}
-
-class _CoinPrice extends StatelessWidget {
-  final int value;
-  const _CoinPrice({required this.value});
-  @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      const Icon(
-        Icons.monetization_on_rounded,
-        size: 13,
-        color: Color(0xFFD59B00),
-      ),
-      const SizedBox(width: 2),
-      Flexible(
-        child: Text(
-          value.toString(),
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ),
-    ],
-  );
 }

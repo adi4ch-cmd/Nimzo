@@ -1,0 +1,41 @@
+name: Capture 20 custom gifts and royal lion visuals (NO APK)
+on:
+  push:
+    branches: [feature/profile-reference-redesign]
+    paths:
+      - '.github/workflows/nimzo-gift-gallery-preview.yml'
+permissions:
+  contents: write
+jobs:
+  gallery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Render actual NIMZO gift icons and Lion Entry
+        working-directory: nimzo
+        run: |
+          flutter pub get
+          flutter test --update-goldens test/custom_gift_gallery_preview_test.dart
+      - name: Upload screenshot review (no APK)
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-original-gift-20-and-lion-review
+          path: |
+            nimzo/test/goldens/nimzo_20_gift_preview.png
+            nimzo/test/goldens/nimzo_lion_entry_preview.png
+      - name: Commit reproducible visual baselines
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add nimzo/test/goldens/nimzo_20_gift_preview.png nimzo/test/goldens/nimzo_lion_entry_preview.png
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'test(gifts-vip): capture 20 original gift icons and Lion entrance [gifts-only]'
+          git push

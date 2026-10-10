@@ -1,7 +1,7 @@
 name: nimzo
 description: Nimzo social voice-room app
 publish_to: none
-version: 1.0.5+105
+version: 1.0.20+120
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:
@@ -10,6 +10,7 @@ dependencies:
   go_router: ^14.0.0
   supabase_flutter: ^2.15.4
   url_launcher: ^6.3.2
+  package_info_plus: ^8.1.0
   lucide_flutter: ^1.47.0
   google_fonts: ^6.2.1
   image_picker: ^1.1.2
@@ -17,11 +18,54 @@ dependencies:
   in_app_purchase: ^3.2.0
   in_app_purchase_android: ^0.5.3
   flutter_svg: ^2.0.17
+  video_player: ^2.9.2
+  flutter_svga: ^0.0.13
+  flutter_vap_player: 2.1.1
 dev_dependencies:
   flutter_test: {sdk: flutter}
   flutter_lints: ^4.0.0
   http: ^1.2.0
+  video_player_platform_interface: 6.9.0
 flutter:
   uses-material-design: true
   assets:
-    - assets/gifts/
+    - assets/room_rocket/
+    - assets/gifts/free/
+    - assets/nimzo_custom_gifts/
+    - assets/nimzo/gift_controls/
+    - assets/yo2_gifts/images/
+    - assets/reference/fonts/Cinzel-OFL.txt
+    - assets/reference/fonts/Poppins-OFL.txt
+    - assets/reference/gift/
+    - assets/reference/fruit/
+    - assets/reference/grady/
+    - assets/reference/slot/
+    - assets/reference/game/
+    - assets/reference/med/
+    - assets/reference/frame/
+    - assets/reference/car/
+    - assets/reference/pg/
+    - assets/reference/lv/
+    - assets/membership/svip/
+    - assets/haza_membership/vip/
+    - assets/haza_membership/svip/
+    - assets/hilo/game_levels/
+    - assets/hilo/store/
+    - assets/reference/svip/
+    - assets/reference/tool/
+    - assets/reference/gem/
+    - assets/reference/chest/
+    - assets/reference/crys/
+    - assets/reference/rmed/
+    - assets/reference/prz/
+    - assets/reference/emblems/
+    - assets/reference/icons/
+  fonts:
+    - family: Cinzel
+      fonts:
+        - asset: assets/reference/fonts/Cinzel.ttf
+    - family: Poppins
+      fonts:
+        - asset: assets/reference/fonts/Poppins-Regular.ttf
+        - asset: assets/reference/fonts/Poppins-SemiBold.ttf
+          weight: 600

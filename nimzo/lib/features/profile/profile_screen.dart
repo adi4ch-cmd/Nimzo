@@ -1,441 +1,717 @@
-import '../auth/presentation/auth_controller.dart';
+import '../vip/phoenix_widgets.dart';
+import '../../core/widgets/master_ui.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/providers/supabase_provider.dart';
-import '../../core/theme/colors.dart';
-import '../../core/widgets/empty_view.dart';
-import '../../core/utils/formatters.dart';
-import '../../core/utils/helpers.dart';
-import '../../core/widgets/error_view.dart';
-import '../../core/widgets/loading_view.dart';
-import '../../core/widgets/nimzo_avatar.dart';
-import '../../core/widgets/nimzo_badge.dart';
-import '../../core/widgets/nimzo_icon.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/widgets/reference_widgets.dart';
+import '../gifts/gift_sheet.dart';
+import '../gifts/yo2_gift_ui.dart';
 import '../social/social_repositories.dart';
+import '../social/friend_button.dart';
 import 'profile_repository.dart';
+import 'levels_screen.dart';
+import 'profile_level_scale.dart';
+import 'profile_membership_status.dart';
+import 'profile_collections.dart';
+import 'profile_setup_screen.dart';
+import 'profile_presentation.dart';
+import '../store/store_badge.dart';
+import '../gifts/gift_artwork.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
   const ProfileScreen({super.key, this.userId});
-
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  String? _visitedId;
+  int section = 0;
+  Widget _actions(BuildContext context, String id, String? me) => me == id
+      ? GradientButton(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const ProfileSetupScreen(edit: true),
+            ),
+          ),
+          child: const Text('Edit profile'),
+        )
+      : Row(
+          children: [
+            Expanded(
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xffdcfce7),
+                  foregroundColor: const Color(0xff16a34a),
+                ),
+                onPressed: () async {
+                  try {
+                    final on = await ref.read(isFollowingProvider(id).future);
+                    final repo = ref.read(followRepositoryProvider);
+                    on ? await repo.unfollow(id) : await repo.follow(id);
+                    ref.invalidate(isFollowingProvider(id));
+                    ref.invalidate(profileStatsProvider(id));
+                    if (me != null) ref.invalidate(profileStatsProvider(me));
+                  } catch (_) {
+                    if (context.mounted)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Unable to update follow. Retry.'),
+                        ),
+                      );
+                  }
+                },
+                child: Text(
+                  ref.watch(isFollowingProvider(id)).valueOrNull == true
+                      ? 'Following'
+                      : 'Follow',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(child: ReferenceFriendButton(userId: id)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xfffce7f3),
+                  foregroundColor: const Color(0xffdb2777),
+                ),
+                onPressed: () => showProfileGiftSheet(context, id),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Yo2GiftPanelArt(
+                      'ic_user_dialog_gift.webp',
+                      width: 18,
+                      height: 18,
+                      fallback: Icon(Icons.card_giftcard, size: 16),
+                    ),
+                    SizedBox(width: 4),
+                    Text('Gift'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+
   @override
   Widget build(BuildContext context) {
-    final me = ref.watch(currentUserIdProvider);
-    final id = widget.userId ?? me;
-    if (id == null) return const LoadingView();
-    final isMe = id == me;
-    if (!isMe && _visitedId != id) {
-      _visitedId = id;
-      Future.microtask(() {
-        if (mounted) ref.read(profileRepositoryProvider).recordVisit(id);
-      });
-    }
-    final p = ref.watch(profileProvider(id));
-    final stats = ref.watch(profileStatsProvider(id));
-    final tags = ref.watch(profileTagsProvider(id));
-    final couple = ref.watch(profileCoupleProvider(id));
-    final models = ref.watch(profileModelsProvider(id));
-    final db = ref.watch(supabaseProvider);
-
+    final me = ref.watch(currentUserIdProvider), id = widget.userId ?? me;
+    if (id == null)
+      return const Scaffold(body: EmptyContent('Please sign in.'));
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isMe ? 'Profile' : ''),
-        actions: [
-          if (isMe)
-            IconButton(
-              icon: const NimzoIcon(
-                Icons.account_balance_wallet_rounded,
-                color: Color(0xFF2E9B73),
-              ),
-              onPressed: () => context.push('/wallet'),
-            ),
-          if (isMe)
-            IconButton(
-              icon: const NimzoIcon(
-                Icons.workspace_premium_rounded,
-                color: Color(0xFFE0A72E),
-              ),
-              onPressed: () => context.push('/vip'),
-            ),
-          if (isMe)
-            IconButton(
-              icon: const NimzoIcon(
-                Icons.settings_rounded,
-                color: Color(0xFF64748B),
-              ),
-              onPressed: () => context.push('/profile-setup'),
-            ),
-          if (isMe)
-            IconButton(
-              icon: const NimzoIcon(
-                Icons.logout_rounded,
-                color: Color(0xFFD85C5C),
-              ),
-              tooltip: 'Sign out',
-              onPressed: () async {
-                final ok = await showDialog<bool>(
-                  context: context,
-                  builder: (c) => AlertDialog(
-                    title: const Text('Sign out?'),
-                    content: const Text(
-                      'Your account and conversations will be here when you return.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(c, false),
-                        child: const Text('Cancel'),
-                      ),
-                      FilledButton(
-                        onPressed: () => Navigator.pop(c, true),
-                        child: const Text('Sign out'),
-                      ),
-                    ],
-                  ),
-                );
-                if (ok == true) {
-                  await ref.read(authControllerProvider.notifier).signOut();
-                  final result = ref.read(authControllerProvider);
-                  if (result.hasError && context.mounted) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text('${result.error}')));
-                  }
-                }
-              },
-            ),
-        ],
-      ),
-      body: p.when(
-        loading: () => const LoadingView(),
-        error: (e, _) => ErrorView(
-          message: '$e',
-          onRetry: () => ref.invalidate(profileProvider(id)),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: NimzoStyle.line)),
+          ),
+          child: _actions(context, id, me),
         ),
-        data: (u) => DefaultTabController(
-          length: 4,
-          child: NestedScrollView(
-            headerSliverBuilder: (_, __) => [
-              SliverToBoxAdapter(
-                child: Column(
+      ),
+      body: AsyncContent(
+        value: ref.watch(profileProvider(id)),
+        onRetry: () => ref.invalidate(profileProvider(id)),
+        builder: (p) {
+          final db = ref.watch(supabaseProvider);
+          String? image(String bucket, String? path) =>
+              path == null ? null : db.storage.from(bucket).getPublicUrl(path);
+          final cover = image('covers', p.coverPath);
+          return ListView(
+            children: [
+              SizedBox(
+                height: 170,
+                child: Stack(
                   children: [
-                    SizedBox(
-                      height: 190,
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            top: 0,
-                            left: 16,
-                            right: 16,
-                            height: 146,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: _ProfileCover(
-                                url: storageUrl(db, 'covers', u.coverPath),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            child: Center(
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: NimzoColors.background,
-                                ),
-                                child: NimzoAvatar(
-                                  radius: 44,
-                                  url: storageUrl(db, 'avatars', u.avatarPath),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     Container(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 8),
-                          Text(
-                            (u.displayName?.trim().isNotEmpty == true)
-                                ? u.displayName!
-                                : 'Nimzo User',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Nimzo ID ${u.nimzoId}',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          if (u.countryName != null)
-                            Text(
-                              [u.countryName, u.language]
-                                  .whereType<String>()
-                                  .where((v) => v.isNotEmpty)
-                                  .join(' · '),
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          const SizedBox(height: 10),
-                          tags.maybeWhen(
-                            data: (t) => Wrap(
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: [
-                                for (final x in t)
-                                  NimzoBadge(
-                                    x,
-                                    gold:
-                                        x.startsWith('TOP') ||
-                                        x.contains('VIP'),
-                                  ),
-                              ],
-                            ),
-                            orElse: () => const SizedBox.shrink(),
-                          ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 8,
-                            children: [
-                              if (u.wealthLevel > 0)
-                                _Level('Wealth', u.wealthLevel),
-                              if (u.charmLevel > 0)
-                                _Level('Charm', u.charmLevel),
-                              if (u.activeLevel > 0)
-                                _Level('Active', u.activeLevel),
-                              if (u.vipLevel > 0) _Level('VIP', u.vipLevel),
-                              if (u.svipLevel > 0) _Level('SVIP', u.svipLevel),
-                            ],
-                          ),
-                          const SizedBox(height: 14),
-                          stats.when(
-                            data: (s) => Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                _Stat('Following', s['following'] ?? 0),
-                                _Stat('Followers', s['followers'] ?? 0),
-                                _Stat('Visitors', s['visitors'] ?? 0),
-                              ],
-                            ),
-                            loading: () => const SizedBox(
-                              height: 42,
-                              child: Center(
-                                child: SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                ),
+                      key: const ValueKey('profile-cover'),
+                      height: 130,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xff4b5563), Color(0xff111827)],
+                        ),
+                        image: cover == null
+                            ? null
+                            : DecorationImage(
+                                image: NetworkImage(cover),
+                                fit: BoxFit.cover,
                               ),
-                            ),
-                            error: (_, __) => Text(
-                              'Stats unavailable',
-                              style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: SafeArea(
+                          bottom: false,
+                          child: IconButton(
+                            onPressed: () {
+                              if (Navigator.of(context).canPop())
+                                Navigator.of(context).pop();
+                            },
+                            icon: const ReferenceIcon(
+                              'back',
+                              color: Colors.white,
                             ),
                           ),
-                          if (!isMe) _Actions(targetId: id),
-                          const SizedBox(height: 8),
-                          couple.maybeWhen(
-                            data: (c) => _SectionPreview(
-                              title: 'CP / Couple',
-                              child: c == null
-                                  ? const Text('No couple linked')
-                                  : Text(
-                                      c['display_name']?.toString() ??
-                                          'Linked couple',
-                                    ),
-                            ),
-                            orElse: () => const SizedBox.shrink(),
-                          ),
-                          models.maybeWhen(
-                            data: (m) => _SectionPreview(
-                              title: 'Models',
-                              child: m.isEmpty
-                                  ? const Text('No model profile yet')
-                                  : Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        for (final x in m)
-                                          Text(
-                                            x['title']?.toString() ?? 'Model',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                            ),
-                            orElse: () => const SizedBox.shrink(),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                    const TabBar(
-                      isScrollable: true,
-                      tabAlignment: TabAlignment.start,
-                      dividerHeight: 0,
-                      tabs: [
-                        Tab(text: 'About'),
-                        Tab(text: 'Moments'),
-                        Tab(text: 'Gifts'),
-                        Tab(text: 'Achievements'),
-                      ],
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: SafeArea(
+                        bottom: false,
+                        child: PopupMenuButton<String>(
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: Colors.white,
+                          ),
+                          onSelected: (value) {
+                            if (value == 'chat') context.push('/chat/$id');
+                            if (value == 'visitors')
+                              context.push('/social/visitors/$id');
+                          },
+                          itemBuilder: (_) => [
+                            const PopupMenuItem(
+                              value: 'visitors',
+                              child: Text('Visitors'),
+                            ),
+                            if (id != me)
+                              const PopupMenuItem(
+                                value: 'chat',
+                                child: Text('Chat'),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 90,
+                      left: 16,
+                      child: Container(
+                        key: const ValueKey('profile-avatar'),
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: PhoenixDecoration(
+                          userId: id,
+                          avatar: true,
+                          child: NimzoAvatar(
+                            name: p.displayName ?? p.username ?? 'N',
+                            url: image('avatars', p.avatarPath),
+                            size: 70,
+                            backgroundColor: NimzoStyle.ink,
+                            online: id == me,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-            body: TabBarView(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text(
-                    u.bio?.isNotEmpty == true ? u.bio! : 'No bio yet.',
-                  ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const ReferenceIcon(
+                          'crown_filled',
+                          color: Color(0xfff59e0b),
+                          size: 22,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: PhoenixNameplate(
+                            userId: id,
+                            name: p.displayName ?? p.username ?? 'Nimzo user',
+                            style: const TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        EquippedRoyalMedal(userId: id, compact: true),
+                        if (p.dateOfBirth != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 9,
+                              vertical: 1,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff2563eb),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '${p.gender == "Female" ? "♀" : "♂"} ${profileAge(p.dateOfBirth!)}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    Text(
+                      'ID:${p.nimzoId} · ${p.countryName ?? p.countryCode ?? ''}',
+                      style: const TextStyle(color: NimzoStyle.muted),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      key: const ValueKey('profile-level-badges'),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (var kind = 0; kind < 3; kind++) ...[
+                          if (kind > 0) const SizedBox(width: 6),
+                          Expanded(
+                            child: InkWell(
+                              key: ValueKey('profile-level-$kind'),
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => LevelsScreen(
+                                    initialKind: kind,
+                                    userId: id,
+                                  ),
+                                ),
+                              ),
+                              child: ProfileProgressBadge(
+                                kind: kind,
+                                level: [
+                                  p.wealthLevel,
+                                  p.charmLevel,
+                                  p.activeLevel,
+                                ][kind],
+                                total: [
+                                  p.wealthCoins,
+                                  p.charmDiamonds,
+                                  p.activePoints,
+                                ][kind],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ProfileMembershipStatus(
+                      profile: p,
+                      editable: me == id,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(p.bio?.isNotEmpty == true ? p.bio! : 'No bio yet'),
+                    AsyncContent(
+                      value: ref.watch(profileStatsProvider(id)),
+                      onRetry: () => ref.invalidate(profileStatsProvider(id)),
+                      builder: (stats) => Wrap(
+                        spacing: 10,
+                        children: [
+                          for (final key in ['following', 'followers'])
+                            InkWell(
+                              onTap: () => context.push('/social/$key/$id'),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6,
+                                ),
+                                child: Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: '${stats[key] ?? 0} ',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            '${key[0].toUpperCase()}${key.substring(1)}',
+                                        style: const TextStyle(
+                                          color: NimzoStyle.muted,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    AsyncContent(
+                      value: ref.watch(profileTagsProvider(id)),
+                      onRetry: () => ref.invalidate(profileTagsProvider(id)),
+                      builder: (tags) => Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (var i = 0; i < tags.length; i++)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: [
+                                  const Color(0xffdcfce7),
+                                  const Color(0xffede9fe),
+                                  const Color(0xfffce7f3),
+                                  const Color(0xffe0f2fe),
+                                ][i % 4],
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                tags[i],
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: [
+                                    const Color(0xff16a34a),
+                                    const Color(0xff7c3aed),
+                                    const Color(0xffdb2777),
+                                    const Color(0xff0284c7),
+                                  ][i % 4],
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const Text(
+                      'CP relationship',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    AsyncContent(
+                      value: ref.watch(profileCoupleProvider(id)),
+                      onRetry: () => ref.invalidate(profileCoupleProvider(id)),
+                      builder: (cp) {
+                        if (cp == null)
+                          return CouplePanel(
+                            name: p.displayName ?? 'N',
+                            avatarUrl: image('avatars', p.avatarPath),
+                            onAdd: me == id ? () => context.push('/cp') : null,
+                          );
+                        final partner =
+                            cp['user_a'] == id ? cp['user_b'] : cp['user_a'];
+                        return AsyncContent(
+                          value: ref.watch(profileProvider(partner)),
+                          onRetry: () =>
+                              ref.invalidate(profileProvider(partner)),
+                          builder: (other) => CouplePanel(
+                            name: p.displayName ?? 'N',
+                            avatarUrl: image('avatars', p.avatarPath),
+                            partnerAvatarUrl: image(
+                              'avatars',
+                              other.avatarPath,
+                            ),
+                            partner: other.displayName ??
+                                other.username ??
+                                'Nimzo user',
+                            days: DateTime.tryParse(
+                                      cp['created_at']?.toString() ?? '',
+                                    ) ==
+                                    null
+                                ? 0
+                                : DateTime.now()
+                                    .difference(
+                                      DateTime.parse(
+                                        cp['created_at'].toString(),
+                                      ),
+                                    )
+                                    .inDays,
+                          ),
+                        );
+                      },
+                    ),
+                    if (me == id)
+                      TextButton(
+                        onPressed: () => context.push('/cp'),
+                        child: const Text('CP invitations'),
+                      ),
+                    for (final kind in ProfileCollection.values) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              {
+                                'medal': 'Medal Wall',
+                                'frame': 'Frame',
+                                'car': 'Car',
+                              }[kind.name]!,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => showReferenceSheet(
+                              context,
+                              Consumer(
+                                builder: (context, ref, _) => Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: AsyncContent(
+                                    value: ref.watch(
+                                      profileCollectionProvider((id, kind)),
+                                    ),
+                                    onRetry: () => ref.invalidate(
+                                      profileCollectionProvider((id, kind)),
+                                    ),
+                                    builder: (items) => items.isEmpty
+                                        ? const EmptyContent('No items yet')
+                                        : SingleChildScrollView(
+                                            child: Wrap(
+                                              spacing: 10,
+                                              runSpacing: 10,
+                                              children: [
+                                                for (final item in items)
+                                                  CollectibleArtwork(
+                                                    item: item,
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            child: const Text(
+                              'View All',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: NimzoStyle.muted,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      AsyncContent(
+                        value: ref.watch(profileCollectionProvider((id, kind))),
+                        onRetry: () => ref.invalidate(
+                          profileCollectionProvider((id, kind)),
+                        ),
+                        builder: (items) => items.isEmpty
+                            ? const EmptyContent('No items yet')
+                            : Wrap(
+                                children: [
+                                  for (final item in items)
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 10),
+                                      child: CollectibleArtwork(item: item),
+                                    ),
+                                ],
+                              ),
+                      ),
+                    ],
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'Gifts (Top 15)',
+                            style: TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        TextButton(
+                          key: const ValueKey('all-received-gifts'),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => _AllGifts(id: id),
+                            ),
+                          ),
+                          child: const Text('View All'),
+                        ),
+                      ],
+                    ),
+                    Wrap(
+                      spacing: 12,
+                      children: [
+                        for (var i = 0; i < 3; i++)
+                          TextButton(
+                            onPressed: () => setState(() => section = i),
+                            child: Text(
+                              ['Gifts', 'Achievements', 'Moments'][i],
+                            ),
+                          ),
+                      ],
+                    ),
+                    if (section == 0) GiftList(id: id, limit: 15),
+                    if (section == 1)
+                      AsyncContent(
+                        value: ref.watch(profileAchievementsProvider(id)),
+                        onRetry: () =>
+                            ref.invalidate(profileAchievementsProvider(id)),
+                        builder: (a) => a.isEmpty
+                            ? const EmptyContent('No achievements yet')
+                            : Column(
+                                children: [
+                                  for (final name in a)
+                                    ListTile(title: Text(name)),
+                                ],
+                              ),
+                      ),
+                    if (section == 2)
+                      AsyncContent(
+                        value: ref.watch(profileMomentsProvider(id)),
+                        onRetry: () =>
+                            ref.invalidate(profileMomentsProvider(id)),
+                        builder: (a) => a.isEmpty
+                            ? const EmptyContent('No Moments yet')
+                            : Column(
+                                children: [
+                                  for (final post in a)
+                                    ListTile(
+                                      title: Text(post.text ?? ''),
+                                      onTap: () =>
+                                          context.push('/moments/${post.id}'),
+                                    ),
+                                ],
+                              ),
+                      ),
+                  ],
                 ),
-                _ProfileMoments(userId: id),
-                _ProfileGifts(userId: id),
-                _ProfileAchievements(userId: id),
-              ],
-            ),
-          ),
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
-class _Stat extends StatelessWidget {
-  final String label;
-  final int value;
-  const _Stat(this.label, this.value);
+class GiftList extends ConsumerWidget {
+  final String id;
+  final int? limit;
+  const GiftList({super.key, required this.id, this.limit});
   @override
-  Widget build(BuildContext c) => Column(
-    children: [
-      Text(
-        '$value',
-        style: Theme.of(c).textTheme.titleMedium
-            ?.copyWith(fontWeight: FontWeight.w700),
+  Widget build(BuildContext context, WidgetRef ref) => ref
+      .watch(profileGiftsProvider(id))
+      .when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, __) => DataFailure(
+          message: 'Gifts could not be loaded.',
+          onRetry: () => ref.invalidate(profileGiftsProvider(id)),
+        ),
+        data: (g) => g.isEmpty
+            ? const EmptyContent('No gifts received yet')
+            : SizedBox(
+                height: 96 * MediaQuery.textScalerOf(context).scale(1),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    for (final item in g.take(limit ?? g.length))
+                      SizedBox(
+                        width: 64,
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              width: 46,
+                              height: 44,
+                              child: GiftArtwork(
+                                name: item['name'].toString(),
+                                assetPath: item['asset_path']?.toString(),
+                              ),
+                            ),
+                            Text(
+                              item['name'].toString(),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 11, height: 1.2),
+                            ),
+                            Text(
+                              '× ${item['quantity']}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 11, height: 1.2),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+      );
+}
+
+class _AllGifts extends StatelessWidget {
+  final String id;
+  const _AllGifts({required this.id});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('All received gifts')),
+        body: SingleChildScrollView(child: GiftList(id: id)),
+      );
+}
+
+class ProfileProgressBadge extends StatelessWidget {
+  final int kind, level;
+  final int? total;
+  const ProfileProgressBadge({
+    super.key,
+    required this.kind,
+    required this.level,
+    this.total,
+  });
+
+  static Color color(int kind, int level) => LevelBadge.color(kind, level);
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = color(kind, level);
+    final amount = total;
+    final unit = const ['coins','diamonds','points'][kind];
+    final totalString = amount?.toString().replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]},',
+    );
+    final fraction = amount == null || level < 1
+        ? 0.0 : ProfileLevelScale.fraction(kind, level, amount);
+    return Container(
+      key: ValueKey('profile-level-compact-$kind'),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: .08),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: accent.withValues(alpha: .3)),
       ),
-      Text(label, style: Theme.of(c).textTheme.bodySmall),
-    ],
-  );
-}
-
-class _Level extends StatelessWidget {
-  final String label;
-  final int value;
-  const _Level(this.label, this.value);
-  @override
-  Widget build(BuildContext c) => Container(
-    margin: const EdgeInsets.symmetric(horizontal: 4),
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(14),
-      color: NimzoColors.primaryFaint,
-    ),
-    child: Column(
-      children: [
-        Text(
-          'Level $value',
-          style: const TextStyle(fontWeight: FontWeight.w700),
-        ),
-        Text(label, style: Theme.of(c).textTheme.bodySmall),
-      ],
-    ),
-  );
-}
-
-class _SectionPreview extends StatelessWidget {
-  final String title;
-  final Widget child;
-  const _SectionPreview({required this.title, required this.child});
-  @override
-  Widget build(BuildContext c) => Container(
-    width: double.infinity,
-    margin: const EdgeInsets.fromLTRB(16, 6, 16, 6),
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: Theme.of(c).dividerColor),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(c).textTheme.titleSmall
-              ?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 8),
-        child,
-      ],
-    ),
-  );
-}
-
-class _Actions extends ConsumerWidget {
-  final String targetId;
-  const _Actions({required this.targetId});
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final follow =
-        ref.watch(isFollowingProvider(targetId)).valueOrNull ?? false;
-    final fs =
-        ref.watch(friendStateProvider(targetId)).valueOrNull ??
-        FriendState.none;
-    final fr = ref.read(friendRepositoryProvider);
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Wrap(
-        spacing: 8,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          FilledButton(
-            onPressed: () async {
-              final r = ref.read(followRepositoryProvider);
-              follow ? await r.unfollow(targetId) : await r.follow(targetId);
-              ref.invalidate(isFollowingProvider(targetId));
-            },
-            child: Text(follow ? 'Following' : 'Follow'),
+          Row(children: [
+            Icon(kind == 0 ? Icons.diamond_outlined
+              : kind == 1 ? Icons.favorite_border : Icons.bolt_outlined,
+              color: accent, size: 15),
+            const SizedBox(width: 4),
+            Expanded(child: Text(
+              ProfileLevelScale.labels[kind],
+              maxLines: 1, overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: accent, fontSize: 11,
+                fontWeight: FontWeight.w700))),
+          ]),
+          const SizedBox(height: 3),
+          Text(level > 0 ? 'Lv $level' : 'Level unavailable',
+            maxLines: 1, overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: accent,
+              fontSize: level > 0 ? 16 : 9,
+              fontWeight: FontWeight.w800)),
+          const SizedBox(height: 3),
+          Text(
+            amount == null ? 'Total unavailable' : '$totalString $unit',
+            maxLines: 1, overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 9, color: Color(0xff64748b)),
           ),
-          OutlinedButton(
-            onPressed: () => context.push('/chat/$targetId'),
-            child: const Text('Message'),
-          ),
-          OutlinedButton(
-            onPressed: switch (fs) {
-              FriendState.none => () async {
-                await fr.request(targetId);
-                ref.invalidate(friendStateProvider(targetId));
-              },
-              FriendState.received => () async {
-                await fr.accept(targetId);
-                ref.invalidate(friendStateProvider(targetId));
-              },
-              _ => null,
-            },
-            child: Text(switch (fs) {
-              FriendState.none => 'Add Friend',
-              FriendState.sent => 'Request Sent',
-              FriendState.received => 'Accept',
-              FriendState.friends => 'Friends',
-            }),
+          const SizedBox(height: 5),
+          LinearProgressIndicator(
+            value: fraction, minHeight: 3,
+            color: accent, backgroundColor: accent.withValues(alpha: .14),
+            borderRadius: BorderRadius.circular(8),
           ),
         ],
       ),
@@ -443,166 +719,54 @@ class _Actions extends ConsumerWidget {
   }
 }
 
-class _ProfileCover extends StatelessWidget {
-  final String? url;
-  const _ProfileCover({this.url});
-  @override
-  Widget build(BuildContext context) {
-    const fallback = ColoredBox(color: NimzoColors.primaryLight);
-    return url == null
-        ? fallback
-        : Image.network(
-            url!,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => fallback,
-            loadingBuilder: (_, child, progress) =>
-                progress == null ? child : fallback,
-          );
-  }
-}
+class LevelBadge extends StatelessWidget {
+  final int kind, level;
+  final bool showLabel;
+  const LevelBadge({
+    super.key,
+    required this.kind,
+    required this.level,
+    this.showLabel = false,
+  });
+  static Color color(int kind, int level) =>
+      ProfileLevelScale.color(kind, level);
 
-class _ProfileMoments extends ConsumerWidget {
-  final String userId;
-  const _ProfileMoments({required this.userId});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => ref
-      .watch(profileMomentsProvider(userId))
-      .when(
-        loading: () => const LoadingView(),
-        error: (_, __) => ErrorView(
-          message: 'Moments could not be loaded.',
-          onRetry: () => ref.invalidate(profileMomentsProvider(userId)),
+  Widget build(BuildContext context) => Container(
+        padding:
+            EdgeInsets.symmetric(horizontal: showLabel ? 5 : 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: color(kind, level),
+          borderRadius: BorderRadius.circular(14),
         ),
-        data: (moments) => moments.isEmpty
-            ? const EmptyView(
-                title: 'No moments yet',
-                hint: 'Shared moments appear here.',
-                icon: Icons.photo_library_outlined,
-              )
-            : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: moments.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, i) {
-                  final m = moments[i];
-                  return _SectionPreview(
-                    title: timeAgo(m.createdAt),
-                    child: InkWell(
-                      onTap: () => context.push('/moments/${m.id}'),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (m.imagePath != null) ...[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                storageUrl(
-                                  ref.watch(supabaseProvider),
-                                  'moment-images',
-                                  m.imagePath,
-                                )!,
-                                width: double.infinity,
-                                height: 180,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const SizedBox(
-                                  height: 72,
-                                  child: Center(
-                                    child: NimzoIcon(
-                                      Icons.broken_image_outlined,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                          if (m.text?.isNotEmpty == true) Text(m.text!),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ReferenceIcon(
+              kind == 0 ? 'crown' : 'star',
+              size: showLabel ? 12 : 14,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                showLabel
+                    ? '${const [
+                        'Wealth',
+                        'Charm',
+                        'Active'
+                      ][kind]} ${level > 0 ? level : '—'}'
+                    : (level > 0 ? '$level' : '—'),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: showLabel ? 9 : 12,
+                  fontWeight: FontWeight.w700,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-      );
-}
-
-class _ProfileGifts extends ConsumerWidget {
-  final String userId;
-  const _ProfileGifts({required this.userId});
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => ref
-      .watch(profileGiftsProvider(userId))
-      .when(
-        loading: () => const LoadingView(),
-        error: (_, __) => ErrorView(
-          message: 'Gifts could not be loaded.',
-          onRetry: () => ref.invalidate(profileGiftsProvider(userId)),
+            ),
+          ],
         ),
-        data: (gifts) => gifts.isEmpty
-            ? const EmptyView(
-                title: 'No gifts received yet',
-                hint: 'Gifts from your community appear here.',
-                icon: Icons.card_giftcard_rounded,
-              )
-            : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: gifts.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
-                itemBuilder: (context, i) {
-                  final gift = gifts[i];
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: NimzoColors.surface,
-                      border: Border.all(color: NimzoColors.border),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: ListTile(
-                      leading: const NimzoIcon(
-                        Icons.card_giftcard_rounded,
-                        color: NimzoColors.primary,
-                      ),
-                      title: Text(gift['name']?.toString() ?? 'Gift'),
-                      trailing: Text(
-                        '× ${gift['quantity'] ?? 0}',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                    ),
-                  );
-                },
-              ),
-      );
-}
-
-class _ProfileAchievements extends ConsumerWidget {
-  final String userId;
-  const _ProfileAchievements({required this.userId});
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => ref
-      .watch(profileAchievementsProvider(userId))
-      .when(
-        loading: () => const LoadingView(),
-        error: (_, __) => ErrorView(
-          message: 'Achievements could not be loaded.',
-          onRetry: () => ref.invalidate(profileAchievementsProvider(userId)),
-        ),
-        data: (achievements) => achievements.isEmpty
-            ? const EmptyView(
-                title: 'No achievements yet',
-                hint: 'Your earned achievements appear here.',
-                icon: Icons.emoji_events_outlined,
-              )
-            : ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  for (final achievement in achievements)
-                    _SectionPreview(
-                      title: achievement,
-                      child: const NimzoIcon(
-                        Icons.emoji_events_outlined,
-                        color: NimzoColors.primary,
-                      ),
-                    ),
-                ],
-              ),
       );
 }

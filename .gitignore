@@ -1,3 +1,11 @@
 supabase/.temp/
 __pycache__/
 *.pyc
+
+nimzo/.dart_tool/
+nimzo/build/
+nimzo/.flutter-plugins*
+nimzo/android/
+nimzo/.metadata
+
+nimzo/test/failures/

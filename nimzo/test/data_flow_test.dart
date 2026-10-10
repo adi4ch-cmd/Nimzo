@@ -35,10 +35,29 @@ void main() {
       );
     },
   );
-  test('verification accepts confirmed settlement', () async {
-    await RechargeRepository(client((_) => http.Response('{"ok":true}', 200)))
-        .verify(store: 'google', productId: 'coins', receipt: 'token');
-  });
+  test(
+    'verification rejects bare success without matching settlement',
+    () async {
+      await expectLater(
+        RechargeRepository(client((_) => http.Response('{"ok":true}', 200)))
+            .verify(store: 'google', productId: 'coins', receipt: 'token'),
+        throwsStateError,
+      );
+    },
+  );
+  test(
+    'verification accepts confirmed settlement and normalizes store alias',
+    () async {
+      await RechargeRepository(
+        client(
+          (_) => http.Response(
+            '{"ok":true,"status":"credited","store":"google_play","product_id":"coins","transaction_id":"token","coins":500000,"environment":"production"}',
+            200,
+          ),
+        ),
+      ).verify(store: 'google', productId: 'coins', receipt: 'token');
+    },
+  );
   test('roomless games refuse before sending a request', () async {
     var calls = 0;
     final repo = GameRepository(

@@ -1,0 +1,63 @@
+name: Inspect free Sports Car animation artwork (no APK)
+on:
+  push:
+    branches: [feature/profile-reference-redesign]
+    paths: ['.github/workflows/nimzo-inspect-sports-car.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect embedded original PNG images (not modified)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install pillow==11.3.0
+          python3 - <<'PY'
+          from pathlib import Path
+          import zlib,struct,io,json
+          from PIL import Image,ImageOps,ImageDraw
+          output=Path('gift-preview');output.mkdir(exist_ok=True)
+          rows=[]
+          for gift in ['rocket','sports_car']:
+              blob=zlib.decompress((Path('nimzo/assets/gifts/free')/(gift+'.svga')).read_bytes())
+              start=0
+              while True:
+                  i=blob.find(b'\x89PNG\r\n\x1a\n',start)
+                  if i<0:break
+                  off=i+8
+                  try:
+                      while off<len(blob):
+                          size=struct.unpack('>I',blob[off:off+4])[0]
+                          name=blob[off+4:off+8]
+                          if size>30000000: raise ValueError('oversized')
+                          off+=size+12
+                          if name==b'IEND':break
+                      im=Image.open(io.BytesIO(blob[i:off])).convert('RGBA')
+                      if im.width>=100 and im.height>=100:
+                          rows.append((gift,i,im,im.width*im.height))
+                  except (ValueError,OSError,struct.error):pass
+                  start=i+8
+          rows.sort(key=lambda x:x[3],reverse=True)
+          cards=[]
+          for k,(name,off,im,pixels) in enumerate(rows[:30]):
+              im.thumbnail((260,200))
+              bg=Image.new('RGB',(280,260),'#222c36')
+              bg.paste(im,((280-im.width)//2,10),im)
+              ImageDraw.Draw(bg).text((8,225),f'{name} {im.width}x{im.height} #{k}',fill='white')
+              cards.append(bg)
+              if name=='sports_car':
+                  im.save(output/('sprite_'+str(k)+'.png'))
+          if cards:
+              sheet=Image.new('RGB',(280*5,260*((len(cards)+4)//5)),'white')
+              for k,c in enumerate(cards):sheet.paste(c,((k%5)*280,(k//5)*260))
+              sheet.save(output/'preview.jpg',quality=88)
+          print('Found sprites:',len(rows))
+          print('Top sprites:',json.dumps([(n,i,im.width,im.height) for n,i,im,_ in rows[:20]]))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: free-svga-png-preview
+          path: gift-preview/

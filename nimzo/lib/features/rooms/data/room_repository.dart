@@ -75,6 +75,16 @@ class RoomRepository {
     }
   }
 
+  /// Return the permanent room owned by the signed-in user, if any.
+  /// Closed rooms are included: one user may own only one room.
+  Future<String?> ownedRoomId() async {
+    final uid = _db.auth.currentUser?.id;
+    if (uid == null) throw StateError('Please sign in again');
+    final room =
+        await _db.from('rooms').select('id').eq('owner_id', uid).maybeSingle();
+    return room?['id']?.toString();
+  }
+
   /// Room creation is performed by the SECURITY DEFINER RPC so the owner,
   /// ten mic seats and membership are initialized atomically server-side.
   Future<String> create(
@@ -82,10 +92,21 @@ class RoomRepository {
     String? country,
     String? password,
   }) async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty || trimmed.length > 40) {
+      throw StateError('Room name must contain 1 to 40 characters.');
+    }
+    // Reuse the existing permanent room; do not create a second room.
+    final existing = await ownedRoomId();
+    if (existing != null) return existing;
     try {
       final id = await _db.rpc(
         'create_room',
-        params: {'p_name': name, 'p_country': country, 'p_password': password},
+        params: {
+          'p_name': trimmed,
+          'p_country': country,
+          'p_password': password,
+        },
       );
       return id.toString();
     } catch (e) {
@@ -107,14 +128,44 @@ class RoomRepository {
   }
 
   Future<void> leave(String roomId) => _rpc('leave_room', {'p_room': roomId});
+  /// Server awards at most two verified room minutes per call.
+  Future<int> touchActivity(String roomId) async {
+    try {
+      final result = await _db.rpc('touch_room_activity',
+          params: {'p_room': roomId});
+      return (result as num?)?.toInt() ?? 0;
+    } catch (e) {
+      throw mapError(e);
+    }
+  }
   Future<void> takeSeat(String roomId, int seat) =>
       _rpc('take_seat', {'p_room': roomId, 'p_seat': seat});
   Future<void> leaveSeat(String roomId) =>
       _rpc('leave_seat', {'p_room': roomId});
   Future<void> modMuteSeat(String roomId, int seat, bool muted) => _rpc(
-    'mod_mute_seat',
-    {'p_room': roomId, 'p_seat': seat, 'p_muted': muted},
-  );
+        'mod_mute_seat',
+        {'p_room': roomId, 'p_seat': seat, 'p_muted': muted},
+      );
+  Future<bool> canModerate(String roomId) async {
+    try {
+      return await _db.rpc('get_room_moderation', params: {'p_room': roomId}) ==
+          true;
+    } catch (e) {
+      throw mapError(e);
+    }
+  }
+
+  Future<void> moderateMember(
+    String roomId,
+    String userId, {
+    required bool ban,
+  }) =>
+      _rpc('moderate_room_member', {
+        'p_room': roomId,
+        'p_user': userId,
+        'p_ban': ban,
+      });
+
   Future<void> kick(String roomId, String userId) =>
       _rpc('kick_member', {'p_room': roomId, 'p_user': userId});
 
@@ -137,6 +188,14 @@ class RoomRepository {
       throw mapError(e);
     }
   }
+
+  /// All currently joined room identities, including listeners off mic.
+  /// A server leave/delete removes the ID from this Realtime collection.
+  Stream<List<String>> watchMembers(String roomId) => _db
+      .from('room_members')
+      .stream(primaryKey: ['room_id', 'user_id'])
+      .eq('room_id', roomId)
+      .map((rows) => rows.map((e) => e['user_id'].toString()).toList());
 
   Stream<List<MicSeat>> watchSeats(String roomId) => _db
       .from('mic_seats')

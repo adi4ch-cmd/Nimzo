@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+<radialGradient id="glow"><stop stop-color="#8f6938" stop-opacity=".44"/><stop offset=".76" stop-color="#113227" stop-opacity=".24"/><stop offset="1" stop-color="#051610" stop-opacity="0"/></radialGradient>
+<linearGradient id="gold" x2="1" y2="1"><stop stop-color="#fff3c2"/><stop offset=".38" stop-color="#f8cb6a"/><stop offset=".73" stop-color="#b86d23"/><stop offset="1" stop-color="#ffe8a8"/></linearGradient>
+<linearGradient id="ruby" x2="1" y2="1"><stop stop-color="#ffa9b1"/><stop offset=".38" stop-color="#ed294a"/><stop offset=".8" stop-color="#a20d3e"/><stop offset="1" stop-color="#ff5d72"/></linearGradient>
+<linearGradient id="blue" x2="1" y2="1"><stop stop-color="#e9faff"/><stop offset=".33" stop-color="#6ee4ff"/><stop offset=".76" stop-color="#4262e9"/><stop offset="1" stop-color="#222a7b"/></linearGradient>
+<linearGradient id="jade" x2="1" y2="1"><stop stop-color="#b1ffe5"/><stop offset=".50" stop-color="#1cbea0"/><stop offset="1" stop-color="#07574f"/></linearGradient>
+<linearGradient id="flame" x2="1" y2="1"><stop stop-color="#fff5b7"/><stop offset=".4" stop-color="#ffb52f"/><stop offset=".75" stop-color="#e14719"/><stop offset="1" stop-color="#8f133d"/></linearGradient>
+</defs>
+<circle cx="256" cy="260" r="231" fill="url(#glow)"/>
+<g fill="#ffe7ae" opacity=".85"><path d="M97 79l5 17 18 5-18 5-5 17-5-17-18-5 18-5z"/><path d="M418 99l5 14 13 5-13 5-5 14-5-14-13-5 13-5z"/><circle cx="432" cy="324" r="4"/><circle cx="81" cy="335" r="4"/></g>
+<circle cx="151" cy="134" r="59" fill="#ab6232"/><circle cx="361" cy="134" r="59" fill="#ab6232"/><circle cx="151" cy="134" r="28" fill="#da9e64"/><circle cx="361" cy="134" r="28" fill="#da9e64"/><ellipse cx="256" cy="331" rx="127" ry="128" fill="#ad673c"/><circle cx="256" cy="216" r="132" fill="#b97747"/><ellipse cx="256" cy="262" rx="70" ry="56" fill="#eac49c"/><ellipse cx="211" cy="207" rx="15" ry="20" fill="#2e2523"/><ellipse cx="301" cy="207" rx="15" ry="20" fill="#2e2523"/><path d="M238 242Q255 230 274 242Q260 267 250 258Z" fill="#4f2722"/><path d="M258 258v20M258 278q-23 24-40 3M258 278q24 24 40 3" stroke="#4f2722" stroke-width="6" fill="none"/><path d="M256 376Q169 311 194 283Q227 263 255 297Q283 263 315 283Q345 316 256 376Z" fill="url(#ruby)"/>
+</svg>

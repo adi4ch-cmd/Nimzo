@@ -1,60 +1,445 @@
-name: Nimzo APK Build
+name: Nimzo Android Verification APK
+
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
+    branches:
+      - feature/profile-reference-redesign
+    paths-ignore:
+      - NIMZO_Dragon_Gift_Assets_Patch.zip
+      - NIMZO_Yo2_Assets_Part_1_of_2.zip
+      - NIMZO_Yo2_Assets_Part_2_of_2.zip
+      - NIMZO_Yo2_NonDragon_Gifts_Patch.zip
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
 jobs:
   build:
+    # Locked 2026-10-10: NO intermediate APK builds. A dedicated final release
+    # commit or an explicit manual dispatch is required to generate an APK.
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'release(gifts-vip):') }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: nimzo
+    env:
+      HAS_RELEASE_SIGNING: ${{ secrets.NIMZO_KEYSTORE_BASE64 != '' || secrets.NIMZO_KEYSTORE_PASSWORD != '' || secrets.NIMZO_KEY_ALIAS != '' || secrets.NIMZO_KEY_PASSWORD != '' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Java 17
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
-      - uses: subosito/flutter-action@v2
+          java-version: "17"
+
+      - name: Flutter stable
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.29.3"
+          flutter-version: "3.47.6"
           channel: stable
           cache: true
-      - run: flutter create --platforms=android --org io.nimzo .
-      - name: Configure Nimzo deep link
+
+      - name: Generate Android project
+        working-directory: nimzo
+        run: flutter create --platforms=android --project-name nimzo .
+
+      - name: Install Vivox Android bridge
+        working-directory: nimzo
+        shell: bash
         run: |
+          set -euo pipefail
+          mkdir -p android/app/src/main/java/io/nimzo/app
+          mkdir -p android/app/src/main/java/io/nimzo/vivox
+          mkdir -p android/app/src/main/cpp
+          mkdir -p android/app/src/main/res/drawable
+          cp native/vivox/android/nimzo_launcher.xml android/app/src/main/res/drawable/nimzo_launcher.xml
+          cp native/vivox/android/proguard-rules.pro android/app/proguard-rules.pro
+          cp native/vivox/android/NimzoUpdate.java android/app/src/main/java/io/nimzo/app/NimzoUpdate.java
+          cp native/vivox/android/MainActivity.java android/app/src/main/java/io/nimzo/app/MainActivity.java
+          cp native/vivox/android/NimzoVivox.java android/app/src/main/java/io/nimzo/vivox/NimzoVivox.java
+          cp native/vivox/android/vivox_bridge.cpp android/app/src/main/cpp/vivox_bridge.cpp
+          cp native/vivox/android/CMakeLists.txt android/app/src/main/cpp/CMakeLists.txt
+
+      - name: Configure Android ID permissions and OAuth callback
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           import re
-          p = Path("android/app/src/main/AndroidManifest.xml")
-          s = p.read_text()
-          meta = '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />'
-          deep_link = '''<intent-filter>
+
+          gradle = Path("android/app/build.gradle.kts")
+          if not gradle.exists():
+              gradle = Path("android/app/build.gradle")
+          s = gradle.read_text()
+
+          if gradle.suffix == ".kts":
+              s = re.sub(r'namespace\s*=\s*"[^"]+"', 'namespace = "io.nimzo.app"', s, count=1)
+              s = re.sub(r'applicationId\s*=\s*"[^"]+"', 'applicationId = "io.nimzo.app"', s, count=1)
+          s += '''
+          // Nimzo Vivox native bridge
+          android {
+              defaultConfig {
+                  externalNativeBuild {
+                      cmake {
+                          arguments.add("-DVIVOX_SDK_ROOT=/tmp/vivox/android")
+                      }
+                  }
+              }
+              externalNativeBuild {
+                  cmake {
+                      path = file("src/main/cpp/CMakeLists.txt")
+                      version = "3.22.1"
+                  }
+              }
+          }
+          '''
+          gradle.write_text(s)
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          m = manifest.read_text()
+          m = re.sub(r'android:label="[^"]+"', 'android:label="Nimzo"', m, count=1)
+          m = re.sub(r'android:icon="[^"]+"', 'android:icon="@drawable/nimzo_launcher"', m, count=1)
+          if "xmlns:tools=" not in m:
+              m = m.replace("<manifest", '<manifest xmlns:tools="http://schemas.android.com/tools"', 1)
+
+          for perm in [
+              "android.permission.REQUEST_INSTALL_PACKAGES",
+              "android.permission.INTERNET",
+              "android.permission.RECORD_AUDIO",
+              "android.permission.MODIFY_AUDIO_SETTINGS",
+              "android.permission.BLUETOOTH",
+              "android.permission.BLUETOOTH_CONNECT",
+              "android.permission.BLUETOOTH_SCAN",
+          ]:
+              tag = f'<uses-permission android:name="{perm}" />'
+              if perm not in m:
+                  m = m.replace("<application", tag + "\n    <application", 1)
+
+          m = re.sub(
+              r'<meta-data\s+android:name="flutter_deeplinking_enabled"\s+android:value="(?:true|false)"\s*/>',
+              '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />',
+              m,
+          )
+
+          activity = re.search(
+              r'<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>(.*?)</activity>',
+              m,
+              re.DOTALL,
+          )
+          if not activity:
+              raise SystemExit("MainActivity block not found")
+
+          block = activity.group(0)
+          opening = re.match(r'<activity\b[^>]*>', block).group(0)
+          opening = re.sub(r'\sandroid:exported="[^"]*"', '', opening)
+          opening = re.sub(r'\sandroid:launchMode="[^"]*"', '', opening)
+          opening = opening[:-1] + ' android:exported="true" android:launchMode="singleTask">'
+          body = block[len(re.match(r'<activity\b[^>]*>', block).group(0)):]
+          if 'android:scheme="io.nimzo.app"' not in body:
+              body = body.replace("</activity>", '''<intent-filter>
               <action android:name="android.intent.action.VIEW" />
               <category android:name="android.intent.category.DEFAULT" />
               <category android:name="android.intent.category.BROWSABLE" />
               <data android:scheme="io.nimzo.app" android:host="login-callback" />
-            </intent-filter>'''
-          main = re.search(r'(<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>)(.*?)(</activity>)', s, re.DOTALL)
-          if not main:
-              raise SystemExit("MainActivity block not found")
-          opening, body, closing = main.groups()
-          opening = re.sub(r'\sandroid:exported="[^"]*"', '', opening)
-          opening = re.sub(r'\sandroid:launchMode="[^"]*"', '', opening)
-          opening = opening[:-1] + ' android:exported="true" android:launchMode="singleTask">'
-          body = re.sub(r'\s*<meta-data\s+android:name="flutter_deeplinking_enabled"\s+android:value="[^"]*"\s*/>', '', body)
-          if 'android:scheme="io.nimzo.app"' not in body:
-              body += "\n            " + meta + "\n            " + deep_link + "\n        "
-          else:
-              body = "\n            " + meta + "\n            " + deep_link + "\n        "
-          s = s[:main.start()] + opening + body + closing + s[main.end():]
-          p.write_text(s)
+          </intent-filter>
+          </activity>''')
+          if 'android:name="flutter_deeplinking_enabled"' not in body:
+              body = body.replace("</activity>", '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />\n</activity>')
+          m = m[:activity.start()] + opening + body + m[activity.end():]
+
+          if 'tools:replace="android:name"' not in m:
+              m = m.replace("<application", '<application tools:replace="android:name"', 1)
+
+          if 'android:name="flutter_deeplinking_enabled"' not in m:
+              m = m.replace(
+                  "<application",
+                  '<application',
+                  1,
+              )
+              app_end = m.find(">", m.find("<application"))
+              m = m[:app_end+1] + '\n        <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />' + m[app_end+1:]
+
+          provider = '''<provider android:name="androidx.core.content.FileProvider" android:authorities="io.nimzo.app.apk_updates" android:exported="false" android:grantUriPermissions="true"><meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/nimzo_apk_paths" /></provider>'''
+          m = m.replace("</application>", provider + "\n</application>")
+          paths = Path("android/app/src/main/res/xml/nimzo_apk_paths.xml")
+          paths.parent.mkdir(parents=True, exist_ok=True)
+          paths.write_text('<paths xmlns:android="http://schemas.android.com/apk/res/android"><cache-path name="nimzo_updates" path="nimzo_updates/" /></paths>')
+          manifest.write_text(m)
+
+          # Fail fast: verify the exact OAuth contract that Supabase expects.
+          final = manifest.read_text()
+          assert 'application tools:replace="android:name"' in final
+          assert 'android:scheme="io.nimzo.app" android:host="login-callback"' in final
+          assert 'android:exported="true"' in final
+          assert 'android:launchMode="singleTask"' in final
+          activity_final = re.search(r'<activity\b[^>]*>.*?</activity>', final, re.DOTALL).group(0)
+          assert 'android:name="flutter_deeplinking_enabled" android:value="false"' in activity_final
+          print("OAuth manifest verification: PASS")
           PY
-      - run: rm -f test/widget_test.dart
-      - run: flutter pub get
-      - run: flutter analyze lib --no-fatal-infos --no-fatal-warnings
-      - run: flutter build apk --release --dart-define=SUPABASE_URL=https://kvqvlpozqokwarovwmwv.supabase.co
-      - uses: actions/upload-artifact@v4
+
+      - name: Download and verify Vivox 5.28.0
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/vivox
+          curl -fL --retry 3 -o /tmp/vivox/android.zip "https://github.com/adi4ch-cmd/Nimzo/releases/download/vivox-5.28.0/com.custom.android.vivox.vivoxCoreAndroidSdk-5.28.0.zip"
+          echo "c30f6caf08184874a7daecc2f9c670df099fa504265dc08b51859e287a38d75f  /tmp/vivox/android.zip" | sha256sum -c -
+          unzip -q /tmp/vivox/android.zip -d /tmp/vivox/android
+          aar="$(find /tmp/vivox/android -type f -name 'sdk-release.aar' -print -quit)"
+          header="$(find /tmp/vivox/android -type f -name 'Vxc.h' -print -quit)"
+          lib="$(find /tmp/vivox/android -type f \( -name 'libvivox-sdk.so' -o -name 'libvivoxsdk.so' \) -print -quit)"
+          test -n "$aar" && test -n "$header" && test -n "$lib"
+          mkdir -p android/app/libs
+          cp "$aar" android/app/libs/vivox-sdk-5.28.0.aar
+          echo "Vivox SDK verification: PASS"
+
+      - name: Add Vivox AAR dependency
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          g="android/app/build.gradle.kts"
+          if [ ! -f "$g" ]; then g="android/app/build.gradle"; fi
+          if ! grep -q "vivox-sdk-5.28.0.aar" "$g"; then
+            if [[ "$g" == *.kts ]]; then
+              printf '\n// Vivox Core SDK 5.28.0\ndependencies { implementation(files("libs/vivox-sdk-5.28.0.aar")) }\n' >> "$g"
+            else
+              printf '\n// Vivox Core SDK 5.28.0\ndependencies { implementation files("libs/vivox-sdk-5.28.0.aar") }\n' >> "$g"
+            fi
+          fi
+
+      - name: Dependencies
+        working-directory: nimzo
+        run: |
+          rm -f test/widget_test.dart
+          flutter pub get
+
+      - name: Analyze
+        working-directory: nimzo
+        run: flutter analyze
+
+      - name: Format source for verification
+        working-directory: nimzo
+        run: dart format lib test
+
+      - name: Reference asset integrity
+        run: python3 -m unittest discover -s nimzo/test/reference -p "*_test.py"
+
+      - name: Node 22
+        uses: actions/setup-node@v4
         with:
-          name: nimzo-pro-polish-release
+          node-version: '22'
+
+      - name: Release metadata contract tests
+        run: |
+          python3 -m pip install PyYAML==6.0.3
+          python3 -m unittest discover -s tools/tests -p "*_test.py"
+
+      - name: Voice token authorization tests
+        run: node --test supabase/functions/voice-token/tests/authorization.test.mjs supabase/functions/verify-purchase/tests/*.test.mjs
+
+      - name: Regression tests
+        working-directory: nimzo
+        run: flutter test
+
+      - name: Upload visual regression diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-visual-failures-${{ github.sha }}
+          path: nimzo/test/failures/
+          if-no-files-found: ignore
+
+      - name: Native contract tests
+        run: |
+          python3 -m unittest discover -s nimzo/test/voice -p "*_test.py"
+          python3 -m unittest discover -s nimzo/test/update -p "*_test.py"
+
+      # Never produce ANY APK before user-approved gift media and Rocket VAP
+      # binary assets have passed exact integrity verification.
+      - name: Verify all original Rocket videos before APK
+        run: python3 tools/verify_room_rocket_media.py
+
+      # Generated Android debug signing is used only for this test artifact.
+      # Never publish development certificates as permanent updater releases.
+      - name: Build installable test APK when signing is unavailable
+        if: env.HAS_RELEASE_SIGNING != 'true'
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter build apk --release
+          python3 ../tools/verify_test_apk.py build/app/outputs/flutter-apk/app-release.apk
+          mkdir -p ../test-release
+          cp build/app/outputs/flutter-apk/app-release.apk ../test-release/nimzo-test.apk
+          cp build/app/outputs/flutter-apk/app-release.apk.signing.txt ../test-release/nimzo-test.apk.signing.txt
+          printf '%s\n' "$GITHUB_SHA" > ../test-release/source-sha.txt
+          sha256sum ../test-release/nimzo-test.apk > ../test-release/sha256.txt
+          printf '%s\n' 'Installable release-mode TEST APK signed with an ephemeral Android development key. Package io.nimzo.app. This cannot update permanent-release installations or future builds with a different key: uninstall first if Android reports a signature conflict. Supabase accounts, IDs and balances persist; local cache/drafts may be lost. No updater metadata or public release is generated. Device audio, OAuth and purchases remain unverified.' > ../test-release/README.txt
+
+      - name: Upload installable test APK
+        if: env.HAS_RELEASE_SIGNING != 'true'
+        id: test_apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-installable-test-apk-${{ github.sha }}
+          path: test-release/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Test APK download link
+        if: env.HAS_RELEASE_SIGNING != 'true'
+        run: echo '${{ steps.test_apk.outputs.artifact-url }}' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Require existing signing identity
+        if: env.HAS_RELEASE_SIGNING == 'true'
+        env:
+          NIMZO_KEYSTORE_BASE64: ${{ secrets.NIMZO_KEYSTORE_BASE64 }}
+          NIMZO_KEYSTORE_PASSWORD: ${{ secrets.NIMZO_KEYSTORE_PASSWORD }}
+          NIMZO_KEY_ALIAS: ${{ secrets.NIMZO_KEY_ALIAS }}
+          NIMZO_KEY_PASSWORD: ${{ secrets.NIMZO_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY_SIGN'
+          import base64, os
+          from pathlib import Path
+          names = ('NIMZO_KEYSTORE_BASE64', 'NIMZO_KEYSTORE_PASSWORD', 'NIMZO_KEY_ALIAS', 'NIMZO_KEY_PASSWORD')
+          missing = [name for name in names if not os.environ.get(name)]
+          if missing:
+              raise SystemExit('Existing signing configuration missing: ' + ', '.join(missing) + '. No replacement key will be generated.')
+          target = Path(os.environ['RUNNER_TEMP']) / 'nimzo-existing.keystore'
+          target.write_bytes(base64.b64decode(os.environ['NIMZO_KEYSTORE_BASE64'], validate=True))
+          target.chmod(0o600)
+          with open(os.environ['GITHUB_ENV'], 'a') as environment:
+              environment.write('NIMZO_KEYSTORE_PATH=' + str(target) + '\n')
+          PY_SIGN
+          python3 tools/configure_android_signing.py nimzo/android/app/build.gradle.kts
+
+      - name: Build verification APK
+        if: env.HAS_RELEASE_SIGNING == 'true'
+        working-directory: nimzo
+        env:
+          NIMZO_KEYSTORE_PASSWORD: ${{ secrets.NIMZO_KEYSTORE_PASSWORD }}
+          NIMZO_KEY_ALIAS: ${{ secrets.NIMZO_KEY_ALIAS }}
+          NIMZO_KEY_PASSWORD: ${{ secrets.NIMZO_KEY_PASSWORD }}
+        run: flutter build apk --release
+
+      - name: Verify APK exists
+        if: env.HAS_RELEASE_SIGNING == 'true'
+        run: |
+          set -euo pipefail
+          test -s nimzo/build/app/outputs/flutter-apk/app-release.apk
+          ls -lh nimzo/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Verify APK signature using existing signing configuration
+        if: env.HAS_RELEASE_SIGNING == 'true'
+        run: |
+          python3 - <<'PY'
+          import os, subprocess
+          from pathlib import Path
+          apk = Path('nimzo/build/app/outputs/flutter-apk/app-release.apk')
+          signer = sorted(Path(os.environ['ANDROID_HOME']).glob('build-tools/*/apksigner'))[-1]
+          result = subprocess.run([str(signer), 'verify', '--verbose', '--print-certs', str(apk)], text=True, capture_output=True, check=True)
+          apk.with_suffix('.apk.signing.txt').write_text(result.stdout)
+          print(result.stdout)
+          import re
+          certificates = {value.replace(':', '').lower() for value in re.findall(r'certificate SHA-256 digest:\s*([0-9a-fA-F:]+)', result.stdout)}
+          expected = Path('nimzo/native/vivox/android/release-signing-certificate.sha256').read_text().strip()
+          assert certificates == {expected}, 'Signing identity differs from the authorized permanent release certificate; publishing blocked'
+          print('APK signature verified against authorized permanent release identity.')
+          PY
+
+      - name: Verify packaged Vivox and OAuth contract
+        if: env.HAS_RELEASE_SIGNING == 'true'
+        run: |
+          python3 - <<'PY'
+          import os, subprocess, zipfile
+          from pathlib import Path
+          apk = 'nimzo/build/app/outputs/flutter-apk/app-release.apk'
+          with zipfile.ZipFile(apk) as archive:
+              assert archive.testzip() is None, 'APK ZIP integrity failed'
+              entries = archive.namelist()
+              for abi in ('arm64-v8a', 'armeabi-v7a', 'x86_64'):
+                  assert f'lib/{abi}/libvivox_bridge.so' in entries, f'Vivox JNI bridge missing for {abi}'
+                  assert any(p in entries for p in (f'lib/{abi}/libvivox-sdk.so', f'lib/{abi}/libvivoxsdk.so')), f'Vivox SDK missing for {abi}'
+          aapt = sorted(Path(os.environ['ANDROID_HOME']).glob('build-tools/*/aapt'))[-1]
+          manifest = subprocess.check_output([str(aapt), 'dump', 'xmltree', apk, 'AndroidManifest.xml'], text=True)
+          badging = subprocess.check_output([str(aapt), 'dump', 'badging', apk], text=True)
+          assert "package: name='io.nimzo.app'" in badging, 'Application ID changed'
+          assert 'io.nimzo.app' in manifest and 'login-callback' in manifest, 'OAuth callback missing'
+          assert 'android.intent.category.LAUNCHER' in manifest, 'Launcher missing'
+          assert 'flutter_deeplinking_enabled' in manifest, 'OAuth deep-link metadata missing'
+          for permission in ('android.permission.INTERNET', 'android.permission.RECORD_AUDIO'):
+              assert permission in badging, f'{permission} missing'
+          print('Packaged Vivox SDK, JNI bridge, app ID, launcher, OAuth and permissions: PASS')
+          PY
+          python3 tools/verify_vivox_callback.py nimzo/build/app/outputs/flutter-apk/app-release.apk
+          python3 tools/verify_vivox_login.py nimzo/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload APK
+        if: env.HAS_RELEASE_SIGNING == 'true'
+        id: apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-profile-reference-release-apk
           path: nimzo/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      - name: APK checksum
+        if: env.HAS_RELEASE_SIGNING == 'true'
+        run: sha256sum nimzo/build/app/outputs/flutter-apk/app-release.apk > nimzo/build/app/outputs/flutter-apk/app-release.apk.sha256
+
+      - name: Publish testing APK
+        if: env.HAS_RELEASE_SIGNING == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const tag = `nimzo-release-${context.sha.slice(0, 12)}`;
+            const pubspec = fs.readFileSync('nimzo/pubspec.yaml', 'utf8');
+            const version = pubspec.match(/^version:\s*([^+\n]+)\+(\d+)/m);
+            if (!version) throw new Error('Missing Flutter version/build number');
+            const buildNumber = Number(version[2]);
+            const previous = await github.paginate(github.rest.repos.listReleases, {owner: context.repo.owner, repo: context.repo.repo, per_page: 100});
+            for (const release of previous.filter(r => !r.draft)) {
+              const metadata = release.body?.match(/NIMZO_BUILD_NUMBER=(\d+)/);
+              if (metadata && Number(metadata[1]) >= buildNumber) throw new Error('Increase Flutter build number above every published APK before release');
+            }
+            const folder = 'nimzo/build/app/outputs/flutter-apk/';
+            const signing = fs.readFileSync(folder + 'app-release.apk.signing.txt', 'utf8');
+            const certificates = [...new Set([...signing.matchAll(/certificate SHA-256 digest:\s*([0-9a-fA-F:]+)/g)].map(match => match[1].replaceAll(':', '').toLowerCase()))];
+            if (certificates.length !== 1) throw new Error('Missing verified signing certificate');
+            const apk = fs.readFileSync(folder + 'app-release.apk');
+            const crypto = require('crypto');
+            const update = {
+              version: version[1].trim(), buildNumber, packageName: 'io.nimzo.app',
+              signingCertificateSha256: certificates[0],
+              apkSha256: crypto.createHash('sha256').update(apk).digest('hex'),
+              apkUrl: `https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${tag}/app-release.apk`
+            };
+            fs.writeFileSync(folder + 'nimzo-update.json', JSON.stringify(update, null, 2) + '\n');
+            const release = await github.rest.repos.createRelease({
+              owner: context.repo.owner, repo: context.repo.repo,
+              tag_name: tag, target_commitish: context.sha, draft: true,
+              name: `NIMZO ${update.version} (${buildNumber})`, prerelease: true,
+              body: `NIMZO_BUILD_NUMBER=${buildNumber}\nOptional testing update. Package and permanent release signing identity verified. Older debug-signed APKs require uninstall/reinstall; server accounts and balances persist. Automated tests passed; physical-device voice, OAuth and payment testing remain unverified. No production accounts or balances were reset.`
+            });
+            for (const name of ['app-release.apk', 'app-release.apk.sha256', 'app-release.apk.signing.txt', 'nimzo-update.json']) {
+              const data = fs.readFileSync(folder + name);
+              const asset = await github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner, repo: context.repo.repo,
+                release_id: release.data.id, name, data,
+                headers: {'content-type': name.endsWith('.apk') ? 'application/vnd.android.package-archive' : name.endsWith('.json') ? 'application/json' : 'text/plain', 'content-length': data.length}
+              });
+              core.info(asset.data.browser_download_url);
+              await core.summary.addLink(name, asset.data.browser_download_url).write();
+            }
+            await github.rest.repos.updateRelease({owner: context.repo.owner, repo: context.repo.repo, release_id: release.data.id, tag_name: tag, target_commitish: context.sha, draft: false});
+
+      - name: APK download link
+        if: env.HAS_RELEASE_SIGNING == 'true'
+        run: echo '${{ steps.apk.outputs.artifact-url }}' >> "$GITHUB_STEP_SUMMARY"

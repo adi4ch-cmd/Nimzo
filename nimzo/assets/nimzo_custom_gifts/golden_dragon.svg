@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+<radialGradient id="glow"><stop stop-color="#8f6938" stop-opacity=".44"/><stop offset=".76" stop-color="#113227" stop-opacity=".24"/><stop offset="1" stop-color="#051610" stop-opacity="0"/></radialGradient>
+<linearGradient id="gold" x2="1" y2="1"><stop stop-color="#fff3c2"/><stop offset=".38" stop-color="#f8cb6a"/><stop offset=".73" stop-color="#b86d23"/><stop offset="1" stop-color="#ffe8a8"/></linearGradient>
+<linearGradient id="ruby" x2="1" y2="1"><stop stop-color="#ffa9b1"/><stop offset=".38" stop-color="#ed294a"/><stop offset=".8" stop-color="#a20d3e"/><stop offset="1" stop-color="#ff5d72"/></linearGradient>
+<linearGradient id="blue" x2="1" y2="1"><stop stop-color="#e9faff"/><stop offset=".33" stop-color="#6ee4ff"/><stop offset=".76" stop-color="#4262e9"/><stop offset="1" stop-color="#222a7b"/></linearGradient>
+<linearGradient id="jade" x2="1" y2="1"><stop stop-color="#b1ffe5"/><stop offset=".50" stop-color="#1cbea0"/><stop offset="1" stop-color="#07574f"/></linearGradient>
+<linearGradient id="flame" x2="1" y2="1"><stop stop-color="#fff5b7"/><stop offset=".4" stop-color="#ffb52f"/><stop offset=".75" stop-color="#e14719"/><stop offset="1" stop-color="#8f133d"/></linearGradient>
+</defs>
+<circle cx="256" cy="260" r="231" fill="url(#glow)"/>
+<g fill="#ffe7ae" opacity=".85"><path d="M97 79l5 17 18 5-18 5-5 17-5-17-18-5 18-5z"/><path d="M418 99l5 14 13 5-13 5-5 14-5-14-13-5 13-5z"/><circle cx="432" cy="324" r="4"/><circle cx="81" cy="335" r="4"/></g>
+<path d="M107 365Q168 263 228 280Q318 298 304 213Q293 169 347 157Q384 153 419 98L402 175L453 153Q440 220 379 233Q346 291 290 323Q226 359 167 328Q144 344 107 365Z" fill="url(#gold)" stroke="#fff1b2" stroke-width="11"/><path d="M261 243Q163 96 107 120Q116 203 227 289Z" fill="#bd701e" stroke="#ffda6d" stroke-width="8"/><path d="M305 237Q345 87 279 65Q252 138 271 255Z" fill="#a75b18" stroke="#ffef99" stroke-width="9"/><path d="M355 156L341 95L370 127L384 81L405 126" fill="none" stroke="#ffecaa" stroke-width="14"/><circle cx="401" cy="170" r="9" fill="#ea3952"/><path d="M422 211Q457 234 443 267Q416 249 395 251" fill="url(#flame)"/>
+</svg>

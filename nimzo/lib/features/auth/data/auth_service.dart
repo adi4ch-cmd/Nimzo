@@ -14,9 +14,8 @@ class AuthService {
     final response = await _auth.signInWithOAuth(
       provider,
       redirectTo: kIsWeb ? null : AppConstants.oauthRedirect,
-      authScreenLaunchMode: kIsWeb
-          ? LaunchMode.platformDefault
-          : LaunchMode.externalApplication,
+      authScreenLaunchMode:
+          kIsWeb ? LaunchMode.platformDefault : LaunchMode.externalApplication,
     );
     if (!response) throw const AuthException('Unable to start OAuth sign-in.');
   }
@@ -25,30 +24,34 @@ class AuthService {
       _auth.signInWithPassword(email: email, password: password);
 
   Future<AuthResponse> signUp(String email, String password) => _auth.signUp(
-    email: email,
-    password: password,
-    emailRedirectTo: AppConstants.oauthRedirect,
-  );
+        email: email,
+        password: password,
+        emailRedirectTo: AppConstants.oauthRedirect,
+      );
 
   Future<void> signOut() async {
     final uid = _auth.currentUser?.id;
-    if (uid != null) {
-      final db = Supabase.instance.client;
-      final membership = await db
-          .from('room_members')
-          .select('room_id')
-          .eq('user_id', uid)
-          .maybeSingle();
-      if (membership != null)
-        await db.rpc('leave_room', params: {'p_room': membership['room_id']});
+    try {
+      if (uid != null) {
+        final db = Supabase.instance.client;
+        final membership = await db
+            .from('room_members')
+            .select('room_id')
+            .eq('user_id', uid)
+            .maybeSingle();
+        if (membership != null)
+          await db.rpc('leave_room', params: {'p_room': membership['room_id']});
+      }
+    } finally {
+      // GoTrue clears local session/storage before attempting the remote revoke.
+      await _auth.signOut(scope: SignOutScope.local);
     }
-    await _auth.signOut();
   }
 
   Future<void> resetPassword(String email) => _auth.resetPasswordForEmail(
-    email,
-    redirectTo: AppConstants.oauthRedirect,
-  );
+        email,
+        redirectTo: AppConstants.oauthRedirect,
+      );
   Future<void> resendVerification(String email) =>
       _auth.resend(type: OtpType.signup, email: email);
   Future<UserResponse> refreshUser() async {

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+<radialGradient id="aura"><stop stop-color="#f6a83c" stop-opacity=".47"/><stop offset=".38" stop-color="#c93b1a" stop-opacity=".15"/><stop offset="1" stop-color="#bd2c23" stop-opacity="0"/></radialGradient>
+<linearGradient id="wing" x1=".22" y1=".9" x2=".72" y2=".03"><stop stop-color="#7f1a24"/><stop offset=".4" stop-color="#df421c"/><stop offset=".7" stop-color="#ff9a29"/><stop offset="1" stop-color="#fff4b4"/></linearGradient>
+<linearGradient id="feather" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#ad1c20"/><stop offset=".48" stop-color="#f85e18"/><stop offset=".77" stop-color="#ffb13c"/><stop offset="1" stop-color="#ffeb9e"/></linearGradient>
+<linearGradient id="body" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff4b1"/><stop offset=".18" stop-color="#ffc853"/><stop offset=".53" stop-color="#e94c22"/><stop offset="1" stop-color="#87162b"/></linearGradient>
+<linearGradient id="tail" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1a0"/><stop offset=".4" stop-color="#ff9921"/><stop offset=".65" stop-color="#e3451e"/><stop offset="1" stop-color="#9a1434"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff9d4"/><stop offset=".43" stop-color="#fbbd4c"/><stop offset="1" stop-color="#9a5119"/></linearGradient>
+</defs>
+<circle cx="256" cy="244" r="242" fill="url(#aura)"/>
+<g opacity=".42"><path d="M256 94C133 30 70 144 37 103C54 238 129 307 256 306C382 307 465 229 480 106C438 148 377 30 256 94Z" fill="#ff8f16"/></g>
+<g fill="#ffe9a7" opacity=".88"><path d="M82 73l4 13 13 4-13 4-4 13-4-13-13-4 13-4Z"/><path d="M423 72l5 17 16 5-16 5-5 17-5-17-16-5 16-5Z"/><circle cx="99" cy="327" r="3"/><circle cx="402" cy="328" r="3"/><circle cx="151" cy="48" r="2"/><circle cx="376" cy="48" r="2"/></g>
+<!-- Three separate flame-tail plumes behind the body -->
+<path d="M252 282C209 358 167 373 139 462C213 430 247 397 267 323Z" fill="url(#tail)" stroke="#fbb650" stroke-width="3"/>
+<path d="M258 279C249 352 258 415 246 492C291 447 307 375 275 310Z" fill="url(#tail)" stroke="#ffdb76" stroke-width="4"/>
+<path d="M259 286C313 346 354 386 376 455C305 420 266 368 249 315Z" fill="url(#tail)" stroke="#fbb650" stroke-width="3"/>
+<path d="M244 325Q218 378 180 420" fill="none" stroke="#ffe28c" stroke-width="4" opacity=".65"/>
+<path d="M269 324Q293 382 336 424" fill="none" stroke="#ffe28c" stroke-width="4" opacity=".65"/>
+<!-- Broad soaring wings; unlike the retired butterfly image this has a head, beak, plumage and three separate tail feathers -->
+<path d="M257 258C203 174 118 104 28 96C47 212 108 297 243 308Z" fill="url(#wing)" stroke="#ffce74" stroke-width="5"/>
+<path d="M255 258C309 174 394 104 484 96C465 212 404 297 269 308Z" fill="url(#wing)" stroke="#ffce74" stroke-width="5"/>
+<path d="M250 229 Q140 145 44 113 Q68 157 215 283Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="2" opacity="0.720"/>
+<path d="M248 234 Q136 153 49 139 Q74 183 214 284Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="2" opacity="0.745"/>
+<path d="M247 239 Q132 161 57 164 Q83 208 212 286Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="2" opacity="0.770"/>
+<path d="M245 244 Q128 169 66 187 Q93 231 211 287Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="2" opacity="0.795"/>
+<path d="M244 249 Q124 177 77 211 Q105 255 209 288Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="1.2" opacity="0.820"/>
+<path d="M242 254 Q120 185 91 233 Q120 277 208 290Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="1.2" opacity="0.845"/>
+<path d="M240 259 Q116 193 111 254 Q141 298 206 291Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="1.2" opacity="0.870"/>
+<path d="M239 264 Q112 201 135 272 Q166 316 205 292Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="1.2" opacity="0.895"/>
+<path d="M262 229 Q372 145 468 113 Q444 157 297 283Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="2" opacity="0.720"/>
+<path d="M264 234 Q376 153 463 139 Q438 183 299 284Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="2" opacity="0.745"/>
+<path d="M265 239 Q380 161 455 164 Q429 208 300 286Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="2" opacity="0.770"/>
+<path d="M267 244 Q384 169 446 187 Q419 231 302 287Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="2" opacity="0.795"/>
+<path d="M268 249 Q388 177 435 211 Q407 255 303 288Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="1.2" opacity="0.820"/>
+<path d="M270 254 Q392 185 421 233 Q392 277 305 290Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="1.2" opacity="0.845"/>
+<path d="M272 259 Q396 193 401 254 Q371 298 306 291Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="1.2" opacity="0.870"/>
+<path d="M273 264 Q400 201 377 272 Q346 316 308 292Z" fill="url(#feather)" stroke="#ffcf65" stroke-width="1.2" opacity="0.895"/>
+<path d="M255 279Q139 206 82 160" fill="none" stroke="#fff3b7" stroke-width="4" opacity=".66"/>
+<path d="M257 279Q373 206 430 160" fill="none" stroke="#fff3b7" stroke-width="4" opacity=".66"/>
+<!-- Neck and full bird body -->
+<path d="M250 196Q228 217 226 271Q228 321 256 360Q287 322 288 271Q287 219 267 196Z" fill="url(#body)" stroke="#ffe5a5" stroke-width="4"/>
+<path d="M236 266Q228 304 254 342Q260 314 252 282Z" fill="#9d1d30" opacity=".62"/>
+<path d="M278 267Q284 307 259 342Q253 311 261 281Z" fill="#ffb23e" opacity=".63"/>
+<!-- Distinct avian head with eyes, sharp beak and flame crest -->
+<path d="M236 211Q222 188 224 167Q228 142 256 139Q277 140 281 166Q286 194 271 213Z" fill="url(#gold)" stroke="#fff0b8" stroke-width="3"/>
+<path d="M255 154Q231 108 242 60Q270 98 263 145Z" fill="url(#tail)" stroke="#ffdb73" stroke-width="3"/>
+<path d="M244 155Q212 113 219 86Q245 105 254 141Z" fill="url(#tail)" stroke="#ffce64" stroke-width="2"/>
+<path d="M268 147Q297 111 289 82Q267 105 258 136Z" fill="url(#tail)" stroke="#ffce64" stroke-width="2"/>
+<path d="M251 180L276 187L252 199Z" fill="#57271b" stroke="#ffcd79" stroke-width="2"/>
+<path d="M246 169Q255 161 263 168Q259 178 251 177Z" fill="#09241c"/>
+<circle cx="253" cy="169" r="2.3" fill="#fffcd0"/>
+<path d="M244 238Q255 259 265 238Q259 281 255 290Q249 269 244 238Z" fill="#ffe58a" opacity=".6"/>
+<circle cx="256" cy="235" r="7" fill="#fff8ce" stroke="#d46e22" stroke-width="3"/>
+<g fill="#ffce6b" opacity=".84"><circle cx="112" cy="298" r="3"/><circle cx="403" cy="294" r="4"/><circle cx="85" cy="265" r="3"/><circle cx="427" cy="254" r="3"/></g>
+</svg>

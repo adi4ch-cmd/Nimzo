@@ -8,6 +8,8 @@
 #include <mutex>
 #include <thread>
 #include <atomic>
+#include <chrono>
+#include <algorithm>
 
 #define LOG_TAG "NimzoVivox"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -26,6 +28,8 @@ static std::atomic<bool> g_pump{false};
 static std::thread g_thread;
 
 static void emit(const char* event, int status, const char* detail) {
+  // Never log tokens, account URIs or provider response bodies.
+  if (status != 0) LOGE("%s failed (code %d)", event ? event : "native", status);
   if (!g_vm || !g_callback || !g_event_method) return;
   JNIEnv* env = nullptr;
   bool attached = false;
@@ -41,11 +45,25 @@ static void emit(const char* event, int status, const char* detail) {
   if (attached) g_vm->DetachCurrentThread();
 }
 
+// Only stable stage names cross JNI; raw provider payloads are never needed.
+static const char* response_stage(vx_response_type type) {
+  switch (type) {
+    case resp_connector_create: return "connector";
+    case resp_account_anonymous_login: return "login";
+    case resp_sessiongroup_add_session: return "channel-join";
+    case resp_connector_mute_local_mic: return "microphone";
+    case resp_connector_mute_local_speaker: return "speaker";
+    case resp_sessiongroup_remove_session:
+    case resp_account_logout: return "leave";
+    default: return "native";
+  }
+}
+
 static void handle_message(vx_message_base_t* msg) {
   if (!msg) return;
   if (msg->type == msg_response) {
     auto* response = reinterpret_cast<vx_resp_base_t*>(msg);
-    if (response->status_code != 0) emit("error", response->status_code, response->status_string);
+    if (response->status_code != 0) emit("error", response->status_code, response_stage(response->type));
     return;
   }
   if (msg->type != msg_event) return;
@@ -53,30 +71,30 @@ static void handle_message(vx_message_base_t* msg) {
   if (evt->type == evt_media_stream_updated) {
     auto* e = reinterpret_cast<vx_evt_media_stream_updated_t*>(msg);
     emit(e->state == session_media_connected ? "audioConnected" : (e->state == session_media_disconnected ? "audioDisconnected" : "audioState"),
-         e->status_code, e->status_string ? e->status_string : "");
+         e->status_code, "channel-join");
   } else if (evt->type == evt_participant_updated) {
     auto* e = reinterpret_cast<vx_evt_participant_updated_t*>(msg);
     emit(e->is_speaking ? "speaking" : "stoppedSpeaking",
          0, e->participant_uri ? e->participant_uri : "");
   } else if (evt->type == evt_account_login_state_change) {
     auto* e = reinterpret_cast<vx_evt_account_login_state_change_t*>(msg);
-    emit("loginState", e->status_code, e->status_string ? e->status_string : "");
+    emit("loginState", e->status_code, "login");
+    if (e->state == login_state_logged_out) emit("audioDisconnected", e->status_code, "login");
   }
 }
 
 static int wait_for_response(vx_response_type wanted, int timeout_ms, vx_message_base_t** out) {
-  const int slice = 100;
-  int elapsed = 0;
-  while (elapsed < timeout_ms) {
-    vx_message_base_t* msg = vx_wait_for_message(slice);
-    if (!msg) { elapsed += slice; continue; }
+  const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+  while (std::chrono::steady_clock::now() < deadline) {
+    const auto remaining = std::chrono::duration_cast<std::chrono::milliseconds>(deadline - std::chrono::steady_clock::now()).count();
+    vx_message_base_t* msg = vx_wait_for_message(static_cast<int>(std::max<int64_t>(1, std::min<int64_t>(100, remaining))));
+    if (!msg) continue;
     if (msg->type == msg_response && reinterpret_cast<vx_resp_base_t*>(msg)->type == wanted) {
       *out = msg;
       return 0;
     }
     handle_message(msg);
     vx_destroy_message(msg);
-    elapsed += slice;
   }
   return -1;
 }
@@ -93,7 +111,9 @@ static void pump_loop() {
 extern "C" JNIEXPORT jboolean JNICALL
 Java_io_nimzo_vivox_NimzoVivox_nativeInit(JNIEnv* env, jclass, jobject callback, jstring server) {
   std::lock_guard<std::mutex> lock(g_mu);
-  if (g_initialized.load()) return JNI_TRUE;
+  // An earlier connector attempt may have failed after SDK initialization.
+  // Only report success when the connector is actually available.
+  if (g_initialized.load() && g_connector) return JNI_TRUE;
   if (!g_vm) env->GetJavaVM(&g_vm);
 
   jclass cls = env->GetObjectClass(callback);
@@ -103,9 +123,9 @@ Java_io_nimzo_vivox_NimzoVivox_nativeInit(JNIEnv* env, jclass, jobject callback,
 
   vx_sdk_config_t cfg;
   int rc = vx_get_default_config3(&cfg, sizeof(cfg));
-  if (rc != VxErrorSuccess) { emit("error", rc, vx_get_error_string(rc)); return JNI_FALSE; }
+  if (rc != VxErrorSuccess) { emit("error", rc, "initialize"); return JNI_FALSE; }
   rc = vx_initialize3(&cfg, sizeof(cfg));
-  if (rc != VxErrorSuccess) { emit("error", rc, vx_get_error_string(rc)); return JNI_FALSE; }
+  if (rc != VxErrorSuccess) { emit("error", rc, "initialize"); return JNI_FALSE; }
 
   g_initialized = true;
   const char* acctServer = env->GetStringUTFChars(server, nullptr);
@@ -119,16 +139,16 @@ Java_io_nimzo_vivox_NimzoVivox_nativeInit(JNIEnv* env, jclass, jobject callback,
     rc = vx_issue_request3(&req->base, &request_count);
   }
   env->ReleaseStringUTFChars(server, acctServer);
-  if (rc != VxErrorSuccess) { emit("error", rc, vx_get_error_string(rc)); return JNI_FALSE; }
+  if (rc != VxErrorSuccess) { emit("error", rc, "connector"); return JNI_FALSE; }
 
   vx_message_base_t* msg = nullptr;
   if (wait_for_response(resp_connector_create, 15000, &msg) != 0) {
-    emit("error", -2, "Vivox connector_create timeout");
+    emit("error", -2, "connector");
     return JNI_FALSE;
   }
   auto* resp = reinterpret_cast<vx_resp_connector_create_t*>(msg);
   if (resp->base.status_code != 0) {
-    emit("error", resp->base.status_code, resp->base.status_string ? resp->base.status_string : "");
+    emit("error", resp->base.status_code, "connector");
     vx_destroy_message(msg);
     return JNI_FALSE;
   }
@@ -143,9 +163,10 @@ extern "C" JNIEXPORT jint JNICALL
 Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
                                                    jstring loginToken,
                                                    jstring channelToken,
-                                                   jstring channelUri) {
+                                                   jstring channelUri,
+                                                   jstring accountName) {
   std::lock_guard<std::mutex> lock(g_mu);
-  if (!g_initialized.load() || !g_connector) return -100;
+  if (!g_initialized.load() || !g_connector) { emit("error", -100, "initialize"); return -100; }
   // Only one SDK message consumer may run while waiting for responses.
   g_pump = false;
   if (g_thread.joinable()) g_thread.join();
@@ -153,19 +174,24 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
   const char* ct = env->GetStringUTFChars(channelToken, nullptr);
   const char* cu = env->GetStringUTFChars(channelUri, nullptr);
 
-  vx_req_account_authtoken_login_t* login = nullptr;
-  int rc = vx_req_account_authtoken_login_create(&login);
+  const char* an = env->GetStringUTFChars(accountName, nullptr);
+
+  // Unity Vivox Access Tokens use anonymous login, not legacy auth tickets.
+  vx_req_account_anonymous_login_t* login = nullptr;
+  int rc = vx_req_account_anonymous_login_create(&login);
   if (rc == VxErrorSuccess) {
     login->connector_handle = vx_strdup(g_connector);
-    login->authtoken = vx_strdup(lt);
+    login->access_token = vx_strdup(lt);
+    login->acct_name = vx_strdup(an);
     login->account_handle = vx_strdup("nimzo_account");
-    login->enable_text = text_mode_disabled;
     login->enable_buddies_and_presence = 0;
     login->enable_presence_persistence = 0;
     int login_request_count = 0;
     rc = vx_issue_request3(&login->base, &login_request_count);
   }
+  env->ReleaseStringUTFChars(accountName, an);
   if (rc != VxErrorSuccess) {
+    emit("error", rc, "login");
     env->ReleaseStringUTFChars(loginToken, lt);
     env->ReleaseStringUTFChars(channelToken, ct);
     env->ReleaseStringUTFChars(channelUri, cu);
@@ -173,16 +199,17 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
   }
 
   vx_message_base_t* msg = nullptr;
-  if (wait_for_response(resp_account_authtoken_login, 20000, &msg) != 0) {
+  if (wait_for_response(resp_account_anonymous_login, 20000, &msg) != 0) {
+    emit("error", -101, "login");
     env->ReleaseStringUTFChars(loginToken, lt);
     env->ReleaseStringUTFChars(channelToken, ct);
     env->ReleaseStringUTFChars(channelUri, cu);
     return -101;
   }
-  auto* lr = reinterpret_cast<vx_resp_account_authtoken_login_t*>(msg);
+  auto* lr = reinterpret_cast<vx_resp_account_anonymous_login_t*>(msg);
   if (lr->base.status_code != 0) {
     int status = lr->base.status_code;
-    emit("error", status, lr->base.status_string ? lr->base.status_string : "");
+    emit("error", status, "login");
     vx_destroy_message(msg);
     env->ReleaseStringUTFChars(loginToken, lt);
     env->ReleaseStringUTFChars(channelToken, ct);
@@ -205,6 +232,7 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
     } else if (rc == VxErrorSuccess) { rc = -103; }
   } else { rc = -104; }
   if (rc != VxErrorSuccess) {
+    emit("error", rc, "initial-mute");
     env->ReleaseStringUTFChars(loginToken, lt);
     env->ReleaseStringUTFChars(channelToken, ct);
     env->ReleaseStringUTFChars(channelUri, cu);
@@ -227,17 +255,17 @@ Java_io_nimzo_vivox_NimzoVivox_nativeLoginAndJoin(JNIEnv* env, jclass,
   env->ReleaseStringUTFChars(loginToken, lt);
   env->ReleaseStringUTFChars(channelToken, ct);
   env->ReleaseStringUTFChars(channelUri, cu);
-  if (rc != VxErrorSuccess) return rc;
+  if (rc != VxErrorSuccess) { emit("error", rc, "channel-join"); return rc; }
 
   vx_message_base_t* join_msg = nullptr;
   if (wait_for_response(resp_sessiongroup_add_session, 15000, &join_msg) != 0) {
-    emit("error", -102, "Vivox session join response timeout");
+    emit("error", -102, "channel-join");
     return -102;
   }
   auto* join_resp = reinterpret_cast<vx_resp_sessiongroup_add_session_t*>(join_msg);
   if (join_resp->base.status_code != 0) {
     const int status = join_resp->base.status_code;
-    emit("error", status, join_resp->base.status_string ? join_resp->base.status_string : "");
+    emit("error", status, "channel-join");
     vx_destroy_message(join_msg);
     return status;
   }

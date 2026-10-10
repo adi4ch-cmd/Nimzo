@@ -1,0 +1,84 @@
+name: Publish Verified Signed NIMZO APK
+on:
+  push:
+    branches: [feature/profile-reference-redesign]
+    paths: [tools/prebuilt_apk_manifest.json, tools/verify_prebuilt_apk.py, .github/workflows/nimzo-publish-verified.yml]
+  workflow_dispatch:
+    inputs:
+      manifest:
+        description: Public prebuilt APK source SHA, checksum and ordered Git blob SHAs
+        required: true
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Retrieve public signed APK
+        uses: actions/github-script@v7
+        env:
+          PREBUILT_MANIFEST: ${{ inputs.manifest }}
+        with:
+          script: |
+            const fs = require('fs');
+            const manifest = JSON.parse(process.env.PREBUILT_MANIFEST || fs.readFileSync('tools/prebuilt_apk_manifest.json', 'utf8'));
+            if (!/^[a-f0-9]{40}$/.test(manifest.sourceSha) || !/^[a-f0-9]{64}$/.test(manifest.sha256) || !Array.isArray(manifest.blobs) || manifest.blobs.length < 1 || manifest.blobs.length > 100 || manifest.blobs.some(sha => !/^[a-f0-9]{40}$/.test(sha))) throw new Error('Invalid public APK manifest');
+            fs.mkdirSync('verified-apk', {recursive: true});
+            const output = fs.openSync('verified-apk/app-release.apk', 'w');
+            let bytes = 0;
+            try {
+              for (const sha of manifest.blobs) {
+                const blob = await github.rest.git.getBlob({owner: context.repo.owner, repo: context.repo.repo, file_sha: sha});
+                if (blob.data.encoding !== 'base64') throw new Error('Unsupported blob encoding');
+                const data = Buffer.from(blob.data.content, 'base64');
+                bytes += data.length;
+                if (bytes > 512 * 1024 * 1024) throw new Error('APK exceeds size limit');
+                fs.writeSync(output, data);
+              }
+            } finally { fs.closeSync(output); }
+            fs.writeFileSync('verified-apk/prebuilt.json', JSON.stringify(manifest));
+      - name: Verify signature package version and native libraries
+        run: python3 tools/verify_prebuilt_apk.py
+      - name: Publish complete verified release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const update = JSON.parse(fs.readFileSync('verified-apk/nimzo-update.json'));
+            const manifest = JSON.parse(fs.readFileSync('verified-apk/prebuilt.json'));
+            const tag = `nimzo-release-${manifest.sourceSha.slice(0, 12)}`;
+            const all = await github.paginate(github.rest.repos.listReleases, {owner: context.repo.owner, repo: context.repo.repo, per_page: 100});
+            const existing = all.find(r => !r.draft && r.tag_name === tag);
+            if (existing) {
+              const crypto = require('crypto');
+              const assets = existing.assets || [];
+              const apk = assets.find(a => a.name === 'app-release.apk');
+              const metadata = assets.find(a => a.name === 'nimzo-update.json');
+              const metadataDigest = 'sha256:' + crypto.createHash('sha256').update(fs.readFileSync('verified-apk/nimzo-update.json')).digest('hex');
+              if (apk?.digest !== 'sha256:' + update.apkSha256 || apk.browser_download_url !== update.apkUrl || metadata?.digest !== metadataDigest || !['app-release.apk.sha256', 'app-release.apk.signing.txt'].every(name => assets.some(a => a.name === name))) throw new Error('Existing published release differs; refusing to overwrite');
+              await core.summary.addLink('Existing verified APK', update.apkUrl).write();
+              return;
+            }
+            for (const release of all.filter(r => !r.draft)) {
+              const build = release.body?.match(/NIMZO_BUILD_NUMBER=(\d+)/);
+              if (build && Number(build[1]) >= update.buildNumber) throw new Error('New APK release must increase build number');
+            }
+            let release = all.find(r => r.draft && r.tag_name === tag);
+            if (!release) release = (await github.rest.repos.createRelease({owner: context.repo.owner, repo: context.repo.repo, tag_name: tag, target_commitish: manifest.sourceSha, draft: true, prerelease: true, name: `NIMZO ${update.version} (${update.buildNumber})`, body: ''})).data;
+            await github.rest.repos.updateRelease({owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, name: `NIMZO ${update.version} (${update.buildNumber})`, body: `NIMZO_BUILD_NUMBER=${update.buildNumber}\nVerified locally built release APK signed with the preserved permanent identity. Initial migration from old debug-signed APKs requires uninstall/reinstall; Supabase accounts, IDs and coins persist. Future updates use the same package/certificate. Users never configure signing or GitHub. Android confirms installation. Analyzer, complete Flutter suite and native contract tests passed; physical-device audio/installer/payment remain unverified. Automatic compilation signing remains blocked by developer Secrets provisioning (HTTP403).`, draft: true});
+            for (const asset of release.assets || []) {
+              if (['app-release.apk', 'app-release.apk.sha256', 'app-release.apk.signing.txt', 'nimzo-update.json'].includes(asset.name)) await github.rest.repos.deleteReleaseAsset({owner: context.repo.owner, repo: context.repo.repo, asset_id: asset.id});
+            }
+            for (const name of ['app-release.apk', 'app-release.apk.sha256', 'app-release.apk.signing.txt', 'nimzo-update.json']) {
+              const data = fs.readFileSync(`verified-apk/${name}`);
+              await github.rest.repos.uploadReleaseAsset({owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, name, data, headers: {'content-type': name.endsWith('.apk') ? 'application/vnd.android.package-archive' : name.endsWith('.json') ? 'application/json' : 'text/plain', 'content-length': data.length}});
+            }
+            await github.rest.repos.updateRelease({owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, tag_name: tag, target_commitish: manifest.sourceSha, draft: false});
+            await core.summary.addLink('Verified APK', update.apkUrl).write();

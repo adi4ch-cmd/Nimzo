@@ -1,0 +1,10 @@
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Preserve the established compact guard/loop style throughout this project.
+    curly_braces_in_flow_control_structures: false

@@ -2,6 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'auth_redirect.dart';
+import '../features/social/social_screens.dart';
+import '../features/discover/ranking_screen.dart';
+import '../features/profile/levels_screen.dart';
+import '../features/profile/profile_repository.dart';
 import '../features/auth/presentation/update_password_screen.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,8 +17,11 @@ import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/register_screen.dart';
 import '../features/auth/presentation/verify_screen.dart';
 import '../features/discover/discover_screen.dart';
-import '../features/admin/admin_screen.dart';
+import '../features/settings/settings_screen.dart';
+import '../features/profile/me_screen.dart';
 import '../features/games/game_screen.dart';
+import '../features/games/game_level_screen.dart';
+import '../features/store/store_screen.dart';
 import '../features/games/games_catalog_screen.dart';
 import '../features/rooms/presentation/create_room_screen.dart';
 import '../features/rooms/presentation/room_settings_screen.dart';
@@ -51,12 +58,29 @@ final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     refreshListenable: refresh,
     initialLocation: Routes.splash,
-    redirect: (ctx, state) {
+    redirect: (ctx, state) async {
       final auth = ref.read(authStateProvider);
+      var profileReady = true;
+      final user = auth.valueOrNull;
+      if (!auth.isLoading &&
+          user != null &&
+          user.emailVerified &&
+          !ref.read(passwordRecoveryProvider)) {
+        try {
+          final profile = await ref.read(profileProvider(user.id).future);
+          profileReady = (profile.displayName?.trim().isNotEmpty ?? false) &&
+              profile.gender != null &&
+              profile.dateOfBirth != null &&
+              profile.countryCode != null;
+        } catch (_) {
+          profileReady = false;
+        }
+      }
       return authRedirect(
         location: state.matchedLocation,
         user: auth.valueOrNull,
         loading: auth.isLoading,
+        profileReady: profileReady,
         recovering: ref.read(passwordRecoveryProvider),
       );
     },
@@ -94,9 +118,29 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/games-play',
-        builder: (_, s) => GameScreen(roomId: s.uri.queryParameters['room']),
+        builder: (_, s) => GameScreen(
+          roomId: s.uri.queryParameters['room'],
+          slug: s.uri.queryParameters['game'],
+        ),
       ),
-      GoRoute(path: '/admin', builder: (_, __) => const AdminScreen()),
+      GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+      GoRoute(path: '/svip', builder: (_, __) => const VipScreen(svip: true)),
+      GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
+      GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
+      GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
+      GoRoute(path: '/game-level', builder: (_, __) => const GameLevelScreen()),
+      GoRoute(path: '/store', builder: (_, __) => const RoyalStoreScreen()),
+      GoRoute(
+        path: '/social/:kind/:id',
+        builder: (_, s) => SocialListScreen(
+          kind: s.pathParameters['kind']!,
+          userId: s.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: '/info/:title',
+        builder: (_, s) => InfoScreen(title: s.pathParameters['title']!),
+      ),
       GoRoute(
         path: '/room/:id',
         builder: (_, s) => RoomScreen(roomId: s.pathParameters['id']!),
@@ -150,7 +194,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.games,
-                builder: (_, __) => const GamesCatalogScreen(),
+                builder: (_, s) =>
+                    GamesCatalogScreen(roomId: s.uri.queryParameters['room']),
               ),
             ],
           ),
@@ -174,7 +219,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.profile,
-                builder: (_, __) => const ProfileScreen(),
+                builder: (_, __) => const MeScreen(),
               ),
             ],
           ),
