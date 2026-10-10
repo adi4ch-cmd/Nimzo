@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 import '../../vip/phoenix_widgets.dart';
 import '../../vip/phoenix_room_entry.dart';
+import '../../profile/profile_repository.dart';
 import '../../gifts/verified_gift_broadcast.dart';
 
 import 'dart:async';
