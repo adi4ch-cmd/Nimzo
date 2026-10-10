@@ -85,6 +85,168 @@ class GiftRepository {
   final SupabaseClient _db;
   GiftRepository(this._db);
 
+  /// Resolve names from public-facing profiles, not from a client-authored
+  /// animation payload. RLS is enforced by the signed-in user's session.
+  /// Never disclose UUIDs or fabricate two anonymous "NIMZO user" names.
+  /// A missing/deleted profile is intentionally left unnamed.
+  Future<Map<String, String>> participantNamesForVerifiedEvent(
+    Map<String, dynamic> event,
+  ) async {
+    final ids = <String>{
+      if (event['sender_id'] is String) event['sender_id'] as String,
+      if (event['receiver_id'] is String) event['receiver_id'] as String,
+    }.where((id) =>
+        RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}
+  Future<List<Gift>> catalog() async {
+    try {
+      final r = await _db
+          .from('gifts')
+          .select()
+          .eq('active', true)
+          .order('coin_price');
+      return r
+          .map(
+            (j) => Gift(
+              j['id'],
+              j['name'],
+              j['category'],
+              (j['coin_price'] as num).toInt(),
+              j['asset_path'] as String?,
+            ),
+          )
+          .toList();
+    } catch (e) {
+      throw mapError(e);
+    }
+  }
+
+  Future<void> sendProfile({
+    required String receiverId,
+    required String giftId,
+    required int qty,
+    required String key,
+  }) async {
+    _validateGiftRequest(receiverId, giftId, qty, key);
+    try {
+      await _db.rpc(
+        'send_profile_gift',
+        params: {
+          'p_receiver': receiverId,
+          'p_gift': giftId,
+          'p_qty': qty,
+          'p_key': key,
+        },
+      );
+    } catch (e) {
+      throw mapGiftError(e);
+    }
+  }
+
+  /// Price, balance and the 45/5 split are decided by Postgres `send_gift`.
+  /// The idempotency key makes retries safe.
+  Future<void> send({
+    required String roomId,
+    required String receiverId,
+    required String giftId,
+    required int qty,
+    required String key,
+  }) async {
+    if (roomId.trim().isEmpty) {
+      throw ArgumentError.value(roomId, 'roomId', 'Room is required.');
+    }
+    _validateGiftRequest(receiverId, giftId, qty, key);
+    try {
+      await _db.rpc(
+        'send_gift',
+        params: {
+          'p_room': roomId,
+          'p_receiver': receiverId,
+          'p_gift': giftId,
+          'p_qty': qty,
+          'p_key': key,
+        },
+      );
+    } catch (e) {
+      throw mapGiftError(e);
+    }
+  }
+
+  static void _validateGiftRequest(
+    String receiverId,
+    String giftId,
+    int qty,
+    String key,
+  ) {
+    if (receiverId.trim().isEmpty) {
+      throw ArgumentError.value(
+        receiverId,
+        'receiverId',
+        'Recipient is required.',
+      );
+    }
+    if (giftId.trim().isEmpty) {
+      throw ArgumentError.value(giftId, 'giftId', 'Gift is required.');
+    }
+    if (qty <= 0) {
+      throw RangeError.value(qty, 'qty', 'Quantity must be positive.');
+    }
+    if (key.trim().isEmpty) {
+      throw ArgumentError.value(key, 'key', 'Idempotency key is required.');
+    }
+  }
+}
+
+final giftRepositoryProvider = Provider(
+  (ref) => GiftRepository(ref.watch(sessionSupabaseProvider).client),
+);
+final giftCatalogProvider = FutureProvider(
+  (ref) => ref.watch(giftRepositoryProvider).catalog(),
+);
+final roomGiftEventProvider =
+    StreamProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
+  (ref, roomId) =>
+      ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
+);
+
+final verifiedGiftAnimationProvider = StreamProvider.autoDispose
+    .family<List<Map<String, dynamic>>, ({String roomId, String countryCode})>(
+  (ref, args) => ref.watch(giftRepositoryProvider).watchVerifiedAnimations(
+        roomId: args.roomId,
+        countryCode: args.countryCode,
+      ),
+);
+)
+            .hasMatch(id)).toList();
+    if (ids.isEmpty) return const {};
+    try {
+      final rows = await _db
+          .from('profiles')
+          .select('id,nimzo_id,display_name,username')
+          .inFilter('id', ids)
+          .limit(2);
+      final names = <String, String>{};
+      for (final row in rows) {
+        final id = row['id']?.toString();
+        if (id == null || !ids.contains(id)) continue;
+        final display = (row['display_name'] as String?)?.trim();
+        final username = (row['username'] as String?)?.trim();
+        final number = row['nimzo_id'];
+        final name = display != null && display.isNotEmpty
+            ? display
+            : username != null && username.isNotEmpty
+                ? username
+                : number is num
+                    ? 'ID ' + number.toString()
+                    : '';
+        if (name.isNotEmpty) names[id] = name;
+      }
+      return names;
+    } catch (_) {
+      // An offline/denied profile lookup cannot block a settled gift effect.
+      return const {};
+    }
+  }
+
   Future<List<Gift>> catalog() async {
     try {
       final r = await _db
