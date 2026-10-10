@@ -36,9 +36,13 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const vivoxServer = Deno.env.get("VIVOX_SERVER");
-  const vivoxDomain = Deno.env.get("VIVOX_DOMAIN");
-  const vivoxIssuer = Deno.env.get("VIVOX_TOKEN_ISSUER");
+  // Pin the non-secret Production identity to the approved Vivox dashboard
+  // project. An old staging server/domain/issuer would yield invalid tokens.
+  // The SIGNING KEY must remain in Supabase Edge Function secrets; NEVER
+  // embed it in the app, GitHub, or the token response.
+  const vivoxServer = "https://unity.vivox.com/appconfig/18968-nimzo-13904";
+  const vivoxDomain = "mtu1xp.vivox.com";
+  const vivoxIssuer = "18968-nimzo-13904";
   const vivoxKey = Deno.env.get("VIVOX_TOKEN_KEY");
 
   if (!supabaseUrl || !serviceKey || !vivoxServer || !vivoxDomain || !vivoxIssuer || !vivoxKey) {
