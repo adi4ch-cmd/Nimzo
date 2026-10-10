@@ -313,25 +313,6 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                 : ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
-                      TextField(
-                        controller: text,
-                        maxLength: 2000,
-                        maxLines: 5,
-                        decoration: const InputDecoration(
-                          hintText: 'What is on your mind?',
-                        ),
-                      ),
-                      OutlinedButton(
-                        onPressed: busy
-                            ? null
-                            : () async {
-                                final source =
-                                    await showModalBottomSheet<ImageSource>(
-                                  context: context,
-                                  builder: (c) => SafeArea(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
                        Container(
                          padding: const EdgeInsets.all(16),
                          margin: const EdgeInsets.only(bottom: 14),
@@ -357,13 +338,40 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                            )),
                          ]),
                        ),
+                      TextField(
+                        controller: text,
+                        maxLength: 2000,
+                        maxLines: 5,
+                        decoration: const InputDecoration(
+                          hintText: 'Write a moment worth sharing…',
+                          filled: true,
+                          fillColor: Color(0xfff6faf7),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(16)),
+                            borderSide: BorderSide(color: Color(0xffdae7dd))),
+                        ),
+                      ),
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.add_photo_alternate_outlined),
+                        onPressed: busy
+                            ? null
+                            : () async {
+                                final source =
+                                    await showModalBottomSheet<ImageSource>(
+                                  context: context,
+                                  builder: (c) => SafeArea(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
                                         ListTile(
-                                          title: const Text('Gallery'),
+                                          leading: const Icon(Icons.photo_library_outlined),
+                                          title: const Text('Choose from gallery'),
                                           onTap: () => Navigator.pop(
                                               c, ImageSource.gallery),
                                         ),
                                         ListTile(
-                                          title: const Text('Camera'),
+                                          leading: const Icon(Icons.camera_alt_outlined),
+                                          title: const Text('Take a photo'),
                                           onTap: () => Navigator.pop(
                                               c, ImageSource.camera),
                                         ),
@@ -391,7 +399,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                   if (mounted) setState(() => busy = false);
                                 }
                               },
-                        child: Text(
+                        label: Text(
                             image == null ? 'Choose photo' : 'Replace photo'),
                       ),
                       if (image != null) ...[
@@ -404,7 +412,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                 .from('moments')
                                 .getPublicUrl(image!),
                             height: 220,
-                            fit: BoxFit.contain,
+                            fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) =>
                                 const EmptyContent('Image unavailable'),
                           ),
@@ -466,7 +474,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                   if (mounted) setState(() => busy = false);
                                 }
                               },
-                        child: Text(widget.id == null ? 'Post' : 'Save'),
+                        child: Text(widget.id == null ? 'Publish moment' : 'Save changes'),
                       ),
                     ],
                   ),
