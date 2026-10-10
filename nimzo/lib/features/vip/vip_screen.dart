@@ -148,6 +148,20 @@ class _VipState extends ConsumerState<VipScreen> {
               color:accent, fontSize:15, fontWeight:FontWeight.w800,
               letterSpacing:.8)),
           centerTitle: true,
+          actions: [
+            IconButton(
+              key: const ValueKey('refresh-membership'),
+              tooltip: 'Refresh verified membership and rewards',
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                ref.invalidate(vipStatusProvider);
+                ref.invalidate(vipDailyRewardsProvider);
+                ref.invalidate(svipFridayRewardsProvider);
+                ref.invalidate(svipThresholdsProvider);
+                ref.invalidate(svipProgressProvider);
+              },
+            ),
+          ],
         ),
         body: Center(
           heightFactor: 1,
