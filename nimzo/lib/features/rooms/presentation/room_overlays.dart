@@ -593,29 +593,37 @@ class _RoomProfileState extends ConsumerState<RoomProfilePage> {
             if (tab == 0) ...[
               _detail('Announcement', widget.room.rules ?? 'Welcome'),
               _detail('Country', widget.room.country ?? '—'),
-              for (final label in [
-                'Room Rewards',
-                'Room Support',
-                'Room Certification',
-                'Room Activity',
-                'Apply for Banner',
-              ])
-                _row(label, '›'),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 14),
-                child: Text(
-                  'Room Medal',
-                  style: TextStyle(fontWeight: FontWeight.w700),
+              Container(
+                key: const ValueKey('room-real-stats'),
+                padding: const EdgeInsets.all(14),
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xfff2f8f5),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: const Color(0xffdce9e1)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Room information',
+                      style: TextStyle(fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 10),
+                    Text('Lifetime gifts: ${widget.room.lifetimeGiftCoins} coins'),
+                    const SizedBox(height: 5),
+                    Text('Privacy: ${widget.room.isPrivate ? 'Private' : 'Public'}'),
+                    const SizedBox(height: 5),
+                    Text('Created: ${widget.room.createdAt.toLocal().toString().split(' ').first}'),
+                    const SizedBox(height: 6),
+                    AsyncContent(
+                      value: ref.watch(roomMemberProfilesProvider(widget.room.id)),
+                      onRetry: () => ref.invalidate(
+                        roomMemberProfilesProvider(widget.room.id)),
+                      builder: (members) => Text(
+                        '${members.length} verified people in the room'),
+                    ),
+                  ],
                 ),
               ),
-              const Row(
-                children: [
-                  ReferenceArtwork('rmed', 0, size: 80),
-                  SizedBox(width: 10),
-                  ReferenceArtwork('rmed', 1, size: 80),
-                ],
-              ),
-              const SizedBox(height: 14),
               Row(
                 children: [
                   Expanded(
@@ -625,22 +633,24 @@ class _RoomProfileState extends ConsumerState<RoomProfilePage> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Expanded(
-                    child: GradientButton(
-                      onPressed: () =>
+                  if (ref.watch(currentUserIdProvider) == widget.room.ownerId)
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () =>
                           context.push('/room/${widget.room.id}/settings'),
-                      child: const Text('Setting'),
+                        icon: const Icon(Icons.settings_outlined),
+                        label: const Text('Room settings'),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ] else if (tab == 1)
               AsyncContent(
-                value: ref.watch(roomSeatProfilesProvider(widget.room.id)),
+                value: ref.watch(roomMemberProfilesProvider(widget.room.id)),
                 onRetry: () =>
-                    ref.invalidate(roomSeatProfilesProvider(widget.room.id)),
+                    ref.invalidate(roomMemberProfilesProvider(widget.room.id)),
                 builder: (members) => members.isEmpty
-                    ? const EmptyContent('Nobody on mic')
+                    ? const EmptyContent('No members currently in this room')
                     : Column(
                         children: [
                           for (final p in members.values)
@@ -664,7 +674,8 @@ class _RoomProfileState extends ConsumerState<RoomProfilePage> {
                       ),
               )
             else
-              const EmptyContent('No activity yet'),
+              _detail('Room created',
+                widget.room.createdAt.toLocal().toString().split('.').first),
           ],
         ),
       );
