@@ -1,0 +1,47 @@
+name: Import verified MIT gift SVGA assets (no APK)
+on:
+  push:
+    branches: [feature/profile-reference-redesign]
+    paths: ['.github/workflows/nimzo-import-free-gift-media.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  import-free-media:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Fetch pinned original free animation files and verify git hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p nimzo/assets/gifts/free
+          curl -fLsS --retry 4 --connect-timeout 20 -o nimzo/assets/gifts/free/rocket.svga 'https://raw.githubusercontent.com/AgoraIO-Usecase/agora-live/0651c5f04f965015221232afc2a1e834287f65bc/Android/scenes/voice/src/main/assets/animation_of_rocket.svga'
+          curl -fLsS --retry 4 --connect-timeout 20 -o nimzo/assets/gifts/free/sports_car.svga 'https://raw.githubusercontent.com/Tencent-RTC/TUILiveKit/c00fa47f3b2cfd29268c811c169b8cd91a95b8e7/Flutter/live_uikit_gift/assets/svga/sports_car.svga'
+          [[ "$(git hash-object nimzo/assets/gifts/free/rocket.svga)" == "437169c38893c0f2150138eebcdc71b157ce6a44" ]]
+          [[ "$(git hash-object nimzo/assets/gifts/free/sports_car.svga)" == "7b5ce3b1fdb1915bfb872a30735ff7c7259d069d" ]]
+          python3 - <<'PY'
+          from pathlib import Path
+          import zlib,zipfile
+          for name in ['rocket','sports_car']:
+              p=Path('nimzo/assets/gifts/free')/(name+'.svga')
+              data=p.read_bytes()
+              try:
+                  movie=zlib.decompress(data)
+                  print(name,'SVGA2 zlib payload',len(movie),'bytes')
+              except zlib.error:
+                  with zipfile.ZipFile(p) as z:
+                      assert 'movie.spec' in z.namelist()
+                      print(name,'SVGA2 ZIP assets',len(z.namelist()))
+          PY
+      - name: Commit byte-verified media without intermediate APK
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add nimzo/assets/gifts/free/rocket.svga nimzo/assets/gifts/free/sports_car.svga
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'assets(gifts): bundle verified MIT Rocket and Sports Car animations [gifts-only]'
+          git push
