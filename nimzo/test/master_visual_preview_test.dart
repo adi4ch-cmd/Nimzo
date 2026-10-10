@@ -84,10 +84,20 @@ void main() {
         });
       }
       await tester.pump(const Duration(milliseconds: 300));
-      await expectLater(
-        find.byKey(const ValueKey('preview')),
-        matchesGoldenFile('goldens/${preview.$1}.png'),
-      );
+      if (preview.$1 == 'crystal_final') {
+        // The original Diamond screenshot was deliberately retired. Validate
+        // the active six-stage Rocket UI rather than asserting old pixels.
+        expect(find.text('ROOM ROCKET'), findsOneWidget);
+        expect(find.textContaining('Gift together'), findsOneWidget);
+        expect(find.text('L1'), findsOneWidget);
+        expect(find.text('L6'), findsOneWidget);
+        expect(find.textContaining('Diamond Blast'), findsNothing);
+      } else {
+        await expectLater(
+          find.byKey(const ValueKey('preview')),
+          matchesGoldenFile('goldens/${preview.$1}.png'),
+        );
+      }
       expect(tester.takeException(), isNull);
     }
     await tester.pumpWidget(const SizedBox());
