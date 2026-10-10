@@ -7,6 +7,7 @@ import '../../core/utils/formatters.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/errors/error_handler.dart';
 import '../profile/profile_repository.dart';
+import '../wallet/wallet_screen.dart';
 import 'vip_repository.dart';
 import 'vip_reward_actions.dart';
 import 'vip_tiers.dart';
@@ -159,6 +160,7 @@ class _VipState extends ConsumerState<VipScreen> {
                 ref.invalidate(svipFridayRewardsProvider);
                 ref.invalidate(svipThresholdsProvider);
                 ref.invalidate(svipProgressProvider);
+                ref.invalidate(walletProvider);
               },
             ),
           ],
