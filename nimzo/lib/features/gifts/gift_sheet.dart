@@ -178,6 +178,9 @@ class _State extends ConsumerState<GiftSheet> {
           quantity: requestQuantity,
           unitPrice: g.price,
           assetPath: g.assetPath,
+          recipientName: ref.read(profileProvider(receiverId)).valueOrNull
+                  ?.displayName ??
+              ref.read(profileProvider(receiverId)).valueOrNull?.username,
         );
       }
       if (mounted) Navigator.pop(context);
