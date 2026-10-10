@@ -601,7 +601,7 @@ void main() {
           expect(find.byKey(const ValueKey('room-real-stats')), findsOneWidget);
         }
         if (entry.key == 'levels') {
-          expect(find.text('Level colors'), findsOneWidget);
+          expect(find.text('Tier colors'), findsOneWidget);
         }
       } else {
         await expectLater(
