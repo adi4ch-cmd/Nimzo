@@ -16,7 +16,9 @@ permissions:
 
 jobs:
   build:
-    if: ${{ !contains(github.event.head_commit.message, '[gifts-only]') }}
+    # Locked 2026-10-10: NO intermediate APK builds. A dedicated final release
+    # commit or an explicit manual dispatch is required to generate an APK.
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'release(gifts-vip):') }}
     runs-on: ubuntu-latest
     env:
       HAS_RELEASE_SIGNING: ${{ secrets.NIMZO_KEYSTORE_BASE64 != '' || secrets.NIMZO_KEYSTORE_PASSWORD != '' || secrets.NIMZO_KEY_ALIAS != '' || secrets.NIMZO_KEY_PASSWORD != '' }}
