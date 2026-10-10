@@ -190,7 +190,9 @@ void main() {
       expect(find.byType(RoyalLionEntry), findsNothing);
       await tester.pumpWidget(const SizedBox());
       await tester.pump();
-      // A listened realtime stream may never finish its close Future in\n      // fake-async widget tests; disposal removes the subscription.\n      unawaited(events.close());
+      // A listened realtime stream may never finish its close Future in
+      // fake-async widget tests; disposal removes the subscription.
+      unawaited(events.close());
       await tester.runAsync(db.dispose);
     });
   }
