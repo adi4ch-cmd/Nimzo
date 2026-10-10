@@ -14,6 +14,8 @@ import '../social/social_repositories.dart';
 import '../social/friend_button.dart';
 import 'profile_repository.dart';
 import 'levels_screen.dart';
+import 'profile_level_scale.dart';
+import '../vip/vip_presentation.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
@@ -667,66 +669,43 @@ class ProfileProgressBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = color(kind, level);
-    final label = const ['Wealth', 'Charm', 'Active'][kind];
-    final unit = const ['coins', 'diamonds', 'points'][kind];
-    final amount = total?.toString().replaceAllMapped(
-          RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-          (match) => '${match[1]},',
-        );
+    final amount = total;
+    final fraction = amount == null || level < 1
+        ? 0.0 : ProfileLevelScale.fraction(kind, level, amount);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+      key: ValueKey('profile-level-compact-$kind'),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [accent, Color.lerp(accent, Colors.black, .24)!],
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: accent.withValues(alpha: .35)),
-        boxShadow: [
-          BoxShadow(
-            color: accent.withValues(alpha: .16),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+        color: accent.withValues(alpha: .08),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: accent.withValues(alpha: .3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(children: [
+            Icon(kind == 0 ? Icons.diamond_outlined
+              : kind == 1 ? Icons.favorite_border : Icons.bolt_outlined,
+              color: accent, size: 15),
+            const SizedBox(width: 4),
+            Expanded(child: Text(
+              ProfileLevelScale.labels[kind],
+              maxLines: 1, overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: accent, fontSize: 11,
+                fontWeight: FontWeight.w700))),
+          ]),
+          const SizedBox(height: 3),
+          Text(level > 0 ? 'Lv $level' : '—',
+            style: TextStyle(color: accent, fontSize: 16,
+              fontWeight: FontWeight.w800)),
+          const SizedBox(height: 4),
+          LinearProgressIndicator(
+            value: fraction, minHeight: 3,
+            color: accent, backgroundColor: accent.withValues(alpha: .14),
+            borderRadius: BorderRadius.circular(8),
           ),
         ],
-      ),
-      child: DefaultTextStyle.merge(
-        style: const TextStyle(color: Colors.white, fontSize: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                ReferenceIcon(
-                  kind == 0 ? 'crown' : 'star',
-                  size: 14,
-                  color: Colors.white,
-                ),
-                const SizedBox(width: 4),
-                Flexible(
-                  child: Text(
-                    label,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 5),
-            Text(
-              amount == null ? 'Total unavailable' : '$amount $unit',
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              level > 0 ? 'Lv $level' : 'Level unavailable',
-              style: const TextStyle(fontSize: 9),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -741,17 +720,8 @@ class LevelBadge extends StatelessWidget {
     required this.level,
     this.showLabel = false,
   });
-  static Color color(int kind, int level) {
-    if (kind == 1) return const Color(0xff2563eb);
-    if (kind == 2) return const Color(0xffdc2626);
-    if (level < 1 || level > 120) return const Color(0xff6b7280);
-    if (level <= 20) return const Color(0xffa16207);
-    if (level <= 39) return const Color(0xff16a34a);
-    if (level <= 59) return const Color(0xff2563eb);
-    if (level <= 79) return const Color(0xffdb2777);
-    if (level <= 99) return const Color(0xffdc2626);
-    return const Color(0xffd4a017);
-  }
+  static Color color(int kind, int level) =>
+      ProfileLevelScale.color(kind, level);
 
   @override
   Widget build(BuildContext context) => Container(
