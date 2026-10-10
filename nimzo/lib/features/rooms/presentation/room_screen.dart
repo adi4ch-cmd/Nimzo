@@ -2,6 +2,7 @@
 import '../../vip/phoenix_widgets.dart';
 import '../../vip/phoenix_room_entry.dart';
 import '../../profile/profile_repository.dart';
+import '../../store/store_badge.dart';
 import '../../gifts/verified_gift_broadcast.dart';
 
 import 'dart:async';
@@ -430,49 +431,62 @@ class _State extends ConsumerState<RoomScreen> {
                                                       ),
                                                     )
                                                   else
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
+                                                    Stack(
+                                                      clipBehavior: Clip.none,
+                                                      children: [
+                                                        Container(
+                                                        padding:
+                                                        const EdgeInsets.all(
                                                         2,
-                                                      ),
-                                                      decoration: BoxDecoration(
+                                                        ),
+                                                        decoration: BoxDecoration(
                                                         shape: BoxShape.circle,
                                                         border: Border.all(
-                                                          color: speaking
-                                                                  .contains(
-                                                            s.userId,
-                                                          )
-                                                              ? NimzoStyle
-                                                                  .primary
-                                                              : Colors
-                                                                  .transparent,
-                                                          width: 2,
+                                                        color: speaking
+                                                        .contains(
+                                                        s.userId,
+                                                        )
+                                                        ? NimzoStyle
+                                                        .primary
+                                                        : Colors
+                                                        .transparent,
+                                                        width: 2,
                                                         ),
-                                                      ),
-                                                      child: PhoenixDecoration(
+                                                        ),
+                                                        child: PhoenixDecoration(
                                                         userId: s.userId,
                                                         avatar: true,
                                                         child: NimzoAvatar(
-                                                          name:
-                                                              p?.displayName ??
-                                                                  'N',
-                                                          size: 48,
-                                                          url: p?.avatarPath ==
-                                                                  null
-                                                              ? null
-                                                              : ref
-                                                                  .read(
-                                                                    supabaseProvider,
-                                                                  )
-                                                                  .storage
-                                                                  .from(
-                                                                    'avatars',
-                                                                  )
-                                                                  .getPublicUrl(
-                                                                    p!.avatarPath!,
-                                                                  ),
+                                                        name:
+                                                        p?.displayName ??
+                                                        'N',
+                                                        size: 48,
+                                                        url: p?.avatarPath ==
+                                                        null
+                                                        ? null
+                                                        : ref
+                                                        .read(
+                                                        supabaseProvider,
+                                                        )
+                                                        .storage
+                                                        .from(
+                                                        'avatars',
+                                                        )
+                                                        .getPublicUrl(
+                                                        p!.avatarPath!,
                                                         ),
-                                                      ),
+                                                        ),
+                                                        ),
+                                                        ),
+                                                        Positioned(
+                                                          right: -8,
+                                                          bottom: -5,
+                                                          child: EquippedRoyalMedal(
+                                                            userId: s.userId!,
+                                                            compact: true,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   const SizedBox(height: 3),
                                                   Text(
