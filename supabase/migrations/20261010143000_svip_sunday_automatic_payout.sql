@@ -48,8 +48,8 @@ BEGIN
  -- Retry slots are 21:00, 21:15, 21:30 and 21:45 Saudi time.
  -- Anything outside this window, including an accidentally invoked manual
  -- RPC, is a NO-OP. UTC never changes its offset for Asia/Riyadh.
- IF pg_catalog.extract(isodow FROM v_local)<>7
-    OR pg_catalog.extract(hour FROM v_local)<>21 THEN
+ IF extract(isodow FROM v_local)<>7
+    OR extract(hour FROM v_local)<>21 THEN
    RETURN pg_catalog.jsonb_build_object(
      'status','outside_sunday_21_hour','credited',0);
  END IF;
