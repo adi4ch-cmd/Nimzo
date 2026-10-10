@@ -6,6 +6,10 @@ on:
       - feature/profile-reference-redesign
     paths:
       - 'nimzo/lib/features/gifts/**'
+      - 'nimzo/lib/features/rooms/rocket/**'
+      - 'nimzo/test/room_rocket_*.dart'
+      - 'nimzo/assets/room_rocket/**'
+      - 'tools/verify_room_rocket_media.py'
       - 'nimzo/lib/features/vip/**'
       - 'nimzo/test/vip_*.dart'
       - 'nimzo/test/phoenix_*.dart'
@@ -93,6 +97,10 @@ jobs:
       - name: Full analysis before final APK
         working-directory: nimzo
         run: flutter analyze
+      - name: Check room Rocket naming and server event compatibility (no media build)
+        working-directory: nimzo
+        run: flutter test test/room_rocket_test.dart
+
       - name: Full regression before final APK
         working-directory: nimzo
         run: flutter test
