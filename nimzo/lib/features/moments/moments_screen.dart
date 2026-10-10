@@ -79,7 +79,9 @@ class _MomentCardState extends ConsumerState<MomentCard> {
         boxShadow: const [BoxShadow(
           color: Color(0x10051918), blurRadius: 12, offset: Offset(0, 3))],
       ),
-      child: Column(
+      child: Material(
+        color: Colors.transparent,
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
@@ -243,6 +245,7 @@ class _MomentCardState extends ConsumerState<MomentCard> {
             ],
           ),
         ],
+      ),
       ),
     );
   }
