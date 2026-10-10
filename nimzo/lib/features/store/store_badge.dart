@@ -67,7 +67,7 @@ class EquippedRoyalMedal extends ConsumerWidget {
                   ),
                   if (!compact) ...[
                     const SizedBox(width: 6),
-                    Flexible(child: Text(
+                    SizedBox(width: 120, child: Text(
                       item.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
