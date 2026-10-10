@@ -44,12 +44,11 @@ void main() {
         ),
       );
       for (final target in [
-        'L1 · 5M', 'L2 · 10M', 'L3 · 20M',
-        'L4 · 30M', 'L5 · 50M', 'L6 · 100M',
+        'L1', 'L2', 'L3', 'L4', 'L5', 'L6',
       ]) {
         expect(find.text(target), findsOneWidget);
       }
-      expect(find.text('Join a room to view live progress.'), findsOneWidget);
+      expect(find.text('Join a room to view Rocket progress.'), findsOneWidget);
       expect(find.textContaining('no wallet rewards'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
@@ -114,13 +113,13 @@ void main() {
       );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
-      expect(find.text('ROOM ROCKET · LEVEL 1'), findsOneWidget);
+      expect(find.text('NIMZO ROOM ROCKET  1 / 6'), findsOneWidget);
       await tester.tap(find.text('Mic'));
       await tester.pump();
       expect(micTaps, 1);
-      await tester.tap(find.byTooltip('Skip room rocket'));
+      await tester.tap(find.byTooltip('Skip rocket animation'));
       await tester.pump();
-      expect(find.text('ROOM ROCKET · LEVEL 2'), findsOneWidget);
+      expect(find.text('NIMZO ROOM ROCKET  2 / 6'), findsOneWidget);
       await tester.pump(const Duration(seconds: 15));
       await tester.pump();
       expect(find.byType(DiamondBurst), findsNothing);
@@ -189,11 +188,11 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('0 coins gifted today'), findsOneWidget);
+      expect(find.text('0 gifted in this room today'), findsOneWidget);
       repo.coins = 1000000;
       events.add(const DiamondUpdate(1));
       await tester.pumpAndSettle();
-      expect(find.text('1.0M coins gifted today'), findsOneWidget);
+      expect(find.text('1.0M gifted in this room today'), findsOneWidget);
       expect(
         tester
             .widget<LinearProgressIndicator>(
@@ -206,8 +205,8 @@ void main() {
       repo.coins = 120000000;
       events.add(const DiamondUpdate(2));
       await tester.pumpAndSettle();
-      expect(find.text('120.0M coins gifted today'), findsOneWidget);
-      expect(find.text('All six rockets launched!'), findsOneWidget);
+      expect(find.text('120.0M gifted in this room today'), findsOneWidget);
+      expect(find.text('All six Rocket levels completed!'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
@@ -238,8 +237,8 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Room Rocket'), findsOneWidget);
-    expect(find.text('15.0M coins gifted today'), findsOneWidget);
+    expect(find.text('ROOM ROCKET'), findsOneWidget);
+    expect(find.text('15.0M gifted in this room today'), findsOneWidget);
     expect(find.textContaining('Rocket 3'), findsOneWidget);
     expect(tester.widget<LinearProgressIndicator>(
       find.byType(LinearProgressIndicator)).value, .5);
