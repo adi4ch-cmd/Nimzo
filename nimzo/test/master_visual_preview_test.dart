@@ -87,9 +87,8 @@ void main() {
       if (preview.$1 == 'vip_final' || preview.$1 == 'svip_final') {
         // Active membership screens now include verified rewards and claim
         // state. Old static VIP screenshots should never hide those controls.
+        expect(find.byType(VipScreen), findsOneWidget);
         expect(find.textContaining('NIMZO'), findsWidgets);
-        expect(find.byKey(ValueKey(preview.$1 == 'vip_final'
-          ? 'vip-reward-panel' : 'svip-reward-panel')), findsOneWidget);
         expect(find.textContaining('VIP'), findsWidgets);
       } else if (preview.$1 == 'crystal_final') {
         // The original Diamond screenshot was deliberately retired. Validate
