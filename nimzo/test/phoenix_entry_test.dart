@@ -140,4 +140,59 @@ void main() {
       await tester.runAsync(db.dispose);
     },
   );
+  for (final membership in [
+    {'vip_level': 1, 'svip_level': 0, 'expected': 'VIP 1'},
+    {'vip_level': 0, 'svip_level': 4, 'expected': 'SVIP 4'},
+  ]) {
+    testWidgets('a server-verified ${membership['expected']} receives room entry',
+        (tester) async {
+      final events = StreamController<List<Map<String, dynamic>>>();
+      final db = (await tester.runAsync(() async => SupabaseClient(
+        'https://example.supabase.co', 'test',
+        authOptions: const AuthClientOptions(autoRefreshToken: false),
+        httpClient: MockClient((request) async => http.Response(
+          jsonEncode({
+            'vip_level': membership['vip_level'],
+            'vip_expires_at': '2002-01-01T00:00:00Z',
+            'svip_level': membership['svip_level'],
+            'svip_expires_at': '2002-01-01T00:00:00Z',
+            'server_now': '2001-01-01T00:00:00Z',
+          }),
+          200, request: request,
+          headers: {'content-type': 'application/json'},
+        )),
+      )))!;
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          supabaseProvider.overrideWithValue(db),
+          currentUserIdProvider.overrideWithValue('viewer'),
+          phoenixEntriesProvider('room').overrideWith((_) => events.stream),
+        ],
+        child: const MaterialApp(home: Scaffold(
+          body: PhoenixRoomEntry(roomId: 'room'))),
+      ));
+      events.add([]);
+      await tester.pump();
+      events.add([{
+        'id': 'fresh-${membership['expected']}',
+        'user_id': 'target',
+        'display_name': 'Verified member',
+        'created_at': '2001-01-01T00:00:00Z',
+      }]);
+      await tester.pump();
+      await tester.runAsync(() async =>
+        Future<void>.delayed(const Duration(milliseconds: 60)));
+      await tester.pump();
+      expect(find.byKey(const ValueKey('verified-premium-room-entry')),
+        findsOneWidget);
+      expect(find.text('${membership['expected']} · VERIFIED ENTRY'),
+        findsOneWidget);
+      expect(find.byType(RoyalLionEntry), findsNothing);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+      await events.close();
+      await tester.runAsync(db.dispose);
+    });
+  }
+
 }
