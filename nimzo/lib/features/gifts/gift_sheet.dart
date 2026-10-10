@@ -13,6 +13,7 @@ import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
+import 'gift_svga_overlay.dart';
 import 'gift_celebration_overlay.dart';
 import 'yo2_gift_ui.dart';
 import 'nimzo_gift_control_art.dart';
@@ -506,131 +507,131 @@ class _State extends ConsumerState<GiftSheet> {
     );
   }
 
-  Widget _giftCard(Gift gift, {bool legendary = false}) => InkWell(
+  /// Premium, accurately labelled artwork for the 20 real server catalog
+  /// gifts. Only Rocket and Sports Car have verified original SVGA playback.
+  /// All other icons are illustrations, never pretend video stills.
+  Widget _giftCard(Gift gift, {bool legendary = false}) {
+    final highlighted = selected?.id == gift.id;
+    final realAnimation = freeGiftAnimationForName(gift.name) != null;
+    final accent = gift.category.toLowerCase() == 'dragon'
+        ? const Color(0xffffd08a)
+        : gift.price >= 1000000
+            ? const Color(0xffd6b8ff)
+            : const Color(0xffa8e3cb);
+    return Semantics(
+      label: '${gift.name}, ${gift.price} coins${realAnimation ? ', original animated gift' : ''}',
+      button: true,
+      child: InkWell(
+        key: ValueKey('gift-card-${gift.id}'),
+        borderRadius: BorderRadius.circular(15),
         onTap: busy || confirming
             ? null
             : () {
-                if (key != null && selected != gift) return;
+                if (key != null && selected?.id != gift.id) return;
                 setState(() => selected = gift);
               },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          padding: const EdgeInsets.fromLTRB(7, 7, 7, 10),
           decoration: BoxDecoration(
-            color: const Color(0xff181723),
-            borderRadius: BorderRadius.circular(14),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: highlighted
+                  ? const [Color(0xff264b3e), Color(0xff0f2929)]
+                  : const [Color(0xff1b2831), Color(0xff111923)],
+            ),
+            borderRadius: BorderRadius.circular(15),
             border: Border.all(
-              color: selected == gift
-                  ? const Color(0xff9b47d7)
-                  : legendary
-                      ? const Color(0xfffbbf24)
-                      : Colors.transparent,
-              width: 2,
+              color: highlighted ? const Color(0xff6fdda9)
+                  : legendary ? const Color(0xffd8b26c)
+                  : const Color(0xff374550),
+              width: highlighted ? 1.5 : 1,
             ),
           ),
-          child: legendary
-              ? Row(
+          child: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 76,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: GiftArtwork(
-                            name: gift.name,
-                            assetPath: gift.assetPath,
-                          ),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xff24343a),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(7),
+                        child: GiftArtwork(
+                          name: gift.name,
+                          assetPath: gift.assetPath,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '${gift.name} · National Legendary',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
+                    if (realAnimation)
+                      Positioned(
+                        top: 2,
+                        right: 2,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: const Color(0xff0d573f),
+                            borderRadius: BorderRadius.circular(6),
                           ),
-                          Text(
-                            compactNumber(gift.price),
-                            style: const TextStyle(
-                              color: Color(0xfffde68a),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                )
-              : Column(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              GiftArtwork(
-                                name: gift.name,
-                                assetPath: gift.assetPath,
-                              ),
-                              if (selected == gift)
-                                Positioned.fill(
-                                  child: IgnorePointer(
-                                    child: Image.asset(
-                                      'assets/nimzo/gift_controls/bg_gift_selected_box.webp',
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
-                                ),
-                            ],
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 2),
+                            child: Text('SVGA',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                                fontWeight: FontWeight.w800)),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      gift.name,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                    if (highlighted)
+                      const Positioned(
+                        bottom: 3,
+                        right: 3,
+                        child: Icon(Icons.check_circle,
+                            color: Color(0xff7df1bd), size: 19),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const NimzoGiftControlArt(
-                          'icon_gift_modal.webp',
-                          width: 14,
-                          height: 14,
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            compactNumber(gift.price),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xfffde68a),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
+              ),
+              const SizedBox(height: 7),
+              Text(
+                gift.name,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const NimzoGiftControlArt(
+                    'icon_gift_modal.webp', width: 13, height: 13),
+                  const SizedBox(width: 3),
+                  Flexible(
+                    child: Text(
+                      compactNumber(gift.price),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 11,
+                        color: accent, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      );
+      ),
+    );
+  }
 }
