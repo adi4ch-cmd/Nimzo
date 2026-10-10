@@ -30,6 +30,41 @@ void main() {
     expect(hasOriginalNimzoGiftEffect('Unverified Gift'),isFalse);
   });
 
+  test('Phoenix artwork contains a bird head, beak and layered tail plumes',
+      () async {
+    final svg = await rootBundle.loadString(
+      'assets/nimzo_custom_gifts/phoenix.svg',
+    );
+    expect(svg, contains('Distinct avian head'));
+    expect(svg, contains('Three separate flame-tail plumes'));
+    expect(RegExp('<path ').allMatches(svg).length, greaterThan(26));
+    expect(svg, isNot(contains('M251 171Q167 105 80 95')));
+  });
+
+  testWidgets('royal Phoenix shows real bird art with moving flame stage',
+      (tester) async {
+    var finished = 0;
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(body: SizedBox(
+        width: 375, height: 700,
+        child: NimzoCustomGiftEffect(
+          name: 'Phoenix', sender: 'Sender 100005',
+          recipient: 'Recipient 100006', quantity: 1,
+          onFinished: () => finished++,
+        ),
+      )),
+    ));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byType(GiftArtwork), findsOneWidget);
+    expect(find.text('PHOENIX'), findsOneWidget);
+    expect(find.text('ROYAL FLAME  ·  NIMZO'), findsOneWidget);
+    expect(find.textContaining('Sender 100005 sent Phoenix'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.byTooltip('Skip gift animation'));
+    expect(finished, 1);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('all fourteen original SVGs actually decode on Flutter',
       (tester) async {
     for (final gift in gifts) {
