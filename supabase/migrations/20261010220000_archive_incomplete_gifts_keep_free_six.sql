@@ -1,7 +1,7 @@
 -- Only six genuinely paired free assets are offered for NEW gifting.
 -- Old gift transactions/ledgers and existing accounts remain readable.
 -- Never cascade-delete financial history to remove an incomplete gift.
--- This is intentionally reversible (active flag), not destructive hard deletion.
+-- Five unused gift IDs can be permanently removed; referenced gifts are deactivated.
 DO $$
 DECLARE
   v_keep uuid[] := ARRAY[
@@ -30,6 +30,30 @@ BEGIN
   UPDATE public.gifts
     SET active = (id = ANY(v_keep))
     WHERE active IS DISTINCT FROM (id = ANY(v_keep));
+  -- Five never-used incomplete gifts can be physically removed without
+  -- destroying gift_event rows, trusted animation events or any wallet ledger.
+  -- The other four incomplete gifts have settlements, so they stay inactive.
+  DELETE FROM public.gifts g
+  WHERE g.id IN (
+    '7b73f7e7-ed4a-4c44-8873-54bd9e0d2659'::uuid, -- Coffee
+    'cd7f0f74-003d-476b-be50-f7aed78ad5b9'::uuid, -- Kiss
+    '75eb2f0f-cdbe-4f41-a8a3-aee3d655e7c0'::uuid, -- Private Jet
+    'ce25005c-bb88-4e99-9891-e3d89e25e027'::uuid, -- Royal Dragon
+    'b6fe7c14-ba89-4dec-9517-65660ef1c4a3'::uuid  -- Phoenix
+  )
+    AND NOT EXISTS (SELECT 1 FROM public.gift_events e WHERE e.gift_id=g.id)
+    AND NOT EXISTS (SELECT 1 FROM public.gift_animation_events a WHERE a.gift_id=g.id)
+    AND NOT EXISTS (SELECT 1 FROM public.gift_animation_media m WHERE m.gift_id=g.id)
+    AND NOT EXISTS (SELECT 1 FROM public.ledger l WHERE l.ref->>'gift'=g.id::text);
+  IF EXISTS (SELECT 1 FROM public.gifts WHERE id IN (
+    '7b73f7e7-ed4a-4c44-8873-54bd9e0d2659'::uuid,
+    'cd7f0f74-003d-476b-be50-f7aed78ad5b9'::uuid,
+    '75eb2f0f-cdbe-4f41-a8a3-aee3d655e7c0'::uuid,
+    'ce25005c-bb88-4e99-9891-e3d89e25e027'::uuid,
+    'b6fe7c14-ba89-4dec-9517-65660ef1c4a3'::uuid
+  )) THEN
+    RAISE EXCEPTION 'A legacy gift gained references; aborting incomplete gift cleanup';
+  END IF;
   IF (SELECT count(*) FROM public.gifts WHERE active) != 6 THEN
     RAISE EXCEPTION 'Expected exactly six active free gifts';
   END IF;
