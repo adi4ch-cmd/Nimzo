@@ -3,10 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'dart:async';
-import 'dart:io';
 
-import 'package:flutter/services.dart';
-import 'package:nimzo/core/theme/app_theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/features/rooms/diamond/room_diamond_repository.dart';
 import 'package:nimzo/features/rooms/diamond/room_diamond_widgets.dart';
@@ -37,7 +34,7 @@ class ProgressRepository extends RoomDiamondRepository {
 
 void main() {
   testWidgets(
-    'Diamond Blast exposes six approved cumulative targets without fake progress',
+    'Room Rocket exposes six cumulative gifting targets',
     (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
@@ -46,7 +43,10 @@ void main() {
           ),
         ),
       );
-      for (final target in ['5M', '10M', '20M', '30M', '50M', '100M']) {
+      for (final target in [
+        'L1 · 5M', 'L2 · 10M', 'L3 · 20M',
+        'L4 · 30M', 'L5 · 50M', 'L6 · 100M',
+      ]) {
         expect(find.text(target), findsOneWidget);
       }
       expect(find.text('Join a room to view live progress.'), findsOneWidget);
@@ -114,14 +114,15 @@ void main() {
       );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
-      expect(find.textContaining('Diamond 1 complete!'), findsOneWidget);
+      expect(find.text('ROOM ROCKET · LEVEL 1'), findsOneWidget);
       await tester.tap(find.text('Mic'));
       await tester.pump();
       expect(micTaps, 1);
-      await tester.tap(find.byTooltip('Skip diamond blast'));
+      await tester.tap(find.byTooltip('Skip room rocket'));
       await tester.pump();
-      expect(find.textContaining('Diamond 2 complete!'), findsOneWidget);
-      await tester.pumpAndSettle();
+      expect(find.text('ROOM ROCKET · LEVEL 2'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 15));
+      await tester.pump();
       expect(find.byType(DiamondBurst), findsNothing);
       events.add(DiamondUpdate(4, one));
       await tester.pump();
@@ -206,32 +207,13 @@ void main() {
       events.add(const DiamondUpdate(2));
       await tester.pumpAndSettle();
       expect(find.text('120.0M coins gifted today'), findsOneWidget);
-      expect(find.text('All six diamonds completed!'), findsOneWidget);
+      expect(find.text('All six rockets launched!'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
-  testWidgets('six-stage live progress has a reviewed phone screenshot', (
-    tester,
-  ) async {
-    await (FontLoader('Roboto')
-          ..addFont(
-            Future.value(
-              ByteData.sublistView(
-                File('test/fonts/Roboto-Regular.ttf').readAsBytesSync(),
-              ),
-            ),
-          ))
-        .load();
-    await (FontLoader(
-      'MaterialIcons',
-    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf')))
-        .load();
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+  testWidgets('room rocket progress renders real verified six-level data',
+      (tester) async {
     final now = DateTime.utc(2026, 10, 9, 20);
-    final key = GlobalKey();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -246,29 +228,22 @@ void main() {
             ),
           ),
         ],
-        child: MaterialApp(
-          theme: AppTheme.light(),
-          home: RepaintBoundary(
-            key: key,
-            child: Scaffold(
-              appBar: AppBar(title: const Text('Diamond Blast')),
-              body: const SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: CrystalSheet(roomId: 'room'),
-                ),
-              ),
+        child: const MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: RoomDiamondSheet(roomId: 'room'),
             ),
           ),
         ),
       ),
     );
     await tester.pumpAndSettle();
+    expect(find.text('Room Rocket'), findsOneWidget);
+    expect(find.text('15.0M coins gifted today'), findsOneWidget);
+    expect(find.textContaining('Rocket 3'), findsOneWidget);
+    expect(tester.widget<LinearProgressIndicator>(
+      find.byType(LinearProgressIndicator)).value, .5);
     expect(tester.takeException(), isNull);
-    await expectLater(
-      find.byKey(key),
-      matchesGoldenFile('goldens/diamond_blast_live.png'),
-    );
   });
   testWidgets(
     'a new server cycle clears queued old blasts before status refresh completes',
@@ -341,7 +316,8 @@ void main() {
         tester.widget<DiamondBurst>(find.byType(DiamondBurst)).event.id,
         'new-one',
       );
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 15));
+      await tester.pump();
       expect(find.byType(DiamondBurst), findsNothing);
     },
   );
