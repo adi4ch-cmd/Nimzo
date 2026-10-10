@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 import 'membership_motion.dart';
+import 'haza_membership_artwork.dart';
 
 const vipPalette = [
   [Color(0xffbef264), Color(0xff4d7c0f)],
@@ -67,7 +68,11 @@ class MembershipEmblem extends StatelessWidget {
                   fit: BoxFit.contain,
                 ),
               )
-            : NimzoRoyalVipSeal(level: level, size: size),
+            : HazaVipBadge(
+                tier: level,
+                size: size,
+                fallback: NimzoRoyalVipSeal(level: level, size: size),
+              ),
       );
 }
 
