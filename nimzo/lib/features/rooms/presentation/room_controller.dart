@@ -75,3 +75,23 @@ final roomOwnerProfileProvider = FutureProvider.family<Profile?, String>((
   ]);
   return rows.isEmpty ? null : rows.first;
 });
+
+/// Realtime authoritative occupants: when leave_room deletes a membership,
+/// the user's avatar disappears from the room's member list.
+final roomMemberIdsProvider =
+    StreamProvider.autoDispose.family<List<String>, String>(
+  (ref, id) => ref.watch(roomRepositoryProvider).watchMembers(id),
+);
+
+final roomMemberProfilesProvider =
+    FutureProvider.autoDispose.family<Map<String, Profile>, String>(
+  (ref, roomId) async {
+    final ids = ref.watch(roomMemberIdsProvider(roomId)).valueOrNull
+        ?? const <String>[];
+    if (ids.isEmpty) return const {};
+    final profiles = await ref.read(roomRepositoryProvider).profilesForUsers(
+      ids.toSet().take(100).toList(),
+    );
+    return {for (final p in profiles) p.id: p};
+  },
+);
