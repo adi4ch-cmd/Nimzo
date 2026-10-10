@@ -1,0 +1,74 @@
+name: NIMZO install 12 Room Rocket videos (NO APK)
+
+on:
+  push:
+    branches:
+      - feature/profile-reference-redesign
+    paths:
+      - NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip
+      - NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: room-rocket-media-install
+  cancel-in-progress: false
+
+jobs:
+  verify-and-install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/profile-reference-redesign
+          persist-credentials: true
+      - name: Check both upload-sized archives are present
+        id: parts
+        shell: bash
+        run: |
+          if [[ -f NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip &&
+                -f NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo 'Waiting for BOTH Rocket ZIP parts. Nothing has been installed.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Install original media only after all twelve SHA256 checks pass
+        if: steps.parts.outputs.ready == 'true'
+        run: |
+          python3 tools/install_room_rocket_assets.py \
+            NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip \
+            NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip
+          python3 tools/verify_room_rocket_media.py
+      - name: Set up Flutter 3.47.6
+        if: steps.parts.outputs.ready == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Verify Dart and every room regression, WITHOUT building APK
+        if: steps.parts.outputs.ready == 'true'
+        working-directory: nimzo
+        shell: bash
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+      - name: Commit the verified videos, delete temporary ZIP packs
+        if: steps.parts.outputs.ready == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nimzo/assets/room_rocket/vap_rocket_*.mp4
+          git rm -- NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip \
+                 NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip
+          git diff --cached --check
+          git diff --cached --quiet && exit 0
+          git commit -m "assets(room-rocket): install twelve SHA-verified original VAP clips (no APK)"
+          git push origin HEAD:feature/profile-reference-redesign
+          echo "All 12 Rocket MP4s installed, validated, and committed. No APK built." >> "$GITHUB_STEP_SUMMARY"
