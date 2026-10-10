@@ -117,7 +117,7 @@ void main() {
         () async => Future<void>.delayed(const Duration(milliseconds: 30)),
       );
       await tester.pump();
-      expect(find.byType(PhoenixEntry), findsNothing);
+      expect(find.byType(RoyalLionEntry), findsNothing);
       pauseGate = Completer<void>();
       events.add([
         {...old, 'id': 'delayed'},
@@ -132,7 +132,7 @@ void main() {
         () async => Future<void>.delayed(const Duration(milliseconds: 30)),
       );
       await tester.pump();
-      expect(find.byType(PhoenixEntry), findsNothing);
+      expect(find.byType(RoyalLionEntry), findsNothing);
       await tester.pumpWidget(const SizedBox());
       await tester.pump();
       unawaited(events.close());

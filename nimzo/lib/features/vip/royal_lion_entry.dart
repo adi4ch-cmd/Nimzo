@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
@@ -148,7 +149,7 @@ class RoyalLionPainter extends CustomPainter {
       const Color(0xffdf9d4c));
     oval(canvas,const Rect.fromLTWH(45,-91,58,64),
       const Color(0xffdf9d4c));
-    final face=const Rect.fromLTWH(-84,-91,168,200);
+    const face=Rect.fromLTWH(-84,-91,168,200);
     canvas.drawOval(face,Paint()..shader=const LinearGradient(
       colors:[Color(0xfffac779),Color(0xffc18138),Color(0xff865027)],
       begin:Alignment.topLeft,end:Alignment.bottomRight).createShader(face));

@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'gift_artwork.dart';
