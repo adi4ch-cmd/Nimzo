@@ -6,6 +6,8 @@ on:
       - feature/profile-reference-redesign
     paths:
       - nimzo/lib/features/voice/**
+      - nimzo/lib/features/rooms/presentation/room_screen.dart
+      - nimzo/test/room_reconnect_test.dart
       - nimzo/test/voice/**
       - supabase/functions/voice-token/**
       - nimzo/supabase/functions/voice-token/**
@@ -30,7 +32,7 @@ jobs:
         run: flutter pub get
       - name: Verify Vivox error handling
         working-directory: nimzo
-        run: flutter test test/voice/vivox_voice_service_test.dart
+        run: flutter test test/voice/vivox_voice_service_test.dart test/room_reconnect_test.dart
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
