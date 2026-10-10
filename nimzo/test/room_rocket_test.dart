@@ -16,6 +16,9 @@ void main() {
     expect([
       for (var i = 0; i < 6; i++) rocketRewardPath(i)
     ].toSet().length, 6);
+    expect(rocketFlyPath(0), endsWith('vap_rocket_fly_1.mp4'));
+    expect(rocketFlyPath(5), endsWith('vap_rocket_fly_6.mp4'));
+    expect(() => rocketFlyPath(6), throwsRangeError);
     expect(rocketRewardPath(0), endsWith('vap_rocket_reward_1.mp4'));
     expect(rocketRewardPath(5), endsWith('vap_rocket_reward_6.mp4'));
     expect(() => rocketRewardPath(-1), throwsRangeError);
