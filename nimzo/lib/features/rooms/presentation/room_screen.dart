@@ -40,6 +40,7 @@ class _State extends ConsumerState<RoomScreen> {
   final text = TextEditingController();
   final gameHost = GlobalKey<RoomGameHostState>();
   bool joining = true, joined = false, mic = false, leaving = false;
+  bool _allowPop = false;
   bool micBusy = false;
   bool chatBusy = false;
   String? failure;
@@ -97,8 +98,38 @@ class _State extends ConsumerState<RoomScreen> {
   Future<void> leave() async {
     if (leaving) return;
     leaving = true;
-    await session.close();
-    joined = false;
+    try {
+      await session.close();
+      joined = false;
+      if (mounted) {
+        ref.invalidate(onlineCountProvider(widget.roomId));
+        ref.invalidate(roomSeatProfilesProvider(widget.roomId));
+        ref.invalidate(roomChatProvider(widget.roomId));
+        ref.invalidate(seatsProvider(widget.roomId));
+        ref.invalidate(myRoomsProvider);
+      }
+    } finally {
+      leaving = false;
+    }
+  }
+
+  Future<void> _exitRoom() async {
+    if (leaving || _allowPop || !mounted) return;
+    try {
+      await leave();
+      if (!mounted) return;
+      setState(() => _allowPop = true);
+      Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Room exit not confirmed. Retry to leave safely.'),
+          action: SnackBarAction(label: 'Retry',
+            onPressed: () => unawaited(_exitRoom())),
+        ),
+      );
+    }
   }
 
   @override
@@ -210,9 +241,9 @@ class _State extends ConsumerState<RoomScreen> {
         micEnabled: mic,
         onMic: !connected || micBusy ? null : toggleMic,
         child: PopScope(
-          canPop: !leaving,
+          canPop: _allowPop,
           onPopInvokedWithResult: (didPop, _) {
-            if (didPop) unawaited(leave().catchError((_) {}));
+            if (!didPop) unawaited(_exitRoom());
           },
           child: Stack(
             children: [
