@@ -65,7 +65,7 @@ class RoomDiamondSheet extends ConsumerWidget {
                           : .45,
                       child: diamondArtwork(stage),
                     ),
-                    Text('L\${stage + 1} · \${diamondTargets[stage] ~/ 1000000}M'),
+                    Text('L${stage + 1} · ${diamondTargets[stage] ~/ 1000000}M'),
                     if (current != null && stage < current.completedStages)
                       const Icon(
                         Icons.check_circle,
@@ -100,7 +100,7 @@ class RoomDiamondSheet extends ConsumerWidget {
                 Text(
                   state.completedStages == 6
                       ? 'All six rockets launched!'
-                      : 'Rocket \${state.activeStage + 1} · \${compactNumber(diamondTargets[state.activeStage])} cumulative coins',
+                      : 'Rocket ${state.activeStage + 1} · ${compactNumber(diamondTargets[state.activeStage])} cumulative coins',
                 ),
               ],
             ),
