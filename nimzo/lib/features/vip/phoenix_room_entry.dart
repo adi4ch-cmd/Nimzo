@@ -86,17 +86,30 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
         json,
         requestTime: elapsed.elapsed,
       );
-      if (!entitlement.isRoyalLion ||
+      final svip = (json['svip_level'] as num?)?.toInt() ?? 0;
+      final svipExpiry = DateTime.tryParse(
+        json['svip_expires_at']?.toString() ?? '',
+      );
+      final svipRemaining = serverNow == null || svipExpiry == null
+          ? Duration.zero : svipExpiry.difference(serverNow) - elapsed.elapsed;
+      final svipActive = svip >= 1 && svip <= 10 &&
+          svipRemaining > Duration.zero;
+      if ((!entitlement.isPhoenix && !svipActive) ||
           !phoenixEntryIsFresh(
             serverNow: serverNow,
             createdAt: created,
             requestTime: elapsed.elapsed,
           )) return;
-      setState(() => current = event);
-      final duration =
-          entitlement.leaseRemaining < const Duration(milliseconds: 5500)
-              ? entitlement.leaseRemaining
-              : const Duration(milliseconds: 5500);
+      setState(() => current = {
+        ...event,
+        '_vip_level': entitlement.isPhoenix ? entitlement.level : 0,
+        '_svip_level': svipActive ? svip : 0,
+        '_royal_lion': entitlement.isRoyalLion,
+      });
+      final lease = entitlement.isPhoenix
+          ? entitlement.leaseRemaining : svipRemaining;
+      final duration = lease < const Duration(milliseconds: 5500)
+          ? lease : const Duration(milliseconds: 5500);
       timer = Timer(duration, () {
         if (!mounted) return;
         setState(() => current = null);
@@ -137,15 +150,58 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
       unawaited(next());
     });
     if (current == null) return const SizedBox.shrink();
-    return RoyalLionEntry(
-      key: ValueKey(current!['id']),
-      name: current!['display_name']?.toString() ?? 'Nimzo user',
-      onFinished: () {
-        timer?.cancel();
-        if (!mounted) return;
-        setState(() => current = null);
-        unawaited(next());
-      },
+    if (current!['_royal_lion'] == true) {
+      return RoyalLionEntry(
+        key: ValueKey(current!['id']),
+        name: current!['display_name']?.toString() ?? 'NIMZO member',
+        onFinished: () {
+          timer?.cancel();
+          if (!mounted) return;
+          setState(() => current = null);
+          unawaited(next());
+        },
+      );
+    }
+    final vip = (current!['_vip_level'] as int?) ?? 0;
+    final svip = (current!['_svip_level'] as int?) ?? 0;
+    final label = svip > 0 ? 'SVIP $svip' : 'VIP $vip';
+    return Center(
+      child: Container(
+        key: const ValueKey('verified-premium-room-entry'),
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        constraints: const BoxConstraints(maxWidth: 340),
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        decoration: BoxDecoration(
+          color: const Color(0xf0172926),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: svip > 0
+              ? const Color(0xffd7ad64)
+              : const Color(0xff67c7a3)),
+          boxShadow: const [
+            BoxShadow(color: Color(0x2e000000), blurRadius: 12),
+          ],
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.workspace_premium, size: 26,
+            color: svip > 0 ? const Color(0xffffd488)
+              : const Color(0xff8cebc6)),
+          const SizedBox(width: 10),
+          Flexible(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('$label · VERIFIED ENTRY',
+                style: const TextStyle(color: Color(0xffffe8a5),
+                  fontWeight: FontWeight.w800, fontSize: 11)),
+              const SizedBox(height: 3),
+              Text(current!['display_name']?.toString() ?? 'NIMZO member',
+                maxLines: 1, overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white,
+                  fontWeight: FontWeight.w600, fontSize: 13)),
+            ],
+          )),
+        ]),
+      ),
     );
   }
 }
