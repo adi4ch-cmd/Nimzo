@@ -573,12 +573,18 @@ void main() {
         expect(find.textContaining('Diamond Blast'), findsNothing);
       } else if (const {
         'moments', 'me', 'profile', 'public_profile', 'room_profile',
-        'levels', 'comments',
+        'levels', 'comments', 'gifts',
       }.contains(entry.key)) {
         // These screens were explicitly redesigned. The old pixel files
         // describe retired large color blocks and childish Moment cards.
         // Keep assertions against the real interactive content instead.
         expect(find.byKey(key), findsOneWidget);
+        if (entry.key == 'gifts') {
+          // User-approved gift tray design has changed; assert a genuine
+          // catalog card rather than the retired pixel-perfect screenshot.
+          expect(find.byType(GiftSheet), findsOneWidget);
+          expect(find.byKey(const ValueKey('gift-card-0')), findsWidgets);
+        }
         if (entry.key == 'moments') {
           expect(find.byKey(const ValueKey('premium-moment-card')),
             findsWidgets);
