@@ -31,6 +31,7 @@ flutter:
   assets:
     - assets/room_rocket/
     - assets/gifts/free/
+    - assets/room_rocket/
     - assets/nimzo_custom_gifts/
     - assets/nimzo/gift_controls/
     - assets/yo2_gifts/images/
