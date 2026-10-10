@@ -21,6 +21,16 @@ void main() {
       expect(originalDragonPoster('Rose'), isNull);
     },
   );
+  test('complete free gifts have actual locally pinned icon paths', () {
+    for (final name in [
+      'Rose', 'Heart', 'Diamond', 'Crown', 'Rocket', 'Sports Car'
+    ]) {
+      expect(freeGiftArtwork(name), startsWith('assets/gifts/free/'));
+      expect(freeGiftArtwork(name), endsWith('.png'));
+    }
+    expect(freeGiftArtwork('Golden Palace'), isNull);
+    expect(freeGiftArtwork('Phoenix'), isNull);
+  });
   test('unmatched gifts do not invent artwork', () {
     expect(referenceGiftArtwork('Coffee'), isNull);
     expect(referenceGiftArtwork('Unknown'), isNull);

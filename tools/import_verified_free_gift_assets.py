@@ -10,7 +10,7 @@ import zlib
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
-DEST = ROOT / "nimzo/assets/free_gifts"
+DEST = ROOT / "nimzo/assets/gifts/free"
 INPUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/tmp/nimzo_free_gifts")
 PINNED = {
     "heart.png": "c3bad7ca779313e3c83fdc6c2b24c4f4cbf3266f",
@@ -100,6 +100,11 @@ def main():
         print(name, len(blob), sha)
 
     images = extract_sprites((DEST/"sports_car.svga").read_bytes())
+    if "seq_0_110" not in images:
+        raise ValueError("Source animation lacks verified Sports Car sprite frame")
+    photo = images["seq_0_110"].copy()
+    photo.thumbnail((512, 512), Image.Resampling.LANCZOS)
+    photo.save(DEST / "sports_car.png", optimize=True)
     ranked = sorted(images.items(), key=lambda v: v[1].width*v[1].height, reverse=True)
     print("SPORTS_CAR_SPRITES", [(k, im.size) for k, im in ranked[:30]])
     candidates = ranked[:30]

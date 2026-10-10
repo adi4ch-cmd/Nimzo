@@ -141,9 +141,7 @@ class _FreeGiftSvgaOverlayState extends State<FreeGiftSvgaOverlay>
                 child: Padding(
                   padding: const EdgeInsets.all(14),
                   child: Text(
-                    widget.sender + ' sent ' + widget.giftName +
-                        ' × ' + widget.quantity.toString() +
-                        ' to ' + widget.recipient,
+                    '${widget.sender} sent ${widget.giftName} × ${widget.quantity} to ${widget.recipient}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,

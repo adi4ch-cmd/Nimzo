@@ -23,6 +23,19 @@ String? referenceGiftArtwork(String name) {
   return index == null ? null : 'assets/reference/gift/$index.jpg';
 }
 
+/// Named, byte-pinned original icons from the MIT-licensed Agora demo.
+/// Sports Car artwork is extracted from a matching, MIT-licensed SVGA frame.
+/// No image is assigned to an unrelated catalog name.
+String? freeGiftArtwork(String name) => switch (name.trim().toLowerCase()) {
+      'heart' => 'assets/gifts/free/heart.png',
+      'rose' => 'assets/gifts/free/rose.png',
+      'diamond' => 'assets/gifts/free/diamond.png',
+      'crown' => 'assets/gifts/free/crown.png',
+      'rocket' => 'assets/gifts/free/rocket.png',
+      'sports car' => 'assets/gifts/free/sports_car.png',
+      _ => null,
+    };
+
 /// Actual poster frames generated from the licensed original videos.
 String? originalDragonPoster(String name) =>
     switch (name.trim().toLowerCase()) {
@@ -58,7 +71,7 @@ class GiftArtwork extends StatelessWidget {
       ),
     );
     final path =
-        assetPath ?? originalDragonPoster(name) ?? referenceGiftArtwork(name);
+        assetPath ?? freeGiftArtwork(name) ?? originalDragonPoster(name) ?? referenceGiftArtwork(name);
     if (path == null) {
       final svga = freeGiftAnimationForName(name);
       if (svga != null) return SVGAEasyPlayer(assetsName: svga, fit: BoxFit.contain);
