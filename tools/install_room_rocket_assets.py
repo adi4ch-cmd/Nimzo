@@ -7,7 +7,6 @@ NIMZO_Room_Rocket_12_VAP_Assets.zip there. Does not run or build an APK.
 from __future__ import annotations
 
 import hashlib
-import json
 import pathlib
 import sys
 import zipfile
@@ -31,26 +30,41 @@ EXPECTED = {
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        print("Usage: python3 tools/install_room_rocket_assets.py <asset_pack.zip>")
+    if len(sys.argv) < 2:
+        print("Usage: python3 tools/install_room_rocket_assets.py "
+              "<full_asset_pack.zip | part_a.zip part_b.zip>")
         return 2
-    archive = pathlib.Path(sys.argv[1]).expanduser().resolve()
-    if not archive.is_file():
-        print(f"ZIP not found: {archive}")
-        return 2
+    paths = [pathlib.Path(arg).expanduser().resolve() for arg in sys.argv[1:]]
+    for archive in paths:
+        if not archive.is_file():
+            print(f"ZIP not found: {archive}")
+            return 2
 
-    # Validate every clip and hash BEFORE installing any bytes; partial
-    # extraction would make it appear that some levels are complete.
+    # Read all supplied archives before modifying any asset. A missing part,
+    # tampered file, or duplicate name must fail the whole installation.
     ready: dict[str, bytes] = {}
-    with zipfile.ZipFile(archive) as zf:
-        for name, checksum in EXPECTED.items():
-            rel = f"nimzo/assets/room_rocket/{name}"
-            data = zf.read(rel)
-            if hashlib.sha256(data).hexdigest() != checksum:
-                raise ValueError(f"SHA256 mismatch for {name}")
-            if b"vapc" not in data:
-                raise ValueError(f"Missing VAP alpha-video metadata: {name}")
-            ready[name] = data
+    for archive in paths:
+        with zipfile.ZipFile(archive) as zf:
+            if zf.testzip() is not None:
+                raise ValueError(f"Corrupt ZIP archive: {archive}")
+            for name in EXPECTED:
+                rel = f"nimzo/assets/room_rocket/{name}"
+                if rel not in zf.namelist():
+                    continue
+                if name in ready:
+                    raise ValueError(f"Duplicate Rocket clip across packs: {name}")
+                ready[name] = zf.read(rel)
+
+    missing = set(EXPECTED) - set(ready)
+    if missing:
+        raise ValueError(f"Missing Rocket clips: {', '.join(sorted(missing))}")
+    for name, expected in EXPECTED.items():
+        data = ready[name]
+        if hashlib.sha256(data).hexdigest() != expected:
+            raise ValueError(f"SHA256 mismatch for {name}")
+        if b"vapc" not in data[:30000] or b"ftyp" not in data[:16]:
+            raise ValueError(f"Invalid VAP MP4 metadata: {name}")
+
     MEDIA.mkdir(parents=True, exist_ok=True)
     for name, data in ready.items():
         dest = MEDIA / name
@@ -59,8 +73,7 @@ def main() -> int:
     for name, data in ready.items():
         (MEDIA / name).write_bytes(data)
     print("Verified and installed all 12 original Rocket VAP videos.")
-    print("Run flutter analyze + flutter test before any final APK.")
-    print("Do not redistribute these source media without suitable permission.")
+    print("No APK built. Only commit the media when distribution rights permit.")
     return 0
 
 
