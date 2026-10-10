@@ -12,6 +12,7 @@ import '../../core/widgets/reference_widgets.dart';
 import 'profile_repository.dart';
 import 'profile_screen.dart';
 import 'profile_presentation.dart';
+import 'profile_membership_status.dart';
 import 'levels_screen.dart';
 
 class MeScreen extends ConsumerWidget {
@@ -22,14 +23,14 @@ class MeScreen extends ConsumerWidget {
     if (id == null)
       return const Scaffold(body: EmptyContent('Please sign in.'));
     return Scaffold(
-      backgroundColor: const Color(0xfff7f3fc),
+      backgroundColor: const Color(0xfff7faf8),
       body: AsyncContent(
         value: ref.watch(profileProvider(id)),
         onRetry: () => ref.invalidate(profileProvider(id)),
         builder: (p) => ListView(
           children: [
             Container(
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 44),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
               decoration: BoxDecoration(
                 image: p.coverPath == null
                     ? null
@@ -43,7 +44,7 @@ class MeScreen extends ConsumerWidget {
                         ),
                         fit: BoxFit.cover,
                         colorFilter: ColorFilter.mode(
-                          const Color(0xff9333ea).withValues(alpha: .65),
+                          const Color(0xff0a2922).withValues(alpha: .38),
                           BlendMode.srcATop,
                         ),
                       ),
@@ -51,11 +52,9 @@ class MeScreen extends ConsumerWidget {
                   begin: Alignment(-.34, -1),
                   end: Alignment(.34, 1),
                   colors: [
-                    Color(0xff9333ea),
-                    Color(0xffc026d3),
-                    Color(0xffd946ef),
+                    Color(0xff153d34),
+                    Color(0xff102b25),
                   ],
-                  stops: [0, .7, 1],
                 ),
               ),
               child: Column(
@@ -230,6 +229,10 @@ class MeScreen extends ConsumerWidget {
                   ),
                 ],
               ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 3),
+              child: ProfileMembershipStatus(profile: p, editable: true),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
