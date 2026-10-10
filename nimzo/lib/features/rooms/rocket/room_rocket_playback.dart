@@ -12,6 +12,12 @@ String rocketRewardPath(int stage) {
       (stage + 1).toString() + '.mp4';
 }
 
+String rocketFlyPath(int stage) {
+  RangeError.checkValueInInterval(stage, 0, 5, 'stage');
+  return 'assets/room_rocket/vap_rocket_fly_' +
+      (stage + 1).toString() + '.mp4';
+}
+
 /// Original videos have the VAP metadata box and alpha mask. A normal MP4
 /// widget will show the mask instead of compositing transparency.
 class RoomRocketPlayback extends StatefulWidget {
@@ -36,6 +42,7 @@ class _RoomRocketPlaybackState extends State<RoomRocketPlayback>
   Timer? _watchdog;
   bool _finished = false;
   bool _unavailable = false;
+  int _part = 0; // 0: rocket launch; 1: achieved-level reward
 
   void _finish() {
     if (_finished || !mounted) return;
@@ -55,36 +62,19 @@ class _RoomRocketPlaybackState extends State<RoomRocketPlayback>
   Future<void> _start() async {
     try {
       final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-      final path = rocketRewardPath(widget.stage);
-      if (!manifest.listAssets().contains(path)) {
+      // Require both Haza clips for a stage, no fabricated single-video effect.
+      final reward = rocketRewardPath(widget.stage);
+      final fly = rocketFlyPath(widget.stage);
+      if (!manifest.listAssets().contains(reward) ||
+          !manifest.listAssets().contains(fly)) {
         if (mounted) {
           setState(() => _unavailable = true);
-          // Do not fake a VAP clip with a stock image.
           _watchdog?.cancel();
           _watchdog = Timer(const Duration(milliseconds: 900), _finish);
         }
         return;
       }
-      final controller = VapPlayerController.asset(
-        path,
-        options: const VapPlayerOptions(
-          viewType: VapViewType.textureView,
-          scaleType: VapScaleType.fitCenter,
-          repeatCount: 0,
-          mute: true,
-        ),
-      );
-      _player = controller;
-      _events = controller.events.listen(
-        (event) {
-          if (event is VapCompletedEvent || event is VapErrorEvent) _finish();
-        },
-        onError: (Object _) => _finish(),
-      );
-      await controller.initialize();
-      if (!mounted || _finished) return;
-      setState(() {});
-      await controller.play();
+      await _playSegment(fly);
     } catch (_) {
       if (mounted) {
         setState(() => _unavailable = true);
@@ -92,6 +82,47 @@ class _RoomRocketPlaybackState extends State<RoomRocketPlayback>
         _watchdog = Timer(const Duration(milliseconds: 900), _finish);
       }
     }
+  }
+
+  Future<void> _playSegment(String path) async {
+    // Play original 1.5s lift-off, followed by the matching 10s reward.
+    // Native players must never overlap or compete with Vivox audio.
+    await _events?.cancel();
+    _events = null;
+    final previous = _player;
+    _player = null;
+    if (previous != null) await previous.dispose();
+    if (!mounted || _finished) return;
+    final controller = VapPlayerController.asset(
+      path,
+      options: const VapPlayerOptions(
+        viewType: VapViewType.textureView,
+        scaleType: VapScaleType.fitCenter,
+        repeatCount: 0,
+        mute: true,
+      ),
+    );
+    _player = controller;
+    _events = controller.events.listen(
+      (event) {
+        if (_finished) return;
+        if (event is VapErrorEvent) {
+          _finish();
+        } else if (event is VapCompletedEvent) {
+          if (_part == 0) {
+            _part = 1;
+            unawaited(_playSegment(rocketRewardPath(widget.stage)));
+          } else {
+            _finish();
+          }
+        }
+      },
+      onError: (Object _) => _finish(),
+    );
+    await controller.initialize();
+    if (!mounted || _finished) return;
+    setState(() {});
+    await controller.play();
   }
 
   @override
