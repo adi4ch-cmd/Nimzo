@@ -68,7 +68,17 @@ class _MomentCardState extends ConsumerState<MomentCard> {
   @override
   Widget build(BuildContext context) {
     final author = ref.watch(profileProvider(moment.authorId)).valueOrNull;
-    return ReferenceCard(
+    return Container(
+      key: const ValueKey('premium-moment-card'),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xffe1eae4)),
+        boxShadow: const [BoxShadow(
+          color: Color(0x10051918), blurRadius: 12, offset: Offset(0, 3))],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -322,6 +332,31 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
+                       Container(
+                         padding: const EdgeInsets.all(16),
+                         margin: const EdgeInsets.only(bottom: 14),
+                         decoration: BoxDecoration(
+                           color: const Color(0xff12382d),
+                           borderRadius: BorderRadius.circular(17),
+                         ),
+                         child: const Row(children: [
+                           Icon(Icons.auto_awesome_outlined,
+                             color: Color(0xffc6e6d5), size: 25),
+                           SizedBox(width: 12),
+                           Expanded(child: Column(
+                             crossAxisAlignment: CrossAxisAlignment.start,
+                             children: [
+                               Text('Share your story',
+                                 style: TextStyle(color: Colors.white,
+                                   fontWeight: FontWeight.w800, fontSize: 17)),
+                               SizedBox(height: 3),
+                               Text('Photos and words for your NIMZO community',
+                                 style: TextStyle(color: Color(0xffc0d5c8),
+                                   fontSize: 12)),
+                             ],
+                           )),
+                         ]),
+                       ),
                                         ListTile(
                                           title: const Text('Gallery'),
                                           onTap: () => Navigator.pop(
