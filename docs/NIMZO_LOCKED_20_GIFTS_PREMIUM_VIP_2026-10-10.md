@@ -69,6 +69,18 @@ All gift images and animations must be original NIMZO-created works or assets wi
 - Existing Phoenix/VIP6 entitlement and other profile, room, chat, gift and badge effects must continue to use **server-verified** membership status.
 - Protect accessibility, small-screen layout, frame lifecycle, motion reduced preference and audio priority.
 
+## 3A. User-approved OLD VIP cleanup / replacement request — 2026-10-10
+
+**Newer user instruction supersedes the earlier direction to keep the legacy normal-VIP look and normal-VIP status data unchanged.**
+
+- Replace and ultimately remove the **old normal VIP UI, images, decorative frames, legacy effects and obsolete VIP-only configuration** after the new professional VIP system is implemented and verified; do not leave old assets rendered in the replacement VIP page.
+- The user explicitly requested deletion of the **old normal VIP data** as part of rebuilding VIP. This includes the legacy `profiles.vip_level`, `profiles.vip_expires_at` and `profiles.vip_last_claim` fields/status and obsolete normal VIP reward configuration, but the actual destructive migration must be explicitly confirmed regarding **one currently active VIP membership**, which would immediately lose access if reset. **No live VIP memberships have been reset by this documentation change.**
+- Before applying destructive changes, audit old normal VIP purchases/rewards and references, prepare a rollback/backup strategy and test a staged migration; avoid losing transaction/accounting records needed to reconcile pre-reset purchases.
+- Treat **SVIP 1–10 separately**, preserving `svip_*` fields, active entitlements, verified recharge history, SVIP weekly rewards, backend security, and original authorized assets unless the user explicitly orders SVIP deletion.
+- **Never delete users, permanent user IDs, wallet balances, financial ledger entries, unrelated gift histories, rooms or payment receipts** as collateral cleanup.
+- Do not delete shared VIP database schema/function dependencies while production clients may be using them; implement the replacement safely, then retire legacy fields and code.
+- No intermediate APK build; only the final completed, tested Gifts + VIP + Lion King release.
+
 ## 4. Original "Lion King Entry" (room entrance), not a catalog gift
 
 - Create a **new original NIMZO royal lion** entry identity (regal lion wearing a gold crown; **not** a recognizable character or another app's copyrighted animation).
