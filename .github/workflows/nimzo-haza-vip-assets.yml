@@ -1,0 +1,70 @@
+name: NIMZO verified Haza VIP/SVIP media installation (NO APK)
+
+on:
+  push:
+    branches:
+      - feature/profile-reference-redesign
+    paths:
+      - NIMZO_Haza_VIP_SVIP_Approved_32_Assets.zip
+      - tools/install_haza_vip_assets.py
+      - .github/workflows/nimzo-haza-vip-assets.yml
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nimzo-haza-vip-install
+  cancel-in-progress: false
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/profile-reference-redesign
+          persist-credentials: true
+      - name: Check owner-approved media pack has been uploaded
+        id: pack
+        shell: bash
+        run: |
+          if test -s NIMZO_Haza_VIP_SVIP_Approved_32_Assets.zip; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+            echo 'Waiting for approved VIP asset ZIP in branch root.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Verify and install all 32 original files
+        if: steps.pack.outputs.present == 'true'
+        run: |
+          python3 tools/install_haza_vip_assets.py NIMZO_Haza_VIP_SVIP_Approved_32_Assets.zip
+      - name: Install Flutter 3.47.6
+        if: steps.pack.outputs.present == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Verify source, VIP artwork and all regression tests (NO APK)
+        if: steps.pack.outputs.present == 'true'
+        working-directory: nimzo
+        shell: bash
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+      - name: Commit only tested original media and remove temporary ZIP
+        if: steps.pack.outputs.present == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nimzo/assets/haza_membership/vip/ nimzo/assets/haza_membership/svip/
+          git rm -- NIMZO_Haza_VIP_SVIP_Approved_32_Assets.zip
+          git diff --cached --check
+          git diff --cached --quiet && exit 0
+          git commit -m "assets(vip): install 32 licensed original Haza VIP and SVIP graphics (no APK)"
+          git push origin HEAD:feature/profile-reference-redesign
+          echo 'SUCCESS: 32 verified VIP/SVIP originals committed; no APK built.' >> "$GITHUB_STEP_SUMMARY"
