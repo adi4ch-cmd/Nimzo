@@ -67,9 +67,12 @@ class _CustomEffectState extends State<NimzoCustomGiftEffect>
   @override
   void dispose(){ _reducedMotionTimer?.cancel(); motion.dispose(); super.dispose(); }
 
+  bool get isPhoenix => widget.name.trim().toLowerCase() == 'phoenix';
+
   Color get accent => switch(widget.name.toLowerCase()){
-    'heart'||'kiss'||'birthday cake'||'teddy bear'||'phoenix'=>
+    'heart'||'kiss'||'birthday cake'||'teddy bear'=>
       const Color(0xffff6784),
+    'phoenix'=>const Color(0xffffc96a),
     'cat'||'panda'||'coffee'=>const Color(0xffa7f2d4),
     'private jet'||'luxury yacht'||'dragon'=>const Color(0xff5bdeee),
     'crown'||'diamond'||'golden palace'||'golden dragon'||'diamond ring'=>
@@ -119,8 +122,17 @@ class _CustomEffectState extends State<NimzoCustomGiftEffect>
         final opacity=math.min(1.0,t*4.5);
         final ease=Curves.easeOutBack.transform(t.clamp(0.0,1.0));
         return Stack(children:[
-          Positioned.fill(child:ColoredBox(
-            color:const Color(0xff030c12).withValues(alpha:.88*opacity))),
+          Positioned.fill(child:DecoratedBox(
+            decoration:BoxDecoration(gradient:RadialGradient(
+              center:const Alignment(0,-.2),radius:1.3,
+              colors:[
+                (isPhoenix?const Color(0xff78331b):accent)
+                    .withValues(alpha:.38*opacity),
+                const Color(0xff040f12).withValues(alpha:.96*opacity),
+              ],
+            )))),
+          if(isPhoenix) Positioned.fill(child:IgnorePointer(
+            child:CustomPaint(painter:_RoyalPhoenixAura(t)))),
           Positioned.fill(child:IgnorePointer(
             child:CustomPaint(painter:_GiftMotionParticles(t,accent)))),
           Center(child:ConstrainedBox(
@@ -158,8 +170,8 @@ class _CustomEffectState extends State<NimzoCustomGiftEffect>
                   style:const TextStyle(color:Colors.white,
                     fontWeight:FontWeight.w600,fontSize:14))),
               const SizedBox(height:8),
-              const Text('NIMZO EXCLUSIVE',
-                style:TextStyle(color:Color(0xffb3c5bc),
+              Text(isPhoenix ? 'ROYAL FLAME  ·  NIMZO' : 'NIMZO EXCLUSIVE',
+                style:const TextStyle(color:Color(0xffb3c5bc),
                   letterSpacing:2,fontSize:10)),
             ]),
           )),
@@ -174,31 +186,104 @@ class _CustomEffectState extends State<NimzoCustomGiftEffect>
   );
 }
 
-class _GiftMotionParticles extends CustomPainter {
-  const _GiftMotionParticles(this.phase,this.color);
+/// A warm light stage for Phoenix. The bird illustration is the real art;
+/// no unrelated animation is substituted, and all rendering is muted.
+class _RoyalPhoenixAura extends CustomPainter {
+  const _RoyalPhoenixAura(this.phase);
   final double phase;
-  final Color color;
+
   @override
-  void paint(Canvas canvas,Size size){
-    final center=Offset(size.width/2,size.height/2-38);
-    final s=math.min(size.width,size.height);
-    for(var i=0;i<56;i++){
-      final angle=i*2.399963+phase*(i.isEven?1.9:-1.1);
-      final age=(phase*1.25+i/56)%1;
-      final radius=30+(age*s*.45);
-      final p=center+Offset(math.cos(angle)*radius,
-        math.sin(angle)*radius);
-      final alpha=((1-age)*.88).clamp(0.0,1.0);
-      final paint=Paint()
-        ..color=color.withValues(alpha:alpha)
-        ..strokeWidth=i.isEven?2.5:1.6
-        ..strokeCap=StrokeCap.round;
-      final line=3.5+(1-age)*8;
-      canvas.drawLine(p.translate(-line,0),p.translate(line,0),paint);
-      canvas.drawLine(p.translate(0,-line),p.translate(0,line),paint);
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2 - 55);
+    final radius = math.min(size.width * .56, size.height * .43);
+    final rise = Curves.easeOutCubic.transform(phase.clamp(0.0, 1.0));
+    final fade = (1 - math.max(0, phase - .83) / .17).clamp(0.0, 1.0);
+    final bounds = Rect.fromCircle(center: center, radius: radius);
+    canvas.drawCircle(
+      center, radius,
+      Paint()..shader = RadialGradient(
+        colors: [
+          const Color(0xffffce75).withValues(alpha: .28 * rise * fade),
+          const Color(0xffde521d).withValues(alpha: .16 * rise * fade),
+          const Color(0xff7f2713).withValues(alpha: 0),
+        ],
+      ).createShader(bounds),
+    );
+    for (var ring = 0; ring < 3; ring++) {
+      final r = radius * (.48 + ring * .22) +
+          8 * math.sin(phase * math.pi * 2 + ring);
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: r),
+        -math.pi / 2 + phase * (ring.isEven ? 1.6 : -1.3) + ring,
+        math.pi * (1.1 - ring * .13),
+        false,
+        Paint()
+          ..color = const Color(0xffffca6a)
+              .withValues(alpha: (.42 - ring * .12) * rise * fade)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.7 + (2 - ring) * .4,
+      );
+    }
+    for (var i = 0; i < 42; i++) {
+      final angle = i * 2.399963;
+      final lifetime = (phase * 1.7 + i / 42) % 1;
+      final spread = 44 + lifetime * radius * .95;
+      final x = center.dx + math.cos(angle) * spread * .75;
+      final y = center.dy + math.sin(angle) * spread * .56 -
+          66 * lifetime;
+      final alpha = ((1 - lifetime) * .65 * fade).clamp(0.0, 1.0);
+      final end = Offset(x, y - (4 + 13 * (1 - lifetime)));
+      canvas.drawLine(
+        Offset(x, y), end,
+        Paint()
+          ..color = const Color(0xffffbb53).withValues(alpha: alpha)
+          ..strokeWidth = i.isEven ? 1.9 : 1.1
+          ..strokeCap = StrokeCap.round,
+      );
     }
   }
+
   @override
-  bool shouldRepaint(_GiftMotionParticles old)=>
-      old.phase!=phase||old.color!=color;
+  bool shouldRepaint(_RoyalPhoenixAura old) => old.phase != phase;
+}
+
+/// Light motes and graceful travel lines; no large pink '+' placeholders.
+class _GiftMotionParticles extends CustomPainter {
+  const _GiftMotionParticles(this.phase, this.color);
+  final double phase;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2 - 38);
+    final travel = math.min(size.width, size.height) * .44;
+    final fade = (1 - math.max(0, phase - .84) / .16).clamp(0.0, 1.0);
+    for (var i = 0; i < 56; i++) {
+      final theta = i * 2.399963 + phase * (i.isEven ? 1.2 : -.85);
+      final age = (phase * 1.3 + i / 56) % 1;
+      final distance = 25 + age * travel;
+      final point = center + Offset(
+        math.cos(theta) * distance, math.sin(theta) * distance,
+      );
+      final alpha = ((1 - age) * .77 * fade).clamp(0.0, 1.0);
+      final length = 3 + (1 - age) * (i.isEven ? 12 : 6);
+      canvas.drawLine(
+        point.translate(-math.cos(theta) * length,
+            -math.sin(theta) * length),
+        point,
+        Paint()
+          ..color = color.withValues(alpha: alpha)
+          ..strokeWidth = i.isEven ? 2.0 : 1.2
+          ..strokeCap = StrokeCap.round,
+      );
+      canvas.drawCircle(
+        point, i.isEven ? 2.0 : 1.0,
+        Paint()..color = const Color(0xfffff2d1).withValues(alpha: alpha),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_GiftMotionParticles old) =>
+      old.phase != phase || old.color != color;
 }
