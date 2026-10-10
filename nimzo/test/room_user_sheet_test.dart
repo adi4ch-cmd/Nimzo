@@ -120,7 +120,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       await render(tester, me: 'member');
-      expect(find.text('—'), findsNWidgets(3));
+      expect(find.text('Level unavailable'), findsNWidgets(3));
       await tester.tap(find.byKey(ValueKey('room-user-level-$kind')));
       await tester.pumpAndSettle();
       final screen = tester.widget<LevelsScreen>(find.byType(LevelsScreen));
