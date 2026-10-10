@@ -47,6 +47,8 @@ flutter:
     - assets/reference/pg/
     - assets/reference/lv/
     - assets/membership/svip/
+    - assets/haza_membership/vip/
+    - assets/haza_membership/svip/
     - assets/hilo/game_levels/
     - assets/hilo/store/
     - assets/reference/svip/
