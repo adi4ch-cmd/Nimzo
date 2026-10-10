@@ -296,6 +296,7 @@ void showSettledPersonalGiftCelebration(
   required int quantity,
   required int unitPrice,
   String? assetPath,
+  String? recipientName,
 }) {
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return;
@@ -308,6 +309,10 @@ void showSettledPersonalGiftCelebration(
     entry.dispose();
   }
 
+  final verifiedRecipient = recipientName?.trim();
+  final recipient = verifiedRecipient != null && verifiedRecipient.isNotEmpty
+      ? verifiedRecipient
+      : 'a member';
   final originalSvga = freeGiftAnimationForName(giftName);
   entry = OverlayEntry(
     builder: (_) => originalSvga != null
@@ -315,7 +320,7 @@ void showSettledPersonalGiftCelebration(
             source: originalSvga,
             giftName: giftName,
             sender: 'You',
-            recipient: 'NIMZO user',
+            recipient: recipient,
             quantity: quantity,
             onFinished: dismiss,
           )
@@ -323,14 +328,14 @@ void showSettledPersonalGiftCelebration(
           ? NimzoCustomGiftEffect(
               name: giftName,
               sender: 'You',
-              recipient: 'NIMZO user',
+              recipient: recipient,
               quantity: quantity,
               onFinished: dismiss,
             )
           : NimzoGiftCelebration(
       giftName: giftName,
       sender: 'You',
-      recipient: 'NIMZO user',
+      recipient: recipient,
       quantity: quantity,
       unitPrice: unitPrice,
       assetPath: assetPath,
