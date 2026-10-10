@@ -7,6 +7,8 @@ on:
     paths:
       - NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip
       - NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip
+      - nimzo/test/diamond_blast_test.dart
+      - .github/workflows/nimzo-room-rocket-install.yml
   workflow_dispatch: {}
 
 permissions:
