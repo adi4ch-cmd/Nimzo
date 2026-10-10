@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/vip/haza_membership_artwork.dart';
 import 'package:nimzo/features/vip/vip_presentation.dart';
@@ -25,26 +24,18 @@ void main() {
   });
 
   testWidgets('Original Haza badge renders only when installed', (tester) async {
-    final files = await HazaMembershipArtwork.bundled;
     await tester.pumpWidget(const MaterialApp(
       home: Scaffold(
         body: MembershipEmblem(level: 3, svip: false, size: 154),
       ),
     ));
     await tester.pump();
-    final available = files.contains(
+    // Always validate the intended source path. If the licensed archive is
+    // not yet installed, Image.errorBuilder renders the original NIMZO seal.
+    final image = tester.widget<Image>(
+        find.byKey(const ValueKey('haza-vip-badge-3')));
+    expect((image.image as AssetImage).assetName,
         'assets/haza_membership/vip/ic_vip_tag_3.png');
-    if (available) {
-      expect(find.byKey(const ValueKey('haza-vip-badge-3')),
-          findsOneWidget);
-      final image = tester.widget<Image>(
-          find.byKey(const ValueKey('haza-vip-badge-3')));
-      expect((image.image as AssetImage).assetName,
-          'assets/haza_membership/vip/ic_vip_tag_3.png');
-    } else {
-      expect(find.byType(NimzoRoyalVipSeal), findsOneWidget);
-      expect(find.byKey(const ValueKey('haza-vip-badge-3')), findsNothing);
-    }
     expect(tester.takeException(), isNull);
   });
 
@@ -80,8 +71,6 @@ void main() {
 
   testWidgets('Licensed stage is decoration and cannot trigger purchases',
       (tester) async {
-    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    final bundled = manifest.listAssets().toSet();
     await tester.pumpWidget(const MaterialApp(
       home: Scaffold(
         body: SizedBox(
@@ -96,9 +85,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(InkWell), findsNothing);
     expect(find.byType(ElevatedButton), findsNothing);
-    if (bundled.contains('assets/haza_membership/vip/ic_vip_bg_3.webp')) {
-      expect(find.byKey(const ValueKey('haza-vip-stage')), findsOneWidget);
-    }
+    expect(find.byKey(const ValueKey('haza-vip-stage')), findsOneWidget);
+    final image = tester.widget<Image>(
+      find.byKey(const ValueKey('haza-vip-stage')));
+    expect((image.image as AssetImage).assetName,
+      'assets/haza_membership/vip/ic_vip_bg_3.webp');
     expect(tester.takeException(), isNull);
   });
 }
