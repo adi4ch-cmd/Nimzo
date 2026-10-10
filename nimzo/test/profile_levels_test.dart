@@ -8,6 +8,7 @@ import 'package:nimzo/features/profile/profile_repository.dart';
 import 'package:nimzo/features/profile/profile_screen.dart';
 import 'package:nimzo/features/profile/me_screen.dart';
 import 'package:nimzo/features/profile/levels_screen.dart';
+import 'package:nimzo/features/profile/profile_level_scale.dart';
 
 void main() {
   test('wealth palette boundaries and separate Charm/Active palette', () {
@@ -27,8 +28,8 @@ void main() {
     };
     for (final entry in cases.entries) {
       expect(LevelBadge.color(0, entry.key), Color(entry.value));
-      expect(LevelBadge.color(1, entry.key), const Color(0xff2563eb));
-      expect(LevelBadge.color(2, entry.key), const Color(0xffdc2626));
+      expect(LevelBadge.color(1, entry.key), ProfileLevelScale.color(1, entry.key));
+      expect(LevelBadge.color(2, entry.key), ProfileLevelScale.color(2, entry.key));
     }
   });
   for (var kind = 0; kind < 3; kind++) {
@@ -94,7 +95,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.textContaining('next-level requirement unavailable'),
+        find.textContaining('Maximum tier or unavailable'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
