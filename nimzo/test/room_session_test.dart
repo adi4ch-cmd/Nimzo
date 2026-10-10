@@ -47,4 +47,37 @@ void main() {
       expect(calls, ['voice', 'room']);
     },
   );
+  test('a failed server leave can retry and removes stuck membership', () async {
+    var leaves = 0;
+    final session = RoomSession(
+      joinRoom: () async {},
+      leaveRoom: () async {
+        leaves++;
+        if (leaves == 1) throw StateError('Network failure');
+      },
+      joinVoice: () async {},
+      leaveVoice: () async {},
+    );
+    await session.join();
+    await expectLater(session.close(), throwsStateError);
+    expect(session.joined, isTrue);
+    await session.close();
+    expect(leaves, 2);
+    expect(session.joined, isFalse);
+  });
+
+  test('native voice exit failure never prevents database removal', () async {
+    var roomExits = 0;
+    final session = RoomSession(
+      joinRoom: () async {},
+      joinVoice: () async {},
+      leaveVoice: () async => throw StateError('Voice SDK unavailable'),
+      leaveRoom: () async { roomExits++; },
+    );
+    await session.join();
+    await session.close();
+    expect(roomExits, 1);
+    expect(session.joined, isFalse);
+  });
+
 }
