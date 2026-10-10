@@ -7,6 +7,7 @@ on:
     paths:
       - NIMZO_Haza_VIP_SVIP_Approved_32_Assets.zip
       - tools/install_haza_vip_assets.py
+      - nimzo/test/haza_vip_artwork_test.dart
       - .github/workflows/nimzo-haza-vip-assets.yml
   workflow_dispatch: {}
 
