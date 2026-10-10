@@ -132,7 +132,7 @@ void main() {
     await tester.pump();
     expect(find.text('Royal Dragon'), findsOneWidget);
     expect(find.text('× 3'), findsOneWidget);
-    expect(find.text('3M coins'), findsOneWidget);
+    expect(find.text('3.0M coins'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
 }
