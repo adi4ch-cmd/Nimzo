@@ -666,6 +666,11 @@ class ProfileProgressBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final accent = color(kind, level);
     final amount = total;
+    final unit = const ['coins','diamonds','points'][kind];
+    final totalString = amount?.toString().replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]},',
+    );
     final fraction = amount == null || level < 1
         ? 0.0 : ProfileLevelScale.fraction(kind, level, amount);
     return Container(
@@ -695,7 +700,13 @@ class ProfileProgressBadge extends StatelessWidget {
           Text(level > 0 ? 'Lv $level' : '—',
             style: TextStyle(color: accent, fontSize: 16,
               fontWeight: FontWeight.w800)),
-          const SizedBox(height: 4),
+          const SizedBox(height: 3),
+          Text(
+            amount == null ? 'Total unavailable' : '$totalString $unit',
+            maxLines: 1, overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 9, color: Color(0xff64748b)),
+          ),
+          const SizedBox(height: 5),
           LinearProgressIndicator(
             value: fraction, minHeight: 3,
             color: accent, backgroundColor: accent.withValues(alpha: .14),
