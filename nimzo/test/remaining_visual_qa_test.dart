@@ -551,6 +551,11 @@ void main() {
           // controls tested; do not lock the pre-medal bitmap.
           expect(find.byType(RoomScreen), findsOneWidget);
         }
+        if (entry.key == 'room_tools' || entry.key == 'room_games') {
+          // Actual verified equipped mic medals alter the room artwork.
+          // Room Tools and Games continue to use their real modal launchers.
+          expect(find.byType(RoomScreen), findsOneWidget);
+        }
         if (entry.key == 'gifts') {
           for (final filename in [
             'video_send_gift.webp',
@@ -588,7 +593,7 @@ void main() {
         expect(find.textContaining('Diamond Blast'), findsNothing);
       } else if (const {
         'moments', 'me', 'profile', 'public_profile', 'room_profile',
-        'levels', 'comments', 'gifts', 'room_tools', 'room_games',
+        'levels', 'comments', 'gifts', 'room_tools', 'room_games', 'room_tools', 'room_games',
       }.contains(entry.key)) {
         // These screens were explicitly redesigned. The old pixel files
         // describe retired large color blocks and childish Moment cards.
