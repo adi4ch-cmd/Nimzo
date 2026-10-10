@@ -560,10 +560,20 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
       }
-      await expectLater(
-        find.byKey(key),
-        matchesGoldenFile('goldens/remaining/${entry.key}.png'),
-      );
+      // The Room Rocket icon deliberately replaces the retired Diamond
+      // reference screenshot. All other approved screenshots remain pinned.
+      // This case checks the actual six-level launcher without approving an
+      // obsolete image or hiding a 2px room layout overflow.
+      if (entry.key == 'room') {
+        expect(find.byIcon(Icons.rocket_launch), findsOneWidget);
+        expect(find.byKey(key), findsOneWidget);
+        expect(find.textContaining('Diamond Blast'), findsNothing);
+      } else {
+        await expectLater(
+          find.byKey(key),
+          matchesGoldenFile('goldens/remaining/${entry.key}.png'),
+        );
+      }
       expect(tester.takeException(), isNull, reason: entry.key);
       await tester.pumpWidget(const SizedBox());
       await tester.pump();
