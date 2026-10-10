@@ -12,6 +12,7 @@ import 'vip_repository.dart';
 import 'vip_reward_actions.dart';
 import 'vip_tiers.dart';
 import 'vip_presentation.dart';
+import 'haza_membership_artwork.dart';
 import 'royal_lion_entry.dart';
 
 final membershipNameProvider = FutureProvider<String?>((ref) async {
@@ -187,7 +188,14 @@ class _VipState extends ConsumerState<VipScreen> {
                            const Color(0xff0c2820)],
                     ),
                   ),
-                  child: Column(children: [
+                  child: Stack(children: [
+                    Positioned.fill(
+                      child: HazaMembershipStage(
+                        tier: tier,
+                        svip: widget.svip,
+                      ),
+                    ),
+                    Column(children: [
                     Text(widget.svip
                       ? 'DIAMOND MEMBERSHIP'
                       : 'THE ROYAL COLLECTION',
@@ -219,6 +227,7 @@ class _VipState extends ConsumerState<VipScreen> {
                         child: Text(label, style: TextStyle(
                           color: accent, fontSize: 12))),
                     ),
+                  ]),
                   ]),
                 ),
                 const SizedBox(height: 22),
