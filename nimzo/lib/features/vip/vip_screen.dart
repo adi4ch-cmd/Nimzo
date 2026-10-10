@@ -8,6 +8,7 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/errors/error_handler.dart';
 import '../profile/profile_repository.dart';
 import 'vip_repository.dart';
+import 'vip_reward_actions.dart';
 import 'vip_tiers.dart';
 import 'vip_presentation.dart';
 import 'royal_lion_entry.dart';
@@ -345,6 +346,12 @@ class _VipState extends ConsumerState<VipScreen> {
                         color:Color(0xffa7b9af),fontSize:12)),
                   ])),
                 ],
+                _heading(widget.svip ? 'Weekly rewards' : 'Daily rewards'),
+                VipRewardActions(
+                  svip: widget.svip,
+                  status: status.valueOrNull,
+                  accent: accent,
+                ),
                 _heading('Your privileges'),
                 _benefit(Icons.workspace_premium_outlined,
                   'New royal profile emblem',
