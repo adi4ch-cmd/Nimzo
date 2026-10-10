@@ -1,0 +1,54 @@
+name: Import MIT free gifts (assets only, no APK)
+on:
+  push:
+    branches:
+      - feature/profile-reference-redesign
+    paths:
+      - '.github/workflows/nimzo-import-free-gift-assets.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  import-free-gifts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install thumbnail tool
+        run: python3 -m pip install Pillow==11.3.0
+      - name: Download verified free gift sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/nimzo_free_gifts
+          a='https://raw.githubusercontent.com/AgoraIO-Usecase/agora-live/0651c5f04f965015221232afc2a1e834287f65bc/Android/scenes/voice/src/main'
+          t='https://raw.githubusercontent.com/Tencent-RTC/TUILiveKit/c00fa47f3b2cfd29268c811c169b8cd91a95b8e7/Flutter/live_uikit_gift/assets/svga'
+          curl -fLsS --retry 3 "$a/res/drawable-hdpi/voice_icon_gift_1.png" -o /tmp/nimzo_free_gifts/heart.png
+          curl -fLsS --retry 3 "$a/res/drawable-hdpi/voice_icon_gift_2.png" -o /tmp/nimzo_free_gifts/rose.png
+          curl -fLsS --retry 3 "$a/res/drawable-hdpi/voice_icon_gift_7.png" -o /tmp/nimzo_free_gifts/diamond.png
+          curl -fLsS --retry 3 "$a/res/drawable-hdpi/voice_icon_gift_8.png" -o /tmp/nimzo_free_gifts/crown.png
+          curl -fLsS --retry 3 "$a/res/drawable-hdpi/voice_icon_gift_9.png" -o /tmp/nimzo_free_gifts/rocket.png
+          curl -fLsS --retry 3 "$a/assets/animation_of_rocket.svga" -o /tmp/nimzo_free_gifts/rocket.svga
+          curl -fLsS --retry 3 "$t/sports_car.svga" -o /tmp/nimzo_free_gifts/sports_car.svga
+          python3 tools/import_verified_free_gift_assets.py /tmp/nimzo_free_gifts
+      - name: Save sprite contact sheet for manual quality review
+        uses: actions/upload-artifact@v4
+        with:
+          name: free-gift-sports-car-asset-review
+          path: /tmp/nimzo_free_sports_car_sprite_preview.jpg
+      - name: Push immutable source files (no APK)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nimzo/assets/free_gifts
+          if git diff --cached --quiet; then
+            echo "Verified gift originals already imported"
+            exit 0
+          fi
+          git commit -m "assets(gifts): add verified MIT gift icons and SVGA movies [gifts-only]"
+          git push
