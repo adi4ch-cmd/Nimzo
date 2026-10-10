@@ -241,6 +241,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                         ),
+                        EquippedRoyalMedal(userId: id, compact: true),
                         if (p.dateOfBirth != null)
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -307,8 +308,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       profile: p,
                       editable: me == id,
                     ),
-                    const SizedBox(height: 8),
-                    EquippedRoyalMedal(userId: id),
                     const SizedBox(height: 8),
                     Text(p.bio?.isNotEmpty == true ? p.bio! : 'No bio yet'),
                     AsyncContent(
