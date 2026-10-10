@@ -24,7 +24,7 @@ test('authorized seat receives join token and transmit state',async()=>{const da
 test('production Vivox identity is pinned while private signing key stays server-only',async()=>{const data=await(await handler().serve(request())).json();assert.equal(data.accountUri.startsWith('sip:.18968-nimzo-13904.'),true);assert.equal(data.channelUri.endsWith('@mtu1xp.vivox.com'),true);assert.equal(data.server,'https://unity.vivox.com/appconfig/18968-nimzo-13904');assert.equal(Object.prototype.hasOwnProperty.call(data,'tokenKey'),false);assert.equal(JSON.stringify(data).includes('test-signing-key'),false);});
 
 test('pasted signing secret whitespace is normalized before creating a Vivox token',async()=>{
- const data=await(await handler({signingKey:'  test-signing-key\\n'}).serve(request())).json();
+ const data=await(await handler({signingKey:'  test-signing-key\n'}).serve(request())).json();
  for (const property of ['loginToken','channelToken']) {
   const parts=data[property].split('.');
   const expected=await webcrypto.subtle.importKey('raw',new TextEncoder().encode('test-signing-key'),{name:'HMAC',hash:'SHA-256'},false,['verify']);
