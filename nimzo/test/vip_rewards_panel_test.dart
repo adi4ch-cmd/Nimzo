@@ -25,6 +25,7 @@ void main() {
     'svip_level': 6,
     'vip_daily_claimed_today': false,
     'svip_weekly_claimed': false,
+    'svip_weekly_claimable': true,
     'vip_expires_at': '2026-11-08T00:00:00Z',
   };
 
@@ -108,6 +109,7 @@ void main() {
     await tester.pump();
     expect(fake.dailyCalls, 0);
     expect(fake.weeklyCalls, 1);
+    expect(find.text('Claim missed weekly reward'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await tester.pumpWidget(ProviderScope(
@@ -127,6 +129,31 @@ void main() {
     final b = tester.widget<OutlinedButton>(
       find.byKey(const ValueKey('claim-svip-weekly')));
     expect(b.onPressed, isNull);
-    expect(find.text('Already claimed this cycle'), findsOneWidget);
+    expect(find.text('Weekly reward already credited'), findsOneWidget);
   });
+  testWidgets('automatic SVIP payout cannot be manually claimed before due',
+      (tester) async {
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        svipFridayRewardsProvider.overrideWith((_) async => [
+          {'level': 6, 'coins': 80000000}
+        ]),
+      ],
+      child: MaterialApp(home: Scaffold(body:
+        VipRewardActions(
+          svip: true,
+          status: {...todayStatus, 'svip_weekly_claimable': false},
+          accent: Colors.orange,
+        ),
+      )),
+    ));
+    await tester.pumpAndSettle();
+    final button = tester.widget<OutlinedButton>(
+      find.byKey(const ValueKey('claim-svip-weekly')));
+    expect(button.onPressed, isNull);
+    expect(find.text('Automatic payout scheduled'), findsOneWidget);
+    expect(find.textContaining('If payment is missed'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
 }
