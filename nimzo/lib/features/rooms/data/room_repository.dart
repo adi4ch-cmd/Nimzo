@@ -179,6 +179,14 @@ class RoomRepository {
     }
   }
 
+  /// All currently joined room identities, including listeners off mic.
+  /// A server leave/delete removes the ID from this Realtime collection.
+  Stream<List<String>> watchMembers(String roomId) => _db
+      .from('room_members')
+      .stream(primaryKey: ['room_id', 'user_id'])
+      .eq('room_id', roomId)
+      .map((rows) => rows.map((e) => e['user_id'].toString()).toList());
+
   Stream<List<MicSeat>> watchSeats(String roomId) => _db
       .from('mic_seats')
       .stream(primaryKey: ['room_id', 'seat_no'])
