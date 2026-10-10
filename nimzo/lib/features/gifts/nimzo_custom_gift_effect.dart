@@ -3,10 +3,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'gift_artwork.dart';
 
-/// Animates only original, individually illustrated NIMZO gift names.
+/// Animates complete gift artwork, including free icons and NIMZO originals.
 /// This is vector/motion artwork, not a false claim of a 3-D cinematic video.
 bool hasOriginalNimzoGiftEffect(String name) =>
-    originalNimzoGiftArtwork(name) != null;
+    originalNimzoGiftArtwork(name) != null || freeGiftArtwork(name) != null;
 
 class NimzoCustomGiftEffect extends StatefulWidget {
   const NimzoCustomGiftEffect({
@@ -47,7 +47,8 @@ class _CustomEffectState extends State<NimzoCustomGiftEffect>
     super.didChangeDependencies();
     if(MediaQuery.disableAnimationsOf(context)){
       motion.stop();
-      motion.value=1;
+      // Avoid firing onFinished synchronously during parent build.
+      motion.value=.999;
     }else if(motion.status==AnimationStatus.dismissed){
       motion.forward();
     }
@@ -56,11 +57,11 @@ class _CustomEffectState extends State<NimzoCustomGiftEffect>
   void dispose(){ motion.dispose(); super.dispose(); }
 
   Color get accent => switch(widget.name.toLowerCase()){
-    'kiss'||'birthday cake'||'teddy bear'||'phoenix'=>
+    'heart'||'kiss'||'birthday cake'||'teddy bear'||'phoenix'=>
       const Color(0xffff6784),
     'cat'||'panda'||'coffee'=>const Color(0xffa7f2d4),
     'private jet'||'luxury yacht'||'dragon'=>const Color(0xff5bdeee),
-    'golden palace'||'golden dragon'||'diamond ring'=>
+    'crown'||'diamond'||'golden palace'||'golden dragon'||'diamond ring'=>
       const Color(0xffffcf78),
     _=>const Color(0xfffad8a6),
   };
@@ -79,12 +80,19 @@ class _CustomEffectState extends State<NimzoCustomGiftEffect>
       case 'cat':
       case 'panda': return Offset(14*math.sin(t*math.pi*4),0);
       case 'kiss':return Offset(0,-30*math.sin(t*math.pi));
+      case 'rose':return Offset(18*math.sin(t*math.pi*3),-54*t);
+      case 'heart':return Offset(0,-18*math.sin(t*math.pi*2));
+      case 'crown':return Offset(0,-28*math.sin(t*math.pi));
+      case 'diamond':return Offset(9*math.sin(t*math.pi*4),0);
       default:return Offset(0,(1-eased)*48);
     }
   }
 
   double turn(double t)=>switch(widget.name.toLowerCase()){
-    'diamond ring'=>.30*math.sin(t*math.pi*4),
+    'diamond ring'||'diamond'=>.30*math.sin(t*math.pi*4),
+    'rose'=>.22*math.sin(t*math.pi*3),
+    'heart'=>.12*math.sin(t*math.pi*4),
+    'crown'=>.07*math.sin(t*math.pi*2),
     'dragon'||'golden dragon'=>.18*math.sin(t*math.pi*2),
     'phoenix'=>.13*math.sin(t*math.pi*3),
     'teddy bear'=>.11*math.sin(t*math.pi*3),

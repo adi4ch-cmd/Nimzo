@@ -228,7 +228,7 @@ class _State extends ConsumerState<GiftSheet> {
                       PhoenixMark(),
                       SizedBox(width: 8),
                       Text(
-                        'Phoenix VIP gift tray',
+                        'NIMZO Royal VIP gift tray',
                         style: TextStyle(
                           color: phoenixGold,
                           fontWeight: FontWeight.w700,

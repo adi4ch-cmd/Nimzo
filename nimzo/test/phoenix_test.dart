@@ -67,7 +67,7 @@ void main() {
         ),
       ),
     );
-    expect(find.textContaining('VIP 6 Phoenix'), findsOneWidget);
+    expect(find.textContaining('VIP 6 Royal Lion'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

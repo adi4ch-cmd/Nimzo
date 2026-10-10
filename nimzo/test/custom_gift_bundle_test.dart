@@ -23,6 +23,9 @@ void main() {
       expect(data.lengthInBytes,greaterThan(200),reason:gift);
       expect(hasOriginalNimzoGiftEffect(gift),isTrue);
     }
+    for (final name in ['Rose','Heart','Crown','Diamond','Rocket','Sports Car']) {
+      expect(hasOriginalNimzoGiftEffect(name),isTrue);
+    }
     expect(originalNimzoGiftArtwork('Unverified Gift'),isNull);
     expect(hasOriginalNimzoGiftEffect('Unverified Gift'),isFalse);
   });

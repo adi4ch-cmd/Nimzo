@@ -5,10 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'phoenix_entitlement.dart';
 
-const phoenixRed = Color(0xffb91c32);
+const phoenixRed = Color(0xff0d8967);
 const phoenixGold = Color(0xffffd778);
 const phoenixGradient = LinearGradient(
-  colors: [Color(0xff521321), Color(0xff982039), Color(0xff381322)],
+  colors: [Color(0xff08362a), Color(0xff136149), Color(0xff082c24)],
 );
 
 /// Original vector artwork; no external images or media.
@@ -23,6 +23,7 @@ class PhoenixMark extends StatelessWidget {
       );
 }
 
+/// The retired red-wing VIP artwork has been replaced with a NIMZO crown.
 class _PhoenixPainter extends CustomPainter {
   final double spread;
   _PhoenixPainter(this.spread);
@@ -30,45 +31,37 @@ class _PhoenixPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.save();
     canvas.scale(size.width / 100, size.height / 100);
-    final paint = Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Color(0xffffefb0), phoenixGold, Color(0xffe96332)],
-      ).createShader(const Rect.fromLTWH(0, 0, 100, 100));
-    for (final side in [-1.0, 1.0]) {
-      final wing = Path()..moveTo(50, 54);
-      wing.cubicTo(
-        50 + side * 16,
-        40,
-        50 + side * 35,
-        20 + 8 * (1 - spread),
-        50 + side * 46,
-        9 + 15 * (1 - spread),
-      );
-      wing.lineTo(50 + side * 37, 48);
-      wing.lineTo(50 + side * 28, 37);
-      wing.lineTo(50 + side * 25, 59);
-      wing.lineTo(50 + side * 17, 50);
-      wing.quadraticBezierTo(50 + side * 15, 72, 50, 68);
-      wing.close();
-      canvas.drawPath(wing, paint);
-    }
-    final body = Path()
-      ..moveTo(47, 32)
-      ..quadraticBezierTo(53, 20, 58, 34)
-      ..lineTo(67, 37)
-      ..lineTo(55, 42)
-      ..lineTo(55, 64)
-      ..quadraticBezierTo(67, 79, 62, 95)
-      ..lineTo(51, 76)
-      ..lineTo(40, 96)
-      ..quadraticBezierTo(39, 78, 45, 63)
+    final crown = Path()
+      ..moveTo(12, 37)
+      ..lineTo(12, 14 + 6 * (1 - spread))
+      ..lineTo(34, 32)
+      ..lineTo(50, 7)
+      ..lineTo(66, 32)
+      ..lineTo(88, 14 + 6 * (1 - spread))
+      ..lineTo(88, 69)
+      ..lineTo(12, 69)
       ..close();
-    canvas.drawPath(body, paint);
+    const bounds = Rect.fromLTWH(10, 8, 80, 63);
+    canvas.drawPath(crown, Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft, end: Alignment.bottomRight,
+        colors:[Color(0xffab6c23),Color(0xffffe9a7),Color(0xffc88730)],
+      ).createShader(bounds));
+    canvas.drawPath(crown, Paint()
+      ..color = const Color(0xffffeac0)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(12,67,76,15),
+        const Radius.circular(6)),
+      Paint()..color = const Color(0xff0e583e));
+    canvas.drawCircle(const Offset(50,48),10,
+      Paint()..color = const Color(0xff35dfa9));
+    canvas.drawCircle(const Offset(50,46),4,
+      Paint()..color = Colors.white);
     canvas.restore();
   }
-
   @override
   bool shouldRepaint(_PhoenixPainter old) => old.spread != spread;
 }
@@ -147,7 +140,7 @@ class PhoenixBadge extends StatelessWidget {
   const PhoenixBadge({super.key});
   @override
   Widget build(BuildContext context) => Semantics(
-        label: 'VIP 6 Phoenix',
+        label: 'VIP 6 Royal Lion',
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
@@ -236,7 +229,7 @@ class PhoenixNameplate extends ConsumerWidget {
         style: style,
       );
     return Semantics(
-      label: 'VIP 6 Phoenix, $name',
+      label: 'VIP 6 Royal Lion, $name',
       child: PhoenixDecoration(
         userId: userId,
         child: LayoutBuilder(
@@ -328,7 +321,7 @@ class _PhoenixEntryState extends State<PhoenixEntry>
                           spread: .7 + .3 * math.sin(phase * math.pi),
                         ),
                         Text(
-                          '${widget.name} entered · VIP 6 Phoenix',
+                          '${widget.name} entered · VIP 6 Royal Lion',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             color: phoenixGold,

@@ -48,7 +48,6 @@ flutter:
     - assets/hilo/game_levels/
     - assets/hilo/store/
     - assets/reference/svip/
-    - assets/reference/vip/
     - assets/reference/tool/
     - assets/reference/gem/
     - assets/reference/chest/
