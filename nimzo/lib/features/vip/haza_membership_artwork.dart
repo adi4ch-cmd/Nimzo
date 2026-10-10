@@ -71,7 +71,7 @@ class HazaVipBadge extends StatelessWidget {
               height: size * 80 / 196,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.high,
-              errorBuilder: (_, _, _) => fallback,
+              errorBuilder: (context, error, stackTrace) => fallback,
             ),
           ),
         );
@@ -115,7 +115,7 @@ class HazaMembershipStage extends StatelessWidget {
                   alignment: Alignment.topCenter,
                   color: const Color(0x5e090f15),
                   colorBlendMode: BlendMode.darken,
-                  errorBuilder: (_, _, _) => const SizedBox.expand(),
+                  errorBuilder: (context, error, stackTrace) => const SizedBox.expand(),
                 ),
                 if (!svip)
                   Align(
@@ -124,7 +124,7 @@ class HazaMembershipStage extends StatelessWidget {
                       HazaMembershipArtwork.border(tier),
                       height: 20,
                       fit: BoxFit.fill,
-                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                      errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
                     ),
                   ),
               ],
