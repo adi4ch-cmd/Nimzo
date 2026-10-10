@@ -258,6 +258,11 @@ jobs:
           python3 -m unittest discover -s nimzo/test/voice -p "*_test.py"
           python3 -m unittest discover -s nimzo/test/update -p "*_test.py"
 
+      # Never produce ANY APK before user-approved gift media and Rocket VAP
+      # binary assets have passed exact integrity verification.
+      - name: Verify all original Rocket videos before APK
+        run: python3 tools/verify_room_rocket_media.py
+
       # Generated Android debug signing is used only for this test artifact.
       # Never publish development certificates as permanent updater releases.
       - name: Build installable test APK when signing is unavailable
