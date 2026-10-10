@@ -1,13 +1,11 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/widgets/master_ui.dart';
-import '../../../core/widgets/reference_widgets.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import 'room_diamond_repository.dart';
+import 'room_rocket_video.dart';
 
 Color diamondColor(int stage) => const [
       Color(0xff2fc466),
@@ -18,10 +16,20 @@ Color diamondColor(int stage) => const [
       Color(0xffe0ca83),
     ][stage];
 
-Widget diamondArtwork(int stage, {double size = 48}) => ReferenceArtwork(
-      stage == 5 ? 'crys' : 'gem',
-      stage == 5 ? 0 : const [0, 1, 3, 2, 4][stage],
-      size: size,
+Widget diamondArtwork(int stage, {double size = 48}) => Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(colors: [
+          diamondColor(stage).withValues(alpha: .36),
+          const Color(0xff09221f),
+        ]),
+        border: Border.all(color: diamondColor(stage), width: 1.4),
+      ),
+      child: Icon(Icons.rocket_launch,
+          size: size * .63, color: const Color(0xffffe8b1)),
     );
 
 class RoomDiamondSheet extends ConsumerWidget {
@@ -36,7 +44,7 @@ class RoomDiamondSheet extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const Text(
-          'Diamond Blast',
+          'Room Rocket',
           style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
         ),
         const SizedBox(height: 12),
@@ -57,7 +65,7 @@ class RoomDiamondSheet extends ConsumerWidget {
                           : .45,
                       child: diamondArtwork(stage),
                     ),
-                    Text('${diamondTargets[stage] ~/ 1000000}M'),
+                    Text('L\${stage + 1} · \${diamondTargets[stage] ~/ 1000000}M'),
                     if (current != null && stage < current.completedStages)
                       const Icon(
                         Icons.check_circle,
@@ -91,15 +99,15 @@ class RoomDiamondSheet extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Text(
                   state.completedStages == 6
-                      ? 'All six diamonds completed!'
-                      : 'Diamond ${state.activeStage + 1} · ${compactNumber(diamondTargets[state.activeStage])} cumulative coins',
+                      ? 'All six rockets launched!'
+                      : 'Rocket \${state.activeStage + 1} · \${compactNumber(diamondTargets[state.activeStage])} cumulative coins',
                 ),
               ],
             ),
           ),
         const SizedBox(height: 12),
         const Text(
-          'Verified room gifting · no wallet rewards',
+          'Levels unlock on verified room gifts · no wallet rewards',
           textAlign: TextAlign.center,
           style: TextStyle(color: NimzoStyle.muted, fontSize: 12),
         ),
@@ -198,7 +206,7 @@ class _RoomDiamondHostState extends ConsumerState<RoomDiamondHost> {
               color: Colors.black54,
               shape: const CircleBorder(),
               child: IconButton(
-                tooltip: 'Skip diamond blast',
+                tooltip: 'Skip room rocket',
                 onPressed: _finish,
                 icon: const Icon(Icons.close, color: Colors.white),
               ),
@@ -210,7 +218,8 @@ class _RoomDiamondHostState extends ConsumerState<RoomDiamondHost> {
   }
 }
 
-class DiamondBurst extends StatefulWidget {
+/// A genuine room gift milestone event. Old Diamond assets are never rendered.
+class DiamondBurst extends StatelessWidget {
   const DiamondBurst({
     super.key,
     required this.event,
@@ -218,101 +227,10 @@ class DiamondBurst extends StatefulWidget {
   });
   final DiamondBlastEvent event;
   final VoidCallback onFinished;
-  @override
-  State<DiamondBurst> createState() => _DiamondBurstState();
-}
-
-class _DiamondBurstState extends State<DiamondBurst>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _animation;
-  @override
-  void initState() {
-    super.initState();
-    _animation = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2200),
-    )
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed && mounted) widget.onFinished();
-      })
-      ..forward();
-  }
 
   @override
-  void dispose() {
-    _animation.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-        animation: _animation,
-        builder: (context, _) {
-          final t = _animation.value;
-          final opacity = t < .8 ? 1.0 : ((1 - t) / .2).clamp(0.0, 1.0);
-          return Opacity(
-            opacity: opacity,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  colors: [
-                    diamondColor(widget.event.stage).withValues(alpha: .32),
-                    Colors.transparent,
-                  ],
-                  radius: .8,
-                ),
-              ),
-              child: Center(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    for (var i = 0; i < 8; i++)
-                      Transform.translate(
-                        offset: Offset(
-                          math.cos(i * math.pi / 4) * t * 150,
-                          math.sin(i * math.pi / 4) * t * 150,
-                        ),
-                        child: Opacity(
-                          opacity: (1 - t).clamp(0.0, 1.0),
-                          child: diamondArtwork(widget.event.stage, size: 32),
-                        ),
-                      ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Transform.scale(
-                          scale: .4 +
-                              Curves.easeOutBack.transform(t.clamp(0.0, 1.0)),
-                          child: diamondArtwork(widget.event.stage, size: 128),
-                        ),
-                        const SizedBox(height: 12),
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: Colors.black87,
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 12,
-                            ),
-                            child: Text(
-                              'Diamond ${widget.event.stage + 1} complete!\n${diamondTargets[widget.event.stage] ~/ 1000000}M coins gifted',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
+  Widget build(BuildContext context) => RoomRocketLevelVideo(
+        level: event.stage + 1,
+        onFinished: onFinished,
       );
 }
