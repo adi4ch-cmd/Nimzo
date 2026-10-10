@@ -52,6 +52,7 @@ import 'package:nimzo/features/discover/ranking_screen.dart';
 import 'package:nimzo/features/discover/leaderboard_repository.dart';
 import 'package:nimzo/features/settings/settings_screen.dart';
 import 'package:nimzo/features/store/store_repository.dart';
+import 'package:nimzo/features/store/store_badge.dart';
 import 'package:nimzo/features/notifications/notifications_screen.dart';
 import 'package:nimzo/features/notifications/notification_repository.dart';
 
@@ -281,6 +282,14 @@ void main() {
             ),
             supabaseProvider.overrideWithValue(db),
             currentUserIdProvider.overrideWithValue('me'),
+            equippedRoyalMedalProvider('me').overrideWith((_) async =>
+              const RoyalBagItem(
+                id: 'crest-4',
+                name: 'Royal Crest IV',
+                image: 'assets/hilo/store/royal_4.webp',
+                equipped: true,
+              )),
+            equippedRoyalMedalProvider('other').overrideWith((_) async => null),
             authControllerProvider.overrideWith(AuthController.new),
             voiceServiceProvider.overrideWithValue(FixtureVoice()),
             ownedRoomPreviewProvider.overrideWith((_) async => fixtureRoom),
