@@ -43,7 +43,8 @@ Deno.serve(async (req) => {
   const vivoxServer = "https://unity.vivox.com/appconfig/18968-nimzo-13904";
   const vivoxDomain = "mtu1xp.vivox.com";
   const vivoxIssuer = "18968-nimzo-13904";
-  const vivoxKey = Deno.env.get("VIVOX_TOKEN_KEY");
+  // Dashboard copy/paste can add trailing whitespace. Never sign with it.
+  const vivoxKey = Deno.env.get("VIVOX_TOKEN_KEY")?.trim();
 
   if (!supabaseUrl || !serviceKey || !vivoxServer || !vivoxDomain || !vivoxIssuer || !vivoxKey) {
     return Response.json({ error: "Vivox voice service is not configured" }, { status: 503 });
