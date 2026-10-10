@@ -139,6 +139,32 @@ void main() {
     expect(methods, ['requestMicPermission']);
     await voice.dispose();
   });
+  test('20122 is an invalid token signature, not a retryable network error', () async {
+    final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'join') {
+        await emit('error', status: 20122, detail: 'login');
+        return 20122;
+      }
+      return ['initialize', 'requestMicPermission'].contains(call.method)
+          ? true
+          : 0;
+    });
+    await expectLater(
+      voice.join('room', ''),
+      throwsA(
+        isA<VoiceConnectionFailure>()
+            .having((e) => e.message.toString(), 'diagnostic',
+                contains('invalid Vivox token signature'))
+            .having((e) => e.message.toString(), 'admin action',
+                contains('signing key'))
+            .having((e) => e.message.toString(), 'no misleading retry',
+                isNot(contains('Retry voice.'))),
+      ),
+    );
+    await voice.dispose();
+  });
   for (final stage in ['login', 'initial-mute', 'channel-join']) {
     test(
       'native $stage failure preserves its stage and status through cleanup',
