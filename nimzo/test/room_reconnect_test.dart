@@ -147,6 +147,13 @@ void main() {
     await tester.tap(find.byTooltip('Microphone'));
     await tester.pump();
     expect(voice.micRequests, [true]);
+    // A mic-seat authorization upgrade temporarily disconnects its old media
+    // session; this must not appear as a permanent voice failure.
+    voice.events.add(false);
+    await tester.pump();
+    expect(find.text('Voice disconnected. Retry voice.'), findsNothing);
+    voice.events.add(true);
+    await tester.pump();
     voice.micPending.complete();
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'First message');
@@ -165,8 +172,16 @@ void main() {
     seats.add(List.generate(10, (i) => MicSeat(seatNo: i + 1)));
     await tester.pumpAndSettle();
     expect(voice.leaves, 1);
+    // A recovered Vivox network should not leave a stale disconnect banner.
     voice.events.add(false);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    voice.events.add(true);
+    await tester.pump(const Duration(seconds: 7));
+    expect(find.text('Voice disconnected. Retry voice.'), findsNothing);
+    // An unrecovered media disconnect eventually exposes manual Retry.
+    voice.events.add(false);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 7));
     expect(find.text('Voice disconnected. Retry voice.'), findsOneWidget);
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();
