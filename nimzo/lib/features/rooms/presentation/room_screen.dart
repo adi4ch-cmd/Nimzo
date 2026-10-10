@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
 import '../../vip/phoenix_widgets.dart';
 import '../../vip/phoenix_room_entry.dart';
 import '../../gifts/verified_gift_broadcast.dart';
