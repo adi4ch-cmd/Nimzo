@@ -120,7 +120,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Take a photo'), findsOneWidget);
     expect(find.text('Choose from gallery'), findsOneWidget);
-    await tester.tap(find.text('Camera'));
+    await tester.tap(find.text('Take a photo'));
     await tester.pumpAndSettle();
     expect(storage.selected, ImageSource.camera);
     expect(find.byType(Image), findsOneWidget);
