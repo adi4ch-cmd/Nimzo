@@ -29,6 +29,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   final List<Map<String, dynamic>> _pending = [];
   bool _primed = false;
   Map<String, dynamic>? _active;
+  Map<String, String> _participants = const {};
   Timer? _timer;
   String? _video;
   bool _loading = false;
@@ -110,6 +111,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       if (mounted) {
         setState(() {
           _active = null;
+          _participants = const {};
           _video = null;
           _loading = false;
         });
@@ -128,6 +130,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       _pending.clear();
       _primed = false;
       _active = null;
+      _participants = const {};
       _video = null;
       _loading = false;
     }
@@ -168,6 +171,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     if (_pending.isEmpty) {
       setState(() {
         _active = null;
+        _participants = const {};
         _video = null;
         _loading = false;
       });
@@ -176,20 +180,29 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final event = _pending.removeAt(0);
     setState(() {
       _active = event;
+      _participants = const {};
       _video = null;
       _loading = true;
     });
     try {
+      // Resolve both real user identities against RLS-protected profiles.
+      // Run in parallel with media discovery and bound the wait time.
+      final namesFuture = ref
+          .read(giftRepositoryProvider)
+          .participantNamesForVerifiedEvent(event)
+          .timeout(const Duration(seconds: 2), onTimeout: () => <String, String>{});
       final giftId = '${event['gift_id']}';
       // Media is enabled only after its URL is approved in Supabase.
       // Do not reference unbundled assets: that breaks playback on devices.
       final url = freeGiftAnimationForId(giftId) == null
           ? await _lookupMedia(giftId)
           : null;
+      final participants = await namesFuture;
       if (!mounted || !identical(_active, event)) return;
       _cancelMediaLookup();
       setState(() {
         _video = url;
+        _participants = participants;
         _loading = false;
       });
     } catch (_) {
@@ -221,6 +234,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     }
     final event = _active;
     if (event == null) return const SizedBox.shrink();
+    final sender = _participants[event['sender_id']?.toString()] ?? 'A member';
+    final recipient = _participants[event['receiver_id']?.toString()] ?? 'a member';
     final price = (event['unit_price'] as num?)?.toInt() ?? 0;
     final quantity = (event['quantity'] as num?)?.toInt() ?? 1;
     // Verified server event contains the gift UUID, not an arbitrary
@@ -246,9 +261,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       return GiftVideoOverlay(
         key: ValueKey(event['id']),
         source: _video!,
-        sender: (event['sender_name'] ?? event['sender_id'] ?? '').toString(),
-        recipient:
-            (event['receiver_name'] ?? event['receiver_id'] ?? '').toString(),
+        sender: sender,
+        recipient: recipient,
         giftName: '$giftName × $quantity',
         // Voice remains audible; users can enable the original video's sound.
         muted: true,
@@ -263,8 +277,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         key: ValueKey(event['id']),
         source: originalSvga,
         giftName: giftName,
-        sender: (event['sender_name'] ?? 'NIMZO user').toString(),
-        recipient: (event['receiver_name'] ?? 'NIMZO user').toString(),
+        sender: sender,
+        recipient: recipient,
         quantity: quantity,
         onFinished: () {
           if (mounted && identical(_active, event)) _next();
@@ -275,8 +289,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       return NimzoCustomGiftEffect(
         key: ValueKey(event['id']),
         name: giftName,
-        sender: (event['sender_name'] ?? 'NIMZO user').toString(),
-        recipient: (event['receiver_name'] ?? 'NIMZO user').toString(),
+        sender: sender,
+        recipient: recipient,
         quantity: quantity,
         onFinished: () {
           if (mounted && identical(_active, event)) _next();
@@ -287,8 +301,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       return NimzoGiftCelebration(
         key: ValueKey(event['id']),
         giftName: giftName,
-        sender: (event['sender_name'] ?? 'NIMZO user').toString(),
-        recipient: (event['receiver_name'] ?? 'NIMZO user').toString(),
+        sender: sender,
+        recipient: recipient,
         quantity: quantity,
         unitPrice: price,
         assetPath: catalogArtwork,
