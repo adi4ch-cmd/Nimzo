@@ -86,7 +86,7 @@ class _PhoenixRoomEntryState extends ConsumerState<PhoenixRoomEntry>
         json,
         requestTime: elapsed.elapsed,
       );
-      if (!entitlement.isPhoenix ||
+      if (!entitlement.isRoyalLion ||
           !phoenixEntryIsFresh(
             serverNow: serverNow,
             createdAt: created,

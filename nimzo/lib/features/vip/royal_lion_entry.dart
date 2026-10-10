@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class RoyalLionEntry extends StatefulWidget {
 
 class _RoyalLionEntryState extends State<RoyalLionEntry>
     with SingleTickerProviderStateMixin {
+  Timer? _reducedMotionTimer;
   late final AnimationController _motion = AnimationController(
     vsync: this, duration: const Duration(milliseconds: 5500));
   @override
@@ -30,12 +32,17 @@ class _RoyalLionEntryState extends State<RoyalLionEntry>
       _motion.stop();
       // Never trigger the completion callback while this widget builds.
       _motion.value = .999;
+      if (widget.onFinished != null) {
+        _reducedMotionTimer ??= Timer(
+          const Duration(milliseconds: 1400), widget.onFinished!);
+      }
     } else if (_motion.status == AnimationStatus.dismissed) {
       _motion.forward();
     }
   }
   @override
   void dispose() {
+    _reducedMotionTimer?.cancel();
     _motion.dispose();
     super.dispose();
   }

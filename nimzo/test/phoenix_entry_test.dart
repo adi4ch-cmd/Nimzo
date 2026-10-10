@@ -55,7 +55,7 @@ void main() {
             if (pauseGate != null) await pauseGate.future;
             return http.Response(
               jsonEncode({
-                'vip_level': 6,
+                'vip_level': 10,
                 'server_now': '2001-01-01T00:00:00Z',
                 'vip_expires_at': '2001-01-01T01:00:00Z',
               }),

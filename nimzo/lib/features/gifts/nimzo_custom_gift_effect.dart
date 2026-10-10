@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'gift_artwork.dart';
@@ -28,6 +29,14 @@ class NimzoCustomGiftEffect extends StatefulWidget {
 class _CustomEffectState extends State<NimzoCustomGiftEffect>
     with SingleTickerProviderStateMixin {
   late final AnimationController motion;
+  Timer? _reducedMotionTimer;
+  bool _finished = false;
+  void _finish() {
+    if (_finished || !mounted) return;
+    _finished = true;
+    _reducedMotionTimer?.cancel();
+    widget.onFinished();
+  }
   @override
   void initState() {
     super.initState();
@@ -39,7 +48,7 @@ class _CustomEffectState extends State<NimzoCustomGiftEffect>
       vsync:this,
       duration:Duration(milliseconds:premium?5400:3500),
     )..addStatusListener((status) {
-      if(status==AnimationStatus.completed) widget.onFinished();
+      if(status==AnimationStatus.completed) _finish();
     });
   }
   @override
@@ -49,12 +58,14 @@ class _CustomEffectState extends State<NimzoCustomGiftEffect>
       motion.stop();
       // Avoid firing onFinished synchronously during parent build.
       motion.value=.999;
+      // Keep a readable static frame briefly, then unblock the playback queue.
+      _reducedMotionTimer ??= Timer(const Duration(milliseconds: 1200), _finish);
     }else if(motion.status==AnimationStatus.dismissed){
       motion.forward();
     }
   }
   @override
-  void dispose(){ motion.dispose(); super.dispose(); }
+  void dispose(){ _reducedMotionTimer?.cancel(); motion.dispose(); super.dispose(); }
 
   Color get accent => switch(widget.name.toLowerCase()){
     'heart'||'kiss'||'birthday cake'||'teddy bear'||'phoenix'=>

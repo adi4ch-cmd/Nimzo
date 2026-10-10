@@ -26,6 +26,12 @@ class PhoenixEntitlement {
     );
   }
   bool activeAt(Duration elapsed) => level == 6 && elapsed < lifetime;
+  // The Lion King entry is a NEW VIP 10 benefit and must never be granted by
+  // the retired VIP 6 Phoenix entitlement.
+  bool get isRoyalLion =>
+      level == 10 && activeLease && _age.elapsed < const Duration(seconds: 30);
+  bool get activeLease => _age.elapsed < lifetime;
+
   bool get isPhoenix =>
       activeAt(_age.elapsed) && _age.elapsed < const Duration(seconds: 30);
   Duration get leaseRemaining {

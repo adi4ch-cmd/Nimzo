@@ -329,7 +329,7 @@ class _VipState extends ConsumerState<VipScreen> {
                     ],
                   )),
                 ])),
-                if (!widget.svip && tier >= 6) ...[
+                if (!widget.svip && tier == 10) ...[
                   _heading('Royal Lion entrance preview'),
                   _card(child: Column(children: [
                     const SizedBox(height: 350,
