@@ -12,6 +12,12 @@ class MediaRepository extends GiftRepository {
   MediaRepository(super.db);
   final pending = <String, Completer<String?>>{};
   @override
+  Future<Map<String, String>> participantNamesForVerifiedEvent(
+      Map<String, dynamic> event) async => {
+    if (event['sender_id'] != null) event['sender_id'].toString(): 'Test Sender',
+    if (event['receiver_id'] != null) event['receiver_id'].toString(): 'Test Recipient',
+  };
+  @override
   Future<String?> approvedAnimationUrl(String giftId) =>
       pending.putIfAbsent(giftId, () => Completer<String?>()).future;
 }
@@ -19,6 +25,8 @@ class MediaRepository extends GiftRepository {
 Map<String, dynamic> event(String id, String giftId) => {
       'id': id,
       'gift_id': giftId,
+      'sender_id': '11111111-1111-4111-8111-111111111111',
+      'receiver_id': '22222222-2222-4222-8222-222222222222',
       'unit_price': 1000000,
       'quantity': 3,
       'scope': 'room',
@@ -133,6 +141,7 @@ void main() {
     expect(find.text('Royal Dragon'), findsOneWidget);
     expect(find.text('× 3'), findsOneWidget);
     expect(find.text('3.0M coins'), findsOneWidget);
+    expect(find.text('Test Sender  →  Test Recipient'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
 }
