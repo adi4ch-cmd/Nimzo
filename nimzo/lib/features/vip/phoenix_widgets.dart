@@ -137,10 +137,11 @@ class _PhoenixFrameState extends State<PhoenixFrame>
 }
 
 class PhoenixBadge extends StatelessWidget {
-  const PhoenixBadge({super.key});
+  final int level;
+  const PhoenixBadge({super.key, this.level = 1});
   @override
   Widget build(BuildContext context) => Semantics(
-        label: 'VIP 6 Royal Lion',
+        label: 'NIMZO VIP $level',
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
@@ -148,14 +149,14 @@ class PhoenixBadge extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: phoenixGold),
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              PhoenixMark(size: 20),
-              SizedBox(width: 4),
+              const PhoenixMark(size: 20),
+              const SizedBox(width: 4),
               Text(
-                'VIP 6',
-                style: TextStyle(
+                'VIP $level',
+                style: const TextStyle(
                   color: phoenixGold,
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
@@ -215,12 +216,9 @@ class PhoenixNameplate extends ConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final active = ref
-            .watch(phoenixEntitlementProvider(userId))
-            .asData
-            ?.value
-            ?.isPhoenix ==
-        true;
+    final membership = ref.watch(phoenixEntitlementProvider(userId)).asData?.value;
+    final active = membership?.isPhoenix == true;
+    final level = membership?.level ?? 0;
     if (!active)
       return Text(
         name,
@@ -229,7 +227,7 @@ class PhoenixNameplate extends ConsumerWidget {
         style: style,
       );
     return Semantics(
-      label: 'VIP 6 Royal Lion, $name',
+      label: 'NIMZO VIP $level, $name',
       child: PhoenixDecoration(
         userId: userId,
         child: LayoutBuilder(
@@ -240,7 +238,7 @@ class PhoenixNameplate extends ConsumerWidget {
                   180 * MediaQuery.textScalerOf(context).scale(1))
                 const PhoenixMark(size: 20)
               else
-                const PhoenixBadge(),
+                PhoenixBadge(level: level),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -321,7 +319,7 @@ class _PhoenixEntryState extends State<PhoenixEntry>
                           spread: .7 + .3 * math.sin(phase * math.pi),
                         ),
                         Text(
-                          '${widget.name} entered · VIP 6 Royal Lion',
+                          '${widget.name} entered · NIMZO VIP',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             color: phoenixGold,

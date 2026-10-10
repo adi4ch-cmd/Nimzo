@@ -4,7 +4,7 @@ import 'package:nimzo/features/vip/phoenix_entitlement.dart';
 import 'package:nimzo/features/vip/phoenix_widgets.dart';
 
 void main() {
-  test('Phoenix requires server level six and unexpired server time', () {
+  test('NIMZO VIP identity supports all ten active tiers and not expired', () {
     final now = DateTime.utc(2026);
     final active = PhoenixEntitlement.fromJson({
       'vip_level': 6,
@@ -12,8 +12,15 @@ void main() {
       'vip_expires_at': now.add(const Duration(seconds: 10)).toIso8601String(),
     });
     expect(active.isPhoenix, isTrue);
+    for (final tier in [1, 5, 7, 10]) {
+      expect(PhoenixEntitlement.fromJson({
+        'vip_level': tier,
+        'server_now': now.toIso8601String(),
+        'vip_expires_at': now.add(const Duration(days: 1)).toIso8601String(),
+      }).isPhoenix, isTrue);
+    }
     expect(active.activeAt(const Duration(seconds: 10)), isFalse);
-    for (final level in [0, 5, 7, 10]) {
+    for (final level in [0, 11]) {
       expect(
         PhoenixEntitlement.fromJson({
           'vip_level': level,
@@ -51,7 +58,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('entry announces VIP six accessibly at large text scale', (
+  testWidgets('legacy entry announces NIMZO VIP accessibly at large text scale', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -67,7 +74,7 @@ void main() {
         ),
       ),
     );
-    expect(find.textContaining('VIP 6 Royal Lion'), findsOneWidget);
+    expect(find.textContaining('NIMZO VIP'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

@@ -25,13 +25,15 @@ class PhoenixEntitlement {
           : expiry.difference(now) - requestTime,
     );
   }
-  bool activeAt(Duration elapsed) => level == 6 && elapsed < lifetime;
+  bool activeAt(Duration elapsed) => level >= 1 && level <= 10 && elapsed < lifetime;
   // The Lion King entry is a NEW VIP 10 benefit and must never be granted by
   // the retired VIP 6 Phoenix entitlement.
   bool get isRoyalLion =>
       level == 10 && activeLease && _age.elapsed < const Duration(seconds: 30);
   bool get activeLease => _age.elapsed < lifetime;
 
+  // Legacy accessor now denotes the new verified NIMZO VIP crown identity
+  // for all ten tiers; no VIP 6-only red Phoenix benefits survive.
   bool get isPhoenix =>
       activeAt(_age.elapsed) && _age.elapsed < const Duration(seconds: 30);
   Duration get leaseRemaining {
