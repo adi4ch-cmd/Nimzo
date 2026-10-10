@@ -42,6 +42,7 @@ class _State extends ConsumerState<RoomScreen> {
   final text = TextEditingController();
   final gameHost = GlobalKey<RoomGameHostState>();
   Timer? _activityTimer;
+  Timer? _voiceDropTimer;
   bool joining = true, joined = false, mic = false, leaving = false;
   bool _allowPop = false;
   bool micBusy = false;
@@ -78,6 +79,7 @@ class _State extends ConsumerState<RoomScreen> {
 
   Future<void> join() async {
     if (!mounted || session.closed) return;
+    _voiceDropTimer?.cancel();
     setState(() {
       joining = true;
       failure = null;
@@ -118,6 +120,7 @@ class _State extends ConsumerState<RoomScreen> {
 
   Future<void> leave() async {
     if (leaving) return;
+    _voiceDropTimer?.cancel();
     leaving = true;
     _activityTimer?.cancel();
     try {
@@ -157,6 +160,7 @@ class _State extends ConsumerState<RoomScreen> {
   @override
   void dispose() {
     _activityTimer?.cancel();
+    _voiceDropTimer?.cancel();
     text.dispose();
     unawaited(session.close().catchError((_) {}));
     super.dispose();
@@ -229,15 +233,29 @@ class _State extends ConsumerState<RoomScreen> {
         speaking = ref.watch(speakingProvider).valueOrNull ?? <String>{};
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
     ref.listen(voiceConnectedProvider, (previous, next) {
-      if (previous?.valueOrNull == true &&
+      if (next.valueOrNull == true) {
+        // The SDK may restore media automatically after a short network drop.
+        _voiceDropTimer?.cancel();
+        if (failure == 'Voice disconnected. Retry voice.' && !joining) {
+          setState(() => failure = null);
+        }
+      } else if (previous?.valueOrNull == true &&
           next.valueOrNull == false &&
           joined &&
           !joining &&
           !leaving &&
           !session.closed) {
-        setState(() {
-          mic = false;
-          failure = 'Voice disconnected. Retry voice.';
+        // Taking a mic seat upgrades a muted Vivox session and deliberately
+        // reconnects. It must not display a spurious room-wide failure.
+        if (micBusy) return;
+        _voiceDropTimer?.cancel();
+        setState(() => mic = false);
+        // Let Vivox's built-in network recovery run before offering a fresh
+        // login. An immediate Retry can race the SDK's recovery process.
+        _voiceDropTimer = Timer(const Duration(seconds: 6), () {
+          if (!mounted || session.closed || leaving || joining ||
+              ref.read(voiceConnectedProvider).valueOrNull == true) return;
+          setState(() => failure = 'Voice disconnected. Retry voice.');
         });
       }
     });
