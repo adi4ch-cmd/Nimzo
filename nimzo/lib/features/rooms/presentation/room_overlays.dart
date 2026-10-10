@@ -692,16 +692,4 @@ class _RoomProfileState extends ConsumerState<RoomProfilePage> {
           ],
         ),
       );
-  Widget _row(String title, String value) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 13),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: NimzoStyle.line)),
-        ),
-        child: Row(
-          children: [
-            Expanded(child: Text(title)),
-            Text(value, style: const TextStyle(color: NimzoStyle.muted)),
-          ],
-        ),
-      );
 }
