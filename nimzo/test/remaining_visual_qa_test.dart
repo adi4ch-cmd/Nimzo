@@ -579,9 +579,15 @@ void main() {
         // describe retired large color blocks and childish Moment cards.
         // Keep assertions against the real interactive content instead.
         expect(find.byKey(key), findsOneWidget);
-        if (entry.key == 'moments' || entry.key == 'comments') {
+        if (entry.key == 'moments') {
           expect(find.byKey(const ValueKey('premium-moment-card')),
             findsWidgets);
+        }
+        if (entry.key == 'comments') {
+          // The comment sheet intentionally shows discussion, not the
+          // parent Moment card again. Avoid a false visual regression.
+          expect(find.text('Comments'), findsOneWidget);
+          expect(find.byType(TextField), findsWidgets);
         }
         if (entry.key == 'me') {
           expect(find.byKey(const ValueKey('me-level-badges')),
