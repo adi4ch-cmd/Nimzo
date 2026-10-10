@@ -76,13 +76,10 @@ void main() {
       if (preview.$1 == 'vip_final' || preview.$1 == 'svip_final') {
         final context = tester.element(find.byKey(const ValueKey('preview')));
         await tester.runAsync(() async {
-          for (final family in ['vip', 'svip']) {
-            for (var i = 0; i < 10; i++) {
-              final asset = family == 'svip'
-                  ? 'assets/membership/svip/svip_medal${i + 1}.webp'
-                  : 'assets/reference/vip/$i.jpg';
-              await precacheImage(AssetImage(asset), context);
-            }
+          for (var i = 0; i < 10; i++) {
+            // Normal VIP is original vector paint, not the deleted legacy JPG.
+            final asset = 'assets/membership/svip/svip_medal${i + 1}.webp';
+            await precacheImage(AssetImage(asset), context);
           }
         });
       }

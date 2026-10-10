@@ -6,7 +6,7 @@ import 'package:nimzo/features/vip/vip_repository.dart';
 import 'package:nimzo/features/games/game_screen.dart';
 
 void main() {
-  testWidgets('VIP selector exposes tier-specific looks without purchasing', (
+  testWidgets('VIP selector previews tiers and confirms purchase intent only', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -35,11 +35,14 @@ void main() {
     );
     await tester.tap(find.byKey(const ValueKey('vip-tier-3')));
     await tester.pump();
-    expect(find.text('Preview VIP 3 · Purchase unavailable'), findsOneWidget);
+    expect(find.textContaining('Activate VIP 3'), findsOneWidget);
     expect(find.text('VIP 3 · Collection preview'), findsOneWidget);
-    await tester.tap(find.text('Preview VIP 3 · Purchase unavailable'));
+    await tester.tap(find.textContaining('Activate VIP 3'));
     await tester.pump();
-    expect(find.text('VIP purchase is unavailable.'), findsOneWidget);
+    expect(find.textContaining('Pay '), findsOneWidget);
+    await tester.tap(find.text('Cancel'));
+    await tester.pump();
+    expect(find.textContaining('Activate VIP 3'), findsOneWidget);
     final container = ProviderScope.containerOf(
       tester.element(find.byType(VipScreen)),
     );

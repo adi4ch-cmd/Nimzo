@@ -1,0 +1,47 @@
+name: Refresh new VIP visual goldens (NO APK)
+on:
+  push:
+    branches: [feature/profile-reference-redesign]
+    paths:
+      - '.github/workflows/nimzo-vip-golden-update.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  capture-vip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Generate exact new VIP/SVIP screenshot baselines
+        working-directory: nimzo
+        run: |
+          flutter pub get
+          flutter test --update-goldens test/master_visual_preview_test.dart
+      - name: Upload VIP visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-professional-vip-golden-review
+          path: |
+            nimzo/test/goldens/vip_final.png
+            nimzo/test/goldens/svip_final.png
+      - name: Save new review-approved baselines
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nimzo/test/goldens/vip_final.png nimzo/test/goldens/svip_final.png
+          if git diff --cached --quiet; then
+            echo 'No screenshot change'
+            exit 0
+          fi
+          git commit -m 'test(vip): recapture professional membership visuals [gifts-only]'
+          git push

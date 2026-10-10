@@ -26,7 +26,7 @@ class VipScreen extends ConsumerStatefulWidget {
 }
 
 class _VipState extends ConsumerState<VipScreen> {
-  int tier = 1;
+  int tier = 5;
   bool _membershipSelected = false;
   bool _purchasing = false;
   String? _purchaseKey;

@@ -28,7 +28,8 @@ class _RoyalLionEntryState extends State<RoyalLionEntry>
     super.didChangeDependencies();
     if (MediaQuery.disableAnimationsOf(context)) {
       _motion.stop();
-      _motion.value = 1;
+      // Never trigger the completion callback while this widget builds.
+      _motion.value = .999;
     } else if (_motion.status == AnimationStatus.dismissed) {
       _motion.forward();
     }
