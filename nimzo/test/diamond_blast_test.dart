@@ -120,7 +120,9 @@ void main() {
       await tester.tap(find.byTooltip('Skip rocket animation'));
       await tester.pump();
       expect(find.text('NIMZO ROOM ROCKET  2 / 6'), findsOneWidget);
-      await tester.pump(const Duration(seconds: 15));
+      // Flutter widget tests cannot play native VAP media. Verify that
+      // explicitly skipping the finished stage drains the verified queue.
+      await tester.tap(find.byTooltip('Skip rocket animation'));
       await tester.pump();
       expect(find.byType(DiamondBurst), findsNothing);
       events.add(DiamondUpdate(4, one));
@@ -315,7 +317,9 @@ void main() {
         tester.widget<DiamondBurst>(find.byType(DiamondBurst)).event.id,
         'new-one',
       );
-      await tester.pump(const Duration(seconds: 15));
+      // Flutter widget tests cannot play native VAP media. Verify that
+      // explicitly skipping the finished stage drains the verified queue.
+      await tester.tap(find.byTooltip('Skip rocket animation'));
       await tester.pump();
       expect(find.byType(DiamondBurst), findsNothing);
     },
