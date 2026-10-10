@@ -97,6 +97,15 @@ jobs:
       - name: Full analysis before final APK
         working-directory: nimzo
         run: flutter analyze
+      - name: Validate Rocket media installation scripts (no APK)
+        run: |
+          python3 -m py_compile tools/verify_room_rocket_media.py tools/install_room_rocket_media.py
+          if test -f nimzo/assets/room_rocket/vap_rocket_reward_1.mp4; then
+            python3 tools/verify_room_rocket_media.py
+          else
+            echo "::notice::Rocket VAP assets not committed yet. Release APK is blocked until 12 originals are installed."
+          fi
+
       - name: Check room Rocket naming and server event compatibility (no media build)
         working-directory: nimzo
         run: flutter test test/room_rocket_test.dart
