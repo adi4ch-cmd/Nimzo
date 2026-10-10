@@ -8,6 +8,7 @@ on:
       - 'nimzo/lib/features/gifts/**'
       - 'nimzo/lib/features/rooms/rocket/**'
       - 'nimzo/test/room_rocket_*.dart'
+      - 'nimzo/test/remaining_visual_qa_test.dart'
       - 'nimzo/assets/room_rocket/**'
       - 'tools/verify_room_rocket_media.py'
       - 'nimzo/lib/features/vip/**'
