@@ -39,6 +39,7 @@ class RoomScreen extends ConsumerStatefulWidget {
 class _State extends ConsumerState<RoomScreen> {
   final text = TextEditingController();
   final gameHost = GlobalKey<RoomGameHostState>();
+  Timer? _activityTimer;
   bool joining = true, joined = false, mic = false, leaving = false;
   bool _allowPop = false;
   bool micBusy = false;
@@ -83,6 +84,7 @@ class _State extends ConsumerState<RoomScreen> {
     try {
       await session.join();
       joined = session.joined;
+      if (joined) _startActivityTracking();
     } catch (error) {
       joined = session.joined;
       failure = joined
@@ -95,9 +97,27 @@ class _State extends ConsumerState<RoomScreen> {
     }
   }
 
+  void _startActivityTracking() {
+    _activityTimer?.cancel();
+    _activityTimer = Timer.periodic(const Duration(seconds: 70), (_) async {
+      if (!mounted || !joined || leaving) return;
+      try {
+        final gained = await ref.read(roomRepositoryProvider)
+            .touchActivity(widget.roomId);
+        if (!mounted || gained <= 0) return;
+        final user = ref.read(currentUserIdProvider);
+        if (user != null) ref.invalidate(profileProvider(user));
+      } catch (_) {
+        // Connection recovery will retry on the next tick; we never fabricate
+        // activity points client-side.
+      }
+    });
+  }
+
   Future<void> leave() async {
     if (leaving) return;
     leaving = true;
+    _activityTimer?.cancel();
     try {
       await session.close();
       joined = false;
@@ -134,6 +154,7 @@ class _State extends ConsumerState<RoomScreen> {
 
   @override
   void dispose() {
+    _activityTimer?.cancel();
     text.dispose();
     unawaited(session.close().catchError((_) {}));
     super.dispose();
