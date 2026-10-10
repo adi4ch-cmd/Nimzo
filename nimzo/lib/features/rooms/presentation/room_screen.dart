@@ -23,7 +23,7 @@ import 'room_controller.dart';
 import 'room_session.dart';
 import 'room_user_sheet.dart';
 import 'room_overlays.dart';
-import '../diamond/room_diamond_widgets.dart';
+import '../rocket/room_rocket_widgets.dart';
 import '../diamond/room_diamond_repository.dart';
 import '../../../core/widgets/master_ui.dart';
 import '../../../core/utils/formatters.dart';
@@ -127,7 +127,7 @@ class _State extends ConsumerState<RoomScreen> {
           height: 46,
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: const Color(0xfff1e6ff),
+            color: const Color(0xfffff2db),
             borderRadius: BorderRadius.circular(14),
           ),
           child: ReferenceArtwork(group, 0, size: 38),
@@ -199,7 +199,7 @@ class _State extends ConsumerState<RoomScreen> {
         );
       }
     });
-    return RoomDiamondHost(
+    return RoomRocketHost(
       roomId: widget.roomId,
       enabled: joined,
       child: RoomGameHost(
@@ -561,7 +561,7 @@ class _State extends ConsumerState<RoomScreen> {
                                         ? null
                                         : () => showReferenceSheet(
                                               context,
-                                              CrystalSheet(
+                                              RoomRocketSheet(
                                                   roomId: widget.roomId),
                                             ),
                                     child: Container(
@@ -572,19 +572,23 @@ class _State extends ConsumerState<RoomScreen> {
                                         color: const Color(0xfff1e6ff),
                                         borderRadius: BorderRadius.circular(14),
                                       ),
-                                      child: diamondArtwork(
-                                        joined
-                                            ? ref
-                                                    .watch(
-                                                      roomDiamondStatusProvider(
-                                                        widget.roomId,
-                                                      ),
-                                                    )
-                                                    .valueOrNull
-                                                    ?.activeStage ??
-                                                0
-                                            : 0,
-                                        size: 38,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(Icons.rocket_launch,
+                                              color: Color(0xffba682d), size: 26),
+                                          Text(
+                                            'L' + ((joined
+                                              ? ref.watch(
+                                                  roomDiamondStatusProvider(widget.roomId),
+                                                ).valueOrNull?.activeStage ?? 0
+                                              : 0) + 1).toString(),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
