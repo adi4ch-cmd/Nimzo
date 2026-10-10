@@ -84,6 +84,12 @@ jobs:
       - name: Analyze gift code
         working-directory: nimzo
         run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/features/gifts test/gift_video_overlay_test.dart test/verified_gift_broadcast_test.dart test/yo2_gift_ui_test.dart lib/features/rooms/presentation/room_screen.dart lib/features/rooms/presentation/room_user_sheet.dart lib/features/profile/profile_screen.dart lib/features/moments/moments_screen.dart
+      - name: Full analysis before final APK
+        working-directory: nimzo
+        run: flutter analyze
+      - name: Full regression before final APK
+        working-directory: nimzo
+        run: flutter test
       - name: Run gift-only tests
         working-directory: nimzo
         run: |
