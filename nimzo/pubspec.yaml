@@ -20,6 +20,7 @@ dependencies:
   flutter_svg: ^2.0.17
   video_player: ^2.9.2
   flutter_svga: ^0.0.13
+  flutter_vap_player: ^2.1.1
   flutter_vap_player: 2.1.1
 dev_dependencies:
   flutter_test: {sdk: flutter}
