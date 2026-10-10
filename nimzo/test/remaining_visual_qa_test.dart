@@ -593,7 +593,7 @@ void main() {
         expect(find.textContaining('Diamond Blast'), findsNothing);
       } else if (const {
         'moments', 'me', 'profile', 'public_profile', 'room_profile',
-        'levels', 'comments', 'gifts', 'room_tools', 'room_games', 'room_tools', 'room_games',
+        'levels', 'comments', 'gifts', 'room_tools', 'room_games',
       }.contains(entry.key)) {
         // These screens were explicitly redesigned. The old pixel files
         // describe retired large color blocks and childish Moment cards.
