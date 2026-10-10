@@ -1,0 +1,33 @@
+name: NIMZO voice regression tests (no APK)
+
+on:
+  push:
+    branches:
+      - feature/profile-reference-redesign
+    paths:
+      - nimzo/lib/features/voice/**
+      - nimzo/test/voice/**
+      - .github/workflows/nimzo-voice-regression.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.6"
+          channel: stable
+          cache: true
+      - name: Install Flutter dependencies
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Verify Vivox error handling
+        working-directory: nimzo
+        run: flutter test test/voice/vivox_voice_service_test.dart
+      - name: Check native voice contract tests
+        run: python3 -m unittest discover -s nimzo/test/voice -p '*_test.py'
