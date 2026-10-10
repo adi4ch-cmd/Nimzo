@@ -78,19 +78,24 @@ class _VipRewardActionsState extends ConsumerState<VipRewardActions> {
         }
       }
     }
-    final ready = status != null && active && !claimed
+    // Weekly rewards auto-credit Sunday 21:00 Riyadh. Manual claim is only
+    // a server-approved fallback after 22:00 if automatic payout was missed.
+    final fallbackOpen = !widget.svip ||
+        status?['svip_weekly_claimable'] == true;
+    final ready = status != null && active && !claimed && fallbackOpen
         && reward != null && reward > 0 && !_busy;
     final title = widget.svip ? 'SVIP weekly reward' : 'VIP daily reward';
     final description = widget.svip
-        ? 'New weekly cycle: Sunday, 9:00 PM Saudi time. '
-          'Claim within that week while your SVIP is active.'
+        ? 'Automatic credit every Sunday, 9:00 PM Saudi time. '
+          'If payment is missed, a one-time manual fallback opens after 10 PM.'
         : 'One claim per Saudi calendar day while your VIP is active.';
     final expires = status?['vip_expires_at'];
     String? expiryText;
     if (!widget.svip && active && expires is String) {
-      final date = DateTime.tryParse(expires)?.toLocal();
+      final utc = DateTime.tryParse(expires)?.toUtc();
+      final date = utc?.add(const Duration(hours: 3));
       if (date != null) {
-        expiryText = 'Membership expires: '
+        expiryText = 'Membership expires (Saudi time): '
             '${date.year}-${date.month.toString().padLeft(2, '0')}-'
             '${date.day.toString().padLeft(2, '0')}';
       }
@@ -143,8 +148,13 @@ class _VipRewardActionsState extends ConsumerState<VipRewardActions> {
               onPressed: ready ? _claim : null,
               icon: Icon(claimed ? Icons.verified : Icons.redeem),
               label: Text(_busy ? 'Confirming with server…'
-                : claimed ? 'Already claimed this cycle'
-                : 'Claim verified reward'),
+                : claimed ? (widget.svip
+                    ? 'Weekly reward already credited'
+                    : 'Already claimed this cycle')
+                : widget.svip
+                    ? (fallbackOpen ? 'Claim missed weekly reward'
+                        : 'Automatic payout scheduled')
+                    : 'Claim verified reward'),
             ),
           ),
         ],
