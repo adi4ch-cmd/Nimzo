@@ -138,7 +138,10 @@ class _VipState extends ConsumerState<VipScreen> {
           foregroundColor: accent,
           title: Text(widget.svip
             ? 'NIMZO · SVIP COLLECTION'
-            : 'NIMZO · ROYAL VIP'),
+            : 'NIMZO · ROYAL VIP',
+            style: TextStyle(
+              color:accent, fontSize:15, fontWeight:FontWeight.w800,
+              letterSpacing:.8)),
           centerTitle: true,
         ),
         body: Center(

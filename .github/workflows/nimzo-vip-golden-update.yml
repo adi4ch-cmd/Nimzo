@@ -1,4 +1,5 @@
 name: Refresh new VIP visual goldens (NO APK)
+# Recapture after increasing app bar contrast; never compiles an APK.
 on:
   push:
     branches: [feature/profile-reference-redesign]
