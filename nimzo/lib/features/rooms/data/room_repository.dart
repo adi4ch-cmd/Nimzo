@@ -128,6 +128,16 @@ class RoomRepository {
   }
 
   Future<void> leave(String roomId) => _rpc('leave_room', {'p_room': roomId});
+  /// Server awards at most two verified room minutes per call.
+  Future<int> touchActivity(String roomId) async {
+    try {
+      final result = await _db.rpc('touch_room_activity',
+          params: {'p_room': roomId});
+      return (result as num?)?.toInt() ?? 0;
+    } catch (e) {
+      throw mapError(e);
+    }
+  }
   Future<void> takeSeat(String roomId, int seat) =>
       _rpc('take_seat', {'p_room': roomId, 'p_seat': seat});
   Future<void> leaveSeat(String roomId) =>
