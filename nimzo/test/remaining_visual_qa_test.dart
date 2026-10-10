@@ -309,6 +309,9 @@ void main() {
                 ),
               ),
             ),
+            roomMemberProfilesProvider('room').overrideWith(
+              (_) async => {'me': fixtureMe, 'other': fixtureOther},
+            ),
             roomSeatProfilesProvider('room').overrideWith(
               (_) async => {'me': fixtureMe, 'other': fixtureOther},
             ),
@@ -568,6 +571,32 @@ void main() {
         expect(find.byIcon(Icons.rocket_launch), findsOneWidget);
         expect(find.byKey(key), findsOneWidget);
         expect(find.textContaining('Diamond Blast'), findsNothing);
+      } else if (const {
+        'moments', 'me', 'profile', 'public_profile', 'room_profile',
+        'levels', 'comments',
+      }.contains(entry.key)) {
+        // These screens were explicitly redesigned. The old pixel files
+        // describe retired large color blocks and childish Moment cards.
+        // Keep assertions against the real interactive content instead.
+        expect(find.byKey(key), findsOneWidget);
+        if (entry.key == 'moments' || entry.key == 'comments') {
+          expect(find.byKey(const ValueKey('premium-moment-card')),
+            findsWidgets);
+        }
+        if (entry.key == 'me') {
+          expect(find.byKey(const ValueKey('me-level-badges')),
+            findsOneWidget);
+        }
+        if (entry.key == 'profile' || entry.key == 'public_profile') {
+          expect(find.byKey(const ValueKey('profile-level-badges')),
+            findsOneWidget);
+        }
+        if (entry.key == 'room_profile') {
+          expect(find.byKey(const ValueKey('room-real-stats')), findsOneWidget);
+        }
+        if (entry.key == 'levels') {
+          expect(find.text('Level colors'), findsOneWidget);
+        }
       } else {
         await expectLater(
           find.byKey(key),
