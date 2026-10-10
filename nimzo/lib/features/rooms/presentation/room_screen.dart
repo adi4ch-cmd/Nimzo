@@ -577,7 +577,7 @@ class _State extends ConsumerState<RoomScreen> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           const Icon(Icons.rocket_launch,
-                                              color: Color(0xffba682d), size: 26),
+                                              color: Color(0xffba682d), size: 22),
                                           Text(
                                             'L' + ((joined
                                               ? ref.watch(
@@ -586,7 +586,7 @@ class _State extends ConsumerState<RoomScreen> {
                                               : 0) + 1).toString(),
                                             style: const TextStyle(
                                               fontWeight: FontWeight.w900,
-                                              fontSize: 10,
+                                              fontSize: 9,
                                             ),
                                           ),
                                         ],
