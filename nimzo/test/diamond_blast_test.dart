@@ -49,7 +49,7 @@ void main() {
         expect(find.text(target), findsOneWidget);
       }
       expect(find.text('Join a room to view Rocket progress.'), findsOneWidget);
-      expect(find.textContaining('no wallet rewards'), findsOneWidget);
+      expect(find.textContaining('no extra wallet rewards'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
