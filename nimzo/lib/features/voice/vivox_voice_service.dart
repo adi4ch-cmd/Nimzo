@@ -90,6 +90,15 @@ class VivoxVoiceService implements VoiceService {
   }
 
   VoiceConnectionFailure _nativeError(int code, String detail) {
+    // 20122 is a server-side invalid-signature error, not a transient
+    // microphone or connection failure. Repeated retries cannot repair it.
+    if (code == 20122) {
+      return VoiceConnectionFailure(
+        'Voice authentication failed (20122: invalid Vivox token signature). '
+        'The service administrator must verify the Vivox signing key and '
+        'matching environment. Retrying will not fix this configuration.',
+      );
+    }
     const stages = {
       'connector',
       'initialize',
