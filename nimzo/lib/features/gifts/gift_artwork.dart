@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svga/flutter_svga.dart';
+
+import 'gift_svga_overlay.dart';
 
 String? referenceGiftArtwork(String name) {
   final index = switch (name.trim().toLowerCase()) {
@@ -56,7 +59,14 @@ class GiftArtwork extends StatelessWidget {
     );
     final path =
         assetPath ?? originalDragonPoster(name) ?? referenceGiftArtwork(name);
-    if (path == null) return unavailable;
+    if (path == null) {
+      final svga = freeGiftAnimationForName(name);
+      if (svga != null) return SVGAEasyPlayer(assetsName: svga, fit: BoxFit.contain);
+      return unavailable;
+    }
+    if (path.endsWith('.svga')) {
+      return SVGAEasyPlayer(assetsName: path, fit: BoxFit.contain);
+    }
     if (Uri.tryParse(path)?.scheme == 'https')
       return Image.network(path, errorBuilder: (_, __, ___) => unavailable);
     if (path.startsWith('assets/'))

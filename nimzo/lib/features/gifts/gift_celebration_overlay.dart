@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'gift_artwork.dart';
 import 'nimzo_gift_control_art.dart';
+import 'gift_svga_overlay.dart';
 import '../../core/utils/formatters.dart';
 
 /// NIMZO's own non-video celebration, shown only for server-settled gifts.
@@ -306,8 +307,18 @@ void showSettledPersonalGiftCelebration(
     entry.dispose();
   }
 
+  final originalSvga = freeGiftAnimationForName(giftName);
   entry = OverlayEntry(
-    builder: (_) => NimzoGiftCelebration(
+    builder: (_) => originalSvga != null
+        ? FreeGiftSvgaOverlay(
+            source: originalSvga,
+            giftName: giftName,
+            sender: 'You',
+            recipient: 'NIMZO user',
+            quantity: quantity,
+            onFinished: dismiss,
+          )
+        : NimzoGiftCelebration(
       giftName: giftName,
       sender: 'You',
       recipient: 'NIMZO user',

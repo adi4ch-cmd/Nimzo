@@ -87,4 +87,4 @@ jobs:
       - name: Run gift-only tests
         working-directory: nimzo
         run: |
-          flutter test             test/gift_artwork_test.dart             test/gift_media_repository_test.dart             test/gift_rejection_test.dart             test/gift_retry_test.dart             test/gift_room_recipient_test.dart             test/gift_settlement_error_test.dart             test/gift_video_overlay_test.dart             test/verified_gift_broadcast_test.dart             test/yo2_gift_ui_test.dart
+          flutter test             test/gift_free_animated_catalog_test.dart             test/gift_artwork_test.dart             test/gift_media_repository_test.dart             test/gift_rejection_test.dart             test/gift_retry_test.dart             test/gift_room_recipient_test.dart             test/gift_settlement_error_test.dart             test/gift_video_overlay_test.dart             test/verified_gift_broadcast_test.dart             test/yo2_gift_ui_test.dart

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'gift_repository.dart';
 import 'gift_video_overlay.dart';
+import 'gift_svga_overlay.dart';
 import 'gift_celebration_overlay.dart';
 import 'nimzo_gift_control_art.dart';
 
@@ -181,7 +182,9 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       final giftId = '${event['gift_id']}';
       // Media is enabled only after its URL is approved in Supabase.
       // Do not reference unbundled assets: that breaks playback on devices.
-      final url = await _lookupMedia(giftId);
+      final url = freeGiftAnimationForId(giftId) == null
+          ? await _lookupMedia(giftId)
+          : null;
       if (!mounted || !identical(_active, event)) return;
       _cancelMediaLookup();
       setState(() {
@@ -248,6 +251,20 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         giftName: '$giftName × $quantity',
         // Voice remains audible; users can enable the original video's sound.
         muted: true,
+        onFinished: () {
+          if (mounted && identical(_active, event)) _next();
+        },
+      );
+    }
+    final originalSvga = freeGiftAnimationForId('${event['gift_id']}');
+    if (!_loading && originalSvga != null) {
+      return FreeGiftSvgaOverlay(
+        key: ValueKey(event['id']),
+        source: originalSvga,
+        giftName: giftName,
+        sender: (event['sender_name'] ?? 'NIMZO user').toString(),
+        recipient: (event['receiver_name'] ?? 'NIMZO user').toString(),
+        quantity: quantity,
         onFinished: () {
           if (mounted && identical(_active, event)) _next();
         },
