@@ -1,9 +1,9 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/widgets/master_ui.dart';
 import '../../../core/widgets/reference_widgets.dart';
 import '../diamond/room_diamond_repository.dart';
 import 'room_rocket_playback.dart';
