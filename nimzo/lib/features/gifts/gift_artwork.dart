@@ -92,6 +92,19 @@ class GiftArtwork extends StatelessWidget {
   const GiftArtwork({super.key, required this.name, this.assetPath});
   @override
   Widget build(BuildContext context) {
+    // Use the actual commissioned photo-realistic NIMZO artwork when
+    // bundled. Fall back to the correctly named vector on older APKs.
+    if (name.trim().toLowerCase() == 'private jet') {
+      return Image.asset(
+        'assets/gifts/premium/private_jet.webp',
+        key: const ValueKey('nimzo-private-jet-photoreal'),
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+        errorBuilder: (context, error, stackTrace) =>
+            SvgPicture.asset('assets/nimzo_custom_gifts/private_jet.svg',
+              fit: BoxFit.contain),
+      );
+    }
     // The original Yo2 APK does not bundle per-gift catalog images. Keep
     // the real catalog name readable rather than inventing a replacement icon.
     final unavailable = Center(
