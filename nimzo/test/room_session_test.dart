@@ -112,4 +112,25 @@ void main() {
     expect(leaves, 0);
   });
 
+  test('failed room join can retry successfully without a phantom session', () async {
+    var joins = 0, leaves = 0;
+    final session = RoomSession(
+      joinRoom: () async {
+        joins++;
+        if (joins == 1) throw StateError('temporary network failure');
+      },
+      joinVoice: () async {},
+      leaveRoom: () async { leaves++; },
+      leaveVoice: () async {},
+    );
+    await expectLater(session.join(), throwsStateError);
+    expect(session.joined, isFalse);
+    await session.join();
+    expect(joins, 2);
+    expect(session.joined, isTrue);
+    await session.close();
+    expect(leaves, 1);
+    expect(session.joined, isFalse);
+  });
+
 }
