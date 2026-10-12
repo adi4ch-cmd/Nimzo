@@ -3,7 +3,7 @@ class RoomSession {
   final Future<void> Function() joinRoom, leaveRoom, joinVoice, leaveVoice;
   bool joined = false, closed = false;
   DateTime? enteredAt;
-  Future<void>? _joining, _closing;
+  Future<void>? _joining, _databaseJoining, _closing;
   RoomSession({
     required this.joinRoom,
     required this.leaveRoom,
@@ -17,9 +17,13 @@ class RoomSession {
 
   Future<void> _join() async {
     if (!joined) {
-      await joinRoom();
-      joined = true;
-      enteredAt = DateTime.now();
+      // Track DB entry independently so exit never waits on a hung Vivox
+      // login before removing authenticated room presence.
+      await (_databaseJoining ??= joinRoom().then((_) {
+        joined = true;
+        enteredAt = DateTime.now();
+      }));
+      _databaseJoining = null;
     }
     if (closed) return;
     await joinVoice();
@@ -40,22 +44,33 @@ class RoomSession {
   }
 
   Future<void> _close() async {
-    // Native voice may fail while the server is reachable. Always remove
-    // membership independently; a bad microphone disconnect must not keep
-    // the user's identity in room_members.
+    // Prioritize Supabase leave over native SDK teardown. A stalled SDK
+    // login must not keep a user visible in room_members or on a mic seat.
     try {
-      await leaveVoice();
+      await _databaseJoining;
     } catch (_) {
-      // Room membership cleanup remains authoritative.
+      // A rejected DB join created no membership to leave.
     }
-    try {
-      await _joining;
-    } catch (_) {
-      // A failed/cancelled join still needs any late DB membership cleaned.
-    }
+    Object? leaveError;
+    StackTrace? leaveStack;
     if (joined) {
-      await leaveRoom();
-      joined = false;
+      try {
+        await leaveRoom();
+        joined = false;
+      } catch (e, st) {
+        // Let the room UI offer Retry rather than reporting a false exit.
+        leaveError = e;
+        leaveStack = st;
+      }
     }
+    // Native cleanup is best-effort after authoritative database cleanup,
+    // never allowed to suppress a failed Supabase leave.
+    try {
+      await leaveVoice().timeout(const Duration(seconds: 6));
+    } catch (_) {
+      // A disconnected Vivox client may fail to release native handles.
+    }
+    if (leaveError != null) Error.throwWithStackTrace(leaveError, leaveStack!);
   }
+
 }
