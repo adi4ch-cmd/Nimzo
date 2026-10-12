@@ -21,6 +21,8 @@ on:
       - 'nimzo/test/custom_gift_*.dart'
       - 'nimzo/assets/nimzo_custom_gifts/**'
       - 'nimzo/lib/features/rooms/presentation/room_screen.dart'
+      - 'nimzo/lib/features/rooms/presentation/room_session.dart'
+      - 'nimzo/test/room_session_test.dart'
       - 'nimzo/lib/features/rooms/rocket/**'
       - 'nimzo/lib/features/rooms/diamond/**'
       - 'nimzo/assets/room_rocket/**'
