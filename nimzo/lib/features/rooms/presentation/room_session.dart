@@ -19,11 +19,15 @@ class RoomSession {
     if (!joined) {
       // Track DB entry independently so exit never waits on a hung Vivox
       // login before removing authenticated room presence.
-      await (_databaseJoining ??= joinRoom().then((_) {
-        joined = true;
-        enteredAt = DateTime.now();
-      }));
-      _databaseJoining = null;
+      try {
+        await (_databaseJoining ??= joinRoom().then((_) {
+          joined = true;
+          enteredAt = DateTime.now();
+        }));
+      } finally {
+        // A rejected join must not poison a future Retry attempt.
+        _databaseJoining = null;
+      }
     }
     if (closed) return;
     await joinVoice();
