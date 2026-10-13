@@ -1,5 +1,6 @@
 import '../../core/providers/supabase_provider.dart';
 
+import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -8,9 +9,14 @@ import 'gift_error.dart';
 
 /// Server catalog IDs of premium dragon gifts that require approved videos.
 /// They must not be charged while their licensed animation is unavailable.
+const premiumDragonVideos = <String, String>{
+  'e1e65664-37f8-4cfd-9640-3bb035723b98':
+      'assets/gifts/dragon_1m.mp4',
+  'c3f41e6e-68d5-4e56-9253-33421ec18fc3':
+      'assets/gifts/golden_dragon_5m.mp4',
+};
 const premiumDragonGiftIds = <String>{
-  'e1e65664-37f8-4cfd-9640-3bb035723b98',
-  'c3f41e6e-68d5-4e56-9253-33421ec18fc3',
+  ...premiumDragonVideos.keys,
 };
 
 class Gift {
@@ -87,6 +93,24 @@ class GiftRepository {
     return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
         ? url
         : null;
+  }
+
+  /// Returns a trusted, playable source only if its media has been
+  /// published (approved HTTPS URL) or is bundled in this installed app.
+  /// A GitHub source-code reference alone does not qualify as bundled media.
+  Future<String?> playablePremiumDragonVideo(String giftId) async {
+    final bundledPath = premiumDragonVideos[giftId];
+    if (bundledPath != null) {
+      try {
+        final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+        if (manifest.listAssets().contains(bundledPath)) {
+          return bundledPath;
+        }
+      } catch (_) {
+        // Absent or corrupt manifest: fall through to approved remote media.
+      }
+    }
+    return approvedAnimationUrl(giftId);
   }
 
   final SupabaseClient _db;
