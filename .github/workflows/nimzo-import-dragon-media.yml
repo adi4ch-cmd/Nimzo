@@ -6,6 +6,7 @@ on:
       - feature/profile-reference-redesign
     paths:
       - NIMZO_Dragon_Gift_Assets_Patch.zip
+      - .github/workflows/nimzo-import-dragon-media.yml
 
 permissions:
   contents: write
@@ -40,6 +41,10 @@ jobs:
           PY
       - name: Install Flutter assets
         run: python3 tools/import_dragon_gifts.py NIMZO_Dragon_Gift_Assets_Patch.zip
+      - name: Install video decoding tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
       - name: Generate authentic gift thumbnails from supplied MP4s
         run: |
           set -euo pipefail
