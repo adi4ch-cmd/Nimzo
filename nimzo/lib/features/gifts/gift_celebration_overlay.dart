@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'gift_artwork.dart';
 import 'nimzo_gift_control_art.dart';
 import 'gift_svga_overlay.dart';
+import 'gift_video_overlay.dart';
 import 'nimzo_custom_gift_effect.dart';
 import '../../core/utils/formatters.dart';
 
@@ -297,6 +298,7 @@ void showSettledPersonalGiftCelebration(
   required int unitPrice,
   String? assetPath,
   String? recipientName,
+  String? videoUrl,
 }) {
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return;
@@ -315,7 +317,16 @@ void showSettledPersonalGiftCelebration(
       : 'a member';
   final originalSvga = freeGiftAnimationForName(giftName);
   entry = OverlayEntry(
-    builder: (_) => originalSvga != null
+    builder: (_) => videoUrl != null
+        ? GiftVideoOverlay(
+            source: videoUrl,
+            sender: 'You',
+            recipient: recipient,
+            giftName: '$giftName × $quantity',
+            muted: true,
+            onFinished: dismiss,
+          )
+        : originalSvga != null
         ? FreeGiftSvgaOverlay(
             source: originalSvga,
             giftName: giftName,
