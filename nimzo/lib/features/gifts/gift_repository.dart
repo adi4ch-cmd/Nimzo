@@ -6,6 +6,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/errors/error_handler.dart';
 import 'gift_error.dart';
 
+/// Server catalog IDs of premium dragon gifts that require approved videos.
+/// They must not be charged while their licensed animation is unavailable.
+const premiumDragonGiftIds = <String>{
+  'e1e65664-37f8-4cfd-9640-3bb035723b98',
+  'c3f41e6e-68d5-4e56-9253-33421ec18fc3',
+};
+
 class Gift {
   final String id, name, category;
   final int price;
