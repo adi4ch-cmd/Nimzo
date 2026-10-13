@@ -116,7 +116,7 @@ class _State extends ConsumerState<GiftSheet> {
         // Never debit one or five million coins for a gift whose promised
         // premium animation has not actually been approved and published.
         try {
-          approvedDragonVideo = await r.approvedAnimationUrl(g.id)
+          approvedDragonVideo = await r.playablePremiumDragonVideo(g.id)
               .timeout(const Duration(seconds: 6));
         } catch (_) {
           // A lookup failure is not proof that a playable video exists.
@@ -127,7 +127,7 @@ class _State extends ConsumerState<GiftSheet> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text(
-                  'Dragon video is not ready. No coins were deducted.',
+                  'Dragon video is not installed yet. No coins were deducted.',
                 ),
               ),
             );
