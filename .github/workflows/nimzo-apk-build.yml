@@ -263,6 +263,27 @@ jobs:
       - name: Verify all original Rocket videos before APK
         run: python3 tools/verify_room_rocket_media.py
 
+      - name: Verify both original Dragon videos before APK
+        run: |
+          python3 - <<'PY'
+          from hashlib import sha256
+          from pathlib import Path
+          expected = {
+              'dragon_1m.mp4': 'c2b70872477e225d720da7330fc6b5d77b8c6227c00ffc6c6bb558cb4905b2d7',
+              'golden_dragon_5m.mp4': 'b9744763526d523dfc6f155beff8510b8481919ad48ec45f778722502ba101ec',
+          }
+          root = Path('nimzo/assets/gifts')
+          for filename, digest in expected.items():
+              path = root / filename
+              if not path.is_file():
+                  raise SystemExit(f'Original premium gift video missing: {path}')
+              if sha256(path.read_bytes()).hexdigest() != digest:
+                  raise SystemExit(f'Premium gift video checksum mismatch: {path}')
+              print(f'Original premium gift video verified: {path}')
+          pubspec = Path('nimzo/pubspec.yaml').read_text()
+          assert '    - assets/gifts/' in pubspec, 'Missing Flutter gift asset registration'
+          PY
+
       # Generated Android debug signing is used only for this test artifact.
       # Never publish development certificates as permanent updater releases.
       - name: Build installable test APK when signing is unavailable
