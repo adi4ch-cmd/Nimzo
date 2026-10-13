@@ -15,6 +15,7 @@ class NativeVideo extends VideoPlayerPlatform {
   double volume = -1;
   bool disposed = false;
   Duration duration = const Duration(seconds: 2);
+  Size videoSize = const Size(1920, 1080);
   bool initialize = true;
   DataSource? source;
   @override
@@ -26,7 +27,7 @@ class NativeVideo extends VideoPlayerPlatform {
       events.add(
         VideoEvent(
           eventType: VideoEventType.initialized,
-          size: const Size(1920, 1080),
+          size: videoSize,
           duration: duration,
         ),
       );
@@ -98,6 +99,30 @@ void main() {
     });
     await tester.pump();
   }
+
+  testWidgets('portrait Dragon media is compact and keeps controls nearby',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(393, 852));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    native.videoSize = const Size(720, 1280);
+
+    await show(
+      tester,
+      () {},
+      source: 'assets/gifts/dragon_1m.mp4',
+    );
+
+    final player = find.byType(VideoPlayer);
+    expect(player, findsOneWidget);
+    final videoSize = tester.getSize(player);
+    expect(videoSize.height, lessThanOrEqualTo(852 * .48 + 1));
+    expect(videoSize.width, lessThanOrEqualTo(393 * .78 + 1));
+    expect(find.text('Sender sent Dragon × 3 to Receiver'), findsOneWidget);
+    expect(find.byTooltip('Close gift animation'), findsOneWidget);
+    expect(find.byTooltip('Enable gift sound'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+  });
 
   testWidgets('voice-safe sound is muted and can be enabled', (tester) async {
     await show(tester, () {});
