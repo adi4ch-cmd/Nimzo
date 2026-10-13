@@ -7,6 +7,25 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/features/gifts/gift_repository.dart';
 
 void main() {
+  test('Dragon IDs map to the two actual approved local video paths', () {
+    expect(
+      premiumDragonGiftIds,
+      containsAll([
+        'e1e65664-37f8-4cfd-9640-3bb035723b98',
+        'c3f41e6e-68d5-4e56-9253-33421ec18fc3',
+      ]),
+    );
+    expect(premiumDragonVideos.length, 2);
+    expect(
+      premiumDragonVideos['e1e65664-37f8-4cfd-9640-3bb035723b98'],
+      'assets/gifts/dragon_1m.mp4',
+    );
+    expect(
+      premiumDragonVideos['c3f41e6e-68d5-4e56-9253-33421ec18fc3'],
+      'assets/gifts/golden_dragon_5m.mp4',
+    );
+  });
+
   for (final giftId in [
     'e1e65664-37f8-4cfd-9640-3bb035723b98',
     'c3f41e6e-68d5-4e56-9253-33421ec18fc3',
