@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -147,90 +148,160 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
   @override
   Widget build(BuildContext context) {
     final controller = _controller;
+    final size = MediaQuery.sizeOf(context);
+    final ready = controller != null && controller.value.isInitialized;
+    final aspect = ready && controller.value.aspectRatio > 0
+        ? controller.value.aspectRatio
+        : 9 / 16;
+
+    // A portrait MP4 is opaque video, not a transparent flying effect.
+    // Keep the complete original frame but avoid covering an entire live room,
+    // its ten mic seats, chat composer, and interaction controls.
+    final maxVideoHeight = size.height * (size.height >= size.width ? .48 : .58);
+    final maxVideoWidth = size.width * .78;
+    final videoHeight = math.min(maxVideoHeight, maxVideoWidth / aspect);
+    final videoWidth = videoHeight * aspect;
+
     return Material(
       type: MaterialType.transparency,
       child: SafeArea(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (controller != null && controller.value.isInitialized)
-              IgnorePointer(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.sizeOf(context).width * 0.94,
-                      maxHeight: MediaQuery.sizeOf(context).height * 0.65,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: videoWidth,
+                height: videoHeight,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    IgnorePointer(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10151E),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: const Color(0xFFE4BA67),
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFCF9F45).withValues(alpha: .28),
+                              blurRadius: 25,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(3),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(14),
+                            child: ready
+                                ? VideoPlayer(controller)
+                                : ColoredBox(
+                                    color: const Color(0xFF10151E),
+                                    child: Center(
+                                      child: Text(
+                                        _error ?? 'Loading gift animation…',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
                     ),
-                    child: AspectRatio(
-                      aspectRatio: controller.value.aspectRatio,
-                      child: VideoPlayer(controller),
+                    Positioned(
+                      top: 7,
+                      right: 7,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _control(
+                            icon: _muted ? Icons.volume_off : Icons.volume_up,
+                            tooltip: _muted ? 'Enable gift sound' : 'Mute gift sound',
+                            onPressed: _finished
+                                ? null
+                                : () {
+                                    setState(() => _muted = !_muted);
+                                    unawaited(_updateSound());
+                                  },
+                          ),
+                          const SizedBox(width: 4),
+                          _control(
+                            icon: Icons.close,
+                            tooltip: 'Close gift animation',
+                            onPressed: _finish,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              )
-            else
+              ),
+              const SizedBox(height: 10),
               IgnorePointer(
-                child: Center(
-                  child: Text(
-                    _error ?? 'Loading gift animation…',
-                    style: const TextStyle(color: Colors.white),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: math.min(size.width * .84, 360),
                   ),
-                ),
-              ),
-            Positioned(
-              top: 12,
-              right: 12,
-              child: IconButton(
-                onPressed: _finish,
-                icon: const Icon(Icons.close, color: Colors.white),
-                tooltip: 'Close gift animation',
-              ),
-            ),
-            Positioned(
-              top: 12,
-              left: 12,
-              child: IconButton(
-                onPressed: _finished
-                    ? null
-                    : () {
-                        setState(() => _muted = !_muted);
-                        unawaited(_updateSound());
-                      },
-                icon: Icon(
-                  _muted ? Icons.volume_off : Icons.volume_up,
-                  color: Colors.white,
-                ),
-                tooltip: _muted ? 'Enable gift sound' : 'Mute gift sound',
-              ),
-            ),
-            Positioned(
-              bottom: 28,
-              left: 16,
-              right: 16,
-              child: IgnorePointer(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.56),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0xFFDDB65E)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      '${widget.sender} sent ${widget.giftName} to ${widget.recipient}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF15181F).withValues(alpha: .87),
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(
+                        color: const Color(0xFFE4BA67).withValues(alpha: .76),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 13,
+                        vertical: 9,
+                      ),
+                      child: Text(
+                        '${widget.sender} sent ${widget.giftName} to ${widget.recipient}',
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _control({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback? onPressed,
+  }) {
+    return SizedBox(
+      width: 36,
+      height: 36,
+      child: IconButton(
+        iconSize: 19,
+        padding: EdgeInsets.zero,
+        style: IconButton.styleFrom(
+          backgroundColor: const Color(0xBB11141D),
+          foregroundColor: Colors.white,
+        ),
+        onPressed: onPressed,
+        tooltip: tooltip,
+        icon: Icon(icon),
       ),
     );
   }
