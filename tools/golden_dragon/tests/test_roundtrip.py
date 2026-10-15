@@ -27,6 +27,11 @@ class RoundTripTests(unittest.TestCase):
                 im.save(folder/f'rgba/frame_{f:04}.png')
             load('pack').encode(folder)
             load('verify').check(folder)
+            load('room_preview').make(folder)
+            for name in ['light','dark_derived']:
+                stream=load('verify').probe(folder/f'golden_dragon_room_{name}.mp4')['streams'][0]
+                self.assertEqual(stream['nb_read_frames'],'360')
+                self.assertEqual((stream['width'],stream['height']),(64,112))
             self.assertTrue((folder/'verification.json').is_file())
             self.assertTrue((folder/'alpha_light_vap.png').is_file())
             # A frame-count-correct opaque FFV1 must fail RGBA validation.
