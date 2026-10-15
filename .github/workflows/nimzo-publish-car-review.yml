@@ -7,7 +7,7 @@ on:
     inputs:
       render_run:
         description: Successful four-car render workflow run ID
-        default: '38817679972'
+        default: '38817917286'
         required: true
 permissions:
   contents: write
@@ -19,7 +19,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      RENDER_RUN: ${{ inputs.render_run || '38817679972' }}
+      RENDER_RUN: ${{ inputs.render_run || '38817917286' }}
     steps:
       - uses: actions/checkout@v4
       - name: Require actual successful render and encode jobs
