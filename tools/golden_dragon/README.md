@@ -23,7 +23,7 @@ The render-only Actions workflow is `.github/workflows/nimzo-golden-dragon-rende
 
 ## Outputs
 
-- `rgba/frame_0001.png`…`frame_0360.png`: full RGBA PNG sequence, film transparency, 12 seconds at 30 fps.
+- `rgba/frame_0001.png`…`frame_0360.png`: full RGBA PNG sequence, film transparency, 12 seconds at 30 fps. Entry/exit fades multiply the completed premultiplied render in Blender’s compositor, preserving all edges without accumulating material-opacity bounces.
 - `golden_dragon.blend`: geometry, materials, lighting, camera and keyframes.
 - `golden_dragon_demo.mp4`: opaque neutral-background H.264 review video, deliberately **not** advertised as alpha.
 - `golden_dragon_rgba.mkv`: lossless FFV1 BGRA review master, not an Android playback format.

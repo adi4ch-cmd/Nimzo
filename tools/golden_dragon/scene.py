@@ -130,11 +130,19 @@ for j in range(100):
  u=random.random();o=sphere('Fine airborne gold',center(u,3),(.008,)*3,dustmat);seed=random.random()*math.tau
  for f in range(1,361,9):
   t=(f-1)/30;v=(u+t*.045)%1;o.location=center(v,t-.5)+Vector((.35*math.sin(seed+t),.18*math.cos(seed),.22*math.sin(seed+t*2)));k=.35+.65*math.sin(math.pi*v)**2;o.scale=(.009*k,)*3;o.keyframe_insert('location',frame=f);o.keyframe_insert('scale',frame=f)
-# Film alpha fades every surface, including fine dust, without a background plane.
-for material in [gold,edge,skin,ivory,black,eye,mane,mouth,dustmat]:
- alpha=material.node_tree.nodes.get('Principled BSDF').inputs['Alpha']
- for f,v in [(1,0),(30,1),(316,1),(360,0)]:
-  alpha.default_value=v;alpha.keyframe_insert('default_value',frame=f)
+# Apply the fade once to the rendered premultiplied RGBA, including dust.
+# Material opacity would accumulate through overlapping scales and hit the
+# transparent-bounce limit, leaving opaque specks even at zero surface alpha.
+s.use_nodes=True
+nt=s.node_tree;nt.nodes.clear()
+render=nt.nodes.new('CompositorNodeRLayers')
+fade=nt.nodes.new('CompositorNodeSetAlpha');fade.mode='APPLY'
+composite=nt.nodes.new('CompositorNodeComposite')
+nt.links.new(render.outputs['Image'],fade.inputs['Image'])
+nt.links.new(fade.outputs['Image'],composite.inputs['Image'])
+for f,v in [(1,0),(30,1),(316,1),(360,0)]:
+ fade.inputs['Alpha'].default_value=v
+ fade.inputs['Alpha'].keyframe_insert('default_value',frame=f)
 # Camera and photographic softboxes: broad warm key, cool rim, white overhead.
 bpy.ops.object.camera_add(location=(8,-14,7));cam=bpy.context.object;target=Vector((0,0,.25));cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=8.1;s.camera=cam
 # Perspective lens, same portrait coverage.
