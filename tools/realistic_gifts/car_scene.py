@@ -85,19 +85,16 @@ for i in range(2):
 # Camera sees actual perspective change while the car drives on an arc.
 bpy.ops.object.camera_add(location=(6,-9,3.6));cam=bpy.context.object;cam.data.lens=42;s.camera=cam
 # Distances drive wheel angular displacement, rather than arbitrary spinning.
+def ease(u):
+ u=max(0,min(1,u));return u*u*u*(u*(u*6-15)+10)
 def path(t):
- keys=[(0,Vector((-5,3,0))),(1.7,Vector((-.8,.65,0))),(3,Vector((0,0,0))),(5,Vector((.25,-.15,0))),(6,Vector((1,-.7,0))),(8,Vector((6,-4.5,0)))]
- def tangent(i):
-  l=max(0,i-1);r=min(len(keys)-1,i+1)
-  return (keys[r][1]-keys[l][1])/(keys[r][0]-keys[l][0])
- for i,((ta,pa),(tb,pb)) in enumerate(zip(keys,keys[1:])):
-  if t<=tb:
-   u=max(0,min(1,(t-ta)/(tb-ta)));dt=tb-ta;m0=tangent(i)*dt;m1=tangent(i+1)*dt
-   pos=(2*u**3-3*u*u+1)*pa+(u**3-2*u*u+u)*m0+(-2*u**3+3*u*u)*pb+(u**3-u*u)*m1
-   velocity=(6*u*u-6*u)*pa+(3*u*u-4*u+1)*m0+(-6*u*u+6*u)*pb+(3*u*u-2*u)*m1
-   # Authored vehicle front is -Y. Match heading to the actual path tangent.
-   return pos,math.atan2(velocity.x,-velocity.y)
- return keys[-1][1],math.atan2(tangent(len(keys)-1).x,-tangent(len(keys)-1).y)
+ # A 24 m turning radius respects the 2.8 m wheelbase. Brake smoothly to
+ # a true hero stop, then accelerate away; never rotate in place.
+ distance=-6*(1-ease(t/2.6)) if t<2.6 else (0 if t<5.1 else 8*ease((t-5.1)/2.9))
+ radius=24;heading=.8+distance/radius
+ pos=Vector((radius*(math.cos(.8)-math.cos(heading)),
+             -radius*(math.sin(heading)-math.sin(.8)),0))
+ return pos,heading
 previous=path(0)[0];distance=0
 for f in range(1,241):
  t=(f-1)/30;pos,heading=path(t);distance+=(pos-previous).length;previous=pos.copy();root.location=pos;root.location.z=.012*math.sin(t*8)*min(1,(pos-path(max(0,t-.03))[0]).length*15);root.rotation_euler.z=heading;root.keyframe_insert('location',frame=f);root.keyframe_insert('rotation_euler',frame=f)
@@ -107,7 +104,7 @@ for f in range(1,241):
  steering=max(-.35,min(.35,math.atan(2.8*heading_rate/speed)))
  for wheel,neutral,axis in fronts:
   wheel.rotation_quaternion=Quaternion(axis,steering)@neutral;wheel.keyframe_insert('rotation_quaternion',frame=f)
- cam.location=(6+.8*math.sin(t*.35),-9+.4*math.sin(t*.5),3.6-.25*math.sin(t*.3));cam.rotation_euler=(Vector((.15,0,.65))-cam.location).to_track_quat('-Z','Y').to_euler();cam.keyframe_insert('location',frame=f);cam.keyframe_insert('rotation_euler',frame=f)
+ camera_angle=.25+.65*ease(t/8);cam.location=(10.8*math.sin(camera_angle),-10.8*math.cos(camera_angle),3.6-.25*math.sin(t*.3));cam.rotation_euler=(Vector((.15,0,.65))-cam.location).to_track_quat('-Z','Y').to_euler();cam.keyframe_insert('location',frame=f);cam.keyframe_insert('rotation_euler',frame=f)
  for i,(smoke,density,seed) in enumerate(smokes):
   age=(t*.38+seed)%1;trail,_=path(max(0,t-age*.9));smoke.location=trail+Vector((((i%2)*2-1)*.9,.9+age*.9,.12+age*.35));smoke.scale=(.35+age*.7,.5+age,.16+age*.4);density.inputs[1].default_value=.09*math.sin(math.pi*age)**2
   smoke.keyframe_insert('location',frame=f);smoke.keyframe_insert('scale',frame=f);density.inputs[1].keyframe_insert('default_value',frame=f)

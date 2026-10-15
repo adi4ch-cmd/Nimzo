@@ -8,7 +8,7 @@ Use Blender 4.3.2, Python 3 with Pillow/numpy, and FFmpeg with libx264/FFV1. Run
 
 ```sh
 python3 tools/realistic_gifts/fetch_assets.py render-assets
-blender -b -t 4 -P tools/realistic_gifts/car_scene.py -- --model render-assets/CarConcept.glb --hdri render-assets/studio_small_09_1k.exr --out rendered-red --color red --width 360 --samples 8 --denoise
+blender --python-exit-code 1 -b -t 4 -P tools/realistic_gifts/car_scene.py -- --model render-assets/CarConcept.glb --hdri render-assets/studio_small_09_1k.exr --out rendered-red --color red --width 360 --samples 8 --denoise
 python3 tools/realistic_gifts/encode.py rendered-red
 python3 tools/realistic_gifts/verify.py rendered-red
 python3 tools/realistic_gifts/room_preview.py rendered-red
