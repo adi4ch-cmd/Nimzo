@@ -5,7 +5,7 @@ Omit --frame to render all 240 actual RGBA frames (8 sec at 30fps).
 import argparse, math, random, sys
 from pathlib import Path
 import bpy
-from mathutils import Vector
+from mathutils import Vector, Quaternion
 p=argparse.ArgumentParser();p.add_argument('--model',required=True);p.add_argument('--hdri',required=True);p.add_argument('--out',required=True);p.add_argument('--color',choices=['red','black','gold','blue'],required=True);p.add_argument('--width',type=int,default=540);p.add_argument('--samples',type=int,default=32);p.add_argument('--frame',type=int);p.add_argument('--build-only',action='store_true');p.add_argument('--denoise',action='store_true');p.add_argument('--start',type=int,default=1);p.add_argument('--end',type=int,default=240)
 a=p.parse_args(sys.argv[sys.argv.index('--')+1:]);out=Path(a.out);(out/'rgba').mkdir(parents=True,exist_ok=True)
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
@@ -58,7 +58,15 @@ for name in ['WheelFrontL','WheelFrontR','WheelRearL','WheelRearR']:
   if child==spin or 'BrakePad' in child.name:continue
   mw=child.matrix_world.copy();child.parent=spin;child.matrix_world=mw
  spins.append(spin)
- if 'Front' in name:fronts.append(wheel)
+ if 'Front' in name:
+  # Imported parts are quaternion-driven and the authored front wheels are
+  # posed 30 degrees. Neutralize that pose before adding real steering.
+  axis=(wheel.parent.matrix_world.to_3x3().inverted()@Vector((0,0,1))).normalized()
+  world_axle=(wheel.matrix_world.to_3x3()@Vector((1,0,0))).normalized()
+  correction=-math.atan2(world_axle.y,world_axle.x)
+  neutral=Quaternion(axis,correction)@wheel.rotation_quaternion.copy()
+  wheel.rotation_mode='QUATERNION';wheel.rotation_quaternion=neutral
+  fronts.append((wheel,neutral,axis))
 # Real environment lighting, hidden only from the camera by film transparency.
 w=bpy.data.worlds.new('CC0 photographic studio');s.world=w;w.use_nodes=True;nt=w.node_tree;env=nt.nodes.new('ShaderNodeTexEnvironment');env.image=bpy.data.images.load(str(Path(a.hdri).resolve()));nt.links.new(env.outputs['Color'],nt.nodes['Background'].inputs['Color']);nt.nodes['Background'].inputs['Strength'].default_value=.45
 for name,loc,power,size in [('Key softbox',(1,-3,6),850,5),('Side strip',(-5,0,3),650,4),('Rim strip',(4,3,4),1000,4)]:
@@ -75,19 +83,30 @@ for i in range(2):
  mult=nodes.new('ShaderNodeMath');mult.operation='MULTIPLY';mult.inputs[1].default_value=.22
  output=nodes.new('ShaderNodeOutputMaterial');coord=nodes.new('ShaderNodeTexCoord');sub=nodes.new('ShaderNodeVectorMath');sub.operation='SUBTRACT';sub.inputs[1].default_value=(.5,.5,.5);length=nodes.new('ShaderNodeVectorMath');length.operation='LENGTH';edge=nodes.new('ShaderNodeMath');edge.operation='MULTIPLY_ADD';edge.inputs[1].default_value=-2;edge.inputs[2].default_value=1;edge.use_clamp=True;soft=nodes.new('ShaderNodeMath');soft.operation='MULTIPLY';m.node_tree.links.new(coord.outputs['Generated'],sub.inputs[0]);m.node_tree.links.new(sub.outputs['Vector'],length.inputs[0]);m.node_tree.links.new(length.outputs['Value'],edge.inputs[0]);m.node_tree.links.new(edge.outputs[0],soft.inputs[0]);m.node_tree.links.new(tex.outputs['Fac'],soft.inputs[1]);m.node_tree.links.new(soft.outputs[0],mult.inputs[0]);m.node_tree.links.new(mult.outputs[0],vol.inputs['Density']);m.node_tree.links.new(vol.outputs['Volume'],output.inputs['Volume']);o.data.materials.append(m);smokes.append((o,mult,random.random()))
 # Camera sees actual perspective change while the car drives on an arc.
-bpy.ops.object.camera_add(location=(6,-9,3.6));cam=bpy.context.object;cam.data.lens=48;s.camera=cam
+bpy.ops.object.camera_add(location=(6,-9,3.6));cam=bpy.context.object;cam.data.lens=42;s.camera=cam
 # Distances drive wheel angular displacement, rather than arbitrary spinning.
 def path(t):
- keys=[(0,(-5,3,0),-.50),(1.7,(-.8,.65,0),-.12),(3,(0,0,0),0),(5,(.25,-.15,0),.10),(6,(1,-.7,0),.40),(8,(6,-4.5,0),.65)]
- for (ta,pa,ra),(tb,pb,rb) in zip(keys,keys[1:]):
+ keys=[(0,Vector((-5,3,0))),(1.7,Vector((-.8,.65,0))),(3,Vector((0,0,0))),(5,Vector((.25,-.15,0))),(6,Vector((1,-.7,0))),(8,Vector((6,-4.5,0)))]
+ def tangent(i):
+  l=max(0,i-1);r=min(len(keys)-1,i+1)
+  return (keys[r][1]-keys[l][1])/(keys[r][0]-keys[l][0])
+ for i,((ta,pa),(tb,pb)) in enumerate(zip(keys,keys[1:])):
   if t<=tb:
-   u=max(0,min(1,(t-ta)/(tb-ta)));u=u*u*(3-2*u);return Vector(pa).lerp(Vector(pb),u),ra*(1-u)+rb*u
- return Vector(keys[-1][1]),keys[-1][2]
+   u=max(0,min(1,(t-ta)/(tb-ta)));dt=tb-ta;m0=tangent(i)*dt;m1=tangent(i+1)*dt
+   pos=(2*u**3-3*u*u+1)*pa+(u**3-2*u*u+u)*m0+(-2*u**3+3*u*u)*pb+(u**3-u*u)*m1
+   velocity=(6*u*u-6*u)*pa+(3*u*u-4*u+1)*m0+(-6*u*u+6*u)*pb+(3*u*u-2*u)*m1
+   # Authored vehicle front is -Y. Match heading to the actual path tangent.
+   return pos,math.atan2(velocity.x,-velocity.y)
+ return keys[-1][1],math.atan2(tangent(len(keys)-1).x,-tangent(len(keys)-1).y)
 previous=path(0)[0];distance=0
 for f in range(1,241):
  t=(f-1)/30;pos,heading=path(t);distance+=(pos-previous).length;previous=pos.copy();root.location=pos;root.location.z=.012*math.sin(t*8)*min(1,(pos-path(max(0,t-.03))[0]).length*15);root.rotation_euler.z=heading;root.keyframe_insert('location',frame=f);root.keyframe_insert('rotation_euler',frame=f)
  for spin in spins:spin.rotation_euler.x=distance/.36;spin.keyframe_insert('rotation_euler',frame=f)
- for wheel in fronts:wheel.rotation_euler.y=.08*math.sin(t*.9);wheel.keyframe_insert('rotation_euler',frame=f)
+ _,before=path(max(0,t-.02));_,after=path(min(8,t+.02));heading_rate=(after-before)/.04
+ speed=max(.05,(pos-path(max(0,t-.03))[0]).length/.03)
+ steering=max(-.35,min(.35,math.atan(2.8*heading_rate/speed)))
+ for wheel,neutral,axis in fronts:
+  wheel.rotation_quaternion=Quaternion(axis,steering)@neutral;wheel.keyframe_insert('rotation_quaternion',frame=f)
  cam.location=(6+.8*math.sin(t*.35),-9+.4*math.sin(t*.5),3.6-.25*math.sin(t*.3));cam.rotation_euler=(Vector((.15,0,.65))-cam.location).to_track_quat('-Z','Y').to_euler();cam.keyframe_insert('location',frame=f);cam.keyframe_insert('rotation_euler',frame=f)
  for i,(smoke,density,seed) in enumerate(smokes):
   age=(t*.38+seed)%1;trail,_=path(max(0,t-age*.9));smoke.location=trail+Vector((((i%2)*2-1)*.9,.9+age*.9,.12+age*.35));smoke.scale=(.35+age*.7,.5+age,.16+age*.4);density.inputs[1].default_value=.09*math.sin(math.pi*age)**2
