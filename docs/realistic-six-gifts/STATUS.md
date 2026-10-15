@@ -32,7 +32,7 @@ A detailed Car Concept model from Khronos glTF Sample Assets is downloaded under
 
 `tools/realistic_gifts/car_scene.py` creates four independently colored Blender projects, real rolling/steering/driving motion, reflections, headlights, camera movement and volumetric tire haze. Corrected diagnostic renders exist. Full 240-frame, 8-second review renders at 360×640/30 fps are running in [Actions run 38816339177](https://github.com/adi4ch-cmd/Nimzo/actions/runs/38816339177). These low-resolution review renders are not accepted production masters. Full-length media verification and visual review have not completed.
 
-The CC-BY Running Tiger file has one Run animation; no walk/roar completion or premium fur acceptance is claimed. Inspected free lion candidates were stylized, low-poly or a cub and were rejected. A promisingly named Royal Lion listing also appears stylized in its thumbnail and is not accepted. Noncommercial tiger rigs were rejected.
+The CC-BY Running Tiger file was imported and a real Cycles diagnostic rendered. Its 3,204-vertex mesh and texture-only fur do not meet the requested quality; it was rejected. Its one Run animation also lacks the requested walk/roar. Inspected free lion candidates were stylized, low-poly or a cub and were rejected. A promisingly named Royal Lion listing also appears stylized in its thumbnail and is not accepted. Noncommercial tiger rigs were rejected.
 
 ## Paid alternatives researched — not purchased
 
