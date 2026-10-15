@@ -54,7 +54,7 @@ Purchased .blend/model/texture files must stay in appropriately licensed private
 
 1. The free car model is acquired and documented. Suitable free commercially usable lion/tiger models with convincing fur and walk/roar animation remain unresolved; do not substitute the rejected candidates.
 2. Produce four unmistakable metallic car colors with wheel rotation, driving, lights, camera, smoke and entrance/exit; animate walking/looking/roaring/exiting for both furred animals. Each 8–12 seconds, at least 30 fps. No static-picture or primitive fallback.
-3. Render actual RGBA sequences and derive moving MP4 previews, properly packed Android alpha, thumbnails and licensed source projects. Visually inspect and reject weak results. First complete moving four-car renders and CPU alpha checks have run; corrected car review renders are underway. Only a rejected tiger diagnostic exists; complete animal gift renders remain pending.
+3. Render actual RGBA sequences and derive moving MP4 previews, properly packed Android alpha, thumbnails and licensed source projects. Visually inspect and reject weak results. First complete moving four-car renders and CPU alpha checks have run; corrected car review renders and encoding have passed. Only a rejected tiger diagnostic exists; complete animal gift renders remain pending.
 4. Establish approval of all six actual previews, then implement accepted format-aware UUID media mappings, lifecycle/fallback/queue tests and a reviewed activation migration. Do not charge for absent/unaccepted media.
 5. Test native alpha on two real Android phones, including sender/recipient room events, true settlement and Vivox mic/audio continuity. No adb executable or USB Android devices are attached here. Mock callback tests are not those tests.
 6. Only after all six are approved, integrated and tested: run one final APK build, verify package `io.nimzo.app`, signing/installability/content/hash, publish to a real accessible location, and check the direct download. No final build or APK URL is claimed now.
@@ -68,7 +68,7 @@ The earlier GitHub Releases upload endpoint returned HTTP401 despite Git pushes 
 - Five PostgreSQL staging tests: passed in an isolated local PG17 container, after observing all five fail against the empty migration.
 - New widget tests first failed for the absent component, then passed. Additional lifecycle, delayed initialization and 15-second playback-watchdog tests passed.
 - Independent code review found no concrete blocker in the migration or renderer; the additional lifecycle/watchdog coverage gaps were filled.
-- No production SQL writes or migration application, real device/voice test, final APK build or APK upload has occurred. Licensed free car downloads, diagnostics and four complete review animations have occurred. Corrected review renders are underway.
+- No production SQL writes or migration application, real device/voice test, final APK build or APK upload has occurred. Licensed free car downloads, diagnostics and four complete review animations have occurred. Corrected review renders and encoding have passed.
 - The VAP platform interface 2.1.0 is pinned as a test dependency. Resolving the baseline's already-declared SVGA/VAP dependencies filled 19 missing lock entries; no previously locked package version changed. CI uses the repository's 3.47.6 Flutter pin.
 
 A separate foundation-check workflow runs only analysis/tests and disposable database checks; it never generates an APK. The final APK gate remains unmet.
@@ -77,8 +77,25 @@ A separate foundation-check workflow runs only analysis/tests and disposable dat
 
 - Real FFmpeg round-trip regression passed, including every one of 240 decoded RGBA frames matching the source, soft alpha, actual packed H.264 decoding and rejection of an opaque replacement master.
 - Corrected packed Blender source was opened and evaluated at six moving frames: heading/velocity dot product above 0.999999, measured turning radius above 20 m, changing front-wheel quaternion steering and cumulative rolling rotation; no mesh shadow catcher remains. This does not substitute for visual motion review or Android QA.
-- Initial publication failed because the runner lacked FFmpeg; the workflow now installs it explicitly. No successful release or download URL is asserted until publication actually succeeds.
+- Initial publication failed because the runner lacked FFmpeg; the workflow now installs it explicitly. Corrected publication run 38818505195 succeeded. The public prerelease contains 30 assets, including four actual MP4 previews, four packed source/RGBA ZIPs, four VAP candidates, posters and room composites. All 30 release assets were downloaded and matched their published sizes and available API SHA-256 digests; the 29 payloads also match SHA256SUMS.txt. Every source ZIP was opened and contains a real Blender project plus 240 RGBA frames and required alpha/poster files.
 
 Review render limitations: 360×640 and 8 samples are intended to assess real model/motion/color first. Stochastic volume alpha is visibly noisy in diagnostics and needs higher-sample master rendering before production acceptance. No claim of premium final quality or Android certification is made.
 
 BlenderKit free-only searches were also checked directly through its public API: 33 lion search results and 15 tiger search results, including unrelated props/statues. Frostwhisk, Simba and Terna thumbnails were inspected and rejected as cartoon/stylized. Full result identities and advertised licenses are retained in animal-candidate-audit.json; no candidate was accepted or purchased.
+
+## Actual published review downloads
+
+[Review release — four cars, NO APK](https://github.com/adi4ch-cmd/Nimzo/releases/tag/car-review-38818436101)
+
+| Color | Actual moving MP4 | Desktop light-room alpha composite | Packed Blender/RGBA/source ZIP |
+|---|---|---|---|
+| Red | [Preview](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/red-car-preview.mp4) | [Room composite](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/red-car-room-light.mp4) | [Source](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/red-car-render-source.zip) |
+| Black | [Preview](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/black-car-preview.mp4) | [Room composite](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/black-car-room-light.mp4) | [Source](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/black-car-render-source.zip) |
+| Gold | [Preview](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/gold-car-preview.mp4) | [Room composite](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/gold-car-room-light.mp4) | [Source](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/gold-car-render-source.zip) |
+| Blue | [Preview](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/blue-car-preview.mp4) | [Room composite](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/blue-car-room-light.mp4) | [Source](https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/blue-car-render-source.zip) |
+
+Each preview was downloaded and probed: H.264, 360×640, 240 frames, 30 fps, 8.000 seconds. Every color was visually inspected at six decoded video frames; colors are visibly distinct. Room videos are CPU composites, not native Android recordings. Lossless RGBA comparison covered all 960 actual source frames across the four gifts. The Android VAP candidates are 736×640 packed streams displaying a 360×640 effect; decoded alpha mean absolute error was below 0.026 on the checked 0–255 sample for all colors.
+
+The per-color source ZIP includes actual .blend, all RGBA PNGs, lossless FFV1/BGRA master, VAP candidate, transparent PNG/WebP artwork and verification report. The specific asset license and attribution accompany the handoff. Source ZIPs are published, not merely an unrendered script.
+
+These are unapproved low-resolution review renders, with visibly noisy low-sample haze. High-resolution/high-sample masters, suitable free animals, in-app credits/mappings/activation, native Android alpha, real gift-event/settlement checks, two-device Vivox tests and final APK remain outstanding. No final APK was built or uploaded.
