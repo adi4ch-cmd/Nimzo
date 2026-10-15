@@ -32,6 +32,13 @@ class PackTests(unittest.TestCase):
         self.assertEqual(size,len(result)-len(original))
         self.assertEqual(json.loads(result[len(original)+8:]),metadata)
 
+    def test_h264_level_covers_packed_macroblocks(self):
+        pack = self.load()
+        self.assertEqual(pack.h264_level(pack.config(540,960,360,30)), '4.1')
+        self.assertEqual(pack.h264_level(pack.config(1080,1920,360,30)), '5.1')
+        with self.assertRaises(ValueError):
+            pack.h264_level(pack.config(4320,7680,360,30))
+
     def test_rejects_odd_yuv420_dimensions(self):
         pack = self.load()
         with self.assertRaises(ValueError): pack.config(541,960,360,30)

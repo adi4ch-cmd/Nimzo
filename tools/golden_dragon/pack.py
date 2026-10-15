@@ -19,6 +19,18 @@ def config(width, height, frames, fps):
         rgbFrame=[half,0,width,height])}
 
 
+
+def h264_level(metadata):
+    info=metadata['info']
+    macroblocks=((info['videoW']+15)//16)*((info['videoH']+15)//16)
+    rate=macroblocks*info['fps']
+    if macroblocks<=8192 and rate<=245760:
+        return '4.1'
+    if macroblocks<=36864 and rate<=983040:
+        return '5.1'
+    raise ValueError('Packed stream exceeds supported H.264 level 5.1 limits')
+
+
 def append_config(mp4, metadata):
     payload = json.dumps(metadata, separators=(',', ':')).encode('utf8')
     return mp4 + struct.pack('>I4s', len(payload)+8, b'vapc') + payload
@@ -50,7 +62,7 @@ def encode(folder):
     graph=(f'[0:v]split[c][a];[a]alphaextract,format=rgb24,pad={half}:{vh}:0:0:black[mask];'
            f'[c]format=rgb24,pad={half}:{vh}:0:0:black[color];[mask][color]hstack,format=yuv420p[v]')
     run(*inputs,'-filter_complex',graph,'-map','[v]','-an','-c:v','libx264',
-        '-profile:v','high','-level:v','4.1','-crf','14','-preset','medium',
+        '-profile:v','high','-level:v',h264_level(metadata),'-crf','14','-preset','medium',
         '-movflags','+faststart',packed)
     (folder/'golden_dragon_vap_candidate.mp4').write_bytes(append_config(packed.read_bytes(),metadata))
     packed.unlink()

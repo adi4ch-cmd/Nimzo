@@ -23,7 +23,7 @@ assert len({round(x['jaw_rotation'][1],3) for x in snapshots})>1, 'No jaw articu
 report={'source':'actual saved Blender scene','objects':len(bpy.data.objects),
     'mesh_polygons':sum(len(o.data.polygons) for o in bpy.data.objects if o.type=='MESH'),
     'film_transparent':scene.render.film_transparent,
-    'camera':'perspective','render_samples':scene.cycles.samples,
+    'camera':scene.camera.data.type,'render_samples':scene.cycles.samples,
     'external_images':[im.filepath for im in bpy.data.images if im.source=='FILE'],
     'snapshots':snapshots,
     'art_quality_accepted':False,

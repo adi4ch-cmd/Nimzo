@@ -1,6 +1,7 @@
 """Exercise real FFmpeg packing/decoding, including soft antialiased alpha."""
 import importlib.util
 import math
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -28,5 +29,13 @@ class RoundTripTests(unittest.TestCase):
             load('verify').check(folder)
             self.assertTrue((folder/'verification.json').is_file())
             self.assertTrue((folder/'alpha_light_vap.png').is_file())
+            # A frame-count-correct opaque FFV1 must fail RGBA validation.
+            opaque=folder/'opaque.mkv'
+            subprocess.run(['ffmpeg','-v','error','-y','-i',str(folder/'golden_dragon_rgba.mkv'),
+                '-an','-c:v','ffv1','-pix_fmt','bgr0',str(opaque)],check=True)
+            opaque.replace(folder/'golden_dragon_rgba.mkv')
+            with self.assertRaisesRegex(AssertionError, 'alpha-bearing|RGBA master differs'):
+                load('verify').check(folder)
+
 
 if __name__=='__main__':unittest.main()

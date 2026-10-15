@@ -29,11 +29,11 @@ The render-only Actions workflow is `.github/workflows/nimzo-golden-dragon-rende
 - `golden_dragon_vap_candidate.mp4`: H.264 packed color+alpha with a real `vapc` v2 MP4 box. Requires the native VAP compositor; ordinary `video_player` shows two panels.
 - `golden_dragon_poster.png`, `golden_dragon_thumbnail.webp`: alpha stills from frame 240 of the actual sequence; review assets, not activated catalog art.
 - `alpha_*`, `room_alpha_*`: CPU compositing checks using decoded VAP data. The light room background is the repository's existing room golden. The dark room background is a derived contrast stress test, not a real device screenshot.
-- `verification.json`: actual stream counts, codec, dimensions, checksums, alpha mask error and explicit device-verification flags.
+- `verification.json`: actual stream counts, codec, dimensions, checksums, exact decoded RGBA comparison of all 360 FFV1 frames, alpha mask error and explicit device-verification flags.
 
 ## VAP layout and compatibility
 
-Read `pack.py`, its real encode/decode test, and the player's actual API rather than playing the candidate with `video_player`. For 540×960 display, packed video is 1088×960. The full-resolution alpha rectangle is `[0,0,540,960]`; straight RGB is `[544,0,540,960]`. Four-pixel padding protects the panel boundary; dimensions are 16-aligned. The appended `vapc` box preserves existing MP4 chunk offsets. No chroma keying occurs.
+Read `pack.py`, its real encode/decode test, and the player's actual API rather than playing the candidate with `video_player`. For 540×960 display, packed video is 1088×960. The full-resolution alpha rectangle is `[0,0,540,960]`; straight RGB is `[544,0,540,960]`. Four-pixel padding protects the panel boundary; dimensions are 16-aligned. The 540 export uses H.264 level 4.1; a 1080 export requires level 5.1 and a 2176×1920 packed decoder surface, so it especially requires device capability checks. The appended `vapc` box preserves existing MP4 chunk offsets. No chroma keying occurs.
 
 Inspected packages: `flutter_vap_player` 2.1.1 and `vap_player_android` 2.1.1, using Tencent VAP 2.0.28. `VapPlayerController.asset` accepts `VapPlayerOptions(viewType: VapViewType.textureView, scaleType: VapScaleType.fitCenter, repeatCount: 0, mute: true)`. Initialize before play; handle `VapErrorEvent` and `VapCompletedEvent`, watchdog, cancellation and disposal. Native `ProducerRender` clears to transparent, uses the alpha/RGB rectangles, and `SurfaceEglHelper` requests 8 alpha bits.
 
