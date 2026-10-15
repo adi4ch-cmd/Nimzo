@@ -40,6 +40,7 @@ jobs:
           /tmp/blender-4.3.2-linux-x64/blender -b rendered-dragon/golden_dragon.blend -t 1 -P tools/golden_dragon/audit_scene.py -- rendered-dragon/articulation.json
           python3 tools/golden_dragon/pack.py rendered-dragon
           python3 tools/golden_dragon/verify.py rendered-dragon
+          python3 tools/golden_dragon/room_preview.py rendered-dragon
       - name: Retain render source, frames and review media
         if: always()
         uses: actions/upload-artifact@v4

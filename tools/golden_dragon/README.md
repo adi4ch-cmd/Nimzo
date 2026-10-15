@@ -14,6 +14,7 @@ python3 -m unittest discover -s tools/golden_dragon/tests -v
 blender -b -t 3 -P tools/golden_dragon/scene.py -- --out rendered-dragon --width 540 --samples 16
 python3 tools/golden_dragon/pack.py rendered-dragon
 python3 tools/golden_dragon/verify.py rendered-dragon
+python3 tools/golden_dragon/room_preview.py rendered-dragon
 ```
 
 For a higher-resolution art pass: use `--width 1080 --samples 128 --denoise`. This is a runnable setting, **not an already rendered 1080p master**. Denoising was slow on the available CPU. A diagnostic still uses `--frame 240`; `--build-only` saves a `.blend` without rendering. The saved `.blend` has no external dependencies and can render through Blender's normal animation command.
@@ -28,6 +29,7 @@ The render-only Actions workflow is `.github/workflows/nimzo-golden-dragon-rende
 - `golden_dragon_rgba.mkv`: lossless FFV1 BGRA review master, not an Android playback format.
 - `golden_dragon_vap_candidate.mp4`: H.264 packed color+alpha with a real `vapc` v2 MP4 box. Requires the native VAP compositor; ordinary `video_player` shows two panels.
 - `golden_dragon_poster.png`, `golden_dragon_thumbnail.webp`: alpha stills from frame 240 of the actual sequence; review assets, not activated catalog art.
+- `golden_dragon_room_light.mp4`, `golden_dragon_room_dark_derived.mp4`: actual decoded VAP motion composited over screenshot backgrounds for desktop review; not Android recordings.
 - `alpha_*`, `room_alpha_*`: CPU compositing checks using decoded VAP data. The light room background is the repository's existing room golden. The dark room background is a derived contrast stress test, not a real device screenshot.
 - `verification.json`: actual stream counts, codec, dimensions, checksums, exact decoded RGBA comparison of all 360 FFV1 frames, alpha mask error and explicit device-verification flags.
 
@@ -51,4 +53,4 @@ Before activation: approved high-quality art; inspect all motion; render suffici
 
 All creature geometry, scale meshes, materials, lighting and motion in `scene.py` were generated for this task. No external model or texture is used; no third-party model attribution is needed for these files. No claim is made about the redistribution rights of earlier repository MP4s. Those files are retained unchanged.
 
-Potential third-party replacements were researched, including MAXDESIGN-3D's CC Attribution Chinese Dragon on Sketchfab (`https://sketchfab.com/3d-models/chinese-dragon-a5ad5ec06f43461f95bb93e95fe7553b`). No such asset was downloaded, incorporated, or licensed by this work. A listing alone is not a provenance record for a future download.
+Potential third-party replacements were researched, including MAXDESIGN-3D's CC Attribution Chinese Dragon on Sketchfab (`https://sketchfab.com/3d-models/chinese-dragon-a5ad5ec06f43461f95bb93e95fe7553b`). Its download API returned HTTP 401 without Sketchfab authentication. No such asset was downloaded, incorporated, or licensed by this work. A listing alone is not a provenance record for a future download.
