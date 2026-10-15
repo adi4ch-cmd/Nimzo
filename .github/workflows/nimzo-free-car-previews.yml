@@ -1,0 +1,79 @@
+name: Free licensed four-car CGI previews (NO APK)
+on:
+  push:
+    branches: [feature/realistic-six-gifts]
+    paths: ['tools/realistic_gifts/**', '.github/workflows/nimzo-free-car-previews.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix:
+        color: [red, black, gold, blue]
+        part: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install official Blender CPU renderer
+        run: |
+          curl -fLsS --retry 3 https://download.blender.org/release/Blender4.3/blender-4.3.2-linux-x64.tar.xz -o /tmp/blender-4.3.2-linux-x64.tar.xz
+          echo '4da1c956673c0485e63054e563ee69198cc8f80d8157dd7592dffc8a6a5592e6  /tmp/blender-4.3.2-linux-x64.tar.xz' | sha256sum --check --strict
+          tar -xf /tmp/blender-4.3.2-linux-x64.tar.xz -C /tmp
+      - name: Download pinned free CC-BY car and CC0 lighting
+        run: python3 tools/realistic_gifts/fetch_assets.py render-assets
+      - name: Render actual articulated RGBA frames
+        env:
+          CAR_COLOR: ${{ matrix.color }}
+          CAR_PART: ${{ matrix.part }}
+        run: |
+          first_frame=$((CAR_PART * 60 + 1))
+          last_frame=$((CAR_PART * 60 + 60))
+          /tmp/blender-4.3.2-linux-x64/blender -b -t 4 -P tools/realistic_gifts/car_scene.py -- --model render-assets/CarConcept.glb --hdri render-assets/studio_small_09_1k.exr --out rendered --color "$CAR_COLOR" --width 360 --samples 8 --denoise --start "$first_frame" --end "$last_frame"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: car-${{ matrix.color }}-part-${{ matrix.part }}
+          path: rendered/rgba/
+          retention-days: 3
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: matrix.part == 0
+        with:
+          name: source-${{ matrix.color }}
+          path: rendered/*.blend
+          retention-days: 3
+          if-no-files-found: error
+  encode:
+    needs: render
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        color: [red, black, gold, blue]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: car-${{ matrix.color }}-part-*
+          merge-multiple: true
+          path: rendered/rgba
+      - uses: actions/download-artifact@v4
+        with:
+          name: source-${{ matrix.color }}
+          path: rendered
+      - name: Encode moving review and real alpha media
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python3 -m pip install Pillow numpy
+          python3 tools/realistic_gifts/encode.py rendered
+          python3 tools/realistic_gifts/verify.py rendered
+          cp tools/realistic_gifts/ATTRIBUTION.md rendered/ATTRIBUTION.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: moving-${{ matrix.color }}-car-review
+          path: rendered/
+          retention-days: 3
+          if-no-files-found: error
