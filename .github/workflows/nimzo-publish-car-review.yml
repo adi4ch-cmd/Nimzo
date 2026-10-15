@@ -1,0 +1,69 @@
+name: Publish rendered car review media (NO APK)
+on:
+  push:
+    branches: [feature/realistic-six-gifts]
+    paths: ['.github/workflows/nimzo-publish-car-review.yml']
+  workflow_dispatch:
+    inputs:
+      render_run:
+        description: Successful four-car render workflow run ID
+        default: '38818436101'
+        required: true
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RENDER_RUN: ${{ inputs.render_run || '38818436101' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require actual successful render and encode jobs
+        shell: bash
+        run: |
+          [[ "$RENDER_RUN" =~ ^[0-9]+$ ]]
+          test "$(gh api "repos/$GH_REPO/actions/runs/$RENDER_RUN" --jq .head_branch)" = feature/realistic-six-gifts
+          test "$(gh api "repos/$GH_REPO/actions/runs/$RENDER_RUN" --jq .path)" = .github/workflows/nimzo-free-car-previews.yml
+          gh run watch "$RENDER_RUN" --exit-status --interval 30 > /tmp/render-watch.log
+      - name: Retrieve actual rendered reviews and source
+        run: |
+          for color in red black gold blue; do
+            gh run download "$RENDER_RUN" -n "moving-$color-car-review" -D "reviews/$color"
+          done
+      - name: Package transparent source and room composites
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python3 -m pip install Pillow numpy
+          mkdir -p release-assets
+          for color in red black gold blue; do
+            python3 tools/realistic_gifts/verify.py "reviews/$color"
+            python3 tools/realistic_gifts/room_preview.py "reviews/$color"
+            cp "reviews/$color/preview.mp4" "release-assets/$color-car-preview.mp4"
+            cp "reviews/$color/room_light.mp4" "release-assets/$color-car-room-light.mp4"
+            cp "reviews/$color/room_dark_derived.mp4" "release-assets/$color-car-room-dark-derived.mp4"
+            cp "reviews/$color/alpha_vap.mp4" "release-assets/$color-car-alpha-vap.mp4"
+            cp "reviews/$color/poster.png" "release-assets/$color-car-poster.png"
+            cp "reviews/$color/verification.json" "release-assets/$color-car-verification.json"
+            cp tools/realistic_gifts/ATTRIBUTION.md "reviews/$color/ATTRIBUTION.md"
+            (cd "reviews/$color" && zip -qr "../../release-assets/$color-car-render-source.zip" .)
+          done
+          cp tools/realistic_gifts/ATTRIBUTION.md release-assets/ATTRIBUTION.md
+          (cd release-assets && sha256sum * > SHA256SUMS.txt)
+      - name: Publish explicitly unapproved review media
+        run: |
+          tag="car-review-$RENDER_RUN"
+          cat > /tmp/review-notes.md <<'NOTES'
+          Four actual Blender/Cycles car review renders: red, black, gold and blue. Detailed free CC BY 4.0 model; CC0 HDRI. Attribution and source included.
+
+          Each preview is 240 rendered frames, 8 seconds, 30 fps, 360x640. This is low-resolution REVIEW MEDIA, not approved production CGI. Source ZIPs contain packed Blender projects, RGBA PNG sequences, lossless FFV1 alpha master, render-derived posters, VAP candidates and verification reports.
+
+          Room videos are desktop composites of decoded VAP media over a room screenshot and a derived dark background. Android native alpha playback and Vivox coexistence are NOT verified. Lion and Tiger are NOT complete. The six gifts remain inactive; no production catalog/data changes are applied.
+
+          NO APK IS INCLUDED. Final APK build remains gated on all six gifts being approved, integrated and tested.
+          NOTES
+          gh release create "$tag" --target "$GITHUB_SHA" --prerelease --title 'Four car CGI previews — review only, NO APK' --notes-file /tmp/review-notes.md release-assets/*

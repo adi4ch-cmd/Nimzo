@@ -1,0 +1,420 @@
+{
+  "date": "2026-10-15",
+  "budget_usd": 0,
+  "note": "Listing metadata and diagnostics do not establish production suitability. No listed candidate is accepted. Downloaded Running Tiger lacks requested fur and walk/roar; other inspected lions are stylized, low detail, or lack accessible verified source. Noncommercial assets are excluded.",
+  "candidates": [
+    {
+      "uid": "fc2c7fd74dd04e39935803b884c77258",
+      "name": "Running Tiger",
+      "author": "Amil (francescolima74)",
+      "url": "https://sketchfab.com/3d-models/running-tiger-fc2c7fd74dd04e39935803b884c77258",
+      "license": {
+        "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+        "label": "CC Attribution",
+        "fullName": "Creative Commons Attribution",
+        "requirements": "Author must be credited. Commercial use is allowed.",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "slug": "by"
+      },
+      "faces": 4650,
+      "animations_advertised": 1,
+      "metadata_sha256": "b63f5108586cc774bf925fa35b8edb1f32c8a0932a59617c461b985685f83339",
+      "accepted_for_production": false
+    },
+    {
+      "uid": "515f6c841a124b9897251cde436c2ae0",
+      "name": "Realistic Tiger",
+      "author": "Anees Animates",
+      "url": "https://sketchfab.com/3d-models/realistic-tiger-515f6c841a124b9897251cde436c2ae0",
+      "license": {
+        "uri": "https://api.sketchfab.com/v3/licenses/bbfe3f7dbcdd4122b966b85b9786a989",
+        "label": "CC Attribution-NonCommercial",
+        "fullName": "Creative Commons Attribution-NonCommercial",
+        "requirements": "Author must be credited. No commercial use.",
+        "url": "http://creativecommons.org/licenses/by-nc/4.0/",
+        "slug": "by-nc"
+      },
+      "faces": 100113,
+      "animations_advertised": 0,
+      "metadata_sha256": "a36717b1997042aee99430c6a01c236dffad91644715611066974feee9b47134",
+      "accepted_for_production": false
+    },
+    {
+      "uid": "52c58169b3354c02a66008ed3a98309e",
+      "name": "Royal Lion - Realistic 3D Character",
+      "author": "lehipo",
+      "url": "https://sketchfab.com/3d-models/royal-lion-realistic-3d-character-52c58169b3354c02a66008ed3a98309e",
+      "license": {
+        "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+        "label": "CC Attribution",
+        "fullName": "Creative Commons Attribution",
+        "requirements": "Author must be credited. Commercial use is allowed.",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "slug": "by"
+      },
+      "faces": 270359,
+      "animations_advertised": 0,
+      "metadata_sha256": "0e3d9071fa1588ca7bf0faf0722ecaba8a274671f26175cde259b04c02b7a7ec",
+      "accepted_for_production": false
+    },
+    {
+      "uid": "66be3258e2d64f32af2b73b2ecd47637",
+      "name": "Lion",
+      "author": "kenchoo",
+      "url": "https://sketchfab.com/3d-models/lion-66be3258e2d64f32af2b73b2ecd47637",
+      "license": {
+        "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+        "label": "CC Attribution",
+        "fullName": "Creative Commons Attribution",
+        "requirements": "Author must be credited. Commercial use is allowed.",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "slug": "by"
+      },
+      "faces": 42710,
+      "animations_advertised": 1,
+      "metadata_sha256": "6c67dc6ac32a6be1976092ac829bcc032f02d6f1a3049b46815b51c4136bffb7",
+      "accepted_for_production": false
+    },
+    {
+      "uid": "f5158372967644bb8b05efcd623f4773",
+      "name": "Lion Growl",
+      "author": "oesquivel",
+      "url": "https://sketchfab.com/3d-models/lion-growl-f5158372967644bb8b05efcd623f4773",
+      "license": {
+        "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+        "label": "CC Attribution",
+        "fullName": "Creative Commons Attribution",
+        "requirements": "Author must be credited. Commercial use is allowed.",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "slug": "by"
+      },
+      "faces": 5497,
+      "animations_advertised": 3,
+      "metadata_sha256": "45470084e2e9c2c68570e5fbc6cde218b32215af88589cfa513bec831b8125fd",
+      "accepted_for_production": false
+    },
+    {
+      "uid": "1e846f8989b44d26874e2482e0f90876",
+      "name": "Lion run",
+      "author": "Walter Araujo",
+      "url": "https://sketchfab.com/3d-models/lion-run-1e846f8989b44d26874e2482e0f90876",
+      "license": {
+        "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+        "label": "CC Attribution",
+        "fullName": "Creative Commons Attribution",
+        "requirements": "Author must be credited. Commercial use is allowed.",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "slug": "by"
+      },
+      "faces": 19154,
+      "animations_advertised": 1,
+      "metadata_sha256": "e4ab8248d6d5e27619b765fadf64394cb50d07d20096ee36c27f054140dc5217",
+      "accepted_for_production": false
+    }
+  ],
+  "blenderkit_free_search": {
+    "lion": {
+      "query": "lion asset_type:model is_free:true",
+      "count_returned": 33,
+      "metadata_sha256": "05c9dcf5343d352c00b2335bd2136d43694c9c34953f92ee7931c5ffcc561185",
+      "results": [
+        {
+          "id": "50b661cb-119d-4e80-8a9c-5c6996cbb0c8",
+          "name": "Chinese Porcelain Lion",
+          "license": "cc_zero",
+          "isFree": true
+        },
+        {
+          "id": "9aeead45-9568-4fce-854f-d0a076b76195",
+          "name": "Scan Floor Lion",
+          "license": "cc_zero",
+          "isFree": true
+        },
+        {
+          "id": "dc81458e-0193-47d6-b3c9-adaaf526cbc3",
+          "name": "Lion statue",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "b80862b4-f5eb-4cf3-b5d4-08b4fcd51d3f",
+          "name": "Weathered Stone Lion Statue -  Photoscan",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "02b3c2c6-71e9-4326-b235-04575589e498",
+          "name": "Frostwhisk Lion Creature (Rigged)",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "e89f29be-d8cb-4286-b313-f4ffa6523959",
+          "name": "Lion Cub",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "6a52c230-a8fd-4465-b2f8-df12d478ef64",
+          "name": "Chinese Porcelain Lion",
+          "license": "cc_zero",
+          "isFree": true
+        },
+        {
+          "id": "d3202331-5093-4e7c-ae3f-fa4400d22271",
+          "name": "Lion",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "deca4c97-8f6e-4cc7-9a29-e383a38521c4",
+          "name": "Lion Painting",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "11ad0a3d-41fe-4bc5-a353-e02854d7feb5",
+          "name": "Lion",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "5d5bb453-82de-498b-a337-8e914644bf8c",
+          "name": "Asian Ancient Stone Lion Figurine",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "c024a797-a884-4200-b922-132cc01e68e5",
+          "name": "Lion Head",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "daa5dae2-a963-4251-896c-92fb1256d673",
+          "name": "Skin of a lion book",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "e480fb0e-78e7-42ae-bd05-2aeaf00c69ca",
+          "name": "Chubby Lion Rock Statuette",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "22fd225f-0132-4743-ace0-b091c1edee8b",
+          "name": "Lion Head",
+          "license": "cc_zero",
+          "isFree": true
+        },
+        {
+          "id": "0db3af7a-a9e6-498b-9826-059934ca6f7a",
+          "name": "Lion Statue",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "8a2aaee1-bd82-4b69-bd79-0f8d92d2b1e9",
+          "name": "Two Lions Painting",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "29d76e56-e398-4c07-a950-5c184d082586",
+          "name": "Aic samson and the lion",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "c4263680-39af-447d-8efb-0efd43cd7077",
+          "name": "Bear Sculpture (Photoscanned)",
+          "license": "cc_zero",
+          "isFree": true
+        },
+        {
+          "id": "c4c7eca2-ec49-4169-8e63-5fff6d6d4dbd",
+          "name": "Simba",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "97b8de04-aff9-4d3e-b573-919e7ba99d03",
+          "name": "Terna",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "f4c14f74-7f7b-4962-825f-b8283daa2c57",
+          "name": "Big cat statue",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "f716587b-fc42-4f9d-887b-2e282b324e2b",
+          "name": "Rainbow Chimera",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "54dc2032-1b0e-472d-b616-acfa9c8442fb",
+          "name": "Red Chimera (Rigged)",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "65091c6a-3aca-408c-8898-95c0f3f554bc",
+          "name": "Golden Chimera (Rigged)",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "927ccc70-f42d-4e14-bae5-81804da78879",
+          "name": "Plastic Stool",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "fbc85d0e-2520-4133-bb34-7f5974a063a8",
+          "name": "Brown Chimera (Rigged)",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "ee33b8eb-8328-45ec-87e3-c825723dcd4d",
+          "name": "Sunset Chimera (Rigged)",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "8f3ebfde-136c-420a-b200-df3b2043985a",
+          "name": "Sculptre of Hercules from Royal \u0141azienki",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "b0144cbe-add5-4ca8-af77-c829e0e7b16e",
+          "name": "Thunder cat Sword",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "3f95d8d6-3126-4690-a6d8-a09d150478a1",
+          "name": "Sword",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "39345e82-a1c7-4b45-918e-9662b179f4e3",
+          "name": "Buddhist Stuppa",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "d61b7056-63c2-4776-bc48-03e351c568e9",
+          "name": "Shield",
+          "license": "royalty_free",
+          "isFree": true
+        }
+      ]
+    },
+    "tiger": {
+      "query": "tiger asset_type:model is_free:true",
+      "count_returned": 15,
+      "metadata_sha256": "46394d32a55070197b70ac63ad0d9817eed26aef78e1d3847ab13f2cf38b974d",
+      "results": [
+        {
+          "id": "cb40e735-9729-4174-a07c-263b47695161",
+          "name": "Tiger-1-Tank",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "4900d66b-5d12-4908-ae39-135a57d7c4f0",
+          "name": "Tiger rug",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "508ad943-1b2f-4a5c-8ccc-67e40dc70db8",
+          "name": "Tiger Stylized V4 -Rigged - Lowpoly",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "5678bf0e-ab1f-4eed-848c-3b0d7dc4c8f3",
+          "name": "Mecha tiger",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "235d2d23-72b2-4cc7-ac24-669481466f46",
+          "name": "Panzerkampfwagen Tiger Ausf. B",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "948773e9-b9a3-4e50-bc21-91591a73193a",
+          "name": "Pz.Kpfw.VI Ausf.E Tiger",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "f45cd04e-9e81-4ebb-9e77-b40aaf2c3ae6",
+          "name": "Tiger Stylized V1 -Rigged - Lowpoly",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "e36a6445-0b55-439b-8c27-dac56df75922",
+          "name": "Tiger tail seahorse",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "a42d502c-a7f1-4996-8f40-c3d3c50285c0",
+          "name": "Tiger Stylized V2 -Rigged - Lowpoly",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "92db7c11-7ba1-4d5e-832e-edb75acd25cc",
+          "name": "Tiger Stylized V4 -Rigged - Lowpoly",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "1d30043c-15c4-4cef-9bf9-a71f63ba8368",
+          "name": "VITTSJ\u00d6 Coffee table",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "4d4edc43-ce9d-4c5c-bcf1-68193966533c",
+          "name": "Celtic harp",
+          "license": "cc_zero",
+          "isFree": true
+        },
+        {
+          "id": "cd86fc84-9a50-48aa-9632-674448559a7a",
+          "name": "Guitar - bass strap with curve control",
+          "license": "cc_zero",
+          "isFree": true
+        },
+        {
+          "id": "cf4397c5-3aa7-42f8-bc56-7a44725fd565",
+          "name": "Colored Glass",
+          "license": "royalty_free",
+          "isFree": true
+        },
+        {
+          "id": "ca5c4366-77af-4809-a1c2-d37734bcf2aa",
+          "name": "Medieval knight scissor chair",
+          "license": "cc_zero",
+          "isFree": true
+        }
+      ]
+    }
+  },
+  "blenderkit_assessment": "Free search results include statues, props, cubs, stylized creatures and low-poly tigers. Frostwhisk, Simba and Terna thumbnails inspected and rejected as visibly cartoon/stylized; no production animal accepted. No assets purchased."
+}

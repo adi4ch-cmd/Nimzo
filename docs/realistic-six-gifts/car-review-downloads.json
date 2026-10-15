@@ -1,0 +1,190 @@
+{
+  "release": "https://github.com/adi4ch-cmd/Nimzo/releases/tag/car-review-38818436101",
+  "tag": "car-review-38818436101",
+  "source_commit": "34362263153ecc27397b9261a71915a8ea99b7f0",
+  "review_only": true,
+  "android_device_verified": false,
+  "final_apk_included": false,
+  "assets": [
+    {
+      "name": "ATTRIBUTION.md",
+      "size": 3705,
+      "digest": "sha256:66ead2df639cf6eeab4c9ede321097af72755f26ce611a894659c79e3b641d6d",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/ATTRIBUTION.md"
+    },
+    {
+      "name": "black-car-alpha-vap.mp4",
+      "size": 1505582,
+      "digest": "sha256:c2ba0c47f4768eaa3ef8b7f39f3e19fd7e7631ccac8b40c5bdfcecf65a39a119",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/black-car-alpha-vap.mp4"
+    },
+    {
+      "name": "black-car-poster.png",
+      "size": 104608,
+      "digest": "sha256:9700d9b6c46908a5d2856d0378fb094b0a051ea2f3095d13d62afe5fcca94f79",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/black-car-poster.png"
+    },
+    {
+      "name": "black-car-preview.mp4",
+      "size": 362984,
+      "digest": "sha256:38467c13c6fc0c3e80c00554364cb9180819242f7ab4dd686af145b39eabd27c",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/black-car-preview.mp4"
+    },
+    {
+      "name": "black-car-render-source.zip",
+      "size": 65092372,
+      "digest": "sha256:3bedc28911d160deeefd12620a15f41f09e4493121ba87a5c5bd96753c56fa12",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/black-car-render-source.zip"
+    },
+    {
+      "name": "black-car-room-dark-derived.mp4",
+      "size": 384606,
+      "digest": "sha256:d1e8f8b8766a9b8f59e0e046245e8a5cd85e08a4ea1ee53618781ae69d24780c",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/black-car-room-dark-derived.mp4"
+    },
+    {
+      "name": "black-car-room-light.mp4",
+      "size": 433168,
+      "digest": "sha256:18f0f847a79d55db06f26bc9025340e0bd50ebc37d3b5b8b9b1fa44c8d1b996b",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/black-car-room-light.mp4"
+    },
+    {
+      "name": "black-car-verification.json",
+      "size": 1520,
+      "digest": "sha256:ac3ecddbfcb3316199eb51271d91cd44eaed534b4d87cf273c8f8f31b10e3710",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/black-car-verification.json"
+    },
+    {
+      "name": "blue-car-alpha-vap.mp4",
+      "size": 1556748,
+      "digest": "sha256:746c4154d55ee9a8b2681b9e6f72b1bbe07da764b2e5147462f9fe5c55f5eb51",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/blue-car-alpha-vap.mp4"
+    },
+    {
+      "name": "blue-car-poster.png",
+      "size": 105383,
+      "digest": "sha256:ff8c6ba44dbc9edc8a412d10c2ed47620473ee00fdc463e23c0638394253fe93",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/blue-car-poster.png"
+    },
+    {
+      "name": "blue-car-preview.mp4",
+      "size": 383182,
+      "digest": "sha256:b94564b1e01886d5e66ec2fe16cc1a8f011bab53bd55b0f669f2dda97f70cf3a",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/blue-car-preview.mp4"
+    },
+    {
+      "name": "blue-car-render-source.zip",
+      "size": 67683351,
+      "digest": "sha256:9eaf98085403f402961a9710f7888cf9cfc9e48887398692bd23ea50bff098f6",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/blue-car-render-source.zip"
+    },
+    {
+      "name": "blue-car-room-dark-derived.mp4",
+      "size": 399176,
+      "digest": "sha256:248557d8db4bf8a2125941a950deeadf68d03f768d04e378a4b9c67ff28b9a7d",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/blue-car-room-dark-derived.mp4"
+    },
+    {
+      "name": "blue-car-room-light.mp4",
+      "size": 453511,
+      "digest": "sha256:e969959bc0a237bb75bc2accdf2ee844aca390be5373c61ff97ad25c2eafaf88",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/blue-car-room-light.mp4"
+    },
+    {
+      "name": "blue-car-verification.json",
+      "size": 1529,
+      "digest": "sha256:604cf512a5fdb01fb9092b29c3c3dade98791d3c1a15b76669c9db798e88de86",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/blue-car-verification.json"
+    },
+    {
+      "name": "gold-car-alpha-vap.mp4",
+      "size": 1503750,
+      "digest": "sha256:f16826634f566887357ccaacb581b3777933164a449b8c7aee4ed7fc422f15e3",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/gold-car-alpha-vap.mp4"
+    },
+    {
+      "name": "gold-car-poster.png",
+      "size": 105346,
+      "digest": "sha256:a319506728c90f59438b95521fc242c0c3cd75486ee50319ce7c62ac737da481",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/gold-car-poster.png"
+    },
+    {
+      "name": "gold-car-preview.mp4",
+      "size": 353115,
+      "digest": "sha256:9a043d7579c234456b3fef035c21a97742d2cf7d9709814a37784edbc439999d",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/gold-car-preview.mp4"
+    },
+    {
+      "name": "gold-car-render-source.zip",
+      "size": 66725647,
+      "digest": "sha256:b582e91ee431c563e1830ff8289865c52c7f018890a097fb8e0e49246757f1dd",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/gold-car-render-source.zip"
+    },
+    {
+      "name": "gold-car-room-dark-derived.mp4",
+      "size": 371897,
+      "digest": "sha256:7d9df2d7f13ae7e701c6c334b6b7b6e605fc8d4bab3d70576a3729e9acd6eba6",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/gold-car-room-dark-derived.mp4"
+    },
+    {
+      "name": "gold-car-room-light.mp4",
+      "size": 423117,
+      "digest": "sha256:5ff1d96c0bea7c926600f2879905b2ac76a22f4d0f4c05687b7fa95f48c79eda",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/gold-car-room-light.mp4"
+    },
+    {
+      "name": "gold-car-verification.json",
+      "size": 1529,
+      "digest": "sha256:819a4c30ba08ff0ba3fb92e4b4a517e2a6de5fd07581b2e235ac88555b77ee42",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/gold-car-verification.json"
+    },
+    {
+      "name": "red-car-alpha-vap.mp4",
+      "size": 1574183,
+      "digest": "sha256:0e4087852cce67d1dbf95212f75420e5eca5dd41b9e89930a0ae4fc85be1fd26",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/red-car-alpha-vap.mp4"
+    },
+    {
+      "name": "red-car-poster.png",
+      "size": 105430,
+      "digest": "sha256:3fd35714109ca2f295ec07a470bd748ec710b892df078453985315fdec730b00",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/red-car-poster.png"
+    },
+    {
+      "name": "red-car-preview.mp4",
+      "size": 395288,
+      "digest": "sha256:318ad4c8ff766aea3836134f4189ac7ef9a3eb79ef9cb6df954bc6e837a5b0a8",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/red-car-preview.mp4"
+    },
+    {
+      "name": "red-car-render-source.zip",
+      "size": 67203596,
+      "digest": "sha256:0fa9027ae39b56ff46b4a8a3879c8b726d2db730f6aae5dc46f5b40779998984",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/red-car-render-source.zip"
+    },
+    {
+      "name": "red-car-room-dark-derived.mp4",
+      "size": 411850,
+      "digest": "sha256:539f1076e5f59e925b1bc4f0c6f273937fdddc819898a91a3449fa0a3526f68b",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/red-car-room-dark-derived.mp4"
+    },
+    {
+      "name": "red-car-room-light.mp4",
+      "size": 463811,
+      "digest": "sha256:58a2aa1db07ac983ba0ece055cea3695bfa6c97c2c27c887cd2c45b598d96984",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/red-car-room-light.mp4"
+    },
+    {
+      "name": "red-car-verification.json",
+      "size": 1527,
+      "digest": "sha256:e29a9dab2ec57b797b0fbf21666bbaaf904e1ac14040946116f3d97367010ce7",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/red-car-verification.json"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size": 2621,
+      "digest": "sha256:0ba2a40190dbed2e405e7fc7a9305f8feebc6e37a6071418f67995af61550880",
+      "browser_download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/car-review-38818436101/SHA256SUMS.txt"
+    }
+  ]
+}

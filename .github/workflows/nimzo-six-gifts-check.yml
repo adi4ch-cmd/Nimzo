@@ -1,0 +1,34 @@
+name: Six realistic gifts foundation checks (NO APK)
+on:
+  push:
+    branches: [feature/realistic-six-gifts]
+    paths:
+      - 'nimzo/lib/features/gifts/gift_vap_overlay.dart'
+      - 'nimzo/test/gift_vap_overlay_test.dart'
+      - 'nimzo/pubspec*'
+      - 'supabase/migrations/*stage_six_realistic_gifts.sql'
+      - 'tools/tests/test_six_gift_staging.py'
+      - '.github/workflows/nimzo-six-gifts-check.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Catalog staging tests in disposable PostgreSQL
+        run: python3 -m unittest discover -s tools/tests -p test_six_gift_staging.py -v
+      - name: Resolve dependencies
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Full static analysis
+        working-directory: nimzo
+        run: flutter analyze
+      - name: Full Flutter regression (native callbacks mocked)
+        working-directory: nimzo
+        run: flutter test --concurrency=1
