@@ -7,7 +7,7 @@ on:
     inputs:
       render_run:
         description: Successful four-car render workflow run ID
-        default: '38816339177'
+        default: '38817679972'
         required: true
 permissions:
   contents: write
@@ -19,7 +19,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      RENDER_RUN: ${{ inputs.render_run || '38816339177' }}
+      RENDER_RUN: ${{ inputs.render_run || '38817679972' }}
     steps:
       - uses: actions/checkout@v4
       - name: Require actual successful render and encode jobs
@@ -36,6 +36,8 @@ jobs:
           done
       - name: Package transparent source and room composites
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
           python3 -m pip install Pillow numpy
           mkdir -p release-assets
           for color in red black gold blue; do
