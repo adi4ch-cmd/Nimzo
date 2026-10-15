@@ -45,7 +45,7 @@ def encode(folder):
     folder=Path(folder)
     paths=sorted((folder/'rgba').glob('frame_*.png'))
     if [p.name for p in paths] != [f'frame_{n:04}.png' for n in range(1,241)]:
-        raise ValueError('Expected complete frame_0001.png through frame_0120.png')
+        raise ValueError('Expected complete frame_0001.png through frame_0240.png')
     with Image.open(paths[0]) as im:
         width,height=im.size
         if im.mode != 'RGBA': raise ValueError('Render is not RGBA')

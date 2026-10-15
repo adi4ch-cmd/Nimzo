@@ -2,7 +2,7 @@
 
 User scope replaces Golden Dragon work on 2026-10-15. Golden Dragon's remaining render workflow was cancelled. New branch starts from the latest `feature/profile-reference-redesign` commit `e76a9e69cf5e8a080975c95c5cd4d26eb3ded970`.
 
-**NOT COMPLETE. No six-gift footage or final APK exists yet.** No artificial/procedural substitute has been created. Licensed production models and Android test access are not available in this environment. The user's reply “500k coins” authorizes **500,000 coins for each new gift**, not a USD model-purchase budget.
+**NOT COMPLETE. No six-gift footage or final APK exists yet.** No artificial/procedural substitute has been created. A detailed free CC-BY car model has now been acquired and rendered diagnostically; suitable completed lion/tiger gifts and Android test access remain unavailable. The user's reply “500k coins” authorizes **500,000 coins for each new gift**, not a USD model-purchase budget.
 
 ## Implemented foundation
 
@@ -24,7 +24,17 @@ User scope replaces Golden Dragon work on 2026-10-15. Golden Dragon's remaining 
 
 Read-only production audit found the existing Sports Car UUID `35e4c570-cb02-4466-ae86-d670b3fb05ab` active at 100000 coins, with no existing six-gift-name matches. That entry stays unchanged. Existing users, wallets, IDs, historical gift rows, ledgers, VIP/SVIP and Vivox code are untouched. The latest six-gift instruction permits additional gifts but does not authorize replacing the older catalog.
 
-## Model acquisition research — not purchased or downloaded
+## Asset budget and current free render work
+
+The user approved **$0** for assets/subscriptions. No purchases are permitted or made.
+
+A detailed Car Concept model from Khronos glTF Sample Assets is downloaded under its specific CC BY 4.0 license, with a CC0 Poly Haven HDRI. See [asset attribution](../../tools/realistic_gifts/ATTRIBUTION.md) for pinned sources, hashes, exclusions and modifications. Existing authored wheel assemblies are animated; no primitive car substitute is used.
+
+`tools/realistic_gifts/car_scene.py` creates four independently colored Blender projects, real rolling/steering/driving motion, reflections, headlights, camera movement and volumetric tire haze. Corrected diagnostic renders exist. Full 240-frame, 8-second review renders at 360×640/30 fps are running in [Actions run 38816339177](https://github.com/adi4ch-cmd/Nimzo/actions/runs/38816339177). These low-resolution review renders are not accepted production masters. Full-length media verification and visual review have not completed.
+
+The CC-BY Running Tiger file has one Run animation; no walk/roar completion or premium fur acceptance is claimed. Inspected free lion candidates were stylized, low-poly or a cub and were rejected. A promisingly named Royal Lion listing also appears stylized in its thumbnail and is not accepted. Noncommercial tiger rigs were rejected.
+
+## Paid alternatives researched — not purchased
 
 These are candidate listings, **not verified incorporated assets or final licensing recommendations**. No marketplace account/purchase/download entitlement was provided.
 
@@ -44,7 +54,7 @@ Purchased .blend/model/texture files must stay in appropriately licensed private
 
 1. Obtain legitimate downloadable professionally modeled/rigged car, lion and tiger projects and document rights for NIMZO's paid virtual-gift use.
 2. Produce four unmistakable metallic car colors with wheel rotation, driving, lights, camera, smoke and entrance/exit; animate walking/looking/roaring/exiting for both furred animals. Each 8–12 seconds, at least 30 fps. No static-picture or primitive fallback.
-3. Render actual RGBA sequences and derive moving MP4 previews, properly packed Android alpha, thumbnails and licensed source projects. Visually inspect and reject weak results. No six-gift renders have run yet.
+3. Render actual RGBA sequences and derive moving MP4 previews, properly packed Android alpha, thumbnails and licensed source projects. Visually inspect and reject weak results. Car render diagnostics have run; full-length car review renders are underway. Animal renders remain pending.
 4. Establish approval of all six actual previews, then implement accepted format-aware UUID media mappings, lifecycle/fallback/queue tests and a reviewed activation migration. Do not charge for absent/unaccepted media.
 5. Test native alpha on two real Android phones, including sender/recipient room events, true settlement and Vivox mic/audio continuity. No adb executable or USB Android devices are attached here. Mock callback tests are not those tests.
 6. Only after all six are approved, integrated and tested: run one final APK build, verify package `io.nimzo.app`, signing/installability/content/hash, publish to a real accessible location, and check the direct download. No final build or APK URL is claimed now.
@@ -58,7 +68,7 @@ The earlier GitHub Releases upload endpoint returned HTTP401 despite Git pushes 
 - Five PostgreSQL staging tests: passed in an isolated local PG17 container, after observing all five fail against the empty migration.
 - New widget tests first failed for the absent component, then passed. Additional lifecycle, delayed initialization and 15-second playback-watchdog tests passed.
 - Independent code review found no concrete blocker in the migration or renderer; the additional lifecycle/watchdog coverage gaps were filled.
-- No production SQL writes or migration application, licensed model download, six-gift render, real device/voice test, final APK build or APK upload has occurred.
+- No production SQL writes or migration application, real device/voice test, final APK build or APK upload has occurred. Licensed free car downloads and diagnostic renders have occurred; full car review renders are underway.
 - The VAP platform interface 2.1.0 is pinned as a test dependency. Resolving the baseline's already-declared SVGA/VAP dependencies filled 19 missing lock entries; no previously locked package version changed. CI uses the repository's 3.47.6 Flutter pin.
 
 A separate foundation-check workflow runs only analysis/tests and disposable database checks; it never generates an APK. The final APK gate remains unmet.

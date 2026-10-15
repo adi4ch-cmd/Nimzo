@@ -70,6 +70,7 @@ jobs:
           python3 -m pip install Pillow numpy
           python3 tools/realistic_gifts/encode.py rendered
           python3 tools/realistic_gifts/verify.py rendered
+          python3 tools/realistic_gifts/room_preview.py rendered
           cp tools/realistic_gifts/ATTRIBUTION.md rendered/ATTRIBUTION.md
       - uses: actions/upload-artifact@v4
         with:
