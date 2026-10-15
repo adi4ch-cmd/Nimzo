@@ -2,7 +2,7 @@
 
 User scope replaces Golden Dragon work on 2026-10-15. Golden Dragon's remaining render workflow was cancelled. New branch starts from the latest `feature/profile-reference-redesign` commit `e76a9e69cf5e8a080975c95c5cd4d26eb3ded970`.
 
-**NOT COMPLETE. No six-gift footage or final APK exists yet.** No artificial/procedural substitute has been created. A detailed free CC-BY car model has now been acquired and rendered diagnostically; suitable completed lion/tiger gifts and Android test access remain unavailable. The user's reply “500k coins” authorizes **500,000 coins for each new gift**, not a USD model-purchase budget.
+**NOT COMPLETE. Four moving car review renders exist, but no accepted six-gift set or final APK exists.** No artificial/procedural substitute has been created. A detailed free CC-BY car model has now been acquired and rendered diagnostically; suitable completed lion/tiger gifts and Android test access remain unavailable. The user's reply “500k coins” authorizes **500,000 coins for each new gift**, not a USD model-purchase budget.
 
 ## Implemented foundation
 
@@ -30,7 +30,7 @@ The user approved **$0** for assets/subscriptions. No purchases are permitted or
 
 A detailed Car Concept model from Khronos glTF Sample Assets is downloaded under its specific CC BY 4.0 license, with a CC0 Poly Haven HDRI. See [asset attribution](../../tools/realistic_gifts/ATTRIBUTION.md) for pinned sources, hashes, exclusions and modifications. Existing authored wheel assemblies are animated; no primitive car substitute is used.
 
-`tools/realistic_gifts/car_scene.py` creates four independently colored Blender projects, real rolling/steering/driving motion, reflections, headlights, camera movement and volumetric tire haze. Corrected diagnostic renders exist. Full 240-frame, 8-second review renders at 360×640/30 fps are running in [Actions run 38816339177](https://github.com/adi4ch-cmd/Nimzo/actions/runs/38816339177). These low-resolution review renders are not accepted production masters. Full-length media verification and visual review have not completed.
+`tools/realistic_gifts/car_scene.py` creates four independently colored Blender projects, real rolling/steering/driving motion, reflections, headlights, camera movement and volumetric tire haze. Corrected diagnostic renders exist. The first full four-color render/encode run [38816339177](https://github.com/adi4ch-cmd/Nimzo/actions/runs/38816339177) succeeded: 240 actual RGBA frames per color, 8 seconds at 360×640/30 fps. Its full-motion visual review exposed a finite shadow-plane edge and inactive authored quaternion steering. Those previews were rejected for production. The corrected [run 38818436101](https://github.com/adi4ch-cmd/Nimzo/actions/runs/38818436101) removes the plane, uses actual quaternion steering, aligns heading to a 24-m-radius driving arc with a real braking/hero stop, orbits the camera and widens its framing. Low-resolution review renders are not accepted production masters.
 
 The CC-BY Running Tiger file was imported and a real Cycles diagnostic rendered. Its 3,204-vertex mesh and texture-only fur do not meet the requested quality; it was rejected. Its one Run animation also lacks the requested walk/roar. Inspected free lion candidates were stylized, low-poly or a cub and were rejected. A promisingly named Royal Lion listing also appears stylized in its thumbnail and is not accepted. Noncommercial tiger rigs were rejected.
 
@@ -52,9 +52,9 @@ Purchased .blend/model/texture files must stay in appropriately licensed private
 
 ## Rendering and acceptance work still blocked/pending
 
-1. Obtain legitimate downloadable professionally modeled/rigged car, lion and tiger projects and document rights for NIMZO's paid virtual-gift use.
+1. The free car model is acquired and documented. Suitable free commercially usable lion/tiger models with convincing fur and walk/roar animation remain unresolved; do not substitute the rejected candidates.
 2. Produce four unmistakable metallic car colors with wheel rotation, driving, lights, camera, smoke and entrance/exit; animate walking/looking/roaring/exiting for both furred animals. Each 8–12 seconds, at least 30 fps. No static-picture or primitive fallback.
-3. Render actual RGBA sequences and derive moving MP4 previews, properly packed Android alpha, thumbnails and licensed source projects. Visually inspect and reject weak results. Car render diagnostics have run; full-length car review renders are underway. Animal renders remain pending.
+3. Render actual RGBA sequences and derive moving MP4 previews, properly packed Android alpha, thumbnails and licensed source projects. Visually inspect and reject weak results. First complete moving four-car renders and CPU alpha checks have run; corrected car review renders are underway. Only a rejected tiger diagnostic exists; complete animal gift renders remain pending.
 4. Establish approval of all six actual previews, then implement accepted format-aware UUID media mappings, lifecycle/fallback/queue tests and a reviewed activation migration. Do not charge for absent/unaccepted media.
 5. Test native alpha on two real Android phones, including sender/recipient room events, true settlement and Vivox mic/audio continuity. No adb executable or USB Android devices are attached here. Mock callback tests are not those tests.
 6. Only after all six are approved, integrated and tested: run one final APK build, verify package `io.nimzo.app`, signing/installability/content/hash, publish to a real accessible location, and check the direct download. No final build or APK URL is claimed now.
@@ -68,7 +68,15 @@ The earlier GitHub Releases upload endpoint returned HTTP401 despite Git pushes 
 - Five PostgreSQL staging tests: passed in an isolated local PG17 container, after observing all five fail against the empty migration.
 - New widget tests first failed for the absent component, then passed. Additional lifecycle, delayed initialization and 15-second playback-watchdog tests passed.
 - Independent code review found no concrete blocker in the migration or renderer; the additional lifecycle/watchdog coverage gaps were filled.
-- No production SQL writes or migration application, real device/voice test, final APK build or APK upload has occurred. Licensed free car downloads and diagnostic renders have occurred; full car review renders are underway.
+- No production SQL writes or migration application, real device/voice test, final APK build or APK upload has occurred. Licensed free car downloads, diagnostics and four complete review animations have occurred. Corrected review renders are underway.
 - The VAP platform interface 2.1.0 is pinned as a test dependency. Resolving the baseline's already-declared SVGA/VAP dependencies filled 19 missing lock entries; no previously locked package version changed. CI uses the repository's 3.47.6 Flutter pin.
 
 A separate foundation-check workflow runs only analysis/tests and disposable database checks; it never generates an APK. The final APK gate remains unmet.
+
+## CGI verification details
+
+- Real FFmpeg round-trip regression passed, including every one of 240 decoded RGBA frames matching the source, soft alpha, actual packed H.264 decoding and rejection of an opaque replacement master.
+- Corrected packed Blender source was opened and evaluated at five frames: heading/velocity dot product above 0.999, changing front-wheel quaternion steering and cumulative rolling rotation; no mesh shadow catcher remains. This does not substitute for visual motion review or Android QA.
+- Initial publication failed because the runner lacked FFmpeg; the workflow now installs it explicitly. No successful release or download URL is asserted until publication actually succeeds.
+
+Review render limitations: 360×640 and 8 samples are intended to assess real model/motion/color first. Stochastic volume alpha is visibly noisy in diagnostics and needs higher-sample master rendering before production acceptance. No claim of premium final quality or Android certification is made.
