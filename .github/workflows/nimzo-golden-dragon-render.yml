@@ -1,0 +1,51 @@
+name: Golden Dragon CGI review (no APK)
+on:
+  push:
+    branches: [feature/golden-dragon-cgi]
+    paths: ['tools/golden_dragon/**', '.github/workflows/nimzo-golden-dragon-render.yml']
+  workflow_dispatch:
+    inputs:
+      width:
+        description: 'Portrait width (540 review; 1080 master)'
+        default: '540'
+        type: choice
+        options: ['540', '1080']
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install render and encoding tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg libxrender1 libxi6 libxkbcommon0 libsm6
+          python3 -m pip install -r tools/golden_dragon/requirements.txt
+          curl --fail --location --retry 3 https://download.blender.org/release/Blender4.3/blender-4.3.2-linux-x64.tar.xz -o /tmp/blender-4.3.2-linux-x64.tar.xz
+          curl --fail --location --retry 3 https://download.blender.org/release/Blender4.3/blender-4.3.2.sha256 -o /tmp/blender.sha256
+          cd /tmp
+          grep ' blender-4.3.2-linux-x64.tar.xz$' blender.sha256 | sha256sum --check --strict
+          tar -xf blender-4.3.2-linux-x64.tar.xz
+      - name: Test VAP packing contract
+        run: python3 -m unittest discover -s tools/golden_dragon/tests -v
+      - name: Render actual articulated RGBA sequence
+        env:
+          RENDER_WIDTH: ${{ inputs.width || '540' }}
+        run: |
+          /tmp/blender-4.3.2-linux-x64/blender -b -t 4 -P tools/golden_dragon/scene.py -- --out rendered-dragon --width "$RENDER_WIDTH" --samples 32
+      - name: Encode actual review and alpha media
+        run: |
+          /tmp/blender-4.3.2-linux-x64/blender -b rendered-dragon/golden_dragon.blend -t 1 -P tools/golden_dragon/audit_scene.py -- rendered-dragon/articulation.json
+          python3 tools/golden_dragon/pack.py rendered-dragon
+          python3 tools/golden_dragon/verify.py rendered-dragon
+          python3 tools/golden_dragon/room_preview.py rendered-dragon
+      - name: Retain render source, frames and review media
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-dragon-cgi-review
+          path: rendered-dragon/
+          retention-days: 14
+          if-no-files-found: error
