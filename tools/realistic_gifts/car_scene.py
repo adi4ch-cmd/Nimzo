@@ -63,7 +63,8 @@ for name in ['WheelFrontL','WheelFrontR','WheelRearL','WheelRearR']:
 w=bpy.data.worlds.new('CC0 photographic studio');s.world=w;w.use_nodes=True;nt=w.node_tree;env=nt.nodes.new('ShaderNodeTexEnvironment');env.image=bpy.data.images.load(str(Path(a.hdri).resolve()));nt.links.new(env.outputs['Color'],nt.nodes['Background'].inputs['Color']);nt.nodes['Background'].inputs['Strength'].default_value=.45
 for name,loc,power,size in [('Key softbox',(1,-3,6),850,5),('Side strip',(-5,0,3),650,4),('Rim strip',(4,3,4),1000,4)]:
  bpy.ops.object.light_add(type='AREA',location=loc);o=bpy.context.object;o.name=name;o.data.energy=power;o.data.shape='RECTANGLE';o.data.size=size;o.data.size_y=size*.35;o.rotation_euler=(Vector((0,0,.7))-o.location).to_track_quat('-Z','Y').to_euler()
-bpy.ops.mesh.primitive_plane_add(size=10,location=(0,0,-.01));floor=bpy.context.object;floor.name='Transparent contact shadow catcher';floor.is_shadow_catcher=True
+# No floor: a finite shadow catcher produced a rectangular alpha edge during exit.
+# Gift geometry and volumetric haze composite directly over the room.
 # Soft volumetric tire haze is real participating media, never an opaque card.
 random.seed(91)
 smokes=[]
