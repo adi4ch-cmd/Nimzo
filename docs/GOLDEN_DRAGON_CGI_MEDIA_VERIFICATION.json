@@ -1,0 +1,56 @@
+{
+  "status": "REVIEW ONLY \u2014 premium art and Android device approval pending",
+  "rgba_dimensions": [
+    540,
+    960
+  ],
+  "rgba_frame_count": 360,
+  "lossless_rgba_frames_compared_exactly": 360,
+  "edge_partial_alpha_pixels": 5982,
+  "sample_frame_mean_absolute_differences": [
+    20.226394675925928,
+    16.917961516203704,
+    15.542390528549383,
+    14.703381076388888
+  ],
+  "decoded_vap_alpha_mae_0_255": 0.10501543209876543,
+  "decoded_vap_visible_rgb_mae_0_255": 5.997541839243021,
+  "media": {
+    "golden_dragon_demo.mp4": {
+      "bytes": 3728473,
+      "sha256": "786629663130b66cf40b03057d0e3454a9473962505fdbad03f662c7bbff32a0",
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "width": 540,
+      "height": 960,
+      "frames": 360,
+      "fps": 30,
+      "duration": "12.000000"
+    },
+    "golden_dragon_vap_candidate.mp4": {
+      "bytes": 8172073,
+      "sha256": "0db0f0879cc9a7170f256e18be889a54dd0841032e05a572d177b75a973dc62d",
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "width": 1088,
+      "height": 960,
+      "frames": 360,
+      "fps": 30,
+      "duration": "12.000000"
+    },
+    "golden_dragon_rgba.mkv": {
+      "bytes": 74457976,
+      "sha256": "75758bfbbc837a44bb6b664fcec23fa4521bd9c2a0d20011177e0aafa399e584",
+      "codec": "ffv1",
+      "pixel_format": "bgra",
+      "width": 540,
+      "height": 960,
+      "frames": 360,
+      "fps": 30,
+      "duration": "12.000000"
+    }
+  },
+  "android_device_tested": false,
+  "vivox_coexistence_tested": false,
+  "production_mapping_changed": false
+}

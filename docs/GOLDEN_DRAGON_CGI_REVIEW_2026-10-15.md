@@ -48,7 +48,11 @@ The FFV1 BGRA master is for lossless review/archive, not Android playback. CPU v
 
 Flutter pub get added missing transitive entries to the local lockfile during setup; the original tracked lockfile was restored, with no dependency or Flutter source changes committed. The repository's CI pins 3.47.6; the available installed stable SDK used for these runs was 3.47.7. Existing widget tests mock native callbacks and do not prove real MediaCodec/Vivox behavior.
 
-Final rendered-file measurements and checksums are delivered in `verification.json` alongside the review media.
+The first complete-file verification correctly failed because the last frame contained 169 residual pixels from material-opacity rays hitting the transparent-bounce limit. The fix moves entry/exit fading to a single mask on the completed premultiplied RGBA in Blender's compositor. The final endpoint was rerendered and measured alpha maximum 0; the affected entry/exit frames were rerendered from the corrected scene before re-encoding. The initial remote render was cancelled and restarted from the corrected source. This is a renderer correction, not a black overlay or color-key cleanup.
+
+Final rendered-file checks passed: 360/360 actual frames, 12.000 s at 30 fps, 540×960 review. Every decoded FFV1 RGBA frame is pixel-exact against the PNG sequence. VAP decoded alpha MAE is 0.105/255, visible RGB MAE 5.998/255, and frame 240 has 5,982 partially transparent edge pixels. Both endpoint alpha maxima are zero. Light and derived-dark room videos also contain 360 frames at 30 fps over 12.000 s. Decoded images were visually inspected on light/dark backgrounds; no opaque rectangle is present in CPU reconstruction.
+
+Files: demo MP4 3,728,473 bytes; packed VAP candidate 8,172,073 bytes; lossless FFV1 master 74,457,976 bytes. Exact hashes are recorded in `docs/GOLDEN_DRAGON_CGI_MEDIA_VERIFICATION.json` and the download's `verification.json`. These successful file checks do not remove the art/device/integration gates.
 
 ## Open acceptance gates
 
