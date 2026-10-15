@@ -76,7 +76,9 @@ A separate foundation-check workflow runs only analysis/tests and disposable dat
 ## CGI verification details
 
 - Real FFmpeg round-trip regression passed, including every one of 240 decoded RGBA frames matching the source, soft alpha, actual packed H.264 decoding and rejection of an opaque replacement master.
-- Corrected packed Blender source was opened and evaluated at five frames: heading/velocity dot product above 0.999, changing front-wheel quaternion steering and cumulative rolling rotation; no mesh shadow catcher remains. This does not substitute for visual motion review or Android QA.
+- Corrected packed Blender source was opened and evaluated at six moving frames: heading/velocity dot product above 0.999999, measured turning radius above 20 m, changing front-wheel quaternion steering and cumulative rolling rotation; no mesh shadow catcher remains. This does not substitute for visual motion review or Android QA.
 - Initial publication failed because the runner lacked FFmpeg; the workflow now installs it explicitly. No successful release or download URL is asserted until publication actually succeeds.
 
 Review render limitations: 360×640 and 8 samples are intended to assess real model/motion/color first. Stochastic volume alpha is visibly noisy in diagnostics and needs higher-sample master rendering before production acceptance. No claim of premium final quality or Android certification is made.
+
+BlenderKit free-only searches were also checked directly through its public API: 33 lion search results and 15 tiger search results, including unrelated props/statues. Frostwhisk, Simba and Terna thumbnails were inspected and rejected as cartoon/stylized. Full result identities and advertised licenses are retained in animal-candidate-audit.json; no candidate was accepted or purchased.
