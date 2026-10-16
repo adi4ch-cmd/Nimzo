@@ -33,6 +33,27 @@ void main() {
     }
   });
 
+  test('all tier names match each independently rotated badge color', () {
+    const starts = [1, 21, 40, 60, 80, 100];
+    const names = [
+      ['Brown', 'Green', 'Blue', 'Pink', 'Red', 'Gold'],
+      ['Blue', 'Pink', 'Red', 'Gold', 'Brown', 'Green'],
+      ['Red', 'Gold', 'Brown', 'Green', 'Blue', 'Pink'],
+    ];
+    for (var kind = 0; kind < 3; kind++) {
+      for (var i = 0; i < starts.length; i++) {
+        final level = starts[i];
+        expect(ProfileLevelScale.tierName(kind, level), names[kind][i]);
+        final canonicalIndex = ProfileLevelScale.tierNames.indexOf(names[kind][i]);
+        expect(ProfileLevelScale.color(kind, level),
+            ProfileLevelScale.color(0, starts[canonicalIndex]));
+      }
+    }
+    expect(ProfileLevelScale.tierName(1, 0), 'Unavailable');
+    expect(ProfileLevelScale.tierName(1, 121), 'Unavailable');
+    expect(ProfileLevelScale.tierName(5, 1), 'Unavailable');
+  });
+
   test('partial progress is bounded by current and next verified levels', () {
     const kind = 1;
     expect(ProfileLevelScale.fraction(kind, 2, 100), 0);
