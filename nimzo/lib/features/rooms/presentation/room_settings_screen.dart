@@ -8,7 +8,6 @@ import '../data/room_settings_repository.dart';
 import 'room_controller.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../../../core/widgets/reference_widgets.dart';
-import '../../../core/theme/app_theme.dart';
 import '../domain/room_theme.dart';
 import 'room_themes_screen.dart';
 
