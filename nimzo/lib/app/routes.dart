@@ -17,6 +17,5 @@ class Routes {
   static const notifications = '/notifications';
   static const reseller = '/reseller';
   static const recharge = '/recharge';
-  static const vip = '/vip';
   static String room(String id) => '/room/$id';
 }

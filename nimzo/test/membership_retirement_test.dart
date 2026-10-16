@@ -8,25 +8,24 @@ import 'package:nimzo/features/auth/domain/auth_user.dart';
 import 'package:nimzo/features/auth/presentation/auth_controller.dart';
 import 'package:nimzo/features/profile/profile.dart';
 import 'package:nimzo/features/profile/profile_repository.dart';
-import 'package:nimzo/features/membership/royal_membership_repository.dart';
-import 'package:nimzo/features/membership/royal_membership_screen.dart';
+import 'package:nimzo/features/profile/me_screen.dart';
 
 void main() {
-  test('retired paid membership cannot restore old identity', () {
+  test('retired VIP and SVIP cannot be restored by stale profile values', () {
     final p = Profile.fromJson({
       'id': 'u',
       'nimzo_id': 100001,
       'vip_level': 10,
       'vip_expires_at': '2099-01-01T00:00:00Z',
       'svip_level': 10,
-      'svip_cycle_start': DateTime.now().toIso8601String()
+      'svip_cycle_start': DateTime.now().toIso8601String(),
     });
     expect(p.vipLevel, 0);
     expect(p.svipLevel, 0);
   });
 
-  for (final kind in RoyalKind.values) {
-    testWidgets('${kind.title} deep link opens the new free royal screen',
+  for (final path in ['/vip', '/svip']) {
+    testWidgets('$path legacy deep link opens Profile, not membership',
         (tester) async {
       final db = (await tester.runAsync(() async => SupabaseClient(
         'https://example.supabase.co',
@@ -37,10 +36,14 @@ void main() {
       final container = ProviderContainer(overrides: [
         supabaseProvider.overrideWithValue(db),
         profileProvider('u').overrideWith((_) async => Profile(
-          id: 'u', nimzoId: 100001, displayName: 'Nimzo User',
-          gender: 'female', dateOfBirth: DateTime(2000), countryCode: 'PK',
+          id: 'u',
+          nimzoId: 100001,
+          displayName: 'Nimzo User',
+          gender: 'female',
+          dateOfBirth: DateTime(2000),
+          countryCode: 'PK',
         )),
-        freeRoyalSelectionProvider('u').overrideWith((_) async => null),
+        profileStatsProvider('u').overrideWith((_) async => {}),
         authStateProvider.overrideWith((_) => Stream.value(
           const AuthUser(id: 'u', emailVerified: true),
         )),
@@ -48,16 +51,17 @@ void main() {
       addTearDown(container.dispose);
       await container.read(authStateProvider.future);
       final router = container.read(routerProvider);
-      router.go(kind == RoyalKind.vip ? '/vip' : '/svip');
+      router.go(path);
       await tester.pumpWidget(UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(routerConfig: router),
       ));
-      await tester.pump(const Duration(milliseconds: 650));
-      expect(find.byType(RoyalMembershipScreen), findsOneWidget);
-      expect(find.text('ROYAL MEMBERSHIP'), findsOneWidget);
-      expect(find.text(kind.title), findsWidgets);
-      expect(find.text('Buy VIP'), findsNothing);
+      await tester.pump(const Duration(milliseconds: 700));
+      expect(find.byType(MeScreen), findsOneWidget);
+      expect(find.text('VIP'), findsNothing);
+      expect(find.text('SVIP'), findsNothing);
+      expect(find.text('ROYAL MEMBERSHIP'), findsNothing);
+      // Store is below the lazy ListView viewport; check its separate tests.
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     });

@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 import '../../profile/profile_repository.dart';
 import '../../store/store_badge.dart';
-import '../../membership/royal_membership_badge.dart';
 import '../../gifts/verified_gift_broadcast.dart';
 
 import 'dart:async';
@@ -508,7 +507,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                               width: 2,
                                                             ),
                                                           ),
-                                                          child: RoyalAvatarHalo(userId: s.userId!, child: NimzoAvatar(
+                                                          child: NimzoAvatar(
                                                             name:
                                                                 p?.displayName ??
                                                                     'N',
@@ -527,7 +526,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                                     .getPublicUrl(
                                                                       p!.avatarPath!,
                                                                     ),
-                                                          )),
+                                                          ),
                                                         ),
                                                         Positioned(
                                                           right: -8,
@@ -612,7 +611,7 @@ class _State extends ConsumerState<RoomScreen> {
                                     for (final msg in messages)
                                       Align(
                                         alignment: Alignment.centerLeft,
-                                        child: RoyalChatHalo(userId: msg.userId, child: Container(
+                                        child: Container(
                                           constraints: BoxConstraints(
                                             maxWidth: MediaQuery.sizeOf(context)
                                                     .width *
@@ -654,7 +653,7 @@ class _State extends ConsumerState<RoomScreen> {
                                               ),
                                             ],
                                           ),
-                                        )),
+                                        ),
                                       ),
                                   ],
                                 ),
