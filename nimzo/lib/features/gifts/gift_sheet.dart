@@ -365,9 +365,13 @@ class _State extends ConsumerState<GiftSheet> {
                                   ),
                                   scrollDirection: Axis.horizontal,
                                   children: [
-                                    for (final category in nimzoGiftCategories(
-                                      gifts.map((gift) => gift.category),
-                                    ))
+                                    for (final category in [
+                                      'All',
+                                      'Cars',
+                                      ...nimzoGiftCategories(
+                                        gifts.map((gift) => gift.category),
+                                      ).skip(1),
+                                    ])
                                       Padding(
                                         padding: const EdgeInsets.only(
                                           right: 8,
@@ -387,6 +391,7 @@ class _State extends ConsumerState<GiftSheet> {
                                                         !giftMatchesCategory(
                                                           selected!.category,
                                                           category,
+                                                          giftName: selected!.name,
                                                         )) {
                                                       selected = null;
                                                     }
@@ -417,6 +422,7 @@ class _State extends ConsumerState<GiftSheet> {
                                           (g) => giftMatchesCategory(
                                             g.category,
                                             activeGiftCategory,
+                                            giftName: g.name,
                                           ),
                                         )
                                         .elementAt(index);
