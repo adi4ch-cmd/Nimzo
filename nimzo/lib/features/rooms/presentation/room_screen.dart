@@ -1,6 +1,4 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
-import '../../vip/phoenix_widgets.dart';
-import '../../vip/phoenix_room_entry.dart';
 import '../../profile/profile_repository.dart';
 import '../../store/store_badge.dart';
 import '../../gifts/verified_gift_broadcast.dart';
@@ -107,8 +105,8 @@ class _State extends ConsumerState<RoomScreen> {
     _activityTimer = Timer.periodic(const Duration(seconds: 70), (_) async {
       if (!mounted || !joined || leaving) return;
       try {
-        final gained = await ref.read(roomRepositoryProvider)
-            .touchActivity(widget.roomId);
+        final gained =
+            await ref.read(roomRepositoryProvider).touchActivity(widget.roomId);
         if (!mounted || gained <= 0) return;
         final user = ref.read(currentUserIdProvider);
         if (user != null) ref.invalidate(profileProvider(user));
@@ -150,9 +148,10 @@ class _State extends ConsumerState<RoomScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Room exit not confirmed. Retry to leave safely.'),
-          action: SnackBarAction(label: 'Retry',
-            onPressed: () => unawaited(_exitRoom())),
+          content:
+              const Text('Room exit not confirmed. Retry to leave safely.'),
+          action: SnackBarAction(
+              label: 'Retry', onPressed: () => unawaited(_exitRoom())),
         ),
       );
     }
@@ -254,7 +253,10 @@ class _State extends ConsumerState<RoomScreen> {
         // Let Vivox's built-in network recovery run before offering a fresh
         // login. An immediate Retry can race the SDK's recovery process.
         _voiceDropTimer = Timer(const Duration(seconds: 6), () {
-          if (!mounted || session.closed || leaving || joining ||
+          if (!mounted ||
+              session.closed ||
+              leaving ||
+              joining ||
               ref.read(voiceConnectedProvider).valueOrNull == true) return;
           setState(() => failure = 'Voice disconnected. Retry voice.');
         });
@@ -423,25 +425,41 @@ class _State extends ConsumerState<RoomScreen> {
                                                                 n,
                                                               );
                                                         } else {
-                                                          await showDialog<void>(
+                                                          await showDialog<
+                                                              void>(
                                                             context: context,
-                                                            builder: (_) => Dialog(
-                                                              backgroundColor: Colors.transparent,
-                                                              insetPadding: const EdgeInsets.symmetric(
+                                                            builder: (_) =>
+                                                                Dialog(
+                                                              backgroundColor:
+                                                                  Colors
+                                                                      .transparent,
+                                                              insetPadding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
                                                                 horizontal: 18,
                                                                 vertical: 24,
                                                               ),
-                                                              child: RoomUserSheet(
-                                                                roomId: widget.roomId,
-                                                                userId: s.userId!,
+                                                              child:
+                                                                  RoomUserSheet(
+                                                                roomId: widget
+                                                                    .roomId,
+                                                                userId:
+                                                                    s.userId!,
                                                                 seatNo: n,
                                                                 muted: s.muted,
-                                                                onMention: (name) {
-                                                                  final mention = '@$name ';
-                                                                  text.value = TextEditingValue(
-                                                                    text: mention + text.text,
-                                                                    selection: TextSelection.collapsed(
-                                                                      offset: mention.length,
+                                                                onMention:
+                                                                    (name) {
+                                                                  final mention =
+                                                                      '@$name ';
+                                                                  text.value =
+                                                                      TextEditingValue(
+                                                                    text: mention +
+                                                                        text.text,
+                                                                    selection:
+                                                                        TextSelection
+                                                                            .collapsed(
+                                                                      offset: mention
+                                                                          .length,
                                                                     ),
                                                                   );
                                                                 },
@@ -468,53 +486,53 @@ class _State extends ConsumerState<RoomScreen> {
                                                       clipBehavior: Clip.none,
                                                       children: [
                                                         Container(
-                                                        padding:
-                                                        const EdgeInsets.all(
-                                                        2,
-                                                        ),
-                                                        decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        border: Border.all(
-                                                        color: speaking
-                                                        .contains(
-                                                        s.userId,
-                                                        )
-                                                        ? NimzoStyle
-                                                        .primary
-                                                        : Colors
-                                                        .transparent,
-                                                        width: 2,
-                                                        ),
-                                                        ),
-                                                        child: PhoenixDecoration(
-                                                        userId: s.userId,
-                                                        avatar: true,
-                                                        child: NimzoAvatar(
-                                                        name:
-                                                        p?.displayName ??
-                                                        'N',
-                                                        size: 48,
-                                                        url: p?.avatarPath ==
-                                                        null
-                                                        ? null
-                                                        : ref
-                                                        .read(
-                                                        supabaseProvider,
-                                                        )
-                                                        .storage
-                                                        .from(
-                                                        'avatars',
-                                                        )
-                                                        .getPublicUrl(
-                                                        p!.avatarPath!,
-                                                        ),
-                                                        ),
-                                                        ),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(
+                                                            2,
+                                                          ),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            border: Border.all(
+                                                              color: speaking
+                                                                      .contains(
+                                                                s.userId,
+                                                              )
+                                                                  ? NimzoStyle
+                                                                      .primary
+                                                                  : Colors
+                                                                      .transparent,
+                                                              width: 2,
+                                                            ),
+                                                          ),
+                                                          child: NimzoAvatar(
+                                                            name:
+                                                                p?.displayName ??
+                                                                    'N',
+                                                            size: 48,
+                                                            url: p?.avatarPath ==
+                                                                    null
+                                                                ? null
+                                                                : ref
+                                                                    .read(
+                                                                      supabaseProvider,
+                                                                    )
+                                                                    .storage
+                                                                    .from(
+                                                                      'avatars',
+                                                                    )
+                                                                    .getPublicUrl(
+                                                                      p!.avatarPath!,
+                                                                    ),
+                                                          ),
                                                         ),
                                                         Positioned(
                                                           right: -8,
                                                           bottom: -5,
-                                                          child: EquippedRoyalMedal(
+                                                          child:
+                                                              EquippedRoyalMedal(
                                                             userId: s.userId!,
                                                             compact: true,
                                                           ),
@@ -593,50 +611,47 @@ class _State extends ConsumerState<RoomScreen> {
                                     for (final msg in messages)
                                       Align(
                                         alignment: Alignment.centerLeft,
-                                        child: PhoenixDecoration(
-                                          userId: msg.userId,
-                                          child: Container(
-                                            constraints: BoxConstraints(
-                                              maxWidth:
-                                                  MediaQuery.sizeOf(context)
-                                                          .width *
-                                                      .85,
-                                            ),
-                                            margin: const EdgeInsets.only(
-                                              bottom: 6,
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 11,
-                                              vertical: 7,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: NimzoStyle.surface,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                PhoenixNameplate(
-                                                  userId: msg.userId,
-                                                  name: profiles[msg.userId]
+                                        child: Container(
+                                          constraints: BoxConstraints(
+                                            maxWidth: MediaQuery.sizeOf(context)
+                                                    .width *
+                                                .85,
+                                          ),
+                                          margin: const EdgeInsets.only(
+                                            bottom: 6,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 11,
+                                            vertical: 7,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: NimzoStyle.surface,
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  profiles[msg.userId]
                                                           ?.displayName ??
                                                       'Nimzo user',
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: const TextStyle(
                                                     color: NimzoStyle.primary,
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.w700,
-                                                  ),
+                                                  )),
+                                              Text(
+                                                msg.body,
+                                                style: const TextStyle(
+                                                  color: NimzoStyle.ink,
                                                 ),
-                                                Text(
-                                                  msg.body,
-                                                  style: const TextStyle(
-                                                    color: NimzoStyle.ink,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -674,23 +689,30 @@ class _State extends ConsumerState<RoomScreen> {
                                         borderRadius: BorderRadius.circular(14),
                                       ),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Image.asset(
-                                            'assets/room_rocket/posters/rocket_stage_${((joined
-                                              ? ref.watch(roomDiamondStatusProvider(widget.roomId))
-                                                  .valueOrNull?.activeStage ?? 0
-                                              : 0) + 1)}.png',
+                                            'assets/room_rocket/posters/rocket_stage_${((joined ? ref.watch(roomDiamondStatusProvider(widget.roomId)).valueOrNull?.activeStage ?? 0 : 0) + 1)}.png',
                                             width: 22,
                                             height: 22,
                                             fit: BoxFit.contain,
                                           ),
                                           Text(
-                                            'L' + ((joined
-                                              ? ref.watch(
-                                                  roomDiamondStatusProvider(widget.roomId),
-                                                ).valueOrNull?.activeStage ?? 0
-                                              : 0) + 1).toString(),
+                                            'L' +
+                                                ((joined
+                                                            ? ref
+                                                                    .watch(
+                                                                      roomDiamondStatusProvider(
+                                                                          widget
+                                                                              .roomId),
+                                                                    )
+                                                                    .valueOrNull
+                                                                    ?.activeStage ??
+                                                                0
+                                                            : 0) +
+                                                        1)
+                                                    .toString(),
                                             style: const TextStyle(
                                               fontWeight: FontWeight.w900,
                                               fontSize: 9,
@@ -864,13 +886,6 @@ class _State extends ConsumerState<RoomScreen> {
                   ),
                 ),
               ),
-              if (joined)
-                Positioned(
-                  top: 140,
-                  left: 0,
-                  right: 0,
-                  child: PhoenixRoomEntry(roomId: widget.roomId),
-                ),
               if (joined)
                 Positioned.fill(
                   child: VerifiedGiftBroadcast(

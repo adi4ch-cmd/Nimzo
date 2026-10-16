@@ -12,7 +12,7 @@ insert into public.room_members(room_id,user_id) values
 update public.mic_seats set user_id='00000000-0000-4000-8000-000000000802' where room_id='00000000-0000-4000-8000-000000000811' and seat_no=1;
 insert into public.room_moderators(room_id,user_id) values('00000000-0000-4000-8000-000000000811','00000000-0000-4000-8000-000000000803');
 insert into public.admins(user_id) values('00000000-0000-4000-8000-000000000805');
-update public.profiles set svip_level=5 where id='00000000-0000-4000-8000-000000000804';
+-- Retired members have no immunity; owner/mod/admin authorization remains.
 set local role authenticated;
 set local request.jwt.claim.sub='';
 do $$ begin
@@ -27,14 +27,14 @@ end $$;
 set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000801';
 do $$ begin
  if not public.get_room_moderation('00000000-0000-4000-8000-000000000811') then raise exception 'owner capability'; end if;
- begin perform public.moderate_room_member('00000000-0000-4000-8000-000000000811','00000000-0000-4000-8000-000000000804',false); raise exception 'FAIL SVIP protection'; exception when insufficient_privilege then null; end;
+ perform public.moderate_room_member('00000000-0000-4000-8000-000000000811','00000000-0000-4000-8000-000000000804',false);
  begin perform public.moderate_room_member('00000000-0000-4000-8000-000000000811',auth.uid(),true); raise exception 'FAIL owner self removal'; exception when insufficient_privilege then null; end;
  perform public.moderate_room_member('00000000-0000-4000-8000-000000000811','00000000-0000-4000-8000-000000000802',false);
 end $$;
 reset role;
 do $$ begin
  if exists(select 1 from public.room_members where user_id='00000000-0000-4000-8000-000000000802') or exists(select 1 from public.mic_seats where user_id='00000000-0000-4000-8000-000000000802') or exists(select 1 from public.room_bans where user_id='00000000-0000-4000-8000-000000000802') then raise exception 'kick cleanup or temporary semantics'; end if;
- if not exists(select 1 from public.room_members where user_id='00000000-0000-4000-8000-000000000804') then raise exception 'untargeted member changed'; end if;
+ if exists(select 1 from public.room_members where user_id='00000000-0000-4000-8000-000000000804') then raise exception 'Retired member retained immunity'; end if;
 end $$;
 set local role authenticated;
 set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000802';
@@ -61,5 +61,5 @@ do $$ begin
  if exists(select 1 from public.room_members where user_id='00000000-0000-4000-8000-000000000804') or exists(select 1 from public.room_bans where user_id='00000000-0000-4000-8000-000000000804') then raise exception 'admin protected kick semantics'; end if;
  if not exists(select 1 from public.rooms where owner_id='00000000-0000-4000-8000-000000000801') then raise exception 'room owner changed'; end if;
 end $$;
-select 'PASS room moderation auth, owner/mod/admin authority, protected target, kick rejoin, permanent ban, owner safety';
+select 'PASS room moderation auth, owner/mod/admin authority, retired-member immunity removed, kick rejoin, permanent ban, owner safety';
 rollback;

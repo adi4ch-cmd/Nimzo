@@ -24,7 +24,7 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
     if (busy) return;
     setState(() => busy = true);
     try {
-      final selection = await FilePicker.platform.pickFiles(
+      final selection = await FilePicker.pickFiles(
         type: FileType.audio,
         allowMultiple: true,
         withData: false,

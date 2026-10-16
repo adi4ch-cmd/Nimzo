@@ -1,5 +1,3 @@
-import 'package:nimzo/features/vip/phoenix_room_entry.dart';
-
 import 'dart:io';
 
 import 'package:package_info_plus/package_info_plus.dart';
@@ -262,9 +260,6 @@ void main() {
         ProviderScope(
           key: ValueKey(entry.key),
           overrides: [
-            phoenixEntriesProvider.overrideWith(
-              (ref, room) => const Stream.empty(),
-            ),
             verifiedGiftAnimationProvider.overrideWith(
               (ref, args) => const Stream.empty(),
             ),
@@ -282,13 +277,13 @@ void main() {
             ),
             supabaseProvider.overrideWithValue(db),
             currentUserIdProvider.overrideWithValue('me'),
-            equippedRoyalMedalProvider('me').overrideWith((_) async =>
-              const RoyalBagItem(
-                id: 'crest-4',
-                name: 'Royal Crest IV',
-                image: 'assets/hilo/store/royal_4.webp',
-                equipped: true,
-              )),
+            equippedRoyalMedalProvider('me')
+                .overrideWith((_) async => const RoyalBagItem(
+                      id: 'crest-4',
+                      name: 'Royal Crest IV',
+                      image: 'assets/hilo/store/royal_4.webp',
+                      equipped: true,
+                    )),
             equippedRoyalMedalProvider('other').overrideWith((_) async => null),
             authControllerProvider.overrideWith(AuthController.new),
             voiceServiceProvider.overrideWithValue(FixtureVoice()),
@@ -533,14 +528,15 @@ void main() {
         for (final file in Directory('assets/reference')
             .listSync(recursive: true)
             .whereType<File>()
-            .where((f) => f.path.endsWith('.jpg') &&
+            .where((f) =>
+                f.path.endsWith('.jpg') &&
                 !f.path.replaceAll('\\', '/').contains('/vip/'))) {
           await precacheImage(AssetImage(file.path), context);
         }
         if (entry.key == 'honor_wall') {
           for (final n in [1, 2, 3]) {
             await precacheImage(
-              AssetImage('assets/hilo/store/royal_$n.webp'), context);
+                AssetImage('assets/hilo/store/royal_$n.webp'), context);
           }
         }
         // Eagerly decode gift controls so the golden never captures blank
@@ -587,14 +583,31 @@ void main() {
       // reference screenshot. All other approved screenshots remain pinned.
       // This case checks the actual six-level launcher without approving an
       // obsolete image or hiding a 2px room layout overflow.
+      if (const {'me', 'profile', 'public_profile', 'room_profile'}
+          .contains(entry.key)) {
+        expect(find.textContaining('VIP'), findsNothing);
+        expect(find.textContaining('SVIP'), findsNothing);
+        expect(find.byKey(const ValueKey('verified-membership-row')),
+            findsNothing);
+      }
       if (entry.key == 'room') {
         expect(find.byType(Image), findsWidgets);
         expect(find.byKey(key), findsOneWidget);
         expect(find.textContaining('Diamond Blast'), findsNothing);
       } else if (const {
-        'moments', 'me', 'profile', 'public_profile', 'room_profile',
-        'levels', 'comments', 'gifts', 'room_tools', 'room_games',
-        'profile_edit', 'room_settings', 'wallet',
+        'moments',
+        'me',
+        'profile',
+        'public_profile',
+        'room_profile',
+        'levels',
+        'comments',
+        'gifts',
+        'room_tools',
+        'room_games',
+        'profile_edit',
+        'room_settings',
+        'wallet',
       }.contains(entry.key)) {
         // These screens were explicitly redesigned. The old pixel files
         // describe retired large color blocks and childish Moment cards.
@@ -607,8 +620,8 @@ void main() {
           expect(find.byKey(const ValueKey('gift-card-0')), findsWidgets);
         }
         if (entry.key == 'moments') {
-          expect(find.byKey(const ValueKey('premium-moment-card')),
-            findsWidgets);
+          expect(
+              find.byKey(const ValueKey('premium-moment-card')), findsWidgets);
         }
         if (entry.key == 'comments') {
           // The comment sheet intentionally shows discussion, not the
@@ -617,12 +630,11 @@ void main() {
           expect(find.byType(TextField), findsWidgets);
         }
         if (entry.key == 'me') {
-          expect(find.byKey(const ValueKey('me-level-badges')),
-            findsOneWidget);
+          expect(find.byKey(const ValueKey('me-level-badges')), findsOneWidget);
         }
         if (entry.key == 'profile' || entry.key == 'public_profile') {
           expect(find.byKey(const ValueKey('profile-level-badges')),
-            findsOneWidget);
+              findsOneWidget);
         }
         if (entry.key == 'wallet') {
           expect(find.byKey(const ValueKey('wallet-coin-diamond-balances')),

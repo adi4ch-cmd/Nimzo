@@ -1,6 +1,3 @@
-import '../vip/phoenix_widgets.dart';
-import '../vip/phoenix_entitlement.dart';
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -116,7 +113,8 @@ class _State extends ConsumerState<GiftSheet> {
         // Never debit one or five million coins for a gift whose promised
         // premium animation has not actually been approved and published.
         try {
-          approvedDragonVideo = await r.playablePremiumDragonVideo(g.id)
+          approvedDragonVideo = await r
+              .playablePremiumDragonVideo(g.id)
               .timeout(const Duration(seconds: 6));
         } catch (_) {
           // A lookup failure is not proof that a playable video exists.
@@ -204,9 +202,9 @@ class _State extends ConsumerState<GiftSheet> {
           unitPrice: g.price,
           assetPath: g.assetPath,
           videoUrl: approvedDragonVideo,
-          recipientName: ref.read(profileProvider(receiverId)).valueOrNull
-                  ?.displayName ??
-              ref.read(profileProvider(receiverId)).valueOrNull?.username,
+          recipientName:
+              ref.read(profileProvider(receiverId)).valueOrNull?.displayName ??
+                  ref.read(profileProvider(receiverId)).valueOrNull?.username,
         );
       }
       if (mounted) Navigator.pop(context);
@@ -234,205 +232,170 @@ class _State extends ConsumerState<GiftSheet> {
   @override
   Widget build(BuildContext context) {
     final wallet = ref.watch(walletProvider);
+    final me = ref.watch(currentUserIdProvider);
     final recipients = widget.roomId == null
         ? null
         : ref.watch(roomSeatProfilesProvider(widget.roomId!)).valueOrNull;
-    final me = ref.watch(currentUserIdProvider);
-    final phoenix = me != null &&
-        ref.watch(phoenixEntitlementProvider(me)).asData?.value?.isPhoenix ==
-            true;
-    return PhoenixDecoration(
-      userId: me,
-      child: SafeArea(
-        child: SizedBox(
-          height: MediaQuery.sizeOf(context).height * .75,
-          child: Column(
-            children: [
-              if (phoenix)
-                const Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      PhoenixMark(),
-                      SizedBox(width: 8),
-                      Text(
-                        'NIMZO Royal VIP gift tray',
-                        style: TextStyle(
-                          color: phoenixGold,
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.sizeOf(context).height * .75,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  children: [
+                    const NimzoGiftControlArt(
+                      'video_send_gift.webp',
+                      width: 36,
+                      height: 36,
+                      fallback: Icon(Icons.card_giftcard, size: 24),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'NIMZO Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${compactNumber(wallet.valueOrNull!.coins)} coins'}',
+                        style: const TextStyle(
                           fontWeight: FontWeight.w700,
+                          fontSize: 16,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
+            ),
+            // Room members can gift themselves even when not seated on
+            // a microphone. The seat roster must not hide "Myself".
+            if (widget.roomId != null &&
+                me != null &&
+                recipients?.values.any((p) => p.id == me) != true)
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Row(
+                  child: ChoiceChip(
+                    label: const Text('Myself'),
+                    selected: receiverId == me,
+                    onSelected: busy || confirming || key != null
+                        ? null
+                        : (_) => setState(() => recipient = me),
+                  ),
+                ),
+              ),
+            if (recipients != null && recipients.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(
+                  height: 48 * MediaQuery.textScalerOf(context).scale(1),
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
                     children: [
-                      const NimzoGiftControlArt(
-                        'video_send_gift.webp',
-                        width: 36,
-                        height: 36,
-                        fallback: Icon(Icons.card_giftcard, size: 24),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'NIMZO Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${compactNumber(wallet.valueOrNull!.coins)} coins'}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
+                      for (final p in recipients.values)
+                        ChoiceChip(
+                          label: Text(
+                            p.id == me
+                                ? 'Myself'
+                                : p.displayName ?? p.username ?? 'Nimzo user',
                           ),
+                          selected: receiverId == p.id,
+                          onSelected: busy || confirming || key != null
+                              ? null
+                              : (_) => setState(() => recipient = p.id),
                         ),
-                      ),
                     ],
                   ),
                 ),
               ),
-              // Room members can gift themselves even when not seated on
-              // a microphone. The seat roster must not hide "Myself".
-              if (widget.roomId != null &&
-                  me != null &&
-                  recipients?.values.any((p) => p.id == me) != true)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: ChoiceChip(
-                      label: const Text('Myself'),
-                      selected: receiverId == me,
-                      onSelected: busy || confirming || key != null
-                          ? null
-                          : (_) => setState(() => recipient = me),
-                    ),
-                  ),
-                ),
-              if (recipients != null && recipients.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(
-                    height: 48 * MediaQuery.textScalerOf(context).scale(1),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        for (final p in recipients.values)
-                          ChoiceChip(
-                            label: Text(
-                              p.id == me
-                                  ? 'Myself'
-                                  : p.displayName ?? p.username ?? 'Nimzo user',
+            Expanded(
+              child: AsyncContent(
+                value: ref.watch(giftCatalogProvider),
+                onRetry: () => ref.invalidate(giftCatalogProvider),
+                builder: (gifts) => gifts.isEmpty
+                    ? const EmptyContent('No gifts available')
+                    : CustomScrollView(
+                        slivers: [
+                          const SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+                              child: Text(
+                                'GIFT COLLECTION',
+                                style: TextStyle(
+                                  letterSpacing: 2,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xffd6ad61),
+                                ),
+                              ),
                             ),
-                            selected: receiverId == p.id,
-                            onSelected: busy || confirming || key != null
-                                ? null
-                                : (_) => setState(() => recipient = p.id),
                           ),
-                      ],
-                    ),
-                  ),
-                ),
-              Expanded(
-                child: AsyncContent(
-                  value: ref.watch(giftCatalogProvider),
-                  onRetry: () => ref.invalidate(giftCatalogProvider),
-                  builder: (gifts) => gifts.isEmpty
-                      ? const EmptyContent('No gifts available')
-                      : CustomScrollView(
-                          slivers: [
-                            const SliverToBoxAdapter(
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
-                                child: Text(
-                                  'GIFT COLLECTION',
-                                  style: TextStyle(
-                                    letterSpacing: 2,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w800,
-                                    color: Color(0xffd6ad61),
-                                  ),
+                          SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: 46,
+                              child: ListView(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
                                 ),
-                              ),
-                            ),
-                            SliverToBoxAdapter(
-                              child: SizedBox(
-                                height: 46,
-                                child: ListView(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    for (final category in [
-                                      'All',
-                                      'Cars',
-                                      ...nimzoGiftCategories(
-                                        gifts.map((gift) => gift.category),
-                                      ).skip(1),
-                                    ])
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          right: 8,
-                                        ),
-                                        child: ChoiceChip(
-                                          label: Text(category),
-                                          selected:
-                                              activeGiftCategory == category,
-                                          onSelected: busy ||
-                                                  confirming ||
-                                                  key != null
-                                              ? null
-                                              : (_) => setState(() {
-                                                    activeGiftCategory =
-                                                        category;
-                                                    if (selected != null &&
-                                                        !giftMatchesCategory(
-                                                          selected!.category,
-                                                          category,
-                                                          giftName: selected!.name,
-                                                        )) {
-                                                      selected = null;
-                                                    }
-                                                  }),
-                                        ),
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  for (final category in [
+                                    'All',
+                                    'Cars',
+                                    ...nimzoGiftCategories(
+                                      gifts.map((gift) => gift.category),
+                                    ).skip(1),
+                                  ])
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        right: 8,
                                       ),
-                                  ],
-                                ),
+                                      child: ChoiceChip(
+                                        label: Text(category),
+                                        selected:
+                                            activeGiftCategory == category,
+                                        onSelected: busy ||
+                                                confirming ||
+                                                key != null
+                                            ? null
+                                            : (_) => setState(() {
+                                                  activeGiftCategory = category;
+                                                  if (selected != null &&
+                                                      !giftMatchesCategory(
+                                                        selected!.category,
+                                                        category,
+                                                        giftName:
+                                                            selected!.name,
+                                                      )) {
+                                                    selected = null;
+                                                  }
+                                                }),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                            SliverPadding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
+                          ),
+                          SliverPadding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                            ),
+                            sliver: SliverGrid(
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount:
+                                    MediaQuery.sizeOf(context).width < 390
+                                        ? 2
+                                        : 3,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                childAspectRatio: .76 /
+                                    MediaQuery.textScalerOf(context).scale(1),
                               ),
-                              sliver: SliverGrid(
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: MediaQuery.sizeOf(context).width < 390 ? 2 : 3,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                  childAspectRatio: .76 /
-                                      MediaQuery.textScalerOf(context).scale(1),
-                                ),
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) {
-                                    final gift = gifts
-                                        .where(
-                                          (g) => giftMatchesCategory(
-                                            g.category,
-                                            activeGiftCategory,
-                                            giftName: g.name,
-                                          ),
-                                        )
-                                        .elementAt(index);
-                                    return _giftCard(
-                                      gift,
-                                      legendary: gift.price == 35000000 ||
-                                          gift.price == 50000000,
-                                    );
-                                  },
-                                  childCount: gifts
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  final gift = gifts
                                       .where(
                                         (g) => giftMatchesCategory(
                                           g.category,
@@ -440,100 +403,115 @@ class _State extends ConsumerState<GiftSheet> {
                                           giftName: g.name,
                                         ),
                                       )
-                                      .length,
+                                      .elementAt(index);
+                                  return _giftCard(
+                                    gift,
+                                    legendary: gift.price == 35000000 ||
+                                        gift.price == 50000000,
+                                  );
+                                },
+                                childCount: gifts
+                                    .where(
+                                      (g) => giftMatchesCategory(
+                                        g.category,
+                                        activeGiftCategory,
+                                        giftName: g.name,
+                                      ),
+                                    )
+                                    .length,
+                              ),
+                            ),
+                          ),
+                          const SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Text(
+                                'Gift prices and delivery are verified by the NIMZO server.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: NimzoStyle.muted,
+                                  fontSize: 12,
                                 ),
                               ),
                             ),
-                            const SliverToBoxAdapter(
-                              child: Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Text(
-                                  'Gift prices and delivery are verified by the NIMZO server.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: NimzoStyle.muted,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-              ),
-              if (selected != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.verified_outlined,
-                          color: Color(0xff0f8d59), size: 18),
-                      const SizedBox(width: 7),
-                      Expanded(
-                        child: Text(
-                          'Total · ${compactNumber(selected!.price * quantity)} coins',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xff0c7650),
-                          ),
-                        ),
-                      ),
-                      if (key != null)
-                        const Text(
-                          'Retry same request',
-                          style: TextStyle(fontSize: 11, color: Color(0xff6b7280)),
-                        ),
-                    ],
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    const Text('Quantity'),
-                    const SizedBox(width: 12),
-                    DropdownButton<int>(
-                      value: quantity,
-                      items: [
-                        for (final q in [1, 10, 50, 99, 100, 999])
-                          DropdownMenuItem(value: q, child: Text('$q')),
-                      ],
-                      onChanged: busy || confirming || key != null
-                          ? null
-                          : (q) => setState(() => quantity = q!),
-                    ),
-                    const Spacer(),
-                    GradientButton(
-                      onPressed:
-                          busy || confirming || selected == null ? null : send,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const NimzoGiftControlArt(
-                            'icon_gift_modal.webp',
-                            width: 18,
-                            height: 18,
-                            fallback: Icon(Icons.send, size: 16),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            busy
-                                ? 'Sending…'
-                                : key == null
-                                    ? 'Send'
-                                    : 'Retry',
                           ),
                         ],
                       ),
+              ),
+            ),
+            if (selected != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
+                child: Row(
+                  children: [
+                    const Icon(Icons.verified_outlined,
+                        color: Color(0xff0f8d59), size: 18),
+                    const SizedBox(width: 7),
+                    Expanded(
+                      child: Text(
+                        'Total · ${compactNumber(selected!.price * quantity)} coins',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xff0c7650),
+                        ),
+                      ),
                     ),
+                    if (key != null)
+                      const Text(
+                        'Retry same request',
+                        style:
+                            TextStyle(fontSize: 11, color: Color(0xff6b7280)),
+                      ),
                   ],
                 ),
               ),
-            ],
-          ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  const Text('Quantity'),
+                  const SizedBox(width: 12),
+                  DropdownButton<int>(
+                    value: quantity,
+                    items: [
+                      for (final q in [1, 10, 50, 99, 100, 999])
+                        DropdownMenuItem(value: q, child: Text('$q')),
+                    ],
+                    onChanged: busy || confirming || key != null
+                        ? null
+                        : (q) => setState(() => quantity = q!),
+                  ),
+                  const Spacer(),
+                  GradientButton(
+                    onPressed:
+                        busy || confirming || selected == null ? null : send,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const NimzoGiftControlArt(
+                          'icon_gift_modal.webp',
+                          width: 18,
+                          height: 18,
+                          fallback: Icon(Icons.send, size: 16),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          busy
+                              ? 'Sending…'
+                              : key == null
+                                  ? 'Send'
+                                  : 'Retry',
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -551,7 +529,8 @@ class _State extends ConsumerState<GiftSheet> {
             ? const Color(0xffd6b8ff)
             : const Color(0xffa8e3cb);
     return Semantics(
-      label: '${gift.name}, ${gift.price} coins${realAnimation ? ', original animated gift' : ''}',
+      label:
+          '${gift.name}, ${gift.price} coins${realAnimation ? ', original animated gift' : ''}',
       button: true,
       child: InkWell(
         key: ValueKey('gift-card-${gift.id}'),
@@ -575,9 +554,11 @@ class _State extends ConsumerState<GiftSheet> {
             ),
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
-              color: highlighted ? const Color(0xff6fdda9)
-                  : legendary ? const Color(0xffd8b26c)
-                  : const Color(0xff374550),
+              color: highlighted
+                  ? const Color(0xff6fdda9)
+                  : legendary
+                      ? const Color(0xffd8b26c)
+                      : const Color(0xff374550),
               width: highlighted ? 1.5 : 1,
             ),
           ),
@@ -611,12 +592,12 @@ class _State extends ConsumerState<GiftSheet> {
                           ),
                           child: const Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 5, vertical: 2),
+                                horizontal: 5, vertical: 2),
                             child: Text('SVGA',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 8,
-                                fontWeight: FontWeight.w800)),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.w800)),
                           ),
                         ),
                       ),
@@ -646,16 +627,18 @@ class _State extends ConsumerState<GiftSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const NimzoGiftControlArt(
-                    'icon_gift_modal.webp', width: 13, height: 13),
+                  const NimzoGiftControlArt('icon_gift_modal.webp',
+                      width: 13, height: 13),
                   const SizedBox(width: 3),
                   Flexible(
                     child: Text(
                       compactNumber(gift.price),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 11,
-                        color: accent, fontWeight: FontWeight.w800),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: accent,
+                          fontWeight: FontWeight.w800),
                     ),
                   ),
                 ],

@@ -142,7 +142,6 @@ class CollectibleArtwork extends StatelessWidget {
     final path = item['image_path']?.toString() ??
         switch (item['name']?.toString().toLowerCase()) {
           'gold frame' => 'assets/reference/frame/0.jpg',
-          'vip frame' => 'assets/reference/frame/1.jpg',
           'eagle car' => 'assets/reference/car/0.jpg',
           'jeep car' => 'assets/reference/car/1.jpg',
           _ => null,

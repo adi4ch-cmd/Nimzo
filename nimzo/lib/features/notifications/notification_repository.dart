@@ -11,8 +11,6 @@ const notificationCategories = [
   'Followers',
   'Friends',
   'Rooms',
-  'VIP',
-  'SVIP',
   'System',
 ];
 

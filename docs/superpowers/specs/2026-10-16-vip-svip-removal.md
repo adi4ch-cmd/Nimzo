@@ -1,0 +1,7 @@
+# Complete VIP/SVIP retirement
+
+Approved scope: user replaced the free VIP rebuild with removing all VIP and SVIP, including all users' assignments, and authorized execution with “Sab koch kar do”. No replacement membership. Keep obsolete deep links harmless and blank; preserve the original SVIP navigation destination as requested, without advertising a membership package. Remove other membership promotion.
+
+Retire purchase, activation, rewards, automatic recharge-based SVIP, room entry effects, profile badges and privileged moderation protection. Preserve accounts, identifiers, financial balances and history, gifts, levels and true administrative permissions. Archive old entitlements and affected function/configuration definitions privately before resetting. Retain audit tables, do not delete purchased unrelated collectibles. Existing non-membership Royal Crest store medals are unrelated and remain.
+
+Use a transactional idempotent migration, rollback rehearsal and preservation assertions before production application. No staging branch currently exists: report rehearsal honestly rather than call it staging validation. New grants must fail after retirement, including from stale clients. Verify no wallet/ledger mutations and zero assignments after deployment. Remove Flutter membership modules and animations and render plain existing identity on all surfaces. Run analysis, full tests, native voice checks and release APK CI; do not claim device voice/install verification without hardware.

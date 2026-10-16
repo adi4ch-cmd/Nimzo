@@ -144,8 +144,6 @@ class ProfileRepository {
       if (profile.wealthLevel > 1) 'Wealth level ${profile.wealthLevel}',
       if (profile.charmLevel > 1) 'Charm level ${profile.charmLevel}',
       if (profile.activeLevel > 1) 'Activity level ${profile.activeLevel}',
-      if (profile.vipLevel > 0) 'VIP level ${profile.vipLevel}',
-      if (profile.svipLevel > 0) 'SVIP level ${profile.svipLevel}',
     ];
   }
 

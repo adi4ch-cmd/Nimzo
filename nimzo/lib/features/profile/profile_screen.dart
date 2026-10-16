@@ -1,4 +1,3 @@
-import '../vip/phoenix_widgets.dart';
 import '../../core/widgets/master_ui.dart';
 
 import 'package:flutter/material.dart';
@@ -16,7 +15,6 @@ import 'profile_repository.dart';
 import 'levels_screen.dart';
 import 'profile_level_scale.dart';
 import 'profile_level_pills.dart';
-import 'profile_membership_status.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
@@ -203,16 +201,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        child: PhoenixDecoration(
-                          userId: id,
-                          avatar: true,
-                          child: NimzoAvatar(
-                            name: p.displayName ?? p.username ?? 'N',
-                            url: image('avatars', p.avatarPath),
-                            size: 70,
-                            backgroundColor: NimzoStyle.ink,
-                            online: id == me,
-                          ),
+                        child: NimzoAvatar(
+                          name: p.displayName ?? p.username ?? 'N',
+                          url: image('avatars', p.avatarPath),
+                          size: 70,
+                          backgroundColor: NimzoStyle.ink,
+                          online: id == me,
                         ),
                       ),
                     ),
@@ -233,14 +227,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: PhoenixNameplate(
-                            userId: id,
-                            name: p.displayName ?? p.username ?? 'Nimzo user',
-                            style: const TextStyle(
-                              fontSize: 19,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
+                          child:
+                              Text(p.displayName ?? p.username ?? 'Nimzo user',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w700,
+                                  )),
                         ),
                         EquippedRoyalMedal(userId: id, compact: true),
                         if (p.dateOfBirth != null)
@@ -299,11 +293,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ],
                       ],
-                    ),
-                    const SizedBox(height: 8),
-                    ProfileMembershipStatus(
-                      profile: p,
-                      editable: me == id,
                     ),
                     const SizedBox(height: 8),
                     Text(p.bio?.isNotEmpty == true ? p.bio! : 'No bio yet'),
@@ -662,13 +651,14 @@ class ProfileProgressBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final accent = color(kind, level);
     final amount = total;
-    final unit = const ['coins','diamonds','points'][kind];
+    final unit = const ['coins', 'diamonds', 'points'][kind];
     final totalString = amount?.toString().replaceAllMapped(
-      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-      (match) => '${match[1]},',
-    );
+          RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+          (match) => '${match[1]},',
+        );
     final fraction = amount == null || level < 1
-        ? 0.0 : ProfileLevelScale.fraction(kind, level, amount);
+        ? 0.0
+        : ProfileLevelScale.fraction(kind, level, amount);
     return Container(
       key: ValueKey('profile-level-compact-$kind'),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
@@ -682,32 +672,45 @@ class ProfileProgressBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(children: [
-            Icon(kind == 0 ? Icons.diamond_outlined
-              : kind == 1 ? Icons.favorite_border : Icons.bolt_outlined,
-              color: accent, size: 15),
+            Icon(
+                kind == 0
+                    ? Icons.diamond_outlined
+                    : kind == 1
+                        ? Icons.favorite_border
+                        : Icons.bolt_outlined,
+                color: accent,
+                size: 15),
             const SizedBox(width: 4),
-            Expanded(child: Text(
-              ProfileLevelScale.labels[kind],
-              maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: accent, fontSize: 11,
-                fontWeight: FontWeight.w700))),
+            Expanded(
+                child: Text(ProfileLevelScale.labels[kind],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: accent,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700))),
           ]),
           const SizedBox(height: 3),
           Text(level > 0 ? 'Lv $level' : 'Level unavailable',
-            maxLines: 1, overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: accent,
-              fontSize: level > 0 ? 16 : 9,
-              fontWeight: FontWeight.w800)),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  color: accent,
+                  fontSize: level > 0 ? 16 : 9,
+                  fontWeight: FontWeight.w800)),
           const SizedBox(height: 3),
           Text(
             amount == null ? 'Total unavailable' : '$totalString $unit',
-            maxLines: 1, overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 9, color: Color(0xff64748b)),
           ),
           const SizedBox(height: 5),
           LinearProgressIndicator(
-            value: fraction, minHeight: 3,
-            color: accent, backgroundColor: accent.withValues(alpha: .14),
+            value: fraction,
+            minHeight: 3,
+            color: accent,
+            backgroundColor: accent.withValues(alpha: .14),
             borderRadius: BorderRadius.circular(8),
           ),
         ],

@@ -53,13 +53,9 @@ do $$ begin
  if (select lifetime_gift_coins from moments where id='00000000-0000-4000-8000-000000000401')<>1000 then raise exception 'Moment lifetime mismatch'; end if;
  if (select wealth_coins from profiles where id='00000000-0000-4000-8000-000000000102')<>2000 then raise exception 'Wealth counter mismatch'; end if;
  end $$;
-update public.gifts set min_vip=1 where id='00000000-0000-4000-8000-000000000301';
-update public.profiles set vip_level=5,vip_expires_at=now()-interval '1 day' where id='00000000-0000-4000-8000-000000000102';
 update public.rooms set perm_game=false where id='00000000-0000-4000-8000-000000000201';
 set local role authenticated;
 do $$ begin
- begin perform send_gift('00000000-0000-4000-8000-000000000201','00000000-0000-4000-8000-000000000103','00000000-0000-4000-8000-000000000301',1,'repair-expired'); raise exception 'Expired VIP gift allowed'; exception when raise_exception then if sqlerrm<>'gift tier required' then raise; end if; end;
- begin perform send_moment_gift('00000000-0000-4000-8000-000000000401','00000000-0000-4000-8000-000000000103','00000000-0000-4000-8000-000000000301',1,'repair-moment-expired'); raise exception 'Expired VIP moment gift allowed'; exception when raise_exception then if sqlerrm<>'gift tier required' then raise; end if; end;
  begin perform play_game('fruit_wheel',1,'spin',null,'repair-disabled','00000000-0000-4000-8000-000000000201'); raise exception 'Disabled game allowed'; exception when raise_exception then if sqlerrm<>'ROOM_GAME_DISABLED' then raise; end if; end;
  end $$;
 reset role;

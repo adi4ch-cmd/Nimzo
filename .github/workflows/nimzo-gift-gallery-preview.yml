@@ -1,4 +1,4 @@
-name: Capture 20 custom gifts and royal lion visuals (NO APK)
+name: Capture 20 custom gifts (NO APK)
 on:
   push:
     branches: [feature/profile-reference-redesign]
@@ -18,7 +18,7 @@ jobs:
           flutter-version: '3.47.6'
           channel: stable
           cache: true
-      - name: Render actual NIMZO gift icons and Lion Entry
+      - name: Render actual NIMZO gift icons
         working-directory: nimzo
         run: |
           flutter pub get
@@ -26,16 +26,15 @@ jobs:
       - name: Upload screenshot review (no APK)
         uses: actions/upload-artifact@v4
         with:
-          name: nimzo-original-gift-20-and-lion-review
+          name: nimzo-original-gift-20-review
           path: |
             nimzo/test/goldens/nimzo_20_gift_preview.png
-            nimzo/test/goldens/nimzo_lion_entry_preview.png
       - name: Commit reproducible visual baselines
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add nimzo/test/goldens/nimzo_20_gift_preview.png nimzo/test/goldens/nimzo_lion_entry_preview.png
+          git add nimzo/test/goldens/nimzo_20_gift_preview.png
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'test(gifts-vip): capture 20 original gift icons and Lion entrance [gifts-only]'
+          git commit -m 'test(gifts): capture 20 original gift icons [gifts-only]'
           git push

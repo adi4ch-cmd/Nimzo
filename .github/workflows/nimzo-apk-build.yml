@@ -18,7 +18,7 @@ jobs:
   build:
     # Locked 2026-10-10: NO intermediate APK builds. A dedicated final release
     # commit or an explicit manual dispatch is required to generate an APK.
-    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'release(gifts-vip):') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'release:') }}
     runs-on: ubuntu-latest
     env:
       HAS_RELEASE_SIGNING: ${{ secrets.NIMZO_KEYSTORE_BASE64 != '' || secrets.NIMZO_KEYSTORE_PASSWORD != '' || secrets.NIMZO_KEY_ALIAS != '' || secrets.NIMZO_KEY_PASSWORD != '' }}
@@ -400,6 +400,26 @@ jobs:
           PY
           python3 tools/verify_vivox_callback.py nimzo/build/app/outputs/flutter-apk/app-release.apk
           python3 tools/verify_vivox_login.py nimzo/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Enable emulator acceleration
+        run: sudo chmod 666 /dev/kvm
+
+      - name: Install and launch APK on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          target: default
+          disable-animations: true
+          script: python3 tools/verify_android_launch.py nimzo/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload Android launch diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-android-launch-${{ github.sha }}
+          path: android-launch-diagnostics/
+          if-no-files-found: ignore
 
       - name: Upload APK
         if: env.HAS_RELEASE_SIGNING == 'true'

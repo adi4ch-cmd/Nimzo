@@ -1,4 +1,3 @@
-import '../vip/phoenix_widgets.dart';
 import '../../core/widgets/master_ui.dart';
 
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/reference_widgets.dart';
 import 'profile_repository.dart';
 import 'profile_presentation.dart';
-import 'profile_membership_status.dart';
 import 'profile_level_pills.dart';
 import 'levels_screen.dart';
 import '../store/store_badge.dart';
@@ -64,23 +62,19 @@ class MeScreen extends ConsumerWidget {
                     onTap: () => context.push('/profile/$id'),
                     child: Row(
                       children: [
-                        PhoenixDecoration(
-                          userId: id,
-                          avatar: true,
-                          child: NimzoAvatar(
-                            name: p.displayName ?? 'N',
-                            size: 78,
-                            online: true,
-                            borderWidth: 3,
-                            backgroundColor: NimzoStyle.ink,
-                            url: p.avatarPath == null
-                                ? null
-                                : ref
-                                    .read(supabaseProvider)
-                                    .storage
-                                    .from('avatars')
-                                    .getPublicUrl(p.avatarPath!),
-                          ),
+                        NimzoAvatar(
+                          name: p.displayName ?? 'N',
+                          size: 78,
+                          online: true,
+                          borderWidth: 3,
+                          backgroundColor: NimzoStyle.ink,
+                          url: p.avatarPath == null
+                              ? null
+                              : ref
+                                  .read(supabaseProvider)
+                                  .storage
+                                  .from('avatars')
+                                  .getPublicUrl(p.avatarPath!),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -91,21 +85,17 @@ class MeScreen extends ConsumerWidget {
                                 spacing: 8,
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
-                                  const ReferenceIcon(
-                                    'crown_filled',
-                                    color: Color(0xfffbbf24),
-                                  ),
-                                  PhoenixNameplate(
-                                    userId: id,
-                                    name: p.displayName ??
-                                        p.username ??
-                                        'Nimzo user',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
+                                  Text(
+                                      p.displayName ??
+                                          p.username ??
+                                          'Nimzo user',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                      )),
                                   EquippedRoyalMedal(
                                     userId: id,
                                     compact: true,
@@ -236,10 +226,6 @@ class MeScreen extends ConsumerWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 3),
-              child: ProfileMembershipStatus(profile: p, editable: true),
-            ),
-            Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
               child: Transform.translate(
                 offset: const Offset(0, -28),
@@ -257,18 +243,6 @@ class MeScreen extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: _FeatureBanner(
-                            title: 'SVIP',
-                            subtitle: 'Check now ›',
-                            colors: const [
-                              Color(0xfffff3d1),
-                              Color(0xfffff9e8),
-                            ],
-                            onTap: () => context.push('/svip'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _FeatureBanner(
                             title: 'Wallet',
                             subtitle: 'My Coins ›',
                             colors: const [
@@ -283,7 +257,6 @@ class MeScreen extends ConsumerWidget {
                     const _MenuRow(
                       items: [
                         ('CP Zone', 'cp', '/cp'),
-                        ('VIP', 'crown', '/vip'),
                         ('Settings', 'gear', '/settings'),
                         ('Level', 'bars', '/levels'),
                         ('About', 'info', '/info/About'),
@@ -342,7 +315,7 @@ class _MenuRow extends StatelessWidget {
                         width: 54,
                         height: 54,
                         decoration: BoxDecoration(
-                          color: (item.$1 == 'Ranking' || item.$1 == 'VIP'
+                          color: (item.$1 == 'Ranking'
                                   ? const Color(0xfff59e0b)
                                   : item.$1 == 'Task' ||
                                           item.$1 == 'CP Zone' ||
@@ -355,7 +328,7 @@ class _MenuRow extends StatelessWidget {
                         child: ReferenceIcon(
                           item.$2,
                           size: 22,
-                          color: item.$1 == 'Ranking' || item.$1 == 'VIP'
+                          color: item.$1 == 'Ranking'
                               ? const Color(0xfff59e0b)
                               : item.$1 == 'Task' ||
                                       item.$1 == 'CP Zone' ||

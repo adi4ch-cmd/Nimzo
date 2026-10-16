@@ -7,8 +7,6 @@ import 'support_repository.dart';
 const supportFaqs = {
   'How do I recharge?':
       'Open Recharge and choose an available store package. The server verifies purchases before crediting coins. For a missing purchase, report the store, product, date and non-sensitive transaction reference.',
-  'How do VIP and SVIP work?':
-      'Open VIP or SVIP to view the current tiers and benefits. Check the displayed details before spending coins.',
   'How do I report another user?':
       'Use the report action on the relevant profile or room when available. You can also block users from their profile.',
   'Does a deletion request delete my account?':

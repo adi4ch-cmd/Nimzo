@@ -95,31 +95,6 @@ do $$ begin
 end $$;
 select 'PASS server chat reentry/cleanup and real progress totals' as result;
 -- Expired counters are historical, never current-cycle progress.
-update profiles set svip_cycle_cents=20000,svip_level=2,
- svip_cycle_start=now()-interval '91 days'
- where id='00000000-0000-4000-8000-000000000102';
-set local role authenticated;
-do $$ declare status jsonb:=vip_status(); begin
- if status->>'svip_level'<>'0' or status->>'svip_cycle_cents'<>'0'
-   or status->>'svip_cycle_active'<>'false' then raise exception 'Expired cycle exposed as current progress'; end if;
-end $$;
-reset role;
-update profiles set svip_cycle_start=now()-interval '1 day'
- where id='00000000-0000-4000-8000-000000000102';
-set local role authenticated;
-do $$ declare status jsonb:=vip_status(); begin
- if status->>'svip_cycle_cents'<>'20000' or status->>'svip_cycle_active'<>'true'
-   or status->>'svip_level'<>'2' then raise exception 'Active cycle progress incorrect'; end if;
-end $$;
-reset role;
-select 'PASS server-authoritative active and expired SVIP cycle progress' as result;
-update profiles set svip_cycle_start=null,svip_cycle_cents=2500,svip_level=0
- where id='00000000-0000-4000-8000-000000000102';
-set local role authenticated;
-do $$ declare status jsonb:=vip_status(); begin
- if status->>'svip_cycle_cents'<>'2500' or status->>'svip_cycle_active'<>'false'
-   or status->>'svip_level'<>'0' then raise exception 'Pre-activation recharge progress lost'; end if;
-end $$;
-reset role;
-select 'PASS pre-activation recharge retained below first SVIP threshold' as result;
+-- VIP/SVIP is retired; mutations and financial safety are covered by
+-- vip_svip_retirement.sql instead of historical cycle progress checks.
 rollback;

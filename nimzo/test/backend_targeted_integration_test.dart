@@ -1,4 +1,3 @@
-import 'package:nimzo/features/vip/phoenix_room_entry.dart';
 import 'package:nimzo/features/gifts/gift_repository.dart';
 
 import 'dart:convert';
@@ -11,8 +10,6 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/features/profile/profile.dart';
 import 'package:nimzo/features/discover/leaderboard_repository.dart';
-import 'package:nimzo/features/vip/vip_progress.dart';
-import 'package:nimzo/features/vip/vip_repository.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/core/theme/app_theme.dart';
 import 'package:nimzo/features/rooms/presentation/room_screen.dart';
@@ -41,101 +38,15 @@ SupabaseClient backendClient(http.Response Function(http.Request) reply) =>
     );
 
 void main() {
-  for (final (active, cents) in [(true, 20000), (false, 0), (false, 2500)]) {
-    test(
-      'SVIP progress consumes server cycle active=$active cents=$cents',
-      () async {
-        final container = ProviderContainer(
-          overrides: [
-            phoenixEntriesProvider.overrideWith(
-              (ref, room) => const Stream.empty(),
-            ),
-            verifiedGiftAnimationProvider.overrideWith(
-              (ref, args) => const Stream.empty(),
-            ),
-            currentUserIdProvider.overrideWithValue('me'),
-            vipStatusProvider.overrideWith(
-              (_) async => {
-                'svip_cycle_cents': cents,
-                'svip_cycle_active': active,
-              },
-            ),
-            svipThresholdsProvider.overrideWith(
-              (_) async => {1: 5000, 2: 50000},
-            ),
-          ],
-        );
-        addTearDown(container.dispose);
-        final progress = await container.read(svipProgressProvider.future);
-        expect(progress.cycleCents, cents);
-        expect(
-          progress.fraction,
-          cents == 0
-              ? 0
-              : cents == 2500
-                  ? .5
-                  : .4,
-        );
-      },
-    );
-  }
-  test(
-    'old status contract cannot present stale recharge as current progress',
-    () async {
-      final container = ProviderContainer(
-        overrides: [
-          phoenixEntriesProvider.overrideWith(
-            (ref, room) => const Stream.empty(),
-          ),
-          verifiedGiftAnimationProvider.overrideWith(
-            (ref, args) => const Stream.empty(),
-          ),
-          currentUserIdProvider.overrideWithValue('me'),
-          vipStatusProvider.overrideWith((_) async => {'svip_level': 0}),
-          svipThresholdsProvider.overrideWith((_) async => {1: 5000}),
-        ],
-      );
-      addTearDown(container.dispose);
-      await expectLater(
-        container.read(svipProgressProvider.future),
-        throwsStateError,
-      );
-    },
-  );
-  test(
-      'progress handles simultaneous data/catalog failure without leaking a future error',
-      () async {
-    final container = ProviderContainer(
-      overrides: [
-        phoenixEntriesProvider.overrideWith(
-          (ref, room) => const Stream.empty(),
-        ),
-        verifiedGiftAnimationProvider.overrideWith(
-          (ref, args) => const Stream.empty(),
-        ),
-        currentUserIdProvider.overrideWithValue('me'),
-        vipStatusProvider.overrideWith(
-          (_) async => throw StateError('Status unavailable'),
-        ),
-        svipThresholdsProvider.overrideWith(
-          (_) async => throw StateError('Catalog unavailable'),
-        ),
-      ],
-    );
-    addTearDown(container.dispose);
-    await expectLater(
-      container.read(svipProgressProvider.future),
-      throwsA(isA<Object>()),
-    );
-  });
-  for (final phoenix in [false, true]) {
+  for (final staleMembership in [false, true]) {
     testWidgets(
-      'server-visible room chat is readable with phoenix=$phoenix when the phone clock is ahead',
+      'server-visible room chat is readable with staleMembership=$staleMembership when the phone clock is ahead',
       (tester) async {
         final db = (await tester.runAsync(
           () async => backendClient(
             (request) => http.Response(
-              phoenix && request.url.path.endsWith('/phoenix_membership')
+              staleMembership &&
+                      request.url.path.endsWith('/phoenix_membership')
                   ? jsonEncode({
                       'vip_level': 6,
                       'server_now': '2001-01-01T00:00:00Z',
@@ -150,9 +61,6 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
-              phoenixEntriesProvider.overrideWith(
-                (ref, room) => const Stream.empty(),
-              ),
               verifiedGiftAnimationProvider.overrideWith(
                 (ref, args) => const Stream.empty(),
               ),
@@ -228,7 +136,8 @@ void main() {
       expect(p.charmDiamonds, 450);
       expect(p.activePoints, 0);
       expect(p.wealthLevel, 0);
-      expect(p.svipCycleCents, 20000);
+      expect(p.vipLevel, 0);
+      expect(p.svipLevel, 0);
       final unavailable = Profile.fromJson({'id': 'me', 'nimzo_id': 11699311});
       expect(unavailable.wealthCoins, isNull);
       expect(unavailable.activePoints, isNull);
@@ -282,40 +191,4 @@ void main() {
       expect(calls, 0);
     },
   );
-  test(
-    'SVIP progress uses live cents/catalog and does not invent tiers 9–10',
-    () {
-      final progress = SvipProgress(
-        cycleCents: 20000,
-        thresholds: {1: 5000, 2: 50000, 3: 200000},
-      );
-      expect(progress.nextLevel, 2);
-      expect(progress.nextThresholdCents, 50000);
-      expect(progress.fraction, .4);
-      expect(progress.thresholdFor(10), isNull);
-      expect(
-        progress.cycleCents,
-        20000,
-      ); // No conversion from a visual tier index.
-    },
-  );
-  test(
-    'catalog values are read from the deployed table, not the UI catalog',
-    () async {
-      final db = backendClient((request) {
-        expect(request.url.path, '/rest/v1/svip_thresholds');
-        return http.Response(
-          '[{"level":1,"usd_cents":5000},{"level":2,"usd_cents":50000}]',
-          200,
-        );
-      });
-      addTearDown(db.dispose);
-      expect(await VipRepository(db).svipThresholds(), {1: 5000, 2: 50000});
-    },
-  );
-  test('a missing VIP status is a clear missing-account failure', () async {
-    final db = backendClient((_) => http.Response('null', 200));
-    addTearDown(db.dispose);
-    await expectLater(VipRepository(db).status(), throwsStateError);
-  });
 }

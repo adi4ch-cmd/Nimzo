@@ -5,13 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/core/theme/app_theme.dart';
-import 'package:nimzo/features/vip/vip_screen.dart';
-import 'package:nimzo/features/vip/vip_repository.dart';
 import 'package:nimzo/features/rooms/presentation/room_overlays.dart';
 import 'package:nimzo/features/wallet/wallet_screen.dart';
 
 void main() {
-  testWidgets('final membership and room overlay visual previews', (
+  testWidgets('room overlay visual previews', (
     tester,
   ) async {
     for (final font in [
@@ -40,8 +38,6 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     for (final preview in <(String, Widget)>[
-      ('vip_final', const VipScreen()),
-      ('svip_final', const VipScreen(svip: true)),
       (
         'treasure_final',
         const Scaffold(
@@ -58,9 +54,6 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            vipStatusProvider.overrideWith(
-              (_) async => {'vip_level': 0, 'svip_level': 0},
-            ),
             walletProvider.overrideWith((_) async => (coins: 0, diamonds: 0)),
           ],
           child: MaterialApp(
@@ -73,24 +66,8 @@ void main() {
         ),
       );
       await tester.pump();
-      if (preview.$1 == 'vip_final' || preview.$1 == 'svip_final') {
-        final context = tester.element(find.byKey(const ValueKey('preview')));
-        await tester.runAsync(() async {
-          for (var i = 0; i < 10; i++) {
-            // Normal VIP is original vector paint, not the deleted legacy JPG.
-            final asset = 'assets/membership/svip/svip_medal${i + 1}.webp';
-            await precacheImage(AssetImage(asset), context);
-          }
-        });
-      }
       await tester.pump(const Duration(milliseconds: 300));
-      if (preview.$1 == 'vip_final' || preview.$1 == 'svip_final') {
-        // Active membership screens now include verified rewards and claim
-        // state. Old static VIP screenshots should never hide those controls.
-        expect(find.byType(VipScreen), findsOneWidget);
-        expect(find.textContaining('NIMZO'), findsWidgets);
-        expect(find.textContaining('VIP'), findsWidgets);
-      } else if (preview.$1 == 'crystal_final') {
+      if (preview.$1 == 'crystal_final') {
         // The original Diamond screenshot was deliberately retired. Validate
         // the active six-stage Rocket UI rather than asserting old pixels.
         expect(find.text('ROOM ROCKET'), findsOneWidget);

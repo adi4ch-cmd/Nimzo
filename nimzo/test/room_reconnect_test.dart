@@ -1,5 +1,3 @@
-import 'package:nimzo/features/vip/phoenix_room_entry.dart';
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -112,9 +110,6 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          phoenixEntriesProvider.overrideWith(
-            (ref, room) => const Stream.empty(),
-          ),
           currentUserIdProvider.overrideWithValue('viewer'),
           roomRepositoryProvider.overrideWithValue(repo),
           roomChatRepositoryProvider.overrideWithValue(chat),

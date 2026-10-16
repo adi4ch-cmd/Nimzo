@@ -12,11 +12,11 @@ Blocking controls and account settings are available in the app. Account deletio
 
 Before publication, the owner must confirm the operator identity and contact channel, service providers and disclosures, legal bases, international transfers, retention periods, age eligibility, and the process for exercising privacy rights. No retention duration or legal jurisdiction has been confirmed.''',
   'Terms of Service':
-      '''Nimzo provides social profiles, rooms, messaging, moments, virtual gifts, and membership features. Availability depends on the service and the account's access. Protect your login credentials and use accurate information where required.
+      '''Nimzo provides social profiles, rooms, messaging, moments, and virtual gifts. Availability depends on the service and the account's access. Protect your login credentials and use accurate information where required.
 
 Use the service lawfully and respect other users. Do not impersonate others, gain unauthorized access, manipulate balances or purchases, or interfere with the service. Virtual balances and gifts are recorded by the backend; do not assume they can be redeemed for money or transferred outside the supported app flows.
 
-Store purchases are subject to the applicable store's purchase process. A support ticket does not establish refund eligibility. Membership benefits depend on the current tier and implementation.
+Store purchases are subject to the applicable store's purchase process. A support ticket does not establish refund eligibility.
 
 Before publication, the owner must approve the contracting entity, contact channel, eligibility requirements, payment and virtual-item terms, termination rules, dispute terms, liability terms, governing law, and policy change process. This draft does not invent those terms.''',
   'Community Guidelines':
@@ -30,11 +30,11 @@ These are proposed community standards. Before publication, the owner must appro
 
 The app does not currently offer a self-service refund action. Submitting a ticket does not issue a refund, reverse a gift, or change a wallet balance. Consult the purchase platform's refund process where applicable.
 
-Before publication, the owner must confirm refund eligibility, deadlines, exceptions, handling of consumed virtual items and memberships, store responsibilities, and the applicable consumer rights. No blanket no-refund rule or refund promise has been approved.''',
+Before publication, the owner must confirm refund eligibility, deadlines, exceptions, handling of consumed virtual items and historical memberships, store responsibilities, and the applicable consumer rights. No blanket no-refund rule or refund promise has been approved.''',
   'Account Deletion Policy':
       '''You can submit an account deletion request from Account settings. The request is associated with your signed-in account and may include an optional reason. A pending request is recorded for review.
 
-Submitting a request does not delete your account, sign you out, cancel purchases or memberships, or remove your messages and other data. There is no automatic deletion workflow in the current implementation.
+Submitting a request does not delete your account, sign you out, cancel purchases, or remove your messages and other data. There is no automatic deletion workflow in the current implementation.
 
 Before publication, the owner must confirm who processes requests, identity verification, cancellation and withdrawal procedures, the handling of public and shared content, legal retention requirements, completion timeframes, and how users receive confirmation. No deletion deadline or data-retention period has been confirmed.''',
 };

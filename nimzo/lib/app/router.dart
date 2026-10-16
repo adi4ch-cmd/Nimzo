@@ -1,3 +1,5 @@
+import '../core/providers/supabase_provider.dart';
+import '../features/profile/retired_membership_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -34,7 +36,6 @@ import '../features/profile/profile_screen.dart';
 import '../features/profile/profile_setup_screen.dart';
 import '../features/recharge/recharge_screen.dart';
 import '../features/rooms/presentation/room_screen.dart';
-import '../features/vip/vip_screen.dart';
 import '../features/wallet/wallet_screen.dart';
 import 'routes.dart';
 import 'shell.dart';
@@ -43,7 +44,8 @@ final routerProvider = Provider<GoRouter>((ref) {
   final refresh = _RouterRefresh();
   ref.listen(authStateProvider, (_, __) => refresh.refresh());
   ref.listen(passwordRecoveryProvider, (_, __) => refresh.refresh());
-  final subscription = Supabase.instance.client.auth.onAuthStateChange.listen((
+  final subscription =
+      ref.read(supabaseProvider).auth.onAuthStateChange.listen((
     event,
   ) {
     if (event.event == AuthChangeEvent.passwordRecovery)
@@ -124,7 +126,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
-      GoRoute(path: '/svip', builder: (_, __) => const VipScreen(svip: true)),
+      GoRoute(
+          path: '/svip', builder: (_, __) => const RetiredMembershipScreen()),
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
@@ -158,7 +161,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.recharge,
         builder: (_, __) => const RechargeScreen(),
       ),
-      GoRoute(path: Routes.vip, builder: (_, __) => const VipScreen()),
+      GoRoute(
+          path: Routes.vip,
+          builder: (_, __) => const RetiredMembershipScreen()),
       GoRoute(
         path: '/profile/:id',
         builder: (_, s) => ProfileScreen(userId: s.pathParameters['id']),

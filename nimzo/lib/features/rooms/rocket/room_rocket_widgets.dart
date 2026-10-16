@@ -388,7 +388,7 @@ class _RocketRewardsPanel extends StatelessWidget {
         ),
       const Text(
         'The six Rocket levels unlock animation milestones only. '
-        'Coin, car, frame or VIP prizes need a verified payout policy '
+        'Coin, car or frame prizes need a verified payout policy '
         'before they can be awarded.',
         textAlign: TextAlign.center,
         style: TextStyle(color: NimzoStyle.muted, fontSize: 11),

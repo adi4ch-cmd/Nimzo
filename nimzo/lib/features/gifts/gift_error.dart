@@ -14,7 +14,7 @@ AppException mapGiftError(Object error) {
       'insufficient coins' =>
         'Not enough coins. Top up your wallet and retry this gift.',
       'gift tier required' =>
-        'This gift requires a higher active VIP or SVIP level. Choose another gift.',
+        'This gift is unavailable. Refresh the gift list and choose another gift.',
       'room member required' ||
       'sender is not in room' ||
       'receiver is not in room' =>

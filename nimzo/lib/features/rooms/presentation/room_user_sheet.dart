@@ -1,5 +1,3 @@
-import '../../vip/phoenix_widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +7,6 @@ import '../../../core/widgets/reference_widgets.dart';
 import '../../gifts/gift_sheet.dart';
 import '../../profile/levels_screen.dart';
 import '../../profile/profile_level_pills.dart';
-import '../../profile/profile_membership_status.dart';
 import '../../profile/profile_repository.dart';
 import '../../social/social_repositories.dart';
 import '../../store/store_badge.dart';
@@ -192,20 +189,16 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                           children: [
                             InkWell(
                               onTap: openProfile,
-                              child: PhoenixDecoration(
-                                userId: widget.userId,
-                                avatar: true,
-                                child: NimzoAvatar(
-                                  name: p.displayName ?? 'N',
-                                  size: 66,
-                                  url: p.avatarPath == null
-                                      ? null
-                                      : ref
-                                          .read(supabaseProvider)
-                                          .storage
-                                          .from('avatars')
-                                          .getPublicUrl(p.avatarPath!),
-                                ),
+                              child: NimzoAvatar(
+                                name: p.displayName ?? 'N',
+                                size: 66,
+                                url: p.avatarPath == null
+                                    ? null
+                                    : ref
+                                        .read(supabaseProvider)
+                                        .storage
+                                        .from('avatars')
+                                        .getPublicUrl(p.avatarPath!),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -215,17 +208,17 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                 children: [
                                   InkWell(
                                     onTap: openProfile,
-                                    child: PhoenixNameplate(
-                                      userId: widget.userId,
-                                      name: p.displayName ??
-                                          p.username ??
-                                          'Nimzo user',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 19,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
+                                    child: Text(
+                                        p.displayName ??
+                                            p.username ??
+                                            'Nimzo user',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 19,
+                                          fontWeight: FontWeight.w800,
+                                        )),
                                   ),
                                   const SizedBox(height: 3),
                                   Row(
@@ -252,11 +245,8 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                         'room-user-level-badges'),
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      for (var kind = 0;
-                                          kind < 3;
-                                          kind++) ...[
-                                        if (kind > 0)
-                                          const SizedBox(width: 4),
+                                      for (var kind = 0; kind < 3; kind++) ...[
+                                        if (kind > 0) const SizedBox(width: 4),
                                         Flexible(
                                           child: InkWell(
                                             key: ValueKey(
@@ -269,8 +259,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                                         builder: (_) =>
                                                             LevelsScreen(
                                                           initialKind: kind,
-                                                          userId:
-                                                              widget.userId,
+                                                          userId: widget.userId,
                                                         ),
                                                       ),
                                                     ),
@@ -293,11 +282,6 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        ProfileMembershipStatus(
-                          profile: p,
-                          editable: self,
-                          compact: true,
-                        ),
                         const SizedBox(height: 18),
                         Row(
                           children: [
@@ -426,20 +410,15 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                         );
                                     if (context.mounted) Navigator.pop(context);
                                   }),
-                          child: Text(widget.muted
-                              ? 'Unmute seat'
-                              : 'Mute seat'),
+                          child:
+                              Text(widget.muted ? 'Unmute seat' : 'Mute seat'),
                         ),
                         TextButton(
-                          onPressed: busy
-                              ? null
-                              : () => moderate(ban: false),
+                          onPressed: busy ? null : () => moderate(ban: false),
                           child: const Text('Kick from room'),
                         ),
                         TextButton(
-                          onPressed: busy
-                              ? null
-                              : () => moderate(ban: true),
+                          onPressed: busy ? null : () => moderate(ban: true),
                           child: const Text(
                             'Ban from room',
                             style: TextStyle(color: Color(0xffff7777)),

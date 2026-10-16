@@ -21,7 +21,7 @@ void main() {
     expect(p.vipLevel, 0);
     expect(p.svipLevel, 0);
   });
-  test('active memberships retain their actual recorded levels', () {
+  test('retired memberships stay inactive even with future expiry', () {
     final p = Profile.fromJson({
       'id': 'u',
       'nimzo_id': 100001,
@@ -31,7 +31,7 @@ void main() {
       'svip_level': 3,
       'svip_cycle_start': DateTime.now().toIso8601String(),
     });
-    expect(p.vipLevel, 5);
-    expect(p.svipLevel, 3);
+    expect(p.vipLevel, 0);
+    expect(p.svipLevel, 0);
   });
 }

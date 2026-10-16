@@ -1,7 +1,7 @@
 name: nimzo
 description: Nimzo social voice-room app
 publish_to: none
-version: 1.0.23+123
+version: 1.0.24+124
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:
@@ -52,19 +52,14 @@ flutter:
     - assets/reference/car/
     - assets/reference/pg/
     - assets/reference/lv/
-    - assets/membership/svip/
-    - assets/haza_membership/vip/
-    - assets/haza_membership/svip/
     - assets/hilo/game_levels/
     - assets/hilo/store/
-    - assets/reference/svip/
     - assets/reference/tool/
     - assets/reference/gem/
     - assets/reference/chest/
     - assets/reference/crys/
     - assets/reference/rmed/
     - assets/reference/prz/
-    - assets/reference/emblems/
     - assets/reference/icons/
   fonts:
     - family: Cinzel

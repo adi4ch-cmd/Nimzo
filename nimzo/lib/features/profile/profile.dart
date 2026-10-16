@@ -12,9 +12,8 @@ class Profile {
       gender;
   final DateTime? dateOfBirth;
   // Authoritative counters are distinct from levels; missing values stay unknown.
-  final int? wealthCoins, charmDiamonds, activePoints, svipCycleCents;
-  final DateTime? svipCycleStart;
-  final int level, wealthLevel, charmLevel, activeLevel, vipLevel, svipLevel;
+  final int? wealthCoins, charmDiamonds, activePoints;
+  final int level, wealthLevel, charmLevel, activeLevel;
   const Profile({
     required this.id,
     required this.nimzoId,
@@ -31,21 +30,15 @@ class Profile {
     this.wealthCoins,
     this.charmDiamonds,
     this.activePoints,
-    this.svipCycleCents,
-    this.svipCycleStart,
     this.level = 1,
     this.wealthLevel = 0,
     this.charmLevel = 0,
     this.activeLevel = 0,
-    this.vipLevel = 0,
-    this.svipLevel = 0,
   });
 
-  static bool _isActive(dynamic value, {int days = 0}) {
-    final date = DateTime.tryParse(value?.toString() ?? '');
-    return date != null &&
-        date.add(Duration(days: days)).isAfter(DateTime.now());
-  }
+  // Compatibility for older consumers: retired memberships can never be active.
+  int get vipLevel => 0;
+  int get svipLevel => 0;
 
   factory Profile.fromJson(Map<String, dynamic> j) => Profile(
         id: j['id'] as String,
@@ -62,9 +55,6 @@ class Profile {
         wealthCoins: (j['wealth_coins'] as num?)?.toInt(),
         charmDiamonds: (j['charm_diamonds'] as num?)?.toInt(),
         activePoints: (j['active_points'] as num?)?.toInt(),
-        svipCycleCents: (j['svip_cycle_cents'] as num?)?.toInt(),
-        svipCycleStart:
-            DateTime.tryParse(j['svip_cycle_start']?.toString() ?? ''),
         dateOfBirth: j['date_of_birth'] == null
             ? null
             : DateTime.tryParse(j['date_of_birth'].toString()),
@@ -72,10 +62,5 @@ class Profile {
         wealthLevel: (j['wealth_level'] ?? 0) as int,
         charmLevel: (j['charm_level'] ?? 0) as int,
         activeLevel: (j['active_level'] ?? 0) as int,
-        vipLevel:
-            _isActive(j['vip_expires_at']) ? (j['vip_level'] ?? 0) as int : 0,
-        svipLevel: _isActive(j['svip_cycle_start'], days: 90)
-            ? (j['svip_level'] ?? 0) as int
-            : 0,
       );
 }
