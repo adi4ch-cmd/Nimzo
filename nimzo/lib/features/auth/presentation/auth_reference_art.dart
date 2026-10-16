@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_theme.dart';
+
 class AuthBackdrop extends StatelessWidget {
   final Widget child;
   const AuthBackdrop({super.key, required this.child});
   @override
   Widget build(BuildContext context) => DecoratedBox(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment(-.34, -1),
-            end: Alignment(.34, 1),
-            colors: [Color(0xff5b21b6), Color(0xffc026d3), Color(0xffec4899)],
-            stops: [0, .65, 1],
-          ),
+          gradient: NimzoStyle.heroGradient,
         ),
         child: Stack(
           children: [
