@@ -15,7 +15,7 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Container(
-          decoration: const BoxDecoration(gradient: NimzoStyle.gradient),
+          decoration: const BoxDecoration(gradient: NimzoStyle.heroGradient),
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -34,6 +34,10 @@ class OnboardingScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: NimzoStyle.royal,
+                  ),
                   onPressed: () => context.go('/login'),
                   child: const Text('Continue'),
                 ),

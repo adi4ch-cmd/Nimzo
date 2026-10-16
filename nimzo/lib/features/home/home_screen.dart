@@ -120,9 +120,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xfff3e8ff), Color(0xfffde7f3)],
-                      ),
+                      gradient: NimzoStyle.heroGradient,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x248b3dff),
+                          blurRadius: 18,
+                          offset: Offset(0, 8),
+                        ),
+                      ],
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Row(
@@ -147,19 +152,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
+                                  color: Colors.white,
                                 ),
                               ),
                               const Text(
                                 'One account, one room',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: NimzoStyle.muted,
+                                  color: Color(0xfff2e8ff),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        GradientButton(
+                        FilledButton(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: NimzoStyle.royal,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 11),
+                          ),
                           onPressed: opening ? null : openMine,
                           child: Text(opening ? 'Opening…' : 'Open my room'),
                         ),
@@ -172,7 +184,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     selected: tab,
                     onSelected: (i) => setState(() => tab = i),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 14),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      ['Popular Rooms', 'Followed Rooms', 'Recently Joined Rooms'][tab],
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 17,
+                        color: NimzoStyle.ink,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 7),
                   AsyncContent(
                     value: rooms,
                     onRetry: retry,
@@ -210,9 +234,12 @@ class RoomTile extends ConsumerWidget {
     return InkWell(
       onTap: () => context.push('/room/${room.id}'),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 11),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: NimzoStyle.line)),
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: NimzoStyle.line),
         ),
         child: Row(
           children: [
@@ -242,13 +269,21 @@ class RoomTile extends ConsumerWidget {
                 ],
               ),
             ),
-            Text(
-              compactNumber(room.lifetimeGiftCoins),
-              style: const TextStyle(
-                color: Color(0xffdb2777),
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.diamond_outlined,
+                    color: NimzoStyle.orange, size: 14),
+                const SizedBox(width: 3),
+                Text(
+                  compactNumber(room.lifetimeGiftCoins),
+                  style: const TextStyle(
+                    color: NimzoStyle.royal,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

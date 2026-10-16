@@ -135,9 +135,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       height: 130,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xff4b5563), Color(0xff111827)],
-                        ),
+                        gradient: NimzoStyle.heroGradient,
                         image: cover == null
                             ? null
                             : DecorationImage(

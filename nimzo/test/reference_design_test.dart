@@ -4,9 +4,9 @@ import 'package:nimzo/core/theme/app_theme.dart';
 import 'package:nimzo/core/widgets/reference_widgets.dart';
 
 void main() {
-  test('theme follows current approved purple reference', () {
-    expect(AppTheme.light().colorScheme.primary, const Color(0xff9333ea));
-    expect(AppTheme.light().scaffoldBackgroundColor, Colors.white);
+  test('theme reflects the approved ByChance-inspired palette', () {
+    expect(AppTheme.light().colorScheme.primary, NimzoStyle.primary);
+    expect(AppTheme.light().scaffoldBackgroundColor, NimzoStyle.surface);
   });
   testWidgets('long avatar labels and unavailable image remain bounded', (
     tester,

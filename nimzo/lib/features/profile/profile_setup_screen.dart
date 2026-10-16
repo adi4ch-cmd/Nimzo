@@ -1,5 +1,6 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import '../../core/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -168,7 +169,7 @@ class _State extends ConsumerState<ProfileSetupScreen> {
     }
   }
 
-  static const _pageColor = Color(0xffe9f3ef);
+  static const _pageColor = NimzoStyle.surface;
 
   Widget _section(Widget child) => Padding(
         padding: const EdgeInsets.only(bottom: 18),
@@ -183,12 +184,12 @@ class _State extends ConsumerState<ProfileSetupScreen> {
         ),
       );
 
-  Widget _line() => const Divider(height: 1, color: Color(0xfff0f3f2));
+  Widget _line() => const Divider(height: 1, color: NimzoStyle.line);
 
   InputDecoration _fieldDecoration(String label) => InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(
-          color: Color(0xff132a24), fontWeight: FontWeight.w700,
+          color: NimzoStyle.ink, fontWeight: FontWeight.w700,
         ),
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
@@ -214,7 +215,7 @@ class _State extends ConsumerState<ProfileSetupScreen> {
           )),
         centerTitle: true,
         backgroundColor: Colors.white,
-        foregroundColor: const Color(0xff132a24),
+        foregroundColor: NimzoStyle.ink,
       ),
       body: failure != null
           ? DataFailure(message: failure!, onRetry: load)
@@ -239,17 +240,17 @@ class _State extends ConsumerState<ProfileSetupScreen> {
                               children: [
                                 CircleAvatar(
                                   radius: 38,
-                                  backgroundColor: const Color(0xffd9f0e5),
+                                  backgroundColor: const Color(0xffede4ff),
                                   backgroundImage: avatarUrl == null
                                       ? null : NetworkImage(avatarUrl),
                                   child: avatarUrl == null
                                       ? const Icon(Icons.person,
-                                        color: Color(0xff19956c), size: 32)
+                                        color: NimzoStyle.primary, size: 32)
                                       : null,
                                 ),
                                 const SizedBox(width: 10),
                                 const Icon(Icons.chevron_right,
-                                  color: Color(0xffacb7b3)),
+                                  color: NimzoStyle.muted),
                               ],
                             ),
                             onTap: busy ? null : () => photo(false),
@@ -297,7 +298,7 @@ class _State extends ConsumerState<ProfileSetupScreen> {
                             trailing: Text(
                               dob?.toIso8601String().split('T').first
                                   ?? 'Choose date',
-                              style: const TextStyle(color: Color(0xff64736e)),
+                              style: const TextStyle(color: NimzoStyle.muted),
                             ),
                             onTap: () async {
                               final date = await showDatePicker(
@@ -348,7 +349,7 @@ class _State extends ConsumerState<ProfileSetupScreen> {
                         key: const ValueKey('modify-profile-save'),
                         onPressed: busy || id == null ? null : save,
                         style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xff14b889),
+                          backgroundColor: NimzoStyle.primary,
                           minimumSize: const Size.fromHeight(52),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16)),

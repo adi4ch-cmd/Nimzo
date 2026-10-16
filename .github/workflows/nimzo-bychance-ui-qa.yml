@@ -1,0 +1,35 @@
+name: NIMZO ByChance-Inspired UI QA
+
+on:
+  pull_request:
+    branches:
+      - feature/profile-reference-redesign
+
+permissions:
+  contents: read
+
+jobs:
+  flutter-ui-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout NIMZO
+        uses: actions/checkout@v4
+      - name: Flutter stable
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.6"
+          channel: stable
+          cache: true
+      - name: Dependencies
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Analyze
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Palette regression
+        working-directory: nimzo
+        run: flutter test test/bychance_palette_test.dart
+      - name: Full Flutter test suite
+        working-directory: nimzo
+        run: flutter test

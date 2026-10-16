@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../domain/room_theme.dart';
+import '../../../core/theme/app_theme.dart';
 
 /// Built-in NIMZO themes. No invented premium prices or ownership state.
 class RoomThemesScreen extends StatelessWidget {
@@ -9,7 +10,7 @@ class RoomThemesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: const Color(0xfff0f6f3),
+        backgroundColor: NimzoStyle.surface,
         appBar: AppBar(
           backgroundColor: Colors.white,
           title: const Text('Room Themes'),
@@ -22,7 +23,7 @@ class RoomThemesScreen extends StatelessWidget {
               child: Text('NIMZO Original Themes',
                 style: TextStyle(
                   fontSize: 15, fontWeight: FontWeight.w800,
-                  color: Color(0xff164f40),
+                  color: NimzoStyle.royal,
                 )),
             ),
             const Padding(
@@ -30,7 +31,7 @@ class RoomThemesScreen extends StatelessWidget {
               child: Text('Eight included room backgrounds. Tap to preview and apply. '
                   'No coin purchase required.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: Color(0xff63766e))),
+                  style: TextStyle(fontSize: 12, color: NimzoStyle.muted)),
             ),
             Expanded(
               child: GridView.builder(
@@ -115,7 +116,7 @@ class RoomThemesScreen extends StatelessWidget {
                                       const Positioned(
                                         top: 8, right: 8,
                                         child: Icon(Icons.check_circle,
-                                          color: Color(0xff16bf92), size: 23),
+                                          color: NimzoStyle.primary, size: 23),
                                       ),
                                   ],
                                 ),
@@ -134,7 +135,7 @@ class RoomThemesScreen extends StatelessWidget {
                                   ),
                                   Text(isCurrent ? 'Active' : 'Free',
                                     style: const TextStyle(
-                                      color: Color(0xff16a880),
+                                      color: NimzoStyle.primary,
                                       fontSize: 11,
                                       fontWeight: FontWeight.w800)),
                                 ],

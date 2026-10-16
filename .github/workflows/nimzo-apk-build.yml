@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/profile-reference-redesign
+      - feature/bychance-inspired-ui-20261016
     paths-ignore:
       - NIMZO_Dragon_Gift_Assets_Patch.zip
       - NIMZO_Yo2_Assets_Part_1_of_2.zip
@@ -21,7 +22,9 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'release:') }}
     runs-on: ubuntu-latest
     env:
-      HAS_RELEASE_SIGNING: ${{ secrets.NIMZO_KEYSTORE_BASE64 != '' || secrets.NIMZO_KEYSTORE_PASSWORD != '' || secrets.NIMZO_KEY_ALIAS != '' || secrets.NIMZO_KEY_PASSWORD != '' }}
+      # A style-reference branch may only produce an ephemeral TEST artifact.
+      # Never publish it as a signed NIMZO updater release.
+      HAS_RELEASE_SIGNING: ${{ github.ref == 'refs/heads/feature/profile-reference-redesign' && (secrets.NIMZO_KEYSTORE_BASE64 != '' || secrets.NIMZO_KEYSTORE_PASSWORD != '' || secrets.NIMZO_KEY_ALIAS != '' || secrets.NIMZO_KEY_PASSWORD != '') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
