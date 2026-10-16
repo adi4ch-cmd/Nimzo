@@ -20,12 +20,14 @@ Future<void> render(
   bool asModal = false,
   bool moderator = false,
   RoomRepository? repository,
+  ValueChanged<String>? onMention,
 }) async {
   final sheet = RoomUserSheet(
     roomId: 'room',
     userId: target,
     seatNo: 2,
     muted: false,
+    onMention: onMention,
   );
   await tester.pumpWidget(
     ProviderScope(
@@ -60,10 +62,12 @@ Future<void> render(
               ? Builder(
                   builder: (context) => TextButton(
                     child: const Text('Open seat'),
-                    onPressed: () => showModalBottomSheet<void>(
+                    onPressed: () => showDialog<void>(
                       context: context,
-                      isScrollControlled: true,
-                      builder: (_) => sheet,
+                      builder: (_) => Dialog(
+                        backgroundColor: Colors.transparent,
+                        child: sheet,
+                      ),
                     ),
                   ),
                 )
@@ -142,6 +146,25 @@ void main() {
     expect(find.text('No gifts available'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  testWidgets('in-room Mention returns the real member name', (tester) async {
+    String? mentionName;
+    await render(
+      tester,
+      me: 'member',
+      asModal: true,
+      onMention: (name) => mentionName = name,
+    );
+    await tester.tap(find.text('Open seat'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('room-mini-profile-card')),
+        findsOneWidget);
+    await tester.tap(find.text('Mention'));
+    await tester.pumpAndSettle();
+    expect(mentionName, 'Member');
+    expect(find.byKey(const ValueKey('room-mini-profile-card')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('member sheet shows real identity and supported social actions', (
     tester,
   ) async {
