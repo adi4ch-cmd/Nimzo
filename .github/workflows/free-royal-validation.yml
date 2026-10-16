@@ -1,7 +1,7 @@
 name: Free VIP and SVIP validation
 on:
   push:
-    branches: [feature/free-royal-memberships-20261016]
+    branches: [feature/free-royal-memberships-20261016, fix/level-progress-and-tier-colors-20261016]
   pull_request:
     paths:
       - 'nimzo/lib/features/membership/**'

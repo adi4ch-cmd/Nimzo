@@ -36,8 +36,25 @@ class ProfileLevelScale {
     Color(0xffa16207), Color(0xff16a34a), Color(0xff2563eb),
     Color(0xffdb2777), Color(0xffdc2626), Color(0xffd4a017),
   ];
-  // Distinct rotations: level 1 is brown for wealth, blue for charm,
-  // and red for active. Higher bands all change with actual level.
+  // Six canonical color names. Wealth/Charm/Active use the same
+  // six real shades, but each starts from a different palette position.
+  // Always derive the visible label from the SAME index as the color.
+  static const tierNames = ['Brown', 'Green', 'Blue', 'Pink', 'Red', 'Gold'];
+  static const bandStarts = [1, 21, 40, 60, 80, 100];
+  static const bandEnds = [20, 39, 59, 79, 99, 120];
+
+  static int paletteIndex(int kind, int level) {
+    if (kind < 0 || kind > 2 || level < 1 || level > 120) return -1;
+    return (band(level) + const [0, 2, 4][kind]) % _wealthColors.length;
+  }
+
+  static String tierName(int kind, int level) {
+    final index = paletteIndex(kind, level);
+    return index < 0 ? 'Unavailable' : tierNames[index];
+  }
+
+  // Distinct rotations: level 1 is Brown for Wealth, Blue for Charm,
+  // and Red for Active. Higher bands all change with actual level.
   static int band(int level) {
     if (level <= 20) return 0;
     if (level <= 39) return 1;
@@ -48,9 +65,7 @@ class ProfileLevelScale {
   }
 
   static Color color(int kind, int level) {
-    if (level < 1 || level > 120 || kind < 0 || kind > 2) {
-      return const Color(0xff64748b);
-    }
-    return _wealthColors[(band(level) + const [0, 2, 4][kind]) % 6];
+    final index = paletteIndex(kind, level);
+    return index < 0 ? const Color(0xff64748b) : _wealthColors[index];
   }
 }
