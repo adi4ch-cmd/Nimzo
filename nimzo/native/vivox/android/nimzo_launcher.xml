@@ -1,5 +1,28 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
-    <path android:fillColor="#176D57" android:pathData="M24,0 L84,0 Q108,0 108,24 L108,84 Q108,108 84,108 L24,108 Q0,108 0,84 L0,24 Q0,0 24,0 Z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M28,78 L28,30 L39,30 L69,59 L69,30 L80,30 L80,78 L69,78 L39,49 L39,78 Z" />
-    <path android:fillColor="#9EDDC4" android:pathData="M28,20 L55,20 Q60,20 60,24 Q60,28 55,28 L28,28 Z" />
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Original NIMZO emblem: dark graphite, restrained neon-mint N ribbon. -->
+    <path android:fillColor="#071914"
+        android:pathData="M26,2 L82,2 Q106,2 106,26 L106,82 Q106,106 82,106 L26,106 Q2,106 2,82 L2,26 Q2,2 26,2 Z"/>
+    <path android:fillColor="#0C2922"
+        android:pathData="M26,9 L82,9 Q99,9 99,26 L99,82 Q99,99 82,99 L26,99 Q9,99 9,82 L9,26 Q9,9 26,9 Z"/>
+    <path android:fillColor="#153C31"
+        android:pathData="M17,23 Q54,2 92,23 L92,33 Q54,11 17,33 Z"/>
+    <path android:strokeColor="#2FE0A5"
+        android:strokeWidth="7.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M30,70 L30,36 L77,71 L77,37"/>
+    <path android:strokeColor="#B7FFE7"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M27.8,69 L27.8,38 M74.7,70 L74.7,39"/>
+    <path android:fillColor="#2FE0A5"
+        android:pathData="M37,81 Q40,81 40,84 L40,88 Q40,91 37,91 Q34,91 34,88 L34,84 Q34,81 37,81 Z"/>
+    <path android:fillColor="#D9FFF0"
+        android:pathData="M50,76 Q53,76 53,79 L53,90 Q53,93 50,93 Q47,93 47,90 L47,79 Q47,76 50,76 Z"/>
+    <path android:fillColor="#2FE0A5"
+        android:pathData="M63,81 Q66,81 66,84 L66,88 Q66,91 63,91 Q60,91 60,88 L60,84 Q60,81 63,81 Z"/>
 </vector>
