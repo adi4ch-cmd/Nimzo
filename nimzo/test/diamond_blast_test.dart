@@ -44,7 +44,7 @@ void main() {
         ),
       );
       for (final target in [
-        'L1', 'L2', 'L3', 'L4', 'L5', 'L6',
+        'Lv1', 'Lv2', 'Lv3', 'Lv4', 'Lv5', 'Lv6',
       ]) {
         expect(find.text(target), findsOneWidget);
       }
