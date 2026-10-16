@@ -75,9 +75,9 @@ class _MomentCardState extends ConsumerState<MomentCard> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xffe1eae4)),
+        border: Border.all(color: NimzoStyle.line),
         boxShadow: const [BoxShadow(
-          color: Color(0x10051918), blurRadius: 12, offset: Offset(0, 3))],
+          color: Color(0x176628cf), blurRadius: 12, offset: Offset(0, 3))],
       ),
       child: Material(
         color: Colors.transparent,
