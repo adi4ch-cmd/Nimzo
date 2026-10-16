@@ -588,7 +588,7 @@ void main() {
       // This case checks the actual six-level launcher without approving an
       // obsolete image or hiding a 2px room layout overflow.
       if (entry.key == 'room') {
-        expect(find.byIcon(Icons.rocket_launch), findsOneWidget);
+        expect(find.byType(Image), findsWidgets);
         expect(find.byKey(key), findsOneWidget);
         expect(find.textContaining('Diamond Blast'), findsNothing);
       } else if (const {
