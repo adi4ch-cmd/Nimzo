@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import 'royal_membership_repository.dart';
@@ -311,7 +312,13 @@ class _RoyalStageState extends State<_RoyalStage>
           Positioned(
             top: 41 + 5 * math.sin(glow.value * math.pi * 2),
             child: Column(children: [
-              Icon(widget.theme.crest, color: widget.theme.accent, size: 68),
+              SvgPicture.asset(
+                'assets/membership/${widget.theme.kind.code}_${widget.theme.tier}.svg',
+                width: 135,
+                height: 135,
+                fit: BoxFit.contain,
+                semanticsLabel: '${widget.theme.label} original royal emblem',
+              ),
               const SizedBox(height: 10),
               Text(widget.theme.label, style: TextStyle(
                 fontFamily: 'Cinzel', fontSize: 29,
