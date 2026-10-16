@@ -2,16 +2,35 @@ import 'package:flutter/material.dart';
 
 import '../widgets/master_ui.dart';
 
-/// Tokens read from nimzo-ui-2.html. Prototype balances are never design tokens.
+/// Unified ByChance-inspired color language with original NIMZO components.
+/// These are independently authored colors; no third-party artwork is bundled.
 abstract final class NimzoStyle {
-  static const primary = Color(0xff9333ea);
-  static const pink = Color(0xffec4899);
-  static const surface = Color(0xfffaf5ff);
-  static const ink = Color(0xff14201a);
-  static const muted = Color(0xff6b7a72);
-  static const line = Color(0xffe9def8);
+  static const primary = Color(0xff8b3dff);
+  static const pink = Color(0xfff45191);
+  static const blue = Color(0xff298df5);
+  static const orange = Color(0xffff941f);
+  static const royal = Color(0xff6628cf);
+  static const surface = Color(0xfff8f6ff);
+  static const ink = Color(0xff241b38);
+  static const muted = Color(0xff79728d);
+  static const line = Color(0xffebe4f7);
   static const gradient = LinearGradient(
-    colors: [Color(0xff8b2cf5), pink],
+    colors: [royal, primary, pink],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  static const heroGradient = LinearGradient(
+    colors: [royal, Color(0xff8b3dff), pink],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  static const softGradient = LinearGradient(
+    colors: [Color(0xffede4ff), Color(0xffffe9f3)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  static const goldGradient = LinearGradient(
+    colors: [Color(0xffffb14b), orange],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -21,15 +40,18 @@ abstract final class NimzoStyle {
 abstract final class AppTheme {
   static ThemeData light() => ThemeData(
         useMaterial3: true,
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: NimzoStyle.surface,
         colorScheme:
             ColorScheme.fromSeed(seedColor: NimzoStyle.primary).copyWith(
           primary: NimzoStyle.primary,
           secondary: NimzoStyle.pink,
+          tertiary: NimzoStyle.orange,
           surface: Colors.white,
           onSurface: NimzoStyle.ink,
         ),
         dividerColor: NimzoStyle.line,
+        splashColor: NimzoStyle.primary.withValues(alpha: .07),
+        highlightColor: NimzoStyle.primary.withValues(alpha: .04),
         actionIconTheme: ActionIconThemeData(
           backButtonIconBuilder: (_) => const Padding(
             padding: EdgeInsets.only(left: 12),
@@ -121,6 +143,8 @@ abstract final class AppTheme {
         ),
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
+            backgroundColor: NimzoStyle.primary,
+            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
