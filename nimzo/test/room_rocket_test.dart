@@ -61,6 +61,10 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('rocket-stage-5')));
     await tester.pumpAndSettle();
     expect(find.text('ROCKET 6'), findsOneWidget);
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('rocket-rewards-tab')),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('rocket-rewards-tab')));
     await tester.pumpAndSettle();
     for (var rank = 1; rank <= 3; rank++) {
