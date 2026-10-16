@@ -698,10 +698,22 @@ class _State extends ConsumerState<RoomScreen> {
                                   InkWell(
                                     onTap: !joined
                                         ? null
-                                        : () => showReferenceSheet(
-                                              context,
-                                              RoomRocketSheet(
-                                                  roomId: widget.roomId),
+                                        : () => showModalBottomSheet<void>(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              backgroundColor: const Color(0xff0c1728),
+                                              barrierColor: Colors.black.withValues(alpha: .72),
+                                              shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.vertical(
+                                                  top: Radius.circular(24),
+                                                ),
+                                              ),
+                                              builder: (_) => SafeArea(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.fromLTRB(17, 18, 17, 12),
+                                                  child: RoomRocketSheet(roomId: widget.roomId),
+                                                ),
+                                              ),
                                             ),
                                     child: Container(
                                       width: 46,
