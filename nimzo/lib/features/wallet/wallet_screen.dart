@@ -10,7 +10,7 @@ import '../../core/widgets/reference_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/master_ui.dart';
 
-final walletProvider = FutureProvider<({int coins, int diamonds})>((ref) async {
+final walletProvider = FutureProvider.autoDispose<({int coins, int diamonds})>((ref) async {
   final db = ref.watch(supabaseProvider);
   final id = ref.watch(currentUserIdProvider);
   if (id == null) throw StateError('Sign in required');
