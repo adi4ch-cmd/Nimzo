@@ -10,6 +10,7 @@ import '../../profile/profile_level_pills.dart';
 import '../../profile/profile_repository.dart';
 import '../../social/social_repositories.dart';
 import '../../store/store_badge.dart';
+import '../../membership/royal_membership_badge.dart';
 import '../../voice/voice_controller.dart';
 import 'room_controller.dart';
 
