@@ -4,6 +4,7 @@
 This script reads actual VAP reward clips, extracts a frame, and recombines the
 colour and alpha regions when the VAP configuration supplies their coordinates.
 It never substitutes cartoon emoji, unrelated gifts or fabricated art.
+The resulting artwork is solely used for level selection previews.
 """
 from __future__ import annotations
 
