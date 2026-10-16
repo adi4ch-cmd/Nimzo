@@ -1,0 +1,33 @@
+name: NIMZO Blank UI Verification
+
+on:
+  push:
+    branches:
+      - feature/nimzo-ui-reset-20261017
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout safe reset branch
+        uses: actions/checkout@v4
+      - name: Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.6"
+          channel: stable
+          cache: true
+      - name: Flutter dependencies
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Check Dart code
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Confirm no old UI renders
+        working-directory: nimzo
+        run: flutter test test/ui_reset_test.dart
