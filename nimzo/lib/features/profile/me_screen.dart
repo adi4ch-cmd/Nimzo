@@ -22,7 +22,7 @@ class MeScreen extends ConsumerWidget {
     if (id == null)
       return const Scaffold(body: EmptyContent('Please sign in.'));
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf8),
+      backgroundColor: NimzoStyle.surface,
       body: AsyncContent(
         value: ref.watch(profileProvider(id)),
         onRetry: () => ref.invalidate(profileProvider(id)),
@@ -43,18 +43,11 @@ class MeScreen extends ConsumerWidget {
                         ),
                         fit: BoxFit.cover,
                         colorFilter: ColorFilter.mode(
-                          const Color(0xff0a2922).withValues(alpha: .38),
+                          NimzoStyle.royal.withValues(alpha: .38),
                           BlendMode.srcATop,
                         ),
                       ),
-                gradient: const LinearGradient(
-                  begin: Alignment(-.34, -1),
-                  end: Alignment(.34, 1),
-                  colors: [
-                    Color(0xff153d34),
-                    Color(0xff102b25),
-                  ],
-                ),
+                gradient: NimzoStyle.heroGradient,
               ),
               child: Column(
                 children: [
@@ -67,7 +60,7 @@ class MeScreen extends ConsumerWidget {
                           size: 78,
                           online: true,
                           borderWidth: 3,
-                          backgroundColor: NimzoStyle.ink,
+                          backgroundColor: NimzoStyle.royal,
                           url: p.avatarPath == null
                               ? null
                               : ref
@@ -244,8 +237,8 @@ class MeScreen extends ConsumerWidget {
                             title: 'Wallet',
                             subtitle: 'My Coins ›',
                             colors: const [
-                              Color(0xffffe3ec),
-                              Color(0xfffff0f4),
+                              Color(0xffffe0f0),
+                              Color(0xfff1e7ff),
                             ],
                             onTap: () => context.push('/wallet'),
                           ),
@@ -314,7 +307,7 @@ class _MenuRow extends StatelessWidget {
                         height: 54,
                         decoration: BoxDecoration(
                           color: (item.$1 == 'Ranking'
-                                  ? const Color(0xfff59e0b)
+                                  ? NimzoStyle.orange
                                   : item.$1 == 'Task' ||
                                           item.$1 == 'CP Zone' ||
                                           item.$1 == 'About'
@@ -327,7 +320,7 @@ class _MenuRow extends StatelessWidget {
                           item.$2,
                           size: 22,
                           color: item.$1 == 'Ranking'
-                              ? const Color(0xfff59e0b)
+                              ? NimzoStyle.orange
                               : item.$1 == 'Task' ||
                                       item.$1 == 'CP Zone' ||
                                       item.$1 == 'About'
