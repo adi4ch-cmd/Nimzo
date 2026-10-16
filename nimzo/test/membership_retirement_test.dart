@@ -8,10 +8,11 @@ import 'package:nimzo/features/auth/domain/auth_user.dart';
 import 'package:nimzo/features/auth/presentation/auth_controller.dart';
 import 'package:nimzo/features/profile/profile.dart';
 import 'package:nimzo/features/profile/profile_repository.dart';
-import 'package:nimzo/features/profile/retired_membership_screen.dart';
+import 'package:nimzo/features/membership/royal_membership_repository.dart';
+import 'package:nimzo/features/membership/royal_membership_screen.dart';
 
 void main() {
-  test('stale server membership cannot restore retired identity', () {
+  test('retired paid membership cannot restore old identity', () {
     final p = Profile.fromJson({
       'id': 'u',
       'nimzo_id': 100001,
@@ -23,15 +24,15 @@ void main() {
     expect(p.vipLevel, 0);
     expect(p.svipLevel, 0);
   });
-  for (final svip in [false, true]) {
-    testWidgets(
-        'retired ${svip ? 'SVIP' : 'VIP'} destination is completely empty',
+
+  for (final kind in RoyalKind.values) {
+    testWidgets('${kind.title} deep link opens the new free royal screen',
         (tester) async {
       final db = (await tester.runAsync(() async => SupabaseClient(
-            'https://example.supabase.co',
-            'test-key',
-            authOptions: const AuthClientOptions(autoRefreshToken: false),
-          )))!;
+        'https://example.supabase.co',
+        'test-key',
+        authOptions: const AuthClientOptions(autoRefreshToken: false),
+      )))!;
       addTearDown(() => tester.runAsync(db.dispose));
       final container = ProviderContainer(overrides: [
         supabaseProvider.overrideWithValue(db),
@@ -39,25 +40,24 @@ void main() {
           id: 'u', nimzoId: 100001, displayName: 'Nimzo User',
           gender: 'female', dateOfBirth: DateTime(2000), countryCode: 'PK',
         )),
+        freeRoyalSelectionProvider('u').overrideWith((_) async => null),
         authStateProvider.overrideWith((_) => Stream.value(
-              const AuthUser(id: 'u', emailVerified: true),
-            )),
+          const AuthUser(id: 'u', emailVerified: true),
+        )),
       ]);
       addTearDown(container.dispose);
       await container.read(authStateProvider.future);
       final router = container.read(routerProvider);
-      router.go(svip ? '/svip' : '/vip');
+      router.go(kind == RoyalKind.vip ? '/vip' : '/svip');
       await tester.pumpWidget(UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(routerConfig: router),
       ));
-      await tester.pumpAndSettle();
-      expect(find.byType(RetiredMembershipScreen), findsOneWidget);
-      expect(router.routeInformationProvider.value.uri.path,
-          svip ? '/svip' : '/vip');
-      expect(find.byType(Text), findsNothing);
-      expect(find.byType(IconButton), findsNothing);
-      expect(find.byType(FilledButton), findsNothing);
+      await tester.pump(const Duration(milliseconds: 650));
+      expect(find.byType(RoyalMembershipScreen), findsOneWidget);
+      expect(find.text('ROYAL MEMBERSHIP'), findsOneWidget);
+      expect(find.text(kind.title), findsWidgets);
+      expect(find.text('Buy VIP'), findsNothing);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     });
