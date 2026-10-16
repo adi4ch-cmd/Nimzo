@@ -27,6 +27,8 @@ void main() {
       );
       final decoration = pill.decoration! as BoxDecoration;
       expect(decoration.color, ProfileLevelScale.color(kind, level));
+      expect(tester.getSize(find.byKey(ValueKey('profile-level-pill-$kind'))).width,
+          lessThan(75), reason: 'levels must stay compact, not full-width cards');
     }
     expect(tester.takeException(), isNull);
   });
