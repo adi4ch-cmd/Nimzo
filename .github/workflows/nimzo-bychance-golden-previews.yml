@@ -6,7 +6,7 @@ on:
       - feature/profile-reference-redesign
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   generate-preview-artifact:
@@ -26,7 +26,7 @@ jobs:
       - name: Resolve Flutter dependencies
         working-directory: nimzo
         run: flutter pub get
-      - name: Render new screenshot baselines for review
+      - name: Render screen previews without modifying baselines
         working-directory: nimzo
         run: >
           flutter test --update-goldens
@@ -40,17 +40,3 @@ jobs:
           name: nimzo-bychance-screen-previews
           path: nimzo/test/goldens/
           if-no-files-found: error
-
-      - name: Commit reviewed UI golden updates to feature branch
-        if: success()
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "${GITHUB_HEAD_REF}" = "feature/bychance-inspired-ui-20261016"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add nimzo/test/goldens/
-          if ! git diff --cached --quiet; then
-            git commit -m "test: update reviewed Game Zone and profile screen baselines"
-            git push origin "HEAD:refs/heads/feature/bychance-inspired-ui-20261016"
-          fi
