@@ -106,3 +106,20 @@ returned HTTP 401 from the connected integration; the resulting empty draft was
 removed. The actual verified APK, checksum, signing report and audit are delivered
 under `/workspace/shared/downloads/nimzo-1.0.28/` instead. No public release URL is
 claimed for the failed upload.
+
+## Public download repair
+
+The user confirmed that the workspace file link could not open on Android.
+The identical APK was transported as seven Git blobs on the dedicated
+`artifacts/nimzo-test-128` branch, then reassembled by the existing publication
+workflow's explicit test-only job. The job verifies source SHA, file size and
+checksum, runs the actual APK verifier, and uploads APK/checksum/signature as a
+prerelease. The permanent updater publisher is skipped and no updater metadata
+is included. Two transport tests and all ten release/tool tests pass.
+
+Workflow run `38914870371` succeeded. Public APK:
+https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-test-38914870371/nimzo-test.apk
+
+An unauthenticated public range request returned the valid APK ZIP header, and
+the public checksum file matches the original SHA-256 above. The artifact remains
+test-signed with the original certificate; this repair changes delivery only.
