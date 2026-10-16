@@ -676,8 +676,15 @@ class _State extends ConsumerState<RoomScreen> {
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          const Icon(Icons.rocket_launch,
-                                              color: Color(0xffba682d), size: 22),
+                                          Image.asset(
+                                            'assets/room_rocket/posters/rocket_stage_${((joined
+                                              ? ref.watch(roomDiamondStatusProvider(widget.roomId))
+                                                  .valueOrNull?.activeStage ?? 0
+                                              : 0) + 1)}.png',
+                                            width: 27,
+                                            height: 27,
+                                            fit: BoxFit.contain,
+                                          ),
                                           Text(
                                             'L' + ((joined
                                               ? ref.watch(
