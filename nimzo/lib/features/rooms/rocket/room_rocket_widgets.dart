@@ -493,6 +493,7 @@ class _RoomRocketHostState extends ConsumerState<RoomRocketHost> {
                 RoomRocketPlayback(
                   key: ValueKey(_queue.first.id),
                   stage: _queue.first.stage,
+                  eventId: _queue.first.id,
                   targetCoins: roomRocketTargets[_queue.first.stage],
                   onFinished: _finish,
                 ),
