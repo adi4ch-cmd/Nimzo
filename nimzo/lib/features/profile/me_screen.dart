@@ -63,7 +63,7 @@ class MeScreen extends ConsumerWidget {
                     onTap: () => context.push('/profile/$id'),
                     child: Row(
                       children: [
-                        NimzoAvatar(
+                        RoyalAvatarHalo(userId: id, child: NimzoAvatar(
                           name: p.displayName ?? 'N',
                           size: 78,
                           online: true,
@@ -76,7 +76,7 @@ class MeScreen extends ConsumerWidget {
                                   .storage
                                   .from('avatars')
                                   .getPublicUrl(p.avatarPath!),
-                        ),
+                        )),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
