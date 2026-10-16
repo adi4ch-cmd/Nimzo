@@ -115,7 +115,7 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
                               border: Border.all(color: color.withValues(alpha: .45)),
                             ),
                             child: Image.asset(
-                              'assets/gifts/free/rocket.png',
+                              'assets/room_rocket/posters/rocket_stage_${selection + 1}.png',
                               width: 146, height: 170,
                               fit: BoxFit.contain,
                               errorBuilder: (_, __, ___) =>
@@ -282,8 +282,13 @@ class _RocketStageTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(completed ? Icons.check_circle : Icons.rocket_launch_rounded,
-            color: _rocketTones[stage], size: 19),
+          SizedBox(
+            width: 23, height: 28,
+            child: Image.asset(
+              'assets/room_rocket/posters/rocket_stage_${stage + 1}.png',
+              fit: BoxFit.contain,
+            ),
+          ),
           const SizedBox(width: 3),
           Text('Lv' + (stage + 1).toString(),
             style: const TextStyle(
