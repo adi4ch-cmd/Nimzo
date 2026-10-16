@@ -312,8 +312,9 @@ class _State extends ConsumerState<ProfileSetupScreen> {
                             contentPadding: EdgeInsets.zero,
                             title: const Text('Country',
                               style: TextStyle(fontWeight: FontWeight.w700)),
-                            trailing: Flexible(child: Text(
+                            trailing: SizedBox(width: 125, child: Text(
                               countryName ?? 'Choose country',
+                              textAlign: TextAlign.end,
                               maxLines: 1, overflow: TextOverflow.ellipsis)),
                             onTap: () => showCountryPicker(
                               context: context,
