@@ -142,3 +142,45 @@ The Moto-specific failure is not reproduced or declared fixed. Existing-install
 status, actual phone OS version and opening the downloaded file through Files
 rather than Chrome remain useful device diagnostics. No existing app or local
 data has been removed, and no speculative app-code fix has been applied.
+
+## Isolated test package for an existing installation
+
+The user confirmed an existing Nimzo installation. Its signing certificate is
+unknown; a certificate conflict is possible but not established as the Moto
+parsing-error cause. The preserved production signing key is unavailable in this
+environment; the current GitHub build also skips permanent signing.
+
+Built an explicitly opt-in `io.nimzo.app.test` variant labelled “Nimzo Test”.
+It retains the original native namespace/JNI classes, explicitly names the
+activity, and uses a package-specific FileProvider authority. The original app
+can remain installed. No account, database, or original local-data removal is
+required. The test app has its own local session and requires signing in. OAuth
+may show an app chooser: select Nimzo Test. Real store payments are unsupported
+under this separate application ID. This is not a production in-place update.
+
+APK: 202,578,183 bytes; SHA-256:
+`8459800b54a3a8da0a42fbd5f5ad3bd031c2ba24d96ed92691d91496b5a90417`.
+Local APK verification passed, including signature, package, provider, native
+voice/JNI, ABI, zip alignment and asset checks. Eleven Python tool tests and two
+Node publication tests pass. Android 14/15 publication gates now install an
+original-package fixture with a different certificate before installing the
+Test APK, and assert that the original package UID remains unchanged. The
+fixture key and APK are never published.
+
+Workflow `38929960187` succeeded: both Android 14 and 15 installed the
+separate package beside a differently signed original-package fixture,
+preserved the original UID, and kept Nimzo Test running for 20 seconds. Android
+14 screenshot shows the welcome screen; its logs contain no Flutter crash.
+Public release (no automatic updater metadata):
+https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-test-38929960187/nimzo-test.apk
+
+Re-downloaded all 202,578,183 bytes from that public URL and confirmed the exact
+SHA-256 above. Physical Moto G35 installation remains for the user to confirm.
+The first coexistence run hit an emulator-action multiline shell error, fixed
+by passing each complete conditional as a single command. A Google emulator
+image download failed once and was retried. Both OS tests then passed; release
+creation failed while the workflow commit was no longer the branch tip. The
+final run published successfully from the current tip. Its one-off pinned
+artifact push trigger was removed after publication; normal dispatch again
+requires an explicit source/checksum manifest. App source was unchanged during
+these publication-only retries.
