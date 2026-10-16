@@ -49,7 +49,7 @@ def verify(root: Path) -> None:
             continue
         head = poster.read_bytes()[:24]
         if (poster.stat().st_size < 85000 or
-                head[:8] != b"\\x89PNG\\r\\n\\x1a\\n" or
+                head[:8] != b"\x89PNG\r\n\x1a\n" or
                 struct.unpack(">II", head[16:24]) != (480, 480)):
             failed.append(f"UNCOMPOSITED/INVALID PREVIEW Lv{stage}")
     if failed:
