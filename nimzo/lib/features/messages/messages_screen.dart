@@ -24,11 +24,61 @@ class MessagesScreen extends ConsumerWidget {
           },
           child: ListView(
             children: [
+              Container(
+                margin: const EdgeInsets.fromLTRB(16, 15, 16, 8),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: NimzoStyle.softGradient,
+                  borderRadius: BorderRadius.circular(17),
+                  border: Border.all(color: NimzoStyle.line),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.forum_rounded,
+                        size: 27, color: NimzoStyle.royal),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Your conversations',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 15,
+                              color: NimzoStyle.ink,
+                            )),
+                          Text('Private messages from your NIMZO friends',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: NimzoStyle.muted,
+                            )),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               AsyncContent(
                 value: ref.watch(conversationsProvider),
                 onRetry: () => ref.invalidate(conversationsProvider),
                 builder: (rows) => rows.isEmpty
-                    ? const EmptyContent('No conversations yet')
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 28),
+                        child: Column(
+                          children: [
+                            const Icon(Icons.mark_chat_unread_outlined,
+                                size: 46, color: NimzoStyle.primary),
+                            const SizedBox(height: 12),
+                            const EmptyContent('No conversations yet'),
+                            OutlinedButton.icon(
+                              onPressed: () => context.push('/discover'),
+                              icon: const Icon(Icons.search),
+                              label: const Text('Discover people'),
+                            ),
+                          ],
+                        ),
+                      )
                     : Column(
                         children: [
                           for (final r in rows) ConversationTile(row: r)
