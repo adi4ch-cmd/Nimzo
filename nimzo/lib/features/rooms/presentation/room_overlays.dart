@@ -1,3 +1,4 @@
+import 'room_music_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -75,7 +76,13 @@ Future<void> showPartyTools(BuildContext context, {String? roomId}) async {
     await showReferenceSheet(context, const TreasureSheet());
     return;
   }
-  if (tool == 2 || tool == 3 || tool == 10) {
+  if (tool == 10) {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoomMusicScreen()),
+    );
+    return;
+  }
+  if (tool == 2 || tool == 3) {
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => RoomToolPage(title: roomToolNames[tool]),
