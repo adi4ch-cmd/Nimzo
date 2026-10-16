@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/profile-reference-redesign
+      - feature/free-royal-memberships-20261016
     paths-ignore:
       - NIMZO_Dragon_Gift_Assets_Patch.zip
       - NIMZO_Yo2_Assets_Part_1_of_2.zip

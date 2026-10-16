@@ -10,6 +10,7 @@ import '../../profile/profile_level_pills.dart';
 import '../../profile/profile_repository.dart';
 import '../../social/social_repositories.dart';
 import '../../store/store_badge.dart';
+import '../../membership/royal_membership_badge.dart';
 import '../../voice/voice_controller.dart';
 import 'room_controller.dart';
 
@@ -189,7 +190,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                           children: [
                             InkWell(
                               onTap: openProfile,
-                              child: NimzoAvatar(
+                              child: RoyalAvatarHalo(userId: widget.userId, child: NimzoAvatar(
                                 name: p.displayName ?? 'N',
                                 size: 66,
                                 url: p.avatarPath == null
@@ -199,7 +200,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                         .storage
                                         .from('avatars')
                                         .getPublicUrl(p.avatarPath!),
-                              ),
+                              )),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -237,6 +238,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                           compact: true,
                                         ),
                                       ),
+                                       RoyalIdentityBadge(userId: widget.userId),
                                     ],
                                   ),
                                   const SizedBox(height: 7),

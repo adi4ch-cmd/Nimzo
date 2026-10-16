@@ -1,5 +1,6 @@
 import '../core/providers/supabase_provider.dart';
-import '../features/profile/retired_membership_screen.dart';
+import '../features/membership/royal_membership_screen.dart';
+import '../features/membership/royal_membership_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -127,7 +128,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
       GoRoute(
-          path: '/svip', builder: (_, __) => const RetiredMembershipScreen()),
+          path: '/svip', builder: (_, __) => const RoyalMembershipScreen(kind: RoyalKind.svip)),
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
@@ -163,7 +164,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
           path: Routes.vip,
-          builder: (_, __) => const RetiredMembershipScreen()),
+          builder: (_, __) => const RoyalMembershipScreen(kind: RoyalKind.vip)),
       GoRoute(
         path: '/profile/:id',
         builder: (_, s) => ProfileScreen(userId: s.pathParameters['id']),

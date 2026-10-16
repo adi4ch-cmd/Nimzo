@@ -585,10 +585,14 @@ void main() {
       // obsolete image or hiding a 2px room layout overflow.
       if (const {'me', 'profile', 'public_profile', 'room_profile'}
           .contains(entry.key)) {
-        expect(find.textContaining('VIP'), findsNothing);
-        expect(find.textContaining('SVIP'), findsNothing);
+        // Retired PAID membership controls stay removed. New free royal
+        // routes are intentionally advertised by Me and are not old tiers.
         expect(find.byKey(const ValueKey('verified-membership-row')),
             findsNothing);
+      }
+      if (entry.key == 'me') {
+        expect(find.text('VIP'), findsOneWidget);
+        expect(find.text('SVIP'), findsOneWidget);
       }
       if (entry.key == 'room') {
         expect(find.byType(Image), findsWidgets);

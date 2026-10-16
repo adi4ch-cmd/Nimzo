@@ -19,6 +19,7 @@ import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
 import '../store/store_badge.dart';
+import '../membership/royal_membership_badge.dart';
 import '../gifts/gift_artwork.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -201,13 +202,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        child: NimzoAvatar(
+                        child: RoyalAvatarHalo(userId: id, child: NimzoAvatar(
                           name: p.displayName ?? p.username ?? 'N',
                           url: image('avatars', p.avatarPath),
                           size: 70,
                           backgroundColor: NimzoStyle.ink,
                           online: id == me,
-                        ),
+                        )),
                       ),
                     ),
                   ],
@@ -237,6 +238,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   )),
                         ),
                         EquippedRoyalMedal(userId: id, compact: true),
+                        RoyalIdentityBadge(userId: id),
                         if (p.dateOfBirth != null)
                           Container(
                             padding: const EdgeInsets.symmetric(

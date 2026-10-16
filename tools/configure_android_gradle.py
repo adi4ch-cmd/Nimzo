@@ -14,7 +14,7 @@ def configure(android: Path):
     settings = android / 'settings.gradle.kts'
     value = settings.read_text()
     for plugin, version in [('com.android.application', '8.11.1'),
-                            ('org.jetbrains.kotlin.android', '2.2.0')]:
+                            ('org.jetbrains.kotlin.android', '2.2.20')]:
         pattern = r'(id\("' + re.escape(plugin) + r'"\) version )"[^"]+"'
         value, count = re.subn(pattern, lambda m: m[1] + '"' + version + '"', value)
         if count != 1:
@@ -26,7 +26,7 @@ def configure(android: Path):
         raise ValueError('Expected one Gradle distribution URL')
     settings.write_text(value)
     wrapper.write_text(distribution)
-    print('Android toolchain: AGP 8.11.1 / Kotlin 2.2.0 / Gradle 8.14.3')
+    print('Android toolchain: AGP 8.11.1 / Kotlin 2.2.20 / Gradle 8.14.3')
 
 
 if __name__ == '__main__':

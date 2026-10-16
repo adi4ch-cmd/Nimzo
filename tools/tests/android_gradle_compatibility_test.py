@@ -20,7 +20,7 @@ class AndroidGradleCompatibilityTest(unittest.TestCase):
             settings.write_text('plugins {\n id("com.android.application") version "9.1.0" apply false\n id("org.jetbrains.kotlin.android") version "2.4.0" apply false\n}\n')
             module.configure(root)
             self.assertIn('version "8.11.1"', settings.read_text())
-            self.assertIn('version "2.2.0"', settings.read_text())
+            self.assertIn('version "2.2.20"', settings.read_text())
             self.assertIn('gradle-8.14.3-all.zip', wrapper.read_text())
             before = (settings.read_text(), wrapper.read_text())
             module.configure(root)

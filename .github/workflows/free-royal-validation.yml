@@ -1,0 +1,33 @@
+name: Free VIP and SVIP validation
+on:
+  push:
+    branches: [feature/free-royal-memberships-20261016]
+  pull_request:
+    paths:
+      - 'nimzo/lib/features/membership/**'
+      - 'nimzo/lib/app/router.dart'
+      - 'nimzo/test/**'
+      - 'supabase/migrations/*free_royal_memberships.sql'
+
+permissions:
+  contents: read
+
+jobs:
+  flutter-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Install Flutter dependencies
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Flutter static analysis
+        working-directory: nimzo
+        run: flutter analyze
+      - name: All Flutter tests
+        working-directory: nimzo
+        run: flutter test
