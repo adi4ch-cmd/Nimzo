@@ -142,3 +142,27 @@ The Moto-specific failure is not reproduced or declared fixed. Existing-install
 status, actual phone OS version and opening the downloaded file through Files
 rather than Chrome remain useful device diagnostics. No existing app or local
 data has been removed, and no speculative app-code fix has been applied.
+
+## Isolated test package for an existing installation
+
+The user confirmed an existing Nimzo installation. Its signing certificate is
+unknown; a certificate conflict is possible but not established as the Moto
+parsing-error cause. The preserved production signing key is unavailable in this
+environment; the current GitHub build also skips permanent signing.
+
+Built an explicitly opt-in `io.nimzo.app.test` variant labelled “Nimzo Test”.
+It retains the original native namespace/JNI classes, explicitly names the
+activity, and uses a package-specific FileProvider authority. The original app
+can remain installed. No account, database, or original local-data removal is
+required. The test app has its own local session and requires signing in. OAuth
+may show an app chooser: select Nimzo Test. Real store payments are unsupported
+under this separate application ID. This is not a production in-place update.
+
+APK: 202,578,183 bytes; SHA-256:
+`8459800b54a3a8da0a42fbd5f5ad3bd031c2ba24d96ed92691d91496b5a90417`.
+Local APK verification passed, including signature, package, provider, native
+voice/JNI, ABI, zip alignment and asset checks. Eleven Python tool tests and two
+Node publication tests pass. Android 14/15 publication gates now install an
+original-package fixture with a different certificate before installing the
+Test APK, and assert that the original package UID remains unchanged. The
+fixture key and APK are never published.
