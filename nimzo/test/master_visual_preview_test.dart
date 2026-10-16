@@ -95,8 +95,8 @@ void main() {
         // the active six-stage Rocket UI rather than asserting old pixels.
         expect(find.text('ROOM ROCKET'), findsOneWidget);
         expect(find.textContaining('Gift together'), findsOneWidget);
-        expect(find.text('L1'), findsOneWidget);
-        expect(find.text('L6'), findsOneWidget);
+        expect(find.text('Lv1'), findsOneWidget);
+        expect(find.text('Lv6'), findsOneWidget);
         expect(find.textContaining('Diamond Blast'), findsNothing);
       } else {
         await expectLater(
