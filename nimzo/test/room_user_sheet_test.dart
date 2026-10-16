@@ -120,7 +120,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       await render(tester, me: 'member');
-      expect(find.text('Level unavailable'), findsNWidgets(3));
+      expect(find.text('—'), findsNWidgets(3));
       await tester.tap(find.byKey(ValueKey('room-user-level-$kind')));
       await tester.pumpAndSettle();
       final screen = tester.widget<LevelsScreen>(find.byType(LevelsScreen));
@@ -136,7 +136,7 @@ void main() {
     await render(tester, me: 'member', asModal: true);
     await tester.tap(find.text('Open seat'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Send gift'));
+    await tester.tap(find.text('Send Gifts'));
     await tester.pumpAndSettle();
     expect(find.textContaining('NIMZO Gifts'), findsOneWidget);
     expect(find.text('No gifts available'), findsOneWidget);
@@ -149,7 +149,7 @@ void main() {
     expect(find.text('ID:100'), findsOneWidget);
     expect(find.text('Follow'), findsOneWidget);
     expect(find.text('Add friend'), findsOneWidget);
-    expect(find.text('Send gift'), findsOneWidget);
+    expect(find.text('Send Gifts'), findsOneWidget);
     expect(find.text('Kick from room'), findsNothing);
     expect(find.text('Ban from room'), findsNothing);
     expect(find.text('Mute seat'), findsNothing);
@@ -168,7 +168,7 @@ void main() {
     (tester) async {
       await render(tester, me: 'guest');
       expect(find.text('Leave seat'), findsOneWidget);
-      expect(find.text('Send gift'), findsOneWidget);
+      expect(find.text('Send Gifts'), findsOneWidget);
       expect(find.text('Follow'), findsNothing);
       expect(find.text('Add friend'), findsNothing);
       expect(tester.takeException(), isNull);
