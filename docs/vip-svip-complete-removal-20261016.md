@@ -26,3 +26,9 @@ Never claim permanent deletion of Git history or historical financial/audit reco
 
 ## Android verification
 Build target: NIMZO 1.0.27+127, no VIP/SVIP routes or media. APK must pass Flutter tests, Vivox native contracts, Android compile and emulator launch before sharing. If permanent release signing is unavailable, artifact is a TEST-signed APK that may require uninstall when replacing other signing identities.
+
+## Final validation targets
+- The legacy /vip and /svip deep links resolve to the Me/Profile screen; membership UI is not reachable.
+- Independent Store medals remain visible and owned after membership removal.
+- Production RPC/table are absent and historic VIP/SVIP claim dates are NULL.
+- Build only from commit including the corrected lazy-viewport deep-link tests.
