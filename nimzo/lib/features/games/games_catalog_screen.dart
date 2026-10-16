@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'game_catalog.dart';
+import '../../core/theme/app_theme.dart';
 
 class GamesCatalogScreen extends StatelessWidget {
   final String? roomId;
@@ -13,6 +14,7 @@ class GamesCatalogScreen extends StatelessWidget {
         appBar: AppBar(title: const GradientText('Games')),
         body: GridView.count(
           crossAxisCount: 3,
+          childAspectRatio: .76,
           padding: const EdgeInsets.all(16),
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
@@ -22,28 +24,50 @@ class GamesCatalogScreen extends StatelessWidget {
                 onTap: () => context.push(
                   '/games-play?game=${g.slug}${roomId == null ? '' : '&room=$roomId'}',
                 ),
-                child: Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        'assets/reference/game/${g.artwork}.jpg',
-                        height: 64,
-                        width: 64,
-                        fit: BoxFit.cover,
+                child: Container(
+                  padding: const EdgeInsets.all(9),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: NimzoStyle.line),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x126628cf),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      g.artwork == 1
-                          ? 'Grady Pro'
-                          : g.artwork == 3
-                              ? 'Slot Jackpots'
-                              : g.title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ],
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: Image.asset(
+                          'assets/reference/game/${g.artwork}.jpg',
+                          height: 64,
+                          width: 64,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        g.artwork == 1
+                            ? 'Grady Pro'
+                            : g.artwork == 3
+                                ? 'Slot Jackpots'
+                                : g.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: NimzoStyle.ink,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
           ],
