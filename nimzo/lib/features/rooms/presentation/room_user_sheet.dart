@@ -365,7 +365,11 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                   ),
                   if (busy) ...[
                     const SizedBox(height: 8),
-                    const LinearProgressIndicator(minHeight: 2),
+                    const Text(
+                      'Working…',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Color(0xffd8d3db), fontSize: 11),
+                    ),
                   ],
                   const SizedBox(height: 10),
                   if (self)
