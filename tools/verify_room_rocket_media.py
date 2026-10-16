@@ -39,6 +39,19 @@ def verify(root: Path) -> None:
             failed.append("NO VAP CONFIG " + name)
         if b"ftyp" not in data[:16]:
             failed.append("INVALID MP4 " + name)
+    # The selection images must be composited previews of the real
+    # fly clips, never packed RGBA source frames (black mask rectangles).
+    import struct
+    for stage in range(1, 7):
+        poster = media / "posters" / f"rocket_stage_{stage}.png"
+        if not poster.is_file():
+            failed.append(f"MISSING COMPOSITED PREVIEW Lv{stage}")
+            continue
+        head = poster.read_bytes()[:24]
+        if (poster.stat().st_size < 85000 or
+                head[:8] != b"\\x89PNG\\r\\n\\x1a\\n" or
+                struct.unpack(">II", head[16:24]) != (480, 480)):
+            failed.append(f"UNCOMPOSITED/INVALID PREVIEW Lv{stage}")
     if failed:
         raise SystemExit(
             "Room Rocket release is blocked. 12 original VAP clips required:\n"
