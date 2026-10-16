@@ -238,6 +238,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                           compact: true,
                                         ),
                                       ),
+                                       RoyalIdentityBadge(userId: widget.userId),
                                     ],
                                   ),
                                   const SizedBox(height: 7),
