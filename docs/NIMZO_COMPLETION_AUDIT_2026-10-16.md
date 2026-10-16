@@ -166,3 +166,20 @@ Node publication tests pass. Android 14/15 publication gates now install an
 original-package fixture with a different certificate before installing the
 Test APK, and assert that the original package UID remains unchanged. The
 fixture key and APK are never published.
+Workflow `38929960187` succeeded: both Android 14 and 15 installed the
+separate package beside a differently signed original-package fixture,
+preserved the original UID, and kept Nimzo Test running for 20 seconds. Android
+14 screenshot shows the welcome screen; its logs contain no Flutter crash.
+Public release (no automatic updater metadata):
+https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-test-38929960187/nimzo-test.apk
+
+Re-downloaded all 202,578,183 bytes from that public URL and confirmed the exact
+SHA-256 above. Physical Moto G35 installation remains for the user to confirm.
+The first coexistence run hit an emulator-action multiline shell error, fixed
+by passing each complete conditional as a single command. A Google emulator
+image download failed once and was retried. Both OS tests then passed; release
+creation failed while the workflow commit was no longer the branch tip. The
+final run published successfully from the current tip. Its one-off pinned
+artifact push trigger was removed after publication; normal dispatch again
+requires an explicit source/checksum manifest. App source was unchanged during
+these publication-only retries.
