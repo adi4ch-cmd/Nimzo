@@ -216,7 +216,11 @@ class RoomTile extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            ReferenceRoomAvatar(url: url),
+            ReferenceRoomAvatar(
+              key: const ValueKey('popular-room-avatar'),
+              url: url,
+              size: 66,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
