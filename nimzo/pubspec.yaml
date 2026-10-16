@@ -18,6 +18,9 @@ dependencies:
   in_app_purchase: ^3.2.0
   in_app_purchase_android: ^0.5.3
   flutter_svg: ^2.0.17
+  file_picker: ^8.1.7
+  just_audio: ^0.9.42
+  audio_session: ^0.1.21
   video_player: ^2.9.2
   flutter_svga: ^0.0.13
   flutter_vap_player: 2.1.1
