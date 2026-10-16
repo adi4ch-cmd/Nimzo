@@ -92,14 +92,17 @@ class _State extends ConsumerState<RoomSettingsScreen> {
     });
   }
 
-  Widget _panel(Widget child) => Container(
-    margin: const EdgeInsets.only(bottom: 15),
-    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-    decoration: BoxDecoration(
+  Widget _panel(Widget child) => Padding(
+    padding: const EdgeInsets.only(bottom: 15),
+    child: Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(21),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+        child: child,
+      ),
     ),
-    child: child,
   );
 
   @override
