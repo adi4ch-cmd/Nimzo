@@ -450,7 +450,11 @@ class RoomToolPage extends StatelessWidget {
   final String title;
   const RoomToolPage({super.key, required this.title});
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    // Legacy Music entry points must open the real on-device audio picker,
+    // never the placeholder "audio library is unavailable" page.
+    if (title == 'Music') return const RoomMusicScreen();
+    return Scaffold(
         backgroundColor:
             title == 'Music' ? Colors.white : const Color(0xff14052e),
         appBar: AppBar(title: Text(title)),
@@ -538,6 +542,7 @@ class RoomToolPage extends StatelessWidget {
                 ],
         ),
       );
+  }
 }
 
 class RoomProfilePage extends ConsumerStatefulWidget {
