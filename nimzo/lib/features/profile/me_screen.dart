@@ -13,6 +13,7 @@ import 'profile_repository.dart';
 import 'profile_screen.dart';
 import 'profile_presentation.dart';
 import 'profile_membership_status.dart';
+import 'profile_level_pills.dart';
 import 'levels_screen.dart';
 import '../store/store_badge.dart';
 
@@ -182,14 +183,13 @@ class MeScreen extends ConsumerWidget {
                                             ),
                                           ),
                                         ),
-                                        child: LevelBadge(
+                                        child: ProfileLevelPill(
                                           kind: kind,
                                           level: [
                                             p.wealthLevel,
                                             p.charmLevel,
                                             p.activeLevel,
                                           ][kind],
-                                          showLabel: true,
                                         ),
                                       ),
                                     ),
