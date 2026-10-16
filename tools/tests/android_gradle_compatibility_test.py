@@ -39,9 +39,15 @@ class AndroidGradleCompatibilityTest(unittest.TestCase):
             app = root / 'app/build.gradle.kts'
             app.parent.mkdir()
             app.write_text('plugins {\n id("com.android.application")\n id("dev.flutter.flutter-gradle-plugin")\n}\n')
+            properties = root / 'gradle.properties'
+            properties.write_text('org.gradle.jvmargs=-Xmx8G -XX:MaxMetaspaceSize=4G\nandroid.useAndroidX=true\n')
             module.configure(root)
             value = app.read_text()
             self.assertIn('id("org.jetbrains.kotlin.android")', value)
             self.assertLess(value.index('id("org.jetbrains.kotlin.android")'), value.index('id("dev.flutter.flutter-gradle-plugin")'))
+            self.assertIn('org.gradle.jvmargs=-Xmx3G -XX:MaxMetaspaceSize=1G', properties.read_text())
+            self.assertIn('org.gradle.workers.max=2', properties.read_text())
+            before_properties = properties.read_text()
             module.configure(root)
             self.assertEqual(value, app.read_text())
+            self.assertEqual(before_properties, properties.read_text())

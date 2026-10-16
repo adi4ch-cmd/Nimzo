@@ -18,7 +18,7 @@ From the repository root, run Python unittest discovery in tools/tests, nimzo/te
 
 ## Android
 
-The complete build recipe is .github/workflows/nimzo-apk-build.yml. Generating the default Flutter Android platform alone does not install the native voice bridge, updater, permissions or OAuth callback. Follow its native installation and manifest configuration steps, and run tools/configure_android_gradle.py after generating Android. It pins AGP 8.11.1, Kotlin 2.2.20 and Gradle 8.14.3, and applies Kotlin for templates that omit it. The workflow verifies the Vivox SDK download by SHA-256.
+The complete build recipe is .github/workflows/nimzo-apk-build.yml. Generating the default Flutter Android platform alone does not install the native voice bridge, updater, permissions or OAuth callback. Follow its native installation and manifest configuration steps, and run tools/configure_android_gradle.py after generating Android. It pins AGP 8.11.1, Kotlin 2.2.20 and Gradle 8.14.3, applies Kotlin for templates that omit it, and limits Gradle memory/workers for common CI environments. The workflow verifies the Vivox SDK download by SHA-256.
 
 The permanent signing identity is external to Git. Without that identity, the workflow creates a clearly identified test APK. It must not enter the permanent automatic-update channel. An installation with a different certificate cannot accept it as an update.
 

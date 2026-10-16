@@ -11,6 +11,12 @@ rules are deferred by the user.
   Kotlin. Nimzo pins AGP 8, so the Android configuration now explicitly applies
   external Kotlin before Flutter. The regression failed before the fix and
   passes afterwards, including repeat configuration.
+- Generated Gradle memory defaults (8G heap plus 4G metaspace) caused an observed
+  8GiB-container OOM during the first APK attempt. Project configuration now
+  limits Gradle to 3G heap/1G metaspace, two workers, and a 768m Kotlin daemon.
+  The regression covers these limits and repeat configuration. Dependencies and
+  native compilation were retained for the retry; the failed attempt is not a
+  successful APK verification claim.
 - Live private-schema lockdown broke four public profile RPCs: gifts, visitor
   recording, profile statistics and couple-request responses. The migration
   `20261016092154_repair_private_profile_rpc_facades.sql` restores their explicit
@@ -38,6 +44,8 @@ rules are deferred by the user.
 - Python release/build checks: 10 passed; native voice: 7 passed; native updater:
   1 passed with Java 17; reference asset integrity: 1 passed.
 - Edge Function voice-token and purchase authorization: 18 passed.
+- Both deployed Edge Functions and the purchase contract match the tested source
+  exactly (trimmed-content comparison).
 - All 12 original room Rocket clips verified by SHA-256. Vivox SDK archive
   verified against `c30f6caf08184874a7daecc2f9c670df099fa504265dc08b51859e287a38d75f`.
 - Live read-only checks passed for VIP/SVIP removal, gift broadcasts, gift

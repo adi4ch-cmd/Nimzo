@@ -38,6 +38,23 @@ def configure(android: Path):
             if count != 1:
                 raise ValueError('Expected one Flutter Gradle plugin application')
         app.write_text(application)
+    properties = android / 'gradle.properties'
+    if properties.exists():
+        values = properties.read_text()
+        # Generated 8G heap + 4G metaspace exceeds common CI/container limits.
+        # Leave room for Kotlin, native compilation and the Flutter compiler.
+        for key, setting in {
+            'org.gradle.jvmargs': '-Xmx3G -XX:MaxMetaspaceSize=1G -XX:ReservedCodeCacheSize=256m -XX:+HeapDumpOnOutOfMemoryError',
+            'org.gradle.workers.max': '2',
+            'org.gradle.parallel': 'false',
+            'kotlin.daemon.jvmargs': '-Xmx768m',
+        }.items():
+            pattern = r'(?m)^' + re.escape(key) + r'=.*$'
+            if re.search(pattern, values):
+                values = re.sub(pattern, lambda _: key + '=' + setting, values)
+            else:
+                values = values.rstrip() + '\n' + key + '=' + setting + '\n'
+        properties.write_text(values)
     settings.write_text(value)
     wrapper.write_text(distribution)
     print('Android toolchain: AGP 8.11.1 / Kotlin 2.2.20 / Gradle 8.14.3')
