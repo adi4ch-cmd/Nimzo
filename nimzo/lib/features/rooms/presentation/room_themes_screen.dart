@@ -31,7 +31,7 @@ class RoomThemesScreen extends StatelessWidget {
               child: Text('Eight included room backgrounds. Tap to preview and apply. '
                   'No coin purchase required.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: NimzoStyle.muted))),
+                  style: TextStyle(fontSize: 12, color: NimzoStyle.muted)),
             ),
             Expanded(
               child: GridView.builder(
