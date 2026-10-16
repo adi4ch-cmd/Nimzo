@@ -320,12 +320,12 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                          padding: const EdgeInsets.all(16),
                          margin: const EdgeInsets.only(bottom: 14),
                          decoration: BoxDecoration(
-                           color: const Color(0xff12382d),
+                           gradient: NimzoStyle.heroGradient,
                            borderRadius: BorderRadius.circular(17),
                          ),
                          child: const Row(children: [
                            Icon(Icons.auto_awesome_outlined,
-                             color: Color(0xffc6e6d5), size: 25),
+                             color: Colors.white, size: 25),
                            SizedBox(width: 12),
                            Expanded(child: Column(
                              crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,7 +335,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                    fontWeight: FontWeight.w800, fontSize: 17)),
                                SizedBox(height: 3),
                                Text('Photos and words for your NIMZO community',
-                                 style: TextStyle(color: Color(0xffc0d5c8),
+                                 style: TextStyle(color: Color(0xfff5eaff),
                                    fontSize: 12)),
                              ],
                            )),
@@ -348,10 +348,10 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                         decoration: const InputDecoration(
                           hintText: 'Write a moment worth sharing…',
                           filled: true,
-                          fillColor: Color(0xfff6faf7),
+                          fillColor: NimzoStyle.surface,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(16)),
-                            borderSide: BorderSide(color: Color(0xffdae7dd))),
+                            borderSide: BorderSide(color: NimzoStyle.line)),
                         ),
                       ),
                       OutlinedButton.icon(
