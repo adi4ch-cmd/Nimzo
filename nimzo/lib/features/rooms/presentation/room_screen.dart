@@ -681,8 +681,8 @@ class _State extends ConsumerState<RoomScreen> {
                                               ? ref.watch(roomDiamondStatusProvider(widget.roomId))
                                                   .valueOrNull?.activeStage ?? 0
                                               : 0) + 1)}.png',
-                                            width: 27,
-                                            height: 27,
+                                            width: 22,
+                                            height: 22,
                                             fit: BoxFit.contain,
                                           ),
                                           Text(
