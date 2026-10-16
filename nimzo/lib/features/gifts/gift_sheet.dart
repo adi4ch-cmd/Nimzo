@@ -437,6 +437,7 @@ class _State extends ConsumerState<GiftSheet> {
                                         (g) => giftMatchesCategory(
                                           g.category,
                                           activeGiftCategory,
+                                          giftName: g.name,
                                         ),
                                       )
                                       .length,
