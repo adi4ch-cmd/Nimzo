@@ -612,7 +612,7 @@ class _State extends ConsumerState<RoomScreen> {
                                     for (final msg in messages)
                                       Align(
                                         alignment: Alignment.centerLeft,
-                                        child: Container(
+                                        child: RoyalChatHalo(userId: msg.userId, child: Container(
                                           constraints: BoxConstraints(
                                             maxWidth: MediaQuery.sizeOf(context)
                                                     .width *
@@ -654,7 +654,7 @@ class _State extends ConsumerState<RoomScreen> {
                                               ),
                                             ],
                                           ),
-                                        ),
+                                        )),
                                       ),
                                   ],
                                 ),
