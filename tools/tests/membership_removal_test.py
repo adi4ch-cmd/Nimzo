@@ -1,3 +1,4 @@
+import re
 import unittest
 from pathlib import Path
 
@@ -41,7 +42,10 @@ class MembershipRemovalTest(unittest.TestCase):
                 self.assertNotIn(name, text, relative)
         pubspec = (ROOT / "nimzo/pubspec.yaml").read_text()
         self.assertNotIn("assets/membership/", pubspec)
-        self.assertIn("version: 1.0.27+127", pubspec)
+        # Membership retirement remains required in subsequent release builds.
+        version = re.search(r'^version: \d+\.\d+\.\d+\+(\d+)$', pubspec, re.MULTILINE)
+        self.assertIsNotNone(version)
+        self.assertGreaterEqual(int(version.group(1)), 127)
 
     def test_no_new_purchase_or_free_activation_api(self):
         sql = (ROOT / "supabase/migrations/20261016170000_remove_all_vip_svip_user_state.sql").read_text()

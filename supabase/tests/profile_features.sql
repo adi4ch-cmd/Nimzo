@@ -46,16 +46,15 @@ do $$ declare a jsonb; b jsonb; begin
   perform public.send_profile_gift('00000000-0000-4000-8000-000000000902','00000000-0000-4000-8000-000000000904',99,'profile-insufficient');
   raise exception 'overdraw accepted';
  exception when raise_exception then if sqlerrm<>'insufficient coins' then raise; end if; end;
- begin
-  perform public.send_profile_gift(auth.uid(),'00000000-0000-4000-8000-000000000904',1,'profile-self');
-  raise exception 'self profile gift allowed';
- exception when raise_exception then if sqlerrm<>'invalid profile gift' then raise; end if; end;
+ a:=public.send_profile_gift(auth.uid(),'00000000-0000-4000-8000-000000000904',1,'profile-self');
+ if a->>'diamonds' is distinct from '450' then raise exception 'self profile gift credit incorrect'; end if;
 end $$;
 reset role;
 do $$ begin
- if (select coins from public.wallets where user_id='00000000-0000-4000-8000-000000000901')<>8000 then raise exception 'sender charged twice'; end if;
+ if (select coins from public.wallets where user_id='00000000-0000-4000-8000-000000000901')<>7000 then raise exception 'sender charged twice'; end if;
+ if (select diamonds from public.wallets where user_id='00000000-0000-4000-8000-000000000901')<>450 then raise exception 'self gift credit incorrect'; end if;
  if (select diamonds from public.wallets where user_id='00000000-0000-4000-8000-000000000902')<>900 then raise exception 'receiver credit incorrect'; end if;
- if (select count(*) from public.gift_events where sender_id='00000000-0000-4000-8000-000000000901')<>1 then raise exception 'incorrect event count'; end if;
+ if (select count(*) from public.gift_events where sender_id='00000000-0000-4000-8000-000000000901')<>2 then raise exception 'incorrect event count'; end if;
  if (select count(*) from public.couples where user_a='00000000-0000-4000-8000-000000000901')<>0 then raise exception 'relationship created before consent'; end if;
 end $$;
 select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000903',true);

@@ -62,13 +62,13 @@ do $$ begin
 end $$;
 -- Self-event notification follows receiver preference without inventing a gift RPC self policy.
 insert into public.gift_events(sender_id,receiver_id,gift_id,quantity,total_coins) values('00000000-0000-4000-8000-000000000701','00000000-0000-4000-8000-000000000701','00000000-0000-4000-8000-000000000703',1,100);
-do $$ begin if (select count(*) from public.notifications where category='gifts')<>1 then raise exception 'self notification optout'; end if; end $$;
+do $$ begin if (select count(*) from public.notifications where category='gifts' and user_id='00000000-0000-4000-8000-000000000701')<>1 then raise exception 'self notification optout'; end if; end $$;
 insert into public.admins(user_id) values('00000000-0000-4000-8000-000000000702');
 set local role authenticated;
 set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000702';
 do $$ declare ticket uuid; begin
- if (select count(*) from public.support_tickets)<>5 then raise exception 'admin cannot read tickets'; end if;
- select id into ticket from public.support_tickets limit 1;
+ if (select count(*) from public.support_tickets where user_id='00000000-0000-4000-8000-000000000701')<>5 then raise exception 'admin cannot read tickets'; end if;
+ select id into ticket from public.support_tickets where user_id='00000000-0000-4000-8000-000000000701' limit 1;
  begin perform public.respond_support_ticket(ticket,repeat('x',4001),true); raise exception 'FAIL response bound'; exception when invalid_parameter_value then null; end;
  perform public.respond_support_ticket(ticket,' Reviewed reply ',true);
 end $$;

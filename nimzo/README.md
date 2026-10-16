@@ -1,21 +1,29 @@
 # Nimzo
 
-Flutter + Supabase + Firebase (FCM/Crashlytics only) + Vivox voice.
+Flutter Android social voice-room app backed by Supabase and a native Vivox bridge.
 
-## Setup
-1. `flutter create . --org io.nimzo --project-name nimzo` (adds android/ios folders), then `flutter pub get`.
-2. Supabase: run `supabase/migrations/0001..0004` in order. Enable Google + Facebook providers. Add redirect `io.nimzo.app://login-callback` and the matching Android intent-filter.
-3. Run: `flutter run --dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...` (anon key only; never the service_role key).
-4. Firebase: add `google-services.json`, run `flutterfire configure`.
-5. Edge Function: `supabase functions deploy verify-purchase` and set its secrets (see the file header).
-6. Make yourself admin: `insert into admins(user_id) values ('<your uid>');` in the SQL editor.
-7. Seed `recharge_packages`, `gifts`, `banners`.
-8. Tests: `flutter test`; run `supabase/tests/economy.sql` in the SQL editor; run the checks in `supabase/tests/security.sql` as a normal user.
+The latest application work is on the repair branches; main contains an older scaffold. Preserve the deployed VIP/SVIP retirement when integrating branches.
 
-## Not finished / needs your input
-- Vivox: `VivoxVoiceService` is a stub. It needs native SDK bindings plus a token Edge Function.
-- Store purchase flow (in_app_purchase) is not wired into RechargeScreen; verification function is untested.
-- Music player, room-invite/gift DM messages, Friends horizontal list, Achievements/Level data, Moments photo upload, Visitors screen, Blocked-users screen, offline banner.
-- Full admin dashboard (rooms, coins, banners, announcements) should be a separate web app.
-- Open questions: unit of SVIP Friday rewards (coins assumed), VIP prices, rounding remainder for non-multiples of 20.
-- Nothing here has been compiled: expect to fix small errors on first `flutter analyze`.
+## Verification
+
+Use Flutter 3.47.x, the committed pubspec.lock, and Java 17.
+
+```sh
+flutter pub get --enforce-lockfile
+flutter analyze
+flutter test
+```
+
+From the repository root, run Python unittest discovery in tools/tests, nimzo/test/voice, nimzo/test/update and nimzo/test/reference, plus the Node tests under both Supabase Edge Functions. The update tests require javac.
+
+## Android
+
+The complete build recipe is .github/workflows/nimzo-apk-build.yml. Generating the default Flutter Android platform alone does not install the native voice bridge, updater, permissions or OAuth callback. Follow its native installation and manifest configuration steps, and run tools/configure_android_gradle.py after generating Android. It pins AGP 8.11.1, Kotlin 2.2.20 and Gradle 8.14.3, and applies Kotlin for templates that omit it. The workflow verifies the Vivox SDK download by SHA-256.
+
+The permanent signing identity is external to Git. Without that identity, the workflow creates a clearly identified test APK. It must not enter the permanent automatic-update channel. An installation with a different certificate cannot accept it as an update.
+
+## Supabase
+
+Client configuration is in lib/core/constants/app_constants.dart. Only public client keys belong in an APK; server/provider credentials remain in Edge Function secrets. Root-level supabase/migrations records current production repairs. The nested nimzo/supabase directory is historical scaffolding and is not a complete fresh-database setup.
+
+Google/Facebook OAuth, two-device voice and real Google Play purchases require configured external providers and physical-device verification. Additional games and Task rewards need defined server rules; disabled entries must not invent settlements or rewards.

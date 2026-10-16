@@ -24,6 +24,20 @@ def configure(android: Path):
                                   r'gradle-8.14.3-\1.zip', wrapper.read_text())
     if count != 1:
         raise ValueError('Expected one Gradle distribution URL')
+    app = android / 'app/build.gradle.kts'
+    if app.exists():
+        application = app.read_text()
+        # AGP 9 templates rely on built-in Kotlin and omit its application.
+        # After pinning AGP 8, apply KGP before Flutter configures Kotlin tasks.
+        if not re.search(r'id\("(?:org\.jetbrains\.kotlin\.android|kotlin-android)"\)', application):
+            application, count = re.subn(
+                r'(?m)^(\s*)id\("dev\.flutter\.flutter-gradle-plugin"\)',
+                lambda m: m[1] + 'id("org.jetbrains.kotlin.android")\n' + m[0],
+                application,
+            )
+            if count != 1:
+                raise ValueError('Expected one Flutter Gradle plugin application')
+        app.write_text(application)
     settings.write_text(value)
     wrapper.write_text(distribution)
     print('Android toolchain: AGP 8.11.1 / Kotlin 2.2.20 / Gradle 8.14.3')
