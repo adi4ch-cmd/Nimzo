@@ -43,6 +43,10 @@ jobs:
         working-directory: nimzo
         run: flutter create --platforms=android --project-name nimzo .
 
+      - name: Configure API 36 compatible Android toolchain
+        working-directory: nimzo
+        run: python3 ../tools/configure_android_gradle.py android
+
       - name: Install Vivox Android bridge
         working-directory: nimzo
         shell: bash
