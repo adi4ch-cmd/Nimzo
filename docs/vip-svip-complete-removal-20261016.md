@@ -23,3 +23,6 @@ Before: 1 active free VIP/SVIP assignment; 0 active legacy VIP/SVIP; 1 non-null 
 After: free_memberships absent, activation function absent, 0 user membership fields populated, 3 user profiles, 3 wallets, 342 ledger rows, 71 gift event rows, 6 independent Store collectible ownerships. Aggregate wallet coins remained 4,386,000 and diamonds 0 at verification.
 
 Never claim permanent deletion of Git history or historical financial/audit records. Real installable APK requires a successful workflow artifact, not just source changes.
+
+## Android verification
+Build target: NIMZO 1.0.27+127, no VIP/SVIP routes or media. APK must pass Flutter tests, Vivox native contracts, Android compile and emulator launch before sharing. If permanent release signing is unavailable, artifact is a TEST-signed APK that may require uninstall when replacing other signing identities.
