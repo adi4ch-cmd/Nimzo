@@ -124,3 +124,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# ffmpeg is provisioned by the dedicated poster workflow.
