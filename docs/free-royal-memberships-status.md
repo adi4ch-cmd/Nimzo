@@ -28,3 +28,6 @@
 - CI uses Flutter 3.47.6, runs `flutter analyze` and full `flutter test`.
 - Android verification build workflow uses the existing native Vivox SDK integration and package/signing checks.
 - APK availability is determined by the actual completed GitHub Actions run, not by source compilation alone.
+
+## Android build toolchain update
+The first verification run found Kotlin 2.2.0 below Flutter 3.47.6's required 2.2.20. The generated Android project now pins Kotlin 2.2.20 with AGP 8.11.1 and Gradle 8.14.3, and the toolchain regression assertion is updated. This does not claim a successful APK until the replacement workflow completes.
