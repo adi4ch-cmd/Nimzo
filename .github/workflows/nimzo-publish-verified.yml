@@ -119,6 +119,22 @@ jobs:
           disable-animations: true
           script: python3 tools/verify_android_launch.py verified-test-apk/nimzo-test.apk
       - name: Upload installation and launch diagnostics
+      # Android 15 is also shipped as an update on the Moto G35.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android14-install-${{ github.run_id }}
+          path: android-launch-diagnostics/
+          if-no-files-found: ignore
+      - name: Install and launch on Android 15
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: python3 tools/verify_android_launch.py verified-test-apk/nimzo-test.apk
+      - name: Upload Android 15 installation diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
