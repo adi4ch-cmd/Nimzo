@@ -397,7 +397,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                     } catch (_) {
                                       await voice.leave();
                                     }
-                                    if (mounted) Navigator.pop(context);
+                                    if (context.mounted) Navigator.pop(context);
                                   }),
                           child: const Text('Leave seat'),
                         ),
@@ -420,7 +420,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                           widget.seatNo,
                                           !widget.muted,
                                         );
-                                    if (mounted) Navigator.pop(context);
+                                    if (context.mounted) Navigator.pop(context);
                                   }),
                           child: Text(widget.muted
                               ? 'Unmute seat'
