@@ -13,3 +13,7 @@ This branch is FORCED to the non-production, temporary development signing path.
 
 ## Verification
 Flutter analyzer, palette regression, all Flutter tests and release-build verifiers must pass before treating its artifact as usable. Device voice, login callbacks and store transactions still require real-phone testing.
+
+## Screenshot baseline review checkpoint
+
+The isolated UI-preview workflow rendered 41 phone screenshots. The generated golden images were inspected through a contact sheet and checked in on this feature branch (commit `c9f6409`). The workflow was reverted to read-only after this one-time baseline refresh. Historic golden pixel expectations were intentionally superseded because the user requested a new violet/coral design. A successful test APK still requires a fresh full CI run and signed-artifact verification.
