@@ -43,6 +43,15 @@ List<String> nimzoGiftCategories(Iterable<String> categories) {
   return result;
 }
 
-bool giftMatchesCategory(String giftCategory, String selectedCategory) =>
-    selectedCategory.toLowerCase() == 'all' ||
-    giftCategory.toLowerCase() == selectedCategory.toLowerCase();
+bool giftMatchesCategory(
+  String giftCategory,
+  String selectedCategory, {
+  String giftName = '',
+}) {
+  if (selectedCategory.toLowerCase() == 'cars') {
+    return giftCategory.toLowerCase() == 'cars' ||
+        giftName.toLowerCase().contains('car');
+  }
+  return selectedCategory.toLowerCase() == 'all' ||
+      giftCategory.toLowerCase() == selectedCategory.toLowerCase();
+}
