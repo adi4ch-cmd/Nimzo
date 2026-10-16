@@ -51,12 +51,12 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text('ROOM ROCKET', style: TextStyle(
-                color: _rocketNavy, fontSize: 20,
+                color: Color(0xfff4e7cb), fontSize: 20,
                 fontWeight: FontWeight.w900, letterSpacing: 1,
               )),
               const SizedBox(height: 4),
               const Text('Gift together to launch six rocket levels',
-                style: TextStyle(color: NimzoStyle.muted, fontSize: 12)),
+                style: TextStyle(color: Color(0xff96a9b9), fontSize: 12)),
               const SizedBox(height: 12),
               Container(
                 key: const ValueKey('six-rocket-selector'),
@@ -149,7 +149,7 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
               ),
               const SizedBox(height: 12),
               if (id == null)
-                const EmptyContent('Join a room to view Rocket progress.')
+                const Text('Join a room to view Rocket progress.', style: TextStyle(color: Colors.white70))
               else
                 AsyncContent(
                   value: status!,
@@ -159,7 +159,7 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
                     children: [
                       Text(compactNumber(state.totalCoins) +
                           ' gifted in this room today',
-                        style: const TextStyle(fontWeight: FontWeight.w700)),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 9),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -179,7 +179,7 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
                             compactNumber(roomRocketTargets[state.activeStage]) +
                             ' cumulative coins',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 12),
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 3),
                       _ResetCountdown(resetAt: state.resetAt,
@@ -219,7 +219,7 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
               if (showRewards)
                 const _RocketRewardsPanel()
               else if (id == null)
-                const EmptyContent('Join a room to view real gifting rankings.')
+                const Text('Join a room to view gifting rankings.', style: TextStyle(color: Colors.white70))
               else
                 AsyncContent(
                   value: ref.watch(roomRocketLeaderboardProvider(id)),
@@ -242,7 +242,7 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
               const SizedBox(height: 12),
               const Text('Verified gifts only · no extra wallet rewards',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: NimzoStyle.muted, fontSize: 11)),
+                style: TextStyle(color: Color(0xff9aacbb), fontSize: 11)),
               const Text('Daily reset · 11:00 p.m. Saudi time',
                 style: TextStyle(color: NimzoStyle.muted, fontSize: 11)),
             ],
