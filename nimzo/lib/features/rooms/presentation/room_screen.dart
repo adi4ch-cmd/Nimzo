@@ -22,6 +22,7 @@ import '../../voice/voice_controller.dart';
 import '../../voice/vivox_voice_service.dart';
 import '../data/room_chat_repository.dart';
 import '../domain/room.dart';
+import '../domain/room_theme.dart';
 import 'room_controller.dart';
 import 'room_session.dart';
 import 'room_user_sheet.dart';
@@ -289,6 +290,9 @@ class _State extends ConsumerState<RoomScreen> {
           child: Stack(
             children: [
               Scaffold(
+                backgroundColor: RoomTheme.byId(
+                  room.valueOrNull?.theme ?? 'nimzo_white',
+                ).gradient.last,
                 appBar: AppBar(
                   titleSpacing: 0,
                   title: InkWell(
