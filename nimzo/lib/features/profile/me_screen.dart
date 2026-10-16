@@ -10,7 +10,6 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/reference_widgets.dart';
 import 'profile_repository.dart';
-import 'profile_screen.dart';
 import 'profile_presentation.dart';
 import 'profile_membership_status.dart';
 import 'profile_level_pills.dart';
