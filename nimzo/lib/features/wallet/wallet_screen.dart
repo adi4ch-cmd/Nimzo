@@ -112,18 +112,51 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                 decoration: BoxDecoration(
                   gradient: NimzoStyle.heroGradient,
                   borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x238b3dff),
+                      offset: Offset(0, 8),
+                      blurRadius: 20,
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Coins',
-                      style: TextStyle(color: Colors.white)),
+                    const Row(
+                      children: [
+                        Icon(Icons.monetization_on_rounded,
+                            size: 20, color: Color(0xffffcf79)),
+                        SizedBox(width: 7),
+                        Text('Coins',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          )),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
                     Text(referenceNumber(w.coins),
                       style: const TextStyle(color: Colors.white,
-                        fontSize: 30, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 12),
-                    const Text('Diamonds (earned from received gifts)',
-                      style: TextStyle(color: Colors.white70)),
+                        fontSize: 30, fontWeight: FontWeight.w800)),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Divider(color: Colors.white24, height: 1),
+                    ),
+                    const Row(
+                      children: [
+                        Icon(Icons.diamond_rounded,
+                            size: 20, color: Color(0xffffbedf)),
+                        SizedBox(width: 7),
+                        Expanded(
+                          child: Text(
+                            'Diamonds (earned from received gifts)',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
                     Text(referenceNumber(w.diamonds),
                       key: const ValueKey('wallet-diamonds'),
                       style: const TextStyle(color: Colors.white,
