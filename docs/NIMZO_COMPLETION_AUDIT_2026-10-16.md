@@ -46,6 +46,9 @@ rules are deferred by the user.
 - Edge Function voice-token and purchase authorization: 18 passed.
 - Both deployed Edge Functions and the purchase contract match the tested source
   exactly (trimmed-content comparison).
+- The public client key successfully reads live Auth settings: Google, Facebook
+  and email providers are enabled, with signup enabled. This is a configuration
+  check, not a completed device OAuth test.
 - All 12 original room Rocket clips verified by SHA-256. Vivox SDK archive
   verified against `c30f6caf08184874a7daecc2f9c670df099fa504265dc08b51859e287a38d75f`.
 - Live read-only checks passed for VIP/SVIP removal, gift broadcasts, gift
@@ -83,3 +86,17 @@ update channel. Different existing signing certificates prevent in-place updates
 Physical-device installation, two-device voice, OAuth browser return and real
 store payments are not verified here. Additional games/reward economics and legal
 document approval remain product/provider inputs, outside the confirmed fixes.
+
+## Delivered APK verification
+
+The bounded-memory retry completed successfully in 261.5 seconds. Built release
+variant 1.0.28+128, package `io.nimzo.app`, using Android test signing.
+`tools/verify_test_apk.py` passed signature verification, package/version,
+permissions, OAuth callback, updater provider, bundled font licenses, ZIP
+integrity/alignment, three-ABI Vivox libraries, retained JNI callback and native
+Vivox access-token login contract.
+
+APK SHA-256: `9f95e133c3a77816111946577055ab3725fe851d63af78566fb49a45680943bf`.
+Test signing certificate SHA-256:
+`0fef00ebb79c39a1da4ce07ee9f2aa998cc93bc8530a06a8d00d48dfc1e106de`.
+No permanent-update manifest is generated for this artifact.
