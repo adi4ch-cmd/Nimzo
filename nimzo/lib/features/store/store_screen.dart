@@ -123,33 +123,68 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Royal Collection',
-                          style: Theme.of(context).textTheme.titleLarge,
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      gradient: NimzoStyle.heroGradient,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x248b3dff),
+                          blurRadius: 18,
+                          offset: Offset(0, 7),
                         ),
-                      ),
-                      TextButton.icon(
-                        onPressed: () => context.push('/wallet'),
-                        icon: const Icon(Icons.account_balance_wallet_outlined),
-                        label: const Text('Wallet'),
-                      ),
-                    ],
-                  ),
-                  ref.watch(walletProvider).when(
-                        data: (balance) => Text(
-                          '${compactNumber(balance.coins)} coins available',
-                          style: const TextStyle(
-                            color: NimzoStyle.primary,
-                            fontWeight: FontWeight.w700,
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Expanded(
+                              child: Text(
+                                'Royal Collection',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 21,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                            TextButton.icon(
+                              onPressed: () => context.push('/wallet'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.white,
+                              ),
+                              icon: const Icon(
+                                Icons.account_balance_wallet_outlined,
+                                size: 18,
+                              ),
+                              label: const Text('Wallet'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        ref.watch(walletProvider).when(
+                          data: (balance) => Text(
+                            '${compactNumber(balance.coins)} coins available',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                          loading: () => const LinearProgressIndicator(
+                            color: Colors.white,
+                          ),
+                          error: (_, __) => const Text(
+                            'Wallet balance unavailable',
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
-                        loading: () => const LinearProgressIndicator(),
-                        error: (_, __) =>
-                            const Text('Wallet balance unavailable'),
-                      ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   SegmentedButton<bool>(
                     segments: const [
@@ -279,9 +314,16 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          gradient: NimzoStyle.softGradient,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xffd8b36b)),
+          border: Border.all(color: NimzoStyle.line),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x116628cf),
+              blurRadius: 9,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
