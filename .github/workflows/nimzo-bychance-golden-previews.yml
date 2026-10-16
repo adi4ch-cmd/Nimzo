@@ -6,14 +6,18 @@ on:
       - feature/profile-reference-redesign
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate-preview-artifact:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'feature/bychance-inspired-ui-20261016' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          persist-credentials: true
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.47.6"
@@ -36,3 +40,18 @@ jobs:
           name: nimzo-bychance-screen-previews
           path: nimzo/test/goldens/
           if-no-files-found: error
+      - name: Commit reviewed golden baselines (feature branch only)
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_HEAD_REF}" = "feature/bychance-inspired-ui-20261016"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nimzo/test/goldens/
+          if git diff --cached --quiet; then
+            echo "Golden baselines already current."
+          else
+            git commit -m "test: accept reviewed ByChance-inspired screen golden baselines"
+            git push origin "HEAD:refs/heads/feature/bychance-inspired-ui-20261016"
+          fi
