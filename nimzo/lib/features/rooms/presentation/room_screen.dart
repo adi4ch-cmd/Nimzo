@@ -296,6 +296,7 @@ class _State extends ConsumerState<RoomScreen> {
                   room.valueOrNull?.theme ?? 'nimzo_white',
                 ).gradient.last,
                 appBar: AppBar(
+                  toolbarHeight: 64,
                   titleSpacing: 0,
                   title: InkWell(
                     onTap: room.valueOrNull == null
@@ -348,32 +349,44 @@ class _State extends ConsumerState<RoomScreen> {
                       ],
                     ),
                   ),
-                  actions: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.emoji_events_rounded,
-                              size: 17, color: Color(0xffd6a542)),
-                            const SizedBox(width: 4),
-                            Text(
-                              compactNumber(
-                                room.valueOrNull?.lifetimeGiftCoins ?? 0,
-                              ),
-                              key: const ValueKey('room-header-total-gifting'),
-                              style: const TextStyle(
-                                color: Color(0xffd6a542),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800,
-                              ),
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(32),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: const Color(0xff1c2b2a).withValues(alpha: .08),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.emoji_events_rounded,
+                                  size: 17, color: Color(0xffd6a542)),
+                                const SizedBox(width: 6),
+                                Text(
+                                  compactNumber(
+                                    room.valueOrNull?.lifetimeGiftCoins ?? 0,
+                                  ),
+                                  key: const ValueKey('room-header-total-gifting'),
+                                  style: const TextStyle(
+                                    color: Color(0xffbb8d2b),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
                 body: SafeArea(
                   child: Column(
