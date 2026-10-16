@@ -46,7 +46,7 @@ class _RoyalMembershipScreenState extends ConsumerState<RoyalMembershipScreen> {
     ('Room Decor', Icons.auto_awesome_outlined),
   ];
 
-  Future<void> activate(String userId) async {
+  Future<void> activateFreeTheme(String userId) async {
     if (saving) return;
     setState(() => saving = true);
     try {
@@ -246,7 +246,7 @@ class _RoyalMembershipScreenState extends ConsumerState<RoyalMembershipScreen> {
                   child: FilledButton(
                     key: const ValueKey('activate-free-royal'),
                     onPressed: userId == null || saving || selected?.isLoading == true || selected?.hasError == true || alreadyActive
-                        ? null : () => activate(userId),
+                        ? null : () => activateFreeTheme(userId),
                     style: FilledButton.styleFrom(
                       disabledBackgroundColor: const Color(0xff55505a),
                       backgroundColor: theme.accent,
