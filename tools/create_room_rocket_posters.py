@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Extract clean six-level Rocket stills from the original VAP fly animations.
 
-VAP videos contain a full-size RGB frame and a half-resolution grayscale alpha
-frame packed side-by-side. Never save these uncomposited source video frames.
+VAP videos contain packed RGB and alpha frames. Compose them using the exact
+VAP header coordinates; uncomposited media MUST NOT appear in room selectors.
+Always regenerate all six stage previews from the unmodified fly videos.
 """
 from __future__ import annotations
 
