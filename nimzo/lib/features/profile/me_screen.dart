@@ -161,8 +161,7 @@ class MeScreen extends ConsumerWidget {
                                 children: [
                                   for (var kind = 0; kind < 3; kind++) ...[
                                     if (kind > 0) const SizedBox(width: 4),
-                                    Expanded(
-                                      child: InkWell(
+                                    InkWell(
                                         key: ValueKey('me-level-$kind'),
                                         onTap: () => Navigator.of(context).push(
                                           MaterialPageRoute(
@@ -181,7 +180,6 @@ class MeScreen extends ConsumerWidget {
                                           ][kind],
                                         ),
                                       ),
-                                    ),
                                   ],
                                 ],
                               ),
