@@ -8,10 +8,15 @@ on:
       manifest:
         description: Public prebuilt APK source SHA, checksum and ordered Git blob SHAs
         required: true
+      test_only:
+        description: Publish a verified test-signed APK outside the automatic updater
+        type: boolean
+        default: false
 permissions:
   contents: write
 jobs:
   publish:
+    if: ${{ inputs.test_only != true }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -82,3 +87,31 @@ jobs:
             }
             await github.rest.repos.updateRelease({owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, tag_name: tag, target_commitish: manifest.sourceSha, draft: false});
             await core.summary.addLink('Verified APK', update.apkUrl).write();
+  publish_test:
+    if: ${{ inputs.test_only == true }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Test public test-APK transport
+        run: node --test tools/tests/test_apk_publication.test.cjs
+      - name: Retrieve checksum-verified test APK
+        uses: actions/github-script@v7
+        env:
+          PREBUILT_MANIFEST: ${{ inputs.manifest }}
+        with:
+          script: |
+            const {retrieve}=require(process.env.GITHUB_WORKSPACE+'/tools/publish_test_apk.cjs');
+            await retrieve({github,context,manifest:JSON.parse(process.env.PREBUILT_MANIFEST)});
+      - name: Verify actual APK signature package OAuth and native voice
+        run: python3 tools/verify_test_apk.py verified-test-apk/nimzo-test.apk
+      - name: Publish test APK without updater metadata
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {publish}=require(process.env.GITHUB_WORKSPACE+'/tools/publish_test_apk.cjs');
+            const url=await publish({github,context});
+            await core.summary.addLink('Download verified TEST APK',url).write();
