@@ -1,0 +1,40 @@
+name: NIMZO extract authentic Rocket preview art
+
+on:
+  push:
+    branches: [feature/profile-reference-redesign]
+    paths:
+      - tools/create_room_rocket_posters.py
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nimzo-rocket-preview-art
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/profile-reference-redesign
+      - name: Prepare original-video poster generator
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python3 -m pip install --quiet Pillow
+          ffmpeg -version | head -1
+      - name: Extract six original Rocket stills
+        run: python3 tools/create_room_rocket_posters.py
+      - name: Commit verified derived stills
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nimzo/assets/room_rocket/posters/rocket_stage_*.png
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "assets(rocket): six posters extracted from actual Haza VAP"
+          git push origin HEAD:feature/profile-reference-redesign

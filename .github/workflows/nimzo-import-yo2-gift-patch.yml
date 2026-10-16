@@ -1,0 +1,32 @@
+name: Install verified non-Dragon Yo2 gifts from a single ZIP
+
+on:
+  push:
+    branches:
+      - feature/profile-reference-redesign
+    paths:
+      - NIMZO_Yo2_NonDragon_Gifts_Patch.zip
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Verify original gift files and install into Flutter
+        run: python3 tools/import_yo2_gift_patch.py NIMZO_Yo2_NonDragon_Gifts_Patch.zip
+      - name: Commit original assets and clear temporary upload
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nimzo/assets/yo2_gifts/ nimzo/pubspec.yaml
+          git rm -f -- NIMZO_Yo2_NonDragon_Gifts_Patch.zip
+          git diff --cached --quiet && exit 0
+          git commit -m "gifts: install 31 original Yo2 gift assets, Dragons skipped [gifts-only]"
+          git push

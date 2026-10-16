@@ -1,0 +1,238 @@
+NIMZO — CODEX MASTER INSTRUCTIONS
+
+LANGUAGE Mujhse hamesha Roman Urdu mein baat karo. Har progress update,
+audit, error explanation, testing result, blocker aur final report Roman
+Urdu mein do. English sirf code, commands, file names, technical terms,
+class/function/package names aur Git commit messages ke liye use karo.
+Bar bar permission mat mango. Safe kaam mein audit -> implement -> test
+-> fix -> retest karte jao.
+
+PROJECT Repository: https://github.com/adi4ch-cmd/Nimzo Working branch:
+feature/profile-reference-redesign App: NIMZO Platforms: Android + iOS
+Frontend: Flutter/Dart Backend: existing Supabase Voice: existing Vivox
+NIMZO voice-first app hai; video calling add nahi karni.
+
+APPROVED UI SOURCE Repository ki nimzo-ui-1.html file ko A-to-Z
+top-to-bottom read karo. Reference commit:
+de425c1b6399af0c0952959fd38b52d2b563ed82. Isi HTML ko approved UI/UX
+reference samjho: screens, navigation, layouts, components, sheets,
+dialogs, room, profile, wallet, VIP/SVIP, gifts, Moments, Messages aur
+Games sab inspect karke fresh Flutter UI banao.
+
+OLD UI RULE Purani deleted Flutter UI intentionally remove ki gayi hai.
+Old screens, shell, themes, widgets, profile/room UI, gift artwork ya
+old game UI Git history se restore mat karna. Fresh presentation
+nimzo-ui-1.html se banao. Existing working backend
+repositories/services/controllers/models/domain logic/Supabase/Vivox ko
+inspect karke reuse karo.
+
+BACKEND Naya backend mat banana. Existing Supabase backend aur
+production data preserve karo. Users, profiles, permanent Nimzo IDs,
+coins, wallets, gifts, transactions, rooms, followers/following,
+VIP/SVIP, levels ya legitimate data reset/delete/drop/truncate mat
+karna. Missing backend feature ho to pehle existing implementation
+inspect karo, sirf minimum compatible change karo aur existing
+data/contracts preserve karo. Repo migration ko live-applied assume mat
+karo.
+
+REAL DATA HTML ke demo/local JavaScript data ko production data mat
+banana. Fake users, rooms, online counts, followers, balances, gifts,
+messages, Moments, VIP/SVIP, rankings, transactions, achievements ya
+voice status mat dikhao. Real Supabase data use karo. Backend feature
+unavailable ho to professional empty/unavailable state do.
+
+AUTH Existing Supabase Auth use karo: Email Signup/Login, Google,
+Facebook, Forgot Password, Profile Setup, Session Restore, Logout. OAuth
+deep links/callback inspect/fix karo. Firebase Auth restore mat karna.
+Logout par local session, Vivox, active room aur realtime/listeners
+clean karo; server data delete mat karo.
+
+PROFILE SETUP Display Name, Gender, DOB, Country, Bio aur required
+fields real backend se save karo. Permanent Nimzo ID backend-controlled
+rahe.
+
+HOME HTML ke mutabiq Home rebuild karo aur real rooms use karo.
+Create/Open My Room, Me, Popular, Followed, Recent/Recently Joined,
+Country Selector aur approved ranked/popular presentation connect karo.
+Fake rooms mat lagao.
+
+ROOM OWNERSHIP Existing room backend inspect karo. Ek user ke paas max
+ek owned room ho. Existing room ho to duplicate create na ho. Room
+public ID permanent Nimzo ID ke saath compatible rakho jahan schema
+support karta hai.
+
+VOICE ROOM HTML Voice Room rebuild karo. EXACTLY 10 mic seats: top row
+5 + bottom row 5. Room avatar/name/ID/owner/online, occupied/empty
+seats, avatars, mic/speaking/mute, join/leave, take/leave seat, profile,
+gifts, chat, Games entry, settings aur supported owner/mod controls
+implement karo. Video nahi.
+
+VIVOX Existing Vivox reuse karo. Runtime verify karo: initialization,
+login/auth, channel join, mic permission/capture, outgoing/incoming
+audio, mute/unmute, reconnect, network interruption, room leave,
+disconnect, cleanup/logout, listeners aur supported
+background/foreground behavior. Sirf SDK packaging ko success mat
+samjho.
+
+ROOM CHAT Local demo chat copy mat karo. Real backend/realtime chat:
+sender, avatar, message, timestamp, safe input, realtime,
+loading/error/retry, proper cleanup. Duplicate subscriptions nahi.
+
+GAMES Games LAZMI include karni hain. nimzo-ui-1.html ke tamam game
+sections/catalog/screens/interactions inspect karke Flutter mein
+reproduce karo. HTML mein Fruit Party Jackpot, Grady Pro, Bigetar, Slot
+Jackpots, Teen Patti, Lucky Wheel 77, Bounty Football jese references ko
+inspect karo. Random extra games invent mat karo. Catalog, cards, room
+Games entry, game screens, buttons, chips, reels, wheel, timers, results
+UI approved reference ke mutabiq banao. HTML ka insecure local coin
+deduction/result logic production mein copy mat karo. Flutter client
+final financial/result authority nahi. Coin spending/rewards/results
+server-authoritative hon.
+
+PROFILE My Profile aur Public User Profile HTML ke mutabiq rebuild karo.
+Real cover, avatar, display name, permanent ID, country, gender, DOB/age
+where allowed, bio, following/followers/visitors, Wealth/Charm/Active,
+VIP/SVIP, real badges/medals/gifts use karo. Fake achievements nahi.
+
+EDIT PROFILE Profile/cover photo, display name, gender, DOB, country,
+supported language aur bio. Phone gallery/camera, Supabase Storage,
+proper RLS/backend save aur immediate refresh. RLS bypass nahi. Raw DB
+errors user ko mat dikhao.
+
+SEARCH/FOLLOW Search permanent Nimzo ID aur username/display name where
+supported. Literal % aur _ safely handle karo aur existing safe search
+behavior break mat karo. Follow/unfollow/counts backend synchronized
+hon.
+
+LEVELS Wealth, Charm, Active separate systems, range 1–120. 1–20 brown
+family 21–39 green family 40–59 blue family 60–79 pink family 80–99 red
+family 100–120 golden family Teeno systems ki visual identity alag ho;
+same level par identical badge na lage.
+
+VIP/SVIP VIP 1–10, SVIP 1–10. HTML UI reference use karo, lekin
+prototype prices/rewards/durations ko production truth mat samjho.
+Existing backend/config verify karke real values show karo.
+
+WALLET/RECHARGE Real backend wallet. Hard-coded balance nahi. Economy
+target 1 USD = 500,000 coins; existing config verify karo aur old 80,000
+rate accidentally restore mat karo. Recharge mein sirf configured
+methods, server-side verification, no fake success/double credit.
+
+GIFTS HTML Gift panel UI reference use karo. Real backend transaction
+mein sender/recipient/gift/quantity/price/total/balance validate karo,
+atomic deduction/record/recipient effects where applicable,
+rollback/error/duplicate prevention. Client-side balance subtraction ko
+production authority mat banao.
+
+MOMENTS Real text/image posts,
+author/avatar/timestamp/likes/comments/profile navigation/gift where
+approved/delete own post/pagination/refresh/loading/empty/error/retry.
+Fake engagement nahi.
+
+MESSAGES Conversation list: avatar, name, last message, time, unread.
+Real Private Conversation screen bhi banao: bubbles, sender/receiver,
+timestamps, send state, errors/retry, realtime where supported aur
+cleanup.
+
+NOTIFICATIONS Sirf real events; fake sample notifications nahi.
+
+COUNTRY/TASKS/STORE/RANKING/HONOR WALL/CP HTML UI reference follow karo.
+Country backend format ke saath consistent. Fake task rewards, fake
+purchases, hard-coded rankings, fake medals ya local CP relationship
+production mein mat save karo. Real backend support ho to connect, warna
+professional unavailable state.
+
+SETTINGS Account, Profile, Privacy, Notifications, Language, Help &
+Feedback, About, Logout, Delete Account where supported. Debug/admin
+controls production UI mein nahi. Logout data delete nahi karta. Delete
+Account separate explicit authorized confirmation flow ho.
+
+DATA PERSISTENCE Accounts/data inactivity, logout, uninstall/reinstall,
+app/server restart ya routine cleanup se auto-delete na hon. Profile,
+permanent ID, levels, VIP/SVIP, coins, gifts, wallet, transactions aur
+legitimate social data preserve karo.
+
+NAVIGATION/DESIGN Approved HTML navigation INCLUDING Games. No dead/fake
+buttons. Android back, iOS navigation, bottom-nav state, sheets/dialogs,
+keyboard, deep links/state preservation handle karo. Reusable design
+system banao: colors, typography, spacing, radius, shadows, buttons,
+inputs, avatars, badges, level badges, app bars, nav, sheets/dialogs,
+loading/skeleton/empty/error/retry. Generic Flutter demo/admin
+dashboard/childish look, fake icons, emoji production icons aur
+inconsistent styling avoid karo.
+
+RESPONSIVE SafeArea, status/nav bars, keyboard, small/large phones, long
+names, text/image scaling, scrolling/notches. No RenderFlex overflow,
+clipping ya broken 10-seat layout.
+
+SUPABASE Auth, tables, relationships, FKs, indexes, RLS, policies,
+functions/RPC, triggers, views, Storage, Realtime, migrations audit
+karo. Production compatibility preserve karo. SQL blindly live DB par
+mat chalao. Storage ownership/auth/file type/size/access/update/delete
+rules verify karo. Realtime duplicate subscriptions mat banao; dispose
+on screen/room/logout. Service-role key Flutter mein nahi. Secrets logs
+mein nahi. Financial/game/admin operations server-authoritative aur
+RLS-safe hon.
+
+ANDROID Application ID, manifest, SDK versions, internet/mic/audio
+permissions, OAuth deep links, Supabase callback, Vivox bridge,
+Gradle/Kotlin/Java, icon/splash, release config, R8/ProGuard audit karo.
+
+IOS Bundle ID, Info.plist, OAuth schemes, Supabase callback, mic usage,
+Vivox requirements, icons/launch, SafeArea, keyboard/permissions audit
+karo. Android fix se iOS break mat karo.
+
+ARCHITECTURE/PERFORMANCE/ERRORS Maintainable lib/app, lib/core,
+lib/features structure.
+Presentation/domain/data/repository/controller/provider/service where
+useful. Puri app main.dart mein nahi. Multiple competing Supabase
+clients nahi. Existing working backend code bina reason rewrite nahi.
+Pagination/caching/disposal use karo. Raw
+PostgrestException/SocketException/schema-cache/permission traces normal
+user ko nahi; friendly errors + safe logs.
+
+TESTING Run: flutter pub get dart format . flutter analyze flutter test
+Existing native/Vivox/contract tests bhi. Test Auth/OAuth/Profile
+Setup/Session Restore/Home/Search/Create/Open Room/one-room rule/Room
+Join-Leave/10 seats/Vivox
+mic+audio/mute/chat/gifts/profile/edit+upload/follow/levels/VIP/SVIP/wallet/Moments/messages/notifications/Games/logout/restart.
+Legitimate failing tests delete mat karo; root cause fix karo.
+
+VISUAL QA Flutter ko nimzo-ui-1.html ke against compare karo: structure,
+spacing, alignment, hierarchy, typography, icons, avatar/card sizes,
+backgrounds, buttons, nav, Voice Room 10 seats, Gift panel, Games,
+Profile, Wallet, VIP/SVIP, Moments, Messages, sheets/dialogs. Obvious
+mismatch ho to complete claim nahi.
+
+WORK ORDER 1 repo audit 2 HTML complete read 3 backend/domain/data
+identify 4 imports/project structure repair 5 design system 6
+shell/navigation 7 auth 8 profile setup 9 Home 10 Search 11 Create/Open
+Room 12 Voice Room/10 seats 13 Vivox runtime 14 Room Chat 15 Games 16
+My/Public Profile 17 Edit Profile 18 Levels 19 Follow/social 20 VIP/SVIP
+21 Gifts 22 Moments 23 Messages 24 Notifications 25 Wallet/Recharge 26
+Tasks/Store/Ranking/Honor Wall/CP 27 Settings/About 28
+Supabase/RLS/Storage/Realtime audit/fixes 29 Android QA 30 iOS QA 31
+tests 32 visual QA 33 fix errors 34 full retest 35 release readiness
+
+APK RULE Har choti update par APK build mat karo. Pehle implement ->
+integrate -> format -> analyze -> test -> visual QA -> fix -> retest.
+Stable hone ke baad final release APK build karo.
+
+SOURCE PRIORITY 1 latest explicit user instruction 2
+nimzo-ui-1.html/latest approved reference 3 legitimate production
+backend/data contracts 4 current repo 5 old Git history Old history se
+deleted UI restore mat karo.
+
+FINAL REPORT Sirf report de kar stop mat karo; actually repository edit
+karo. End par Roman Urdu mein files created/modified, backend
+reuse/changes, Supabase/RLS/Storage, Auth/Google/Facebook, Home/Room/10
+seats/Vivox/Gifts/Games/Profile/Moments/Messages/Wallet, tests/analyze
+results, blockers aur final commit SHA batao. Unverified cheez ko
+working claim mat karo.
+
+START NOW Current branch/repo inspect karo, git status check karo,
+nimzo-ui-1.html A-to-Z read karo, existing
+backend/services/controllers/repositories inspect karo, aur deleted
+legacy UI restore kiye baghair fresh Flutter implementation start karo.
+Unnecessary permission mat mango aur har progress update Roman Urdu mein
+do.

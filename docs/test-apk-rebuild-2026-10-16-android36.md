@@ -1,0 +1,3 @@
+# NIMZO Android owner retest after file-picker compileSDK repair
+
+Checkpoint: `dbcfe8c822a9f82144fa4b8c5e3d63a387a2e6e0`. Android build previously failed at file_picker checkReleaseAarMetadata because file_picker v8 compiled against API 34 while the dependency requires 36. This checkpoint uses newer file_picker with flutter.compileSdkVersion. Repeat tests, Android native compilation, signing, APK verification and attach the installable test artifact. No account or wallet reset.

@@ -1,120 +1,118 @@
-import '../../core/widgets/nimzo_icon.dart';
+import '../../core/widgets/master_ui.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../core/providers/supabase_provider.dart';
-import '../../core/theme/colors.dart';
-import '../../core/widgets/empty_view.dart';
-import '../../core/widgets/error_view.dart';
-import '../../core/widgets/shimmer_view.dart';
+import 'game_catalog.dart';
 
-final gamesCatalogProvider = FutureProvider<List<Map<String, dynamic>>>((
-  ref,
-) async {
-  final rows = await ref
-      .read(supabaseProvider)
-      .from('game_catalog')
-      .select()
-      .eq('active', true)
-      .order('name');
-  return List<Map<String, dynamic>>.from(rows)
-      .where((g) => const ['fruit_wheel', 'fruit_party'].contains(g['slug']))
-      .toList();
-});
-
-class GamesCatalogScreen extends ConsumerWidget {
-  const GamesCatalogScreen({super.key});
+class GamesCatalogScreen extends StatelessWidget {
+  final String? roomId;
+  const GamesCatalogScreen({super.key, this.roomId});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: const Text('Games')),
-    body: ref
-        .watch(gamesCatalogProvider)
-        .when(
-          loading: () => const ShimmerView(),
-          error: (e, _) => ErrorView(
-            message: '$e',
-            onRetry: () => ref.invalidate(gamesCatalogProvider),
-          ),
-          data: (games) => games.isEmpty
-              ? const EmptyView(title: 'No games available')
-              : ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: games.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (_, i) {
-                    final g = games[i];
-                    return Material(
-                      color: NimzoColors.surface,
-                      borderRadius: BorderRadius.circular(18),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(18),
-                        onTap: () => showDialog<void>(
-                          context: context,
-                          builder: (c) => AlertDialog(
-                            title: Text(
-                              g['name']?.toString() ?? g['slug'].toString(),
-                            ),
-                            content: const Text(
-                              'Games can be played inside a voice room. Open a room first, then launch the game from the room.',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(c),
-                                child: const Text('OK'),
-                              ),
-                            ],
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 58,
-                                height: 58,
-                                decoration: BoxDecoration(
-                                  color: NimzoColors.primaryFaint,
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: const NimzoIcon(
-                                  Icons.sports_esports_rounded,
-                                  size: 30,
-                                  color: NimzoColors.primaryDark,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      g['name']?.toString() ??
-                                          g['slug'].toString(),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Server-settled',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Icon(Icons.chevron_right),
-                            ],
-                          ),
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const GradientText('Games')),
+        body: GridView.count(
+          crossAxisCount: 3,
+          padding: const EdgeInsets.all(16),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          children: [
+            for (final g in NimzoRoomGames.approved)
+              InkWell(
+                onTap: () => context.push(
+                  '/games-play?game=${g.slug}${roomId == null ? '' : '&room=$roomId'}',
+                ),
+                child: Column(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/reference/game/${g.artwork}.jpg',
+                        height: 64,
+                        width: 64,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      g.artwork == 1
+                          ? 'Grady Pro'
+                          : g.artwork == 3
+                              ? 'Slot Jackpots'
+                              : g.title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      );
+}
+
+Future<void> showRoomGamesSheet(
+  BuildContext context,
+  String roomId, {
+  ValueChanged<String>? onSelected,
+}) async {
+  final selected = await showReferenceSheet<String>(
+    context,
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Games',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 12),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 4,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          mainAxisExtent: 100 * MediaQuery.textScalerOf(context).scale(1),
+          children: [
+            for (final game in NimzoRoomGames.approved)
+              InkWell(
+                onTap: () => Navigator.pop(context, game.slug),
+                child: Column(
+                  children: [
+                    Flexible(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset(
+                          'assets/reference/game/${game.artwork}.jpg',
+                          width: 64,
+                          height: 64,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      game.artwork == 1
+                          ? 'Grady Pro'
+                          : game.artwork == 3
+                              ? 'Slot Jackpots'
+                              : game.title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
                 ),
+              ),
+          ],
         ),
+      ],
+    ),
   );
+  if (selected != null && context.mounted) {
+    if (onSelected != null) {
+      onSelected(selected);
+    } else {
+      context.push('/games-play?game=$selected&room=$roomId');
+    }
+  }
 }

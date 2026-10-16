@@ -1,0 +1,186 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../core/providers/supabase_provider.dart';
+import '../../core/widgets/reference_widgets.dart';
+import '../../core/widgets/master_ui.dart';
+import '../../core/theme/app_theme.dart';
+import 'profile_repository.dart';
+import 'profile_screen.dart';
+import 'profile_level_scale.dart';
+
+class LevelsScreen extends ConsumerStatefulWidget {
+  final int initialKind;
+  final String? userId;
+  const LevelsScreen({super.key, this.initialKind = 0, this.userId})
+      : assert(initialKind >= 0 && initialKind < 3);
+  @override
+  ConsumerState<LevelsScreen> createState() => _LevelState();
+}
+
+class _LevelState extends ConsumerState<LevelsScreen> {
+  late int selected;
+  @override
+  void initState() {
+    super.initState();
+    selected = widget.initialKind;
+  }
+
+  static const bands = [
+    (1, 20, 'Brown', Color(0xffa16207)),
+    (21, 39, 'Green', Color(0xff16a34a)),
+    (40, 59, 'Blue', Color(0xff2563eb)),
+    (60, 79, 'Pink', Color(0xffdb2777)),
+    (80, 99, 'Red', Color(0xffdc2626)),
+    (100, 120, 'Gold', Color(0xffd4a017)),
+  ];
+  @override
+  Widget build(BuildContext context) {
+    final id = widget.userId ?? ref.watch(currentUserIdProvider),
+        label = ['Wealth', 'Charm', 'Active'][selected];
+    return Scaffold(
+      appBar: AppBar(title: const Text('Level')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          ReferenceTabs(
+            labels: const ['Wealth', 'Charm', 'Active'],
+            selected: selected,
+            onSelected: (i) => setState(() => selected = i),
+          ),
+          const SizedBox(height: 12),
+          if (id == null)
+            const EmptyContent('Please sign in.')
+          else
+            AsyncContent(
+              value: ref.watch(profileProvider(id)),
+              onRetry: () => ref.invalidate(profileProvider(id)),
+              builder: (p) {
+                final level = [
+                  p.wealthLevel,
+                  p.charmLevel,
+                  p.activeLevel,
+                ][selected];
+                final total = [
+                  p.wealthCoins,
+                  p.charmDiamonds,
+                  p.activePoints,
+                ][selected];
+                final band = bands
+                    .where((b) => level >= b.$1 && level <= b.$2)
+                    .firstOrNull;
+                final next = total == null || level >= 120 || level < 1
+                    ? null
+                    : (ProfileLevelScale.nextRequirement(selected, level) - total)
+                        .clamp(0, 1 << 62);
+                return ReferenceCard(
+                  child: Column(
+                    children: [
+                      Transform.scale(
+                        scale: 1.4,
+                        child: LevelBadge(kind: selected, level: level),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        selected == 0
+                            ? 'Tier: ${band?.$3 ?? 'Unavailable'}'
+                            : '$label level',
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        level > 0 ? 'Level $level / 120' : 'Level unavailable',
+                        style: const TextStyle(color: NimzoStyle.muted),
+                      ),
+                      if (total != null && level > 0) ...[
+                        const SizedBox(height: 10),
+                        LinearProgressIndicator(
+                          key: const ValueKey('verified-level-progress'),
+                          value: ProfileLevelScale.fraction(selected, level, total),
+                          minHeight: 6,
+                          color: ProfileLevelScale.color(selected, level),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ],
+                      const SizedBox(height: 8),
+                      Text(
+                        total == null
+                            ? 'Earned progress unavailable'
+                            : '${referenceNumber(total)} ${ProfileLevelScale.units[selected]}'
+                              '${next == null ? ' · Maximum tier or unavailable' : ' · ${referenceNumber(next)} to next level'}',
+                        style: const TextStyle(
+                          color: NimzoStyle.muted,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ReferenceCard(
+            child: ListTile(
+              leading: const Icon(Icons.emoji_events_outlined),
+              title: const Text('Game Level'),
+              subtitle: const Text('Verified settled-game progress'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/game-level'),
+            ),
+          ),
+          ReferenceCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'How $label grows',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                Text(
+                  [
+                    'Grows when you send gifts.',
+                    'Grows when you receive gifts.',
+                    'Grows while you stay active.',
+                  ][selected],
+                  style: const TextStyle(color: NimzoStyle.muted, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                'Tier colors',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          for (final band in bands)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: NimzoStyle.line)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 14,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: ProfileLevelScale.color(selected, band.$1),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(band.$3)),
+                    Text(
+                      'Level ${band.$1}-${band.$2}',
+                      style: const TextStyle(color: NimzoStyle.muted),
+                    ),
+                  ],
+                ),
+              ),
+        ],
+      ),
+    );
+  }
+}

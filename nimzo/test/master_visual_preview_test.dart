@@ -1,0 +1,88 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:nimzo/core/theme/app_theme.dart';
+import 'package:nimzo/features/rooms/presentation/room_overlays.dart';
+import 'package:nimzo/features/wallet/wallet_screen.dart';
+
+void main() {
+  testWidgets('room overlay visual previews', (
+    tester,
+  ) async {
+    for (final font in [
+      ('Roboto', 'test/fonts/Roboto-Regular.ttf'),
+      ('Cinzel', 'assets/reference/fonts/Cinzel.ttf'),
+      ('Poppins', 'assets/reference/fonts/Poppins-Regular.ttf'),
+    ]) {
+      await (FontLoader(font.$1)
+            ..addFont(
+              Future.value(
+                  ByteData.sublistView(File(font.$2).readAsBytesSync())),
+            ))
+          .load();
+    }
+    await (FontLoader('packages/lucide_flutter/LucideIcons')
+          ..addFont(
+            rootBundle.load('packages/lucide_flutter/assets/lucide.ttf'),
+          ))
+        .load();
+    await (FontLoader(
+      'MaterialIcons',
+    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf')))
+        .load();
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    for (final preview in <(String, Widget)>[
+      (
+        'treasure_final',
+        const Scaffold(
+          body: Padding(padding: EdgeInsets.all(16), child: TreasureSheet()),
+        ),
+      ),
+      (
+        'crystal_final',
+        const Scaffold(
+          body: Padding(padding: EdgeInsets.all(16), child: CrystalSheet()),
+        ),
+      ),
+    ]) {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            walletProvider.overrideWith((_) async => (coins: 0, diamonds: 0)),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light(),
+            home: RepaintBoundary(
+              key: const ValueKey('preview'),
+              child: preview.$2,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      if (preview.$1 == 'crystal_final') {
+        // The original Diamond screenshot was deliberately retired. Validate
+        // the active six-stage Rocket UI rather than asserting old pixels.
+        expect(find.text('ROOM ROCKET'), findsOneWidget);
+        expect(find.textContaining('Gift together'), findsOneWidget);
+        expect(find.text('Lv1'), findsOneWidget);
+        expect(find.text('Lv6'), findsOneWidget);
+        expect(find.textContaining('Diamond Blast'), findsNothing);
+      } else {
+        await expectLater(
+          find.byKey(const ValueKey('preview')),
+          matchesGoldenFile('goldens/${preview.$1}.png'),
+        );
+      }
+      expect(tester.takeException(), isNull);
+    }
+    await tester.pumpWidget(const SizedBox());
+  });
+}

@@ -1,132 +1,322 @@
+import '../../core/widgets/master_ui.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../core/providers/supabase_provider.dart';
-import '../../core/utils/formatters.dart';
-import '../../core/widgets/empty_view.dart';
-import '../../core/widgets/error_view.dart';
-import '../../core/widgets/nimzo_avatar.dart';
-import '../../core/widgets/nimzo_icon.dart';
-import '../../core/widgets/shimmer_view.dart';
-import '../profile/profile_repository.dart';
-import 'message_repository.dart';
 
-class MessagesScreen extends ConsumerStatefulWidget {
+import '../../core/providers/supabase_provider.dart';
+import '../../core/widgets/reference_widgets.dart';
+import '../../core/theme/app_theme.dart';
+import 'message_repository.dart';
+import '../social/social_repositories.dart';
+import '../social/blocked_users_screen.dart';
+import '../profile/profile_repository.dart';
+
+class MessagesScreen extends ConsumerWidget {
   const MessagesScreen({super.key});
   @override
-  ConsumerState<MessagesScreen> createState() => _M();
-}
-
-class _M extends ConsumerState<MessagesScreen> {
-  String q = '';
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Messages'), actions: [
-          IconButton(icon: const NimzoIcon(Icons.notifications_none_rounded, color: Color(0xFF64748B)), onPressed: () => context.push('/notifications')),
-        ]),
-        body: Column(children: [
-          Padding(padding: const EdgeInsets.all(12), child: TextField(
-            onChanged: (v) => setState(() => q = v),
-            decoration: const InputDecoration(hintText: 'Search users or Nimzo ID', prefixIcon: Icon(Icons.search)))),
-          Expanded(child: q.isNotEmpty ? _Search(q) : ref.watch(conversationsProvider).when(
-            loading: () => const ShimmerView(),
-            error: (e, _) => ErrorView(message: '$e', onRetry: () => ref.invalidate(conversationsProvider)),
-            data: (l) => l.isEmpty
-                ? const EmptyView(title: 'No conversations', hint: 'Start a chat from a profile.')
-                : ListView(children: [
-                    for (final c in l)
-                      ListTile(
-                        leading: const NimzoAvatar(),
-                        title: Text(c['display_name'] ?? 'User'),
-                        subtitle: Text(c['last_body'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
-                        trailing: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Text(timeAgo(DateTime.parse(c['last_at']))),
-                          if ((c['unread'] ?? 0) > 0) CircleAvatar(radius: 9, child: Text('${c['unread']}', style: const TextStyle(fontSize: 10))),
-                        ]),
-                        onTap: () => context.push('/chat/${c['other_id']}'),
+  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
+        appBar: AppBar(title: const GradientText('Messages')),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(conversationsProvider);
+            await ref.read(conversationsProvider.future);
+          },
+          child: ListView(
+            children: [
+              AsyncContent(
+                value: ref.watch(conversationsProvider),
+                onRetry: () => ref.invalidate(conversationsProvider),
+                builder: (rows) => rows.isEmpty
+                    ? const EmptyContent('No conversations yet')
+                    : Column(
+                        children: [
+                          for (final r in rows) ConversationTile(row: r)
+                        ],
                       ),
-                  ]),
-          )),
-        ]),
+              ),
+            ],
+          ),
+        ),
       );
 }
 
-class _Search extends ConsumerWidget {
-  final String q;
-  const _Search(this.q);
+class ConversationTile extends ConsumerWidget {
+  final Map<String, dynamic> row;
+  const ConversationTile({super.key, required this.row});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => FutureBuilder(
-        future: ref.read(profileRepositoryProvider).search(q),
-        builder: (_, s) => s.connectionState != ConnectionState.done
-            ? const ShimmerView(rows: 3)
-            : s.hasError
-                ? ErrorView(message: '${s.error}', onRetry: () {})
-                : ListView(children: [for (final u in s.data!) ListTile(leading: const NimzoAvatar(), title: Text(u.displayName ?? 'User'), subtitle: Text('ID ${u.nimzoId}'), onTap: () => context.push('/profile/${u.id}'))]),
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final id = row['other_id']?.toString();
+    if (id == null || id.isEmpty) return const SizedBox.shrink();
+    final profile = ref.watch(profileProvider(id)).valueOrNull;
+    final name = profile?.displayName ??
+        profile?.username ??
+        row['display_name']?.toString() ??
+        row['username']?.toString() ??
+        'Nimzo user';
+    final unread = int.tryParse(row['unread']?.toString() ?? '') ?? 0;
+    return ListTile(
+      leading: NimzoAvatar(
+        name: name,
+        url: profile?.avatarPath == null
+            ? null
+            : ref
+                .watch(supabaseProvider)
+                .storage
+                .from('avatars')
+                .getPublicUrl(profile!.avatarPath!),
+      ),
+      title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: Text(
+        row['last_body']?.toString() ?? '',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: unread > 0
+          ? Semantics(
+              label: '$unread unread messages',
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(
+                  color: NimzoStyle.primary,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$unread',
+                  style: const TextStyle(color: Colors.white, fontSize: 11),
+                ),
+              ),
+            )
+          : null,
+      onTap: () => context.push('/chat/$id'),
+    );
+  }
 }
 
 class ConversationScreen extends ConsumerStatefulWidget {
   final String otherId;
   const ConversationScreen({super.key, required this.otherId});
   @override
-  ConsumerState<ConversationScreen> createState() => _C();
+  ConsumerState<ConversationScreen> createState() => _State();
 }
 
-class _C extends ConsumerState<ConversationScreen> {
-  final _t = TextEditingController();
-  RealtimeChannel? _typing;
-  bool _otherTyping = false;
+class _State extends ConsumerState<ConversationScreen> {
+  final body = TextEditingController();
+  bool busy = false, reading = false, blockBusy = false;
   @override
-  void initState() {
-    super.initState();
-    Future.microtask(() => ref.read(messageRepositoryProvider).markRead(widget.otherId));
-    _typing = ref.read(messageRepositoryProvider).typingChannel(widget.otherId)
-      ..onBroadcast(event: 'typing', callback: (p) {
-        if (p['from'] == widget.otherId && mounted) {
-          setState(() => _otherTyping = true);
-          Future.delayed(const Duration(seconds: 2), () { if (mounted) setState(() => _otherTyping = false); });
-        }
-      })
-      ..subscribe();
+  void dispose() {
+    body.dispose();
+    super.dispose();
   }
-  @override
-  void dispose() { _t.dispose(); _typing?.unsubscribe(); super.dispose(); }
+
+  Future<void> send() async {
+    if (busy || body.text.trim().isEmpty) return;
+    final submitted = body.text;
+    setState(() => busy = true);
+    try {
+      final container = ProviderScope.containerOf(context, listen: false);
+      final repository = ref.read(messageRepositoryProvider);
+      await repository.send(widget.otherId, submitted.trim());
+      container.invalidate(conversationsProvider);
+      if (mounted && body.text == submitted) body.clear();
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Message could not be sent. Retry.')),
+        );
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  Future<void> toggleBlock() async {
+    if (blockBusy) return;
+    setState(() => blockBusy = true);
+    final container = ProviderScope.containerOf(context, listen: false);
+    try {
+      final ids = await ref.read(blockedUserIdsProvider.future);
+      final repository = ref.read(blockRepositoryProvider);
+      if (ids.contains(widget.otherId)) {
+        await repository.unblock(widget.otherId);
+      } else {
+        await repository.block(widget.otherId);
+      }
+      container.invalidate(blockedUserIdsProvider);
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to update blocking. Retry.')),
+        );
+    } finally {
+      if (mounted) setState(() => blockBusy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final me = ref.watch(currentUserIdProvider);
+    final other = ref.watch(profileProvider(widget.otherId)).valueOrNull;
+    final avatar = other?.avatarPath;
+    ref.listen(chatProvider(widget.otherId), (_, next) {
+      final unread =
+          next.valueOrNull?.any((m) => m.receiverId == me && !m.read) ?? false;
+      if (unread && !reading) {
+        reading = true;
+        final container = ProviderScope.containerOf(context, listen: false);
+        ref
+            .read(messageRepositoryProvider)
+            .markRead(widget.otherId)
+            .then((_) {
+              container.invalidate(conversationsProvider);
+            })
+            .catchError((Object _) {})
+            .whenComplete(() => reading = false);
+      }
+    });
     return Scaffold(
-      appBar: AppBar(title: Text(_otherTyping ? 'Typing…' : 'Chat')),
-      body: Column(children: [
-        Expanded(child: ref.watch(chatProvider(widget.otherId)).when(
-          loading: () => const ShimmerView(rows: 4),
-          error: (e, _) => ErrorView(message: '$e', onRetry: () => ref.invalidate(chatProvider(widget.otherId))),
-          data: (l) => l.isEmpty ? const EmptyView(title: 'Say hi') : ListView(reverse: true, padding: const EdgeInsets.all(12), children: [
-            for (final m in l.reversed)
-              Align(
-                alignment: m.senderId == me ? Alignment.centerRight : Alignment.centerLeft,
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 3), padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(color: m.senderId == me ? const Color(0xFFDCFCE7) : const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(12)),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                    Text(m.body ?? ''),
-                    if (m.senderId == me) Icon(m.read ? Icons.done_all : Icons.done, size: 12),
-                  ]),
+      appBar: AppBar(
+        actions: [
+          PopupMenuButton<String>(
+            enabled: !blockBusy,
+            onSelected: (_) => toggleBlock(),
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                value: 'block',
+                child: Text(
+                  ref
+                              .watch(blockedUserIdsProvider)
+                              .valueOrNull
+                              ?.contains(widget.otherId) ==
+                          true
+                      ? 'Unblock user'
+                      : 'Block user',
                 ),
               ),
-          ]),
-        )),
-        SafeArea(child: Padding(padding: const EdgeInsets.all(8), child: Row(children: [
-          Expanded(child: TextField(controller: _t, onChanged: (_) => _typing?.sendBroadcastMessage(event: 'typing', payload: {'from': me}), decoration: const InputDecoration(hintText: 'Message'))),
-          IconButton(icon: const NimzoIcon(Icons.send_rounded, color: Color(0xFF2E9B73)), onPressed: () async {
-            final s = _t.text.trim();
-            if (s.isEmpty) return;
-            _t.clear();
-            try { await ref.read(messageRepositoryProvider).send(widget.otherId, s); }
-            catch (e) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e'))); }
-          }),
-        ]))),
-      ]),
+            ],
+          ),
+        ],
+        title: InkWell(
+          onTap: () => context.push('/profile/${widget.otherId}'),
+          child: Row(
+            children: [
+              NimzoAvatar(
+                name: other?.displayName ?? 'N',
+                size: 36,
+                url: avatar == null
+                    ? null
+                    : ref
+                        .watch(supabaseProvider)
+                        .storage
+                        .from('avatars')
+                        .getPublicUrl(avatar),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  other?.displayName ?? other?.username ?? 'Conversation',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: AsyncContent(
+                value: ref.watch(chatProvider(widget.otherId)),
+                onRetry: () => ref.invalidate(chatProvider(widget.otherId)),
+                builder: (messages) => ListView(
+                  reverse: true,
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    for (final m in messages.reversed)
+                      Align(
+                        alignment: m.senderId == me
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 11,
+                            vertical: 7,
+                          ),
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.sizeOf(context).width * .8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: m.senderId == me ? null : NimzoStyle.surface,
+                            gradient:
+                                m.senderId == me ? NimzoStyle.gradient : null,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                m.body ?? '',
+                                style: TextStyle(
+                                  color: m.senderId == me
+                                      ? Colors.white
+                                      : NimzoStyle.ink,
+                                ),
+                              ),
+                              Text(
+                                '${m.createdAt.toLocal().hour}:${m.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: m.senderId == me
+                                      ? Colors.white70
+                                      : NimzoStyle.muted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: body,
+                      maxLength: 1000,
+                      decoration: const InputDecoration(
+                        hintText: 'Message…',
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        counterText: '',
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: busy ? null : send,
+                    tooltip: 'Send',
+                    icon: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: NimzoStyle.gradient,
+                      ),
+                      child: const ReferenceIcon('send', color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

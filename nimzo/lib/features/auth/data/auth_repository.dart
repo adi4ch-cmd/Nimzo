@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
+
 import '../../../core/errors/error_handler.dart';
 import '../domain/auth_user.dart';
 import 'auth_service.dart';
@@ -10,7 +11,10 @@ class AuthRepository {
   AuthUser? _map(User? u) => u == null
       ? null
       : AuthUser(
-          id: u.id, email: u.email, emailVerified: u.emailConfirmedAt != null);
+          id: u.id,
+          email: u.email,
+          emailVerified: u.emailConfirmedAt != null,
+        );
 
   Stream<AuthUser?> watch() => _s.changes.map((e) => _map(e.session?.user));
   AuthUser? getCurrentUser() => _map(_s.currentUser);

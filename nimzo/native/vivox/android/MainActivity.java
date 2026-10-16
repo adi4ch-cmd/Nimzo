@@ -17,10 +17,19 @@ public class MainActivity extends FlutterActivity {
   private static final int AUDIO_PERMISSION = 4107;
   private final ExecutorService voiceWorker = Executors.newSingleThreadExecutor();
   private MethodChannel.Result permissionResult;
+  private NimzoUpdate appUpdates;
 
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
     super.configureFlutterEngine(flutterEngine);
+    appUpdates = new NimzoUpdate(this);
+    new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "nimzo/app_update")
+        .setMethodCallHandler((call, result) -> {
+          if (!call.method.equals("downloadAndInstall")) { result.notImplemented(); return; }
+          appUpdates.download(call.argument("url"), call.argument("sha256"),
+              call.argument("signingCertificateSha256"), call.argument("packageName"),
+              call.argument("buildNumber"), result);
+        });
     MethodChannel channel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL);
     channel.setMethodCallHandler((call, result) -> {
       if (call.method.equals("requestMicPermission")) {
@@ -43,14 +52,19 @@ public class MainActivity extends FlutterActivity {
           Object value;
           switch (call.method) {
             case "initialize":
-              value = NimzoVivox.initialize(this, call.argument("server"), (event, status, detail) -> {
-                HashMap<String, Object> payload = new HashMap<>();
-                payload.put("detail", detail);
-                payload.put("status", status);
-                runOnUiThread(() -> channel.invokeMethod(event, payload));
+              // JNI resolves this callback by name. An explicit implementation
+              // lets the R8 keep rule retain its method in release builds.
+              value = NimzoVivox.initialize(this, call.argument("server"), new NimzoVivox.Listener() {
+                @Override
+                public void onVivoxEvent(String event, int status, String detail) {
+                  HashMap<String, Object> payload = new HashMap<>();
+                  payload.put("detail", detail);
+                  payload.put("status", status);
+                  runOnUiThread(() -> channel.invokeMethod(event, payload));
+                }
               });
               break;
-            case "join": value = NimzoVivox.join(call.argument("loginToken"), call.argument("channelToken"), call.argument("channelUri")); break;
+            case "join": value = NimzoVivox.join(call.argument("loginToken"), call.argument("channelToken"), call.argument("channelUri"), call.argument("accountName")); break;
             case "setMic": value = NimzoVivox.setMic(Boolean.TRUE.equals(call.argument("enabled"))); break;
             case "setSpeaker": value = NimzoVivox.setSpeaker(Boolean.TRUE.equals(call.argument("enabled"))); break;
             case "leave": value = NimzoVivox.leave(); break;
@@ -60,7 +74,13 @@ public class MainActivity extends FlutterActivity {
           Object response = value;
           runOnUiThread(() -> result.success(response));
         } catch (Throwable t) {
-          runOnUiThread(() -> result.error("VIVOX_NATIVE", t.getMessage(), null));
+          // Exception messages may contain credentials. Retain only the stage
+          // and exception class so failures are actionable without token leaks.
+          HashMap<String, Object> diagnostic = new HashMap<>();
+          diagnostic.put("stage", call.method);
+          diagnostic.put("type", t.getClass().getSimpleName());
+          android.util.Log.e("NimzoVivox", call.method + " failed (" + t.getClass().getSimpleName() + ")");
+          runOnUiThread(() -> result.error("VIVOX_NATIVE", "Native voice operation failed", diagnostic));
         }
       });
     });
@@ -76,7 +96,14 @@ public class MainActivity extends FlutterActivity {
   }
 
   @Override
+  protected void onResume() {
+    super.onResume();
+    if (appUpdates != null) appUpdates.onResume();
+  }
+
+  @Override
   protected void onDestroy() {
+    if (appUpdates != null) appUpdates.destroy();
     voiceWorker.execute(() -> { NimzoVivox.leave(); NimzoVivox.shutdown(); });
     voiceWorker.shutdown();
     if (permissionResult != null) { permissionResult.success(false); permissionResult = null; }

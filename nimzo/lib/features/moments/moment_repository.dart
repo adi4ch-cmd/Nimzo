@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/errors/error_handler.dart';
+import '../gifts/gift_error.dart';
 import '../../core/providers/supabase_provider.dart';
 
 class Moment {
@@ -21,15 +22,15 @@ class Moment {
     required this.createdAt,
   });
   factory Moment.fromJson(Map<String, dynamic> j) => Moment(
-    id: j['id'],
-    authorId: j['author_id'],
-    text: j['body'],
-    imagePath: j['image_path'],
-    likes: (j['like_count'] as num?)?.toInt() ?? 0,
-    comments: (j['comment_count'] as num?)?.toInt() ?? 0,
-    liked: j['liked'] ?? false,
-    createdAt: DateTime.parse(j['created_at']),
-  );
+        id: j['id'],
+        authorId: j['author_id'],
+        text: j['body'],
+        imagePath: j['image_path'],
+        likes: (j['like_count'] as num?)?.toInt() ?? 0,
+        comments: (j['comment_count'] as num?)?.toInt() ?? 0,
+        liked: j['liked'] ?? false,
+        createdAt: DateTime.parse(j['created_at']),
+      );
 }
 
 class MomentRepository {
@@ -74,11 +75,11 @@ class MomentRepository {
       final like = userId == null
           ? null
           : await _db
-                .from('moment_likes')
-                .select('user_id')
-                .eq('moment_id', id)
-                .eq('user_id', userId)
-                .maybeSingle();
+              .from('moment_likes')
+              .select('user_id')
+              .eq('moment_id', id)
+              .eq('user_id', userId)
+              .maybeSingle();
       return Moment.fromJson({
         ...row,
         'liked': like != null,
@@ -108,7 +109,9 @@ class MomentRepository {
           .from('moments')
           .update({'body': text, 'image_path': imagePath})
           .eq('id', id)
-          .eq('author_id', _db.auth.currentUser!.id);
+          .eq('author_id', _db.auth.currentUser!.id)
+          .select('id')
+          .single();
     } catch (e) {
       throw mapError(e);
     }
@@ -118,7 +121,15 @@ class MomentRepository {
       _db.rpc('toggle_like', params: {'p_moment': id});
   Future<void> delete(String id) async {
     try {
-      await _db.from('moments').delete().eq('id', id);
+      final uid = _db.auth.currentUser?.id;
+      if (uid == null) throw StateError('Please sign in again.');
+      await _db
+          .from('moments')
+          .delete()
+          .eq('id', id)
+          .eq('author_id', uid)
+          .select('id')
+          .single();
     } catch (e) {
       throw mapError(e);
     }
@@ -173,13 +184,13 @@ class MomentRepository {
         },
       );
     } catch (e) {
-      throw mapError(e);
+      throw mapGiftError(e);
     }
   }
 }
 
 final momentRepositoryProvider = Provider(
-  (ref) => MomentRepository(ref.watch(supabaseProvider)),
+  (ref) => MomentRepository(ref.watch(sessionSupabaseProvider).client),
 );
 final momentsFeedProvider = FutureProvider(
   (ref) => ref.watch(momentRepositoryProvider).feed(),

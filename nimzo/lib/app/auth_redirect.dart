@@ -6,6 +6,7 @@ String? authRedirect({
   required AuthUser? user,
   required bool loading,
   required bool recovering,
+  bool profileReady = true,
 }) {
   if (loading) return location == Routes.splash ? null : Routes.splash;
   if (recovering && user != null)
@@ -22,10 +23,11 @@ String? authRedirect({
   }
   if (!user.emailVerified)
     return location == Routes.verify ? null : Routes.verify;
+  if (!profileReady)
+    return location == Routes.profileSetup ? null : Routes.profileSetup;
   if (location == Routes.splash ||
       public.contains(location) ||
       location == Routes.verify ||
-      location == Routes.updatePassword)
-    return Routes.home;
+      location == Routes.updatePassword) return Routes.home;
   return null;
 }

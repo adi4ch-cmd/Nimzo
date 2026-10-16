@@ -45,7 +45,16 @@ class ProfileRepository {
         if (gender != null) 'gender': gender,
       };
       if (m.isEmpty) return;
-      await _db.from('profiles').update(m).eq('id', _db.auth.currentUser!.id);
+      final id = _db.auth.currentUser?.id;
+      if (id == null) throw StateError('Please sign in again.');
+      final saved = await _db
+          .from('profiles')
+          .update(m)
+          .eq('id', id)
+          .select('id')
+          .maybeSingle();
+      if (saved == null)
+        throw StateError('Profile was not saved. Please retry.');
     } catch (e) {
       throw mapError(e);
     }
@@ -82,18 +91,42 @@ class ProfileRepository {
 
   Future<List<Profile>> search(String q) async {
     try {
-      final id = int.tryParse(q);
+      final term = q.trim();
+      if (term.isEmpty) return [];
+      final id = int.tryParse(term);
+      // Do not interpolate untrusted text into a PostgREST .or() filter.
+      // The punctuation in that syntax could otherwise change the filter.
       final rows = id != null
           ? await _db.from('profiles').select().eq('nimzo_id', id).limit(20)
-          : await _db
-                .from('profiles')
-                .select()
-                .ilike('country_name', '%$q%')
-                .limit(20);
+          : await _searchByName(term);
       return rows.map(Profile.fromJson).toList();
     } catch (e) {
       throw mapError(e);
     }
+  }
+
+  Future<List<Map<String, dynamic>>> _searchByName(String term) async {
+    // Escape SQL LIKE wildcards so literal user input does not broaden results.
+    final escaped = term
+        .replaceAll(r'\', r'\\')
+        .replaceAll('%', r'\%')
+        .replaceAll('_', r'\_');
+    final usernameRows = await _db
+        .from('profiles')
+        .select()
+        .ilike('username', '%$escaped%')
+        .limit(20);
+    final nameRows = await _db
+        .from('profiles')
+        .select()
+        .ilike('display_name', '%$escaped%')
+        .limit(20);
+    final unique = <String, Map<String, dynamic>>{};
+    for (final row in [...usernameRows, ...nameRows]) {
+      unique[row['id'] as String] = row;
+      if (unique.length >= 20) break;
+    }
+    return unique.values.toList();
   }
 
   Future<List<Map<String, dynamic>>> gifts(String id) async {
@@ -111,8 +144,6 @@ class ProfileRepository {
       if (profile.wealthLevel > 1) 'Wealth level ${profile.wealthLevel}',
       if (profile.charmLevel > 1) 'Charm level ${profile.charmLevel}',
       if (profile.activeLevel > 1) 'Activity level ${profile.activeLevel}',
-      if (profile.vipLevel > 0) 'VIP level ${profile.vipLevel}',
-      if (profile.svipLevel > 0) 'SVIP level ${profile.svipLevel}',
     ];
   }
 
@@ -125,7 +156,7 @@ class ProfileRepository {
 }
 
 final profileRepositoryProvider = Provider(
-  (ref) => ProfileRepository(ref.watch(supabaseProvider)),
+  (ref) => ProfileRepository(ref.watch(sessionSupabaseProvider).client),
 );
 final profileProvider = FutureProvider.family<Profile, String>(
   (ref, id) => ref.watch(profileRepositoryProvider).get(id),
@@ -138,20 +169,20 @@ final profileTagsProvider = FutureProvider.family<List<String>, String>(
 );
 final profileCoupleProvider =
     FutureProvider.family<Map<String, dynamic>?, String>(
-      (ref, id) => ref.watch(profileRepositoryProvider).couple(id),
-    );
+  (ref, id) => ref.watch(profileRepositoryProvider).couple(id),
+);
 final profileModelsProvider =
     FutureProvider.family<List<Map<String, dynamic>>, String>(
-      (ref, id) => ref.watch(profileRepositoryProvider).models(id),
-    );
+  (ref, id) => ref.watch(profileRepositoryProvider).models(id),
+);
 
 final profileMomentsProvider = FutureProvider.family<List<Moment>, String>(
   (ref, id) => ref.watch(momentRepositoryProvider).byAuthor(id),
 );
 final profileGiftsProvider =
     FutureProvider.family<List<Map<String, dynamic>>, String>(
-      (ref, id) => ref.watch(profileRepositoryProvider).gifts(id),
-    );
+  (ref, id) => ref.watch(profileRepositoryProvider).gifts(id),
+);
 final profileAchievementsProvider = FutureProvider.family<List<String>, String>(
   (ref, id) => ref.watch(profileRepositoryProvider).achievements(id),
 );

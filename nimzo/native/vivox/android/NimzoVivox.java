@@ -23,8 +23,8 @@ public final class NimzoVivox {
     return nativeInit(listener, accountManagementServer);
   }
 
-  public static int join(String loginToken, String channelToken, String channelUri) {
-    return nativeLoginAndJoin(loginToken, channelToken, channelUri);
+  public static int join(String loginToken, String channelToken, String channelUri, String accountName) {
+    return nativeLoginAndJoin(loginToken, channelToken, channelUri, accountName);
   }
 
   public static int setMic(boolean enabled) { return nativeSetMic(enabled); }
@@ -33,7 +33,7 @@ public final class NimzoVivox {
   public static void shutdown() { nativeShutdown(); }
 
   private static native boolean nativeInit(Listener listener, String server);
-  private static native int nativeLoginAndJoin(String loginToken, String channelToken, String channelUri);
+  private static native int nativeLoginAndJoin(String loginToken, String channelToken, String channelUri, String accountName);
   private static native int nativeSetMic(boolean enabled);
   private static native int nativeSetSpeaker(boolean enabled);
   private static native int nativeLeave();

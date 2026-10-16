@@ -1,0 +1,63 @@
+name: NIMZO original Private Jet artwork install (NO APK)
+on:
+  push:
+    branches:
+      - feature/profile-reference-redesign
+    paths:
+      - NIMZO_Private_Jet_Premium_Artwork.zip
+      - tools/install_private_jet_premium.py
+      - .github/workflows/nimzo-private-jet-install.yml
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nimzo-private-jet-install
+  cancel-in-progress: false
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/profile-reference-redesign
+      - name: Locate approved NIMZO premium artwork
+        id: art
+        shell: bash
+        run: |
+          if test -s NIMZO_Private_Jet_Premium_Artwork.zip; then
+            echo 'ready=yes' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=no' >> "$GITHUB_OUTPUT"
+            echo 'Waiting for original Private Jet ZIP on correct branch.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Verify and install photo-realistic original media
+        if: steps.art.outputs.ready == 'yes'
+        run: python3 tools/install_private_jet_premium.py
+      - uses: subosito/flutter-action@v2
+        if: steps.art.outputs.ready == 'yes'
+        with:
+          flutter-version: 3.47.6
+          channel: stable
+          cache: true
+      - name: Analyze and run all Flutter regressions (no APK)
+        if: steps.art.outputs.ready == 'yes'
+        working-directory: nimzo
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+      - name: Commit verified Private Jet image without triggering an APK
+        if: steps.art.outputs.ready == 'yes'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nimzo/assets/gifts/premium/private_jet.webp
+          git rm -- NIMZO_Private_Jet_Premium_Artwork.zip
+          git diff --cached --check
+          git diff --cached --quiet && exit 0
+          git commit -m 'assets(gifts): install commissioned NIMZO Private Jet photo-real artwork (no APK)'
+          git push origin HEAD:feature/profile-reference-redesign
