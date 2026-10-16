@@ -22,6 +22,22 @@ REVOKE ALL ON TABLE nimzo_private.charm_progress_repair_backup_v1
 ALTER TABLE nimzo_private.charm_progress_repair_backup_v1
   ENABLE ROW LEVEL SECURITY;
 
+-- Keep the original trigger definition for a reversible, auditable repair.
+CREATE TABLE IF NOT EXISTS nimzo_private.charm_progress_trigger_backup_v1 (
+  function_name text PRIMARY KEY,
+  definition text NOT NULL,
+  captured_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);
+REVOKE ALL ON TABLE nimzo_private.charm_progress_trigger_backup_v1
+  FROM PUBLIC, anon, authenticated;
+ALTER TABLE nimzo_private.charm_progress_trigger_backup_v1
+  ENABLE ROW LEVEL SECURITY;
+INSERT INTO nimzo_private.charm_progress_trigger_backup_v1
+  (function_name, definition)
+SELECT 'public.track_lifetime_events()',
+  pg_get_functiondef('public.track_lifetime_events()'::regprocedure)
+ON CONFLICT (function_name) DO NOTHING;
+
 -- Preserve pre-repair values before changing any account counter.
 -- No ledger/purchase/wallet rows are modified.
 INSERT INTO nimzo_private.charm_progress_repair_backup_v1
