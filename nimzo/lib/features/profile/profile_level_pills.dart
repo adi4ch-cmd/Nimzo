@@ -29,8 +29,8 @@ class ProfileLevelPill extends StatelessWidget {
       label: '$label level ${level > 0 ? level : 'unavailable'}',
       child: Container(
         key: ValueKey('profile-level-pill-$kind'),
-        constraints: const BoxConstraints(minHeight: 25),
-        padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 12, vertical: 3),
+        constraints: const BoxConstraints(minHeight: 22, maxHeight: 25),
+        padding: EdgeInsets.symmetric(horizontal: compact ? 7 : 10, vertical: 2),
         decoration: BoxDecoration(
           color: tint,
           borderRadius: BorderRadius.circular(16),
@@ -40,8 +40,8 @@ class ProfileLevelPill extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: compact ? 14 : 16, color: Colors.white),
-            const SizedBox(width: 4),
+            Icon(icon, size: compact ? 12 : 14, color: Colors.white),
+            const SizedBox(width: 3),
             Text(
               level > 0 ? '$level' : '—',
               maxLines: 1,
