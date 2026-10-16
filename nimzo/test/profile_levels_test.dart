@@ -32,6 +32,40 @@ void main() {
       expect(LevelBadge.color(2, entry.key), ProfileLevelScale.color(2, entry.key));
     }
   });
+  testWidgets('Level screen uses the actual Charm and Active palette names',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        currentUserIdProvider.overrideWithValue('u'),
+        profileProvider('u').overrideWith((_) async => const Profile(
+          id: 'u',
+          nimzoId: 100001,
+          wealthLevel: 1,
+          charmLevel: 1,
+          activeLevel: 1,
+          wealthCoins: 0,
+          charmDiamonds: 0,
+          activePoints: 0,
+        )),
+      ],
+      child: const MaterialApp(home: LevelsScreen(initialKind: 1, userId: 'u')),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text('Charm level · Blue'), findsOneWidget);
+    expect(find.textContaining('100 to next level'), findsOneWidget);
+    await tester.tap(find.text('Active'));
+    await tester.pumpAndSettle();
+    expect(find.text('Active level · Red'), findsOneWidget);
+    await tester.tap(find.text('Wealth'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tier: Brown'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   for (var kind = 0; kind < 3; kind++) {
     testWidgets('Me badge $kind opens corresponding details', (tester) async {
       tester.view.physicalSize = const Size(390, 844);
