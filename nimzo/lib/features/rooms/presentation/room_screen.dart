@@ -309,7 +309,8 @@ class _State extends ConsumerState<RoomScreen> {
                     child: Row(
                       children: [
                         ReferenceRoomAvatar(
-                          size: 38,
+                          key: const ValueKey('room-header-avatar'),
+                          size: 48,
                           url: room.valueOrNull?.avatarPath == null
                               ? null
                               : ref
@@ -351,15 +352,24 @@ class _State extends ConsumerState<RoomScreen> {
                     Padding(
                       padding: const EdgeInsets.only(right: 12),
                       child: Center(
-                        child: Text(
-                          compactNumber(
-                            room.valueOrNull?.lifetimeGiftCoins ?? 0,
-                          ),
-                          style: const TextStyle(
-                            color: NimzoStyle.pink,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.emoji_events_rounded,
+                              size: 17, color: Color(0xffd6a542)),
+                            const SizedBox(width: 4),
+                            Text(
+                              compactNumber(
+                                room.valueOrNull?.lifetimeGiftCoins ?? 0,
+                              ),
+                              key: const ValueKey('room-header-total-gifting'),
+                              style: const TextStyle(
+                                color: Color(0xffd6a542),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
