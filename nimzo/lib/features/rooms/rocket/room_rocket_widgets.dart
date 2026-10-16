@@ -283,7 +283,7 @@ class _RocketStageTile extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 23, height: 28,
+            width: 18, height: 24,
             child: Image.asset(
               'assets/room_rocket/posters/rocket_stage_${stage + 1}.png',
               fit: BoxFit.contain,
@@ -292,7 +292,7 @@ class _RocketStageTile extends StatelessWidget {
           const SizedBox(width: 3),
           Text('Lv' + (stage + 1).toString(),
             style: const TextStyle(
-              fontSize: 13, color: Colors.white,
+              fontSize: 12, color: Colors.white,
               fontWeight: FontWeight.w800,
             )),
         ],
