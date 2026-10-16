@@ -269,8 +269,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       children: [
                         for (var kind = 0; kind < 3; kind++) ...[
                           if (kind > 0) const SizedBox(width: 6),
-                          Expanded(
-                            child: InkWell(
+                          InkWell(
                               key: ValueKey('profile-level-$kind'),
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -289,7 +288,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 ][kind],
                                 compact: true,
                               ),
-                            ),
                           ),
                         ],
                       ],
