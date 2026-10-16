@@ -13,6 +13,7 @@ import 'profile_presentation.dart';
 import 'profile_level_pills.dart';
 import 'levels_screen.dart';
 import '../store/store_badge.dart';
+import '../membership/royal_membership_badge.dart';
 
 class MeScreen extends ConsumerWidget {
   const MeScreen({super.key});
@@ -101,6 +102,7 @@ class MeScreen extends ConsumerWidget {
                                     compact: true,
                                     onDark: true,
                                   ),
+                                  RoyalIdentityBadge(userId: id),
                                   if (p.dateOfBirth != null)
                                     Container(
                                       padding: const EdgeInsets.symmetric(
@@ -231,6 +233,12 @@ class MeScreen extends ConsumerWidget {
                 offset: const Offset(0, -28),
                 child: Column(
                   children: [
+                    const _MenuRow(
+                      items: [
+                        ('VIP', 'crown_filled', '/vip'),
+                        ('SVIP', 'crown_filled', '/svip'),
+                      ],
+                    ),
                     const _MenuRow(
                       items: [
                         ('Task', 'task', '/info/Task'),
