@@ -536,10 +536,10 @@ class _State extends ConsumerState<GiftSheet> {
     final highlighted = selected?.id == gift.id;
     final realAnimation = freeGiftAnimationForName(gift.name) != null;
     final accent = gift.category.toLowerCase() == 'dragon'
-        ? const Color(0xffffd08a)
+        ? NimzoStyle.orange
         : gift.price >= 1000000
-            ? const Color(0xffd6b8ff)
-            : const Color(0xffa8e3cb);
+            ? const Color(0xffd5b3ff)
+            : const Color(0xffffaad7);
     return Semantics(
       label:
           '${gift.name}, ${gift.price} coins${realAnimation ? ', original animated gift' : ''}',
@@ -561,16 +561,16 @@ class _State extends ConsumerState<GiftSheet> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: highlighted
-                  ? const [Color(0xff264b3e), Color(0xff0f2929)]
-                  : const [Color(0xff1b2831), Color(0xff111923)],
+                  ? const [Color(0xff6628cf), Color(0xff39206e)]
+                  : const [Color(0xff291a4f), Color(0xff160f30)],
             ),
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
               color: highlighted
-                  ? const Color(0xff6fdda9)
+                  ? NimzoStyle.pink
                   : legendary
-                      ? const Color(0xffd8b26c)
-                      : const Color(0xff374550),
+                      ? NimzoStyle.orange
+                      : const Color(0xff6c5299),
               width: highlighted ? 1.5 : 1,
             ),
           ),
@@ -582,7 +582,7 @@ class _State extends ConsumerState<GiftSheet> {
                   children: [
                     DecoratedBox(
                       decoration: BoxDecoration(
-                        color: const Color(0xff24343a),
+                        color: const Color(0xff382263),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
@@ -599,7 +599,7 @@ class _State extends ConsumerState<GiftSheet> {
                         right: 2,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: const Color(0xff0d573f),
+                            color: NimzoStyle.royal,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Padding(
@@ -618,7 +618,7 @@ class _State extends ConsumerState<GiftSheet> {
                         bottom: 3,
                         right: 3,
                         child: Icon(Icons.check_circle,
-                            color: Color(0xff7df1bd), size: 19),
+                            color: NimzoStyle.pink, size: 19),
                       ),
                   ],
                 ),
