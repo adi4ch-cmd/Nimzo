@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/rooms/diamond/room_diamond_repository.dart';
 import 'package:nimzo/features/rooms/rocket/room_rocket_playback.dart';
+import 'package:nimzo/features/rooms/rocket/room_rocket_leaderboard.dart';
 import 'package:nimzo/features/rooms/rocket/room_rocket_widgets.dart';
 
 void main() {
@@ -39,6 +40,7 @@ void main() {
     await tester.pumpWidget(ProviderScope(
       overrides: [
         roomDiamondStatusProvider('room').overrideWith((_) async => current),
+        roomRocketLeaderboardProvider('room').overrideWith((_) async => []),
       ],
       child: const MaterialApp(home: Scaffold(
         body: SingleChildScrollView(child: RoomRocketSheet(roomId: 'room')),
@@ -53,6 +55,18 @@ void main() {
     expect(tester.widget<LinearProgressIndicator>(
       find.byType(LinearProgressIndicator),
     ).value, .5);
+    expect(find.byKey(const ValueKey('six-rocket-selector')), findsOneWidget);
+    expect(find.byKey(const ValueKey('rocket-stage-0')), findsOneWidget);
+    expect(find.byKey(const ValueKey('rocket-stage-5')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('rocket-stage-5')));
+    await tester.pumpAndSettle();
+    expect(find.text('ROCKET 6'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('rocket-rewards-tab')));
+    await tester.pumpAndSettle();
+    for (var rank = 1; rank <= 3; rank++) {
+      expect(find.byKey(ValueKey('rocket-reward-rank-$rank')), findsOneWidget);
+    }
+    expect(find.text('Prize not configured'), findsNWidgets(3));
     expect(tester.takeException(), isNull);
   });
 
