@@ -15,6 +15,7 @@ import '../social/friend_button.dart';
 import 'profile_repository.dart';
 import 'levels_screen.dart';
 import 'profile_level_scale.dart';
+import 'profile_level_pills.dart';
 import 'profile_membership_status.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
@@ -285,18 +286,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   ),
                                 ),
                               ),
-                              child: ProfileProgressBadge(
+                              child: ProfileLevelPill(
                                 kind: kind,
                                 level: [
                                   p.wealthLevel,
                                   p.charmLevel,
                                   p.activeLevel,
                                 ][kind],
-                                total: [
-                                  p.wealthCoins,
-                                  p.charmDiamonds,
-                                  p.activePoints,
-                                ][kind],
+                                compact: true,
                               ),
                             ),
                           ),
