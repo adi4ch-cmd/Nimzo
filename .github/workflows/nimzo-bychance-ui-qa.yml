@@ -1,9 +1,6 @@
 name: NIMZO ByChance-Inspired UI QA
 
 on:
-  push:
-    branches:
-      - feature/bychance-inspired-ui-20261016
   pull_request:
     branches:
       - feature/profile-reference-redesign
