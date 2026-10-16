@@ -5,136 +5,409 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/reference_widgets.dart';
+import '../../../core/providers/supabase_provider.dart';
 import '../diamond/room_diamond_repository.dart';
+import 'room_rocket_leaderboard.dart';
 import 'room_rocket_playback.dart';
 
-// Previous cumulative targets remain unchanged. Never rewrite settled gifts.
+// Six existing server milestones and twelve original transparent VAP clips.
+// Do not change targets or charge/grant anything from this screen.
 const roomRocketTargets = diamondTargets;
-
 const _rocketTones = [
-  Color(0xff6ae4bb), Color(0xff55c7ee), Color(0xffaf9bff),
-  Color(0xffffab75), Color(0xffffd76c), Color(0xffffefa4),
+  Color(0xff35cd9f), Color(0xff42c4f1), Color(0xff9b84f5),
+  Color(0xffff986c), Color(0xffffc851), Color(0xffffdd82),
 ];
+const _rocketNavy = Color(0xff101b34);
 
-class RoomRocketSheet extends ConsumerWidget {
+class RoomRocketSheet extends ConsumerStatefulWidget {
   const RoomRocketSheet({super.key, this.roomId});
   final String? roomId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final id = roomId;
+  ConsumerState<RoomRocketSheet> createState() => _RoomRocketSheetState();
+}
+
+class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
+  int? selectedStage;
+  bool showRewards = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final id = widget.roomId;
     final status = id == null ? null : ref.watch(roomDiamondStatusProvider(id));
     final current = status?.valueOrNull;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Text('ROOM ROCKET', style: TextStyle(
-          fontWeight: FontWeight.w900, fontSize: 20,
-          letterSpacing: 1.4,
-        )),
-        const SizedBox(height: 6),
-        const Text('Gift together to launch six rocket levels',
-            style: TextStyle(color: NimzoStyle.muted, fontSize: 12)),
-        const SizedBox(height: 16),
-        Wrap(
-          spacing: 8, runSpacing: 12, alignment: WrapAlignment.center,
-          children: [
-            for (var stage = 0; stage < 6; stage++)
-              _RocketLevelIcon(
-                stage: stage,
-                completed: current != null && stage < current.completedStages,
-                active: current == null || stage <= current.activeStage,
+    final selection = (selectedStage ?? current?.activeStage ?? 0)
+        .clamp(0, roomRocketTargets.length - 1);
+    final color = _rocketTones[selection];
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * .77,
+      ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('ROOM ROCKET', style: TextStyle(
+                color: _rocketNavy, fontSize: 20,
+                fontWeight: FontWeight.w900, letterSpacing: 1,
+              )),
+              const SizedBox(height: 4),
+              const Text('Gift together to launch six rocket levels',
+                style: TextStyle(color: NimzoStyle.muted, fontSize: 12)),
+              const SizedBox(height: 12),
+              Container(
+                key: const ValueKey('six-rocket-selector'),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: _rocketNavy,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (var stage = roomRocketTargets.length - 1;
+                             stage >= 0; stage--)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 5),
+                            child: _RocketStageTile(
+                              stage: stage,
+                              selected: stage == selection,
+                              completed: current != null &&
+                                  stage < current.completedStages,
+                              onTap: () => setState(() {
+                                selectedStage = stage;
+                              }),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text('ROCKET ' + (selection + 1).toString(),
+                            style: TextStyle(
+                              color: color, fontSize: 15,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1,
+                            )),
+                          const SizedBox(height: 7),
+                          Container(
+                            key: const ValueKey('selected-rocket-artwork'),
+                            height: 204,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(22),
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  color.withValues(alpha: .23),
+                                  const Color(0xff16203b),
+                                ],
+                              ),
+                              border: Border.all(color: color.withValues(alpha: .45)),
+                            ),
+                            child: Image.asset(
+                              'assets/gifts/free/rocket.png',
+                              width: 146, height: 170,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) =>
+                                  Icon(Icons.rocket_launch_rounded,
+                                    color: color, size: 100),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(compactNumber(roomRocketTargets[selection]) +
+                              ' cumulative coins',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w700,
+                              fontSize: 11,
+                            )),
+                          const SizedBox(height: 3),
+                          Text(
+                            current == null ? 'Waiting for verified status' :
+                            selection < current.completedStages
+                                ? 'Completed'
+                                : selection == current.activeStage
+                                    ? 'Current milestone'
+                                    : 'Not reached',
+                            style: TextStyle(color: color, fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-          ],
-        ),
-        const SizedBox(height: 18),
-        if (id == null)
-          const EmptyContent('Join a room to view Rocket progress.')
-        else
-          AsyncContent(
-            value: status!,
-            onRetry: () => ref.invalidate(roomDiamondStatusProvider(id)),
-            builder: (state) => Column(
-              children: [
-                Text(compactNumber(state.totalCoins) + ' gifted in this room today',
-                  style: const TextStyle(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: LinearProgressIndicator(
-                    value: state.progress,
-                    backgroundColor: NimzoStyle.line,
-                    color: _rocketTones[state.activeStage],
-                    minHeight: 10,
+              const SizedBox(height: 12),
+              if (id == null)
+                const EmptyContent('Join a room to view Rocket progress.')
+              else
+                AsyncContent(
+                  value: status!,
+                  onRetry: () =>
+                      ref.invalidate(roomDiamondStatusProvider(id)),
+                  builder: (state) => Column(
+                    children: [
+                      Text(compactNumber(state.totalCoins) +
+                          ' gifted in this room today',
+                        style: const TextStyle(fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 9),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: LinearProgressIndicator(
+                          value: state.progress,
+                          backgroundColor: NimzoStyle.line,
+                          color: _rocketTones[state.activeStage],
+                          minHeight: 8,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        state.completedStages == roomRocketTargets.length
+                          ? 'All six Rocket levels completed!'
+                          : 'Rocket ' + (state.activeStage + 1).toString() +
+                            ' · ' +
+                            compactNumber(roomRocketTargets[state.activeStage]) +
+                            ' cumulative coins',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      const SizedBox(height: 3),
+                      _ResetCountdown(resetAt: state.resetAt,
+                        serverNow: state.serverNow),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                Text(state.completedStages == 6
-                  ? 'All six Rocket levels completed!'
-                  : 'Rocket ' + (state.activeStage + 1).toString() +
-                    ' · ' + compactNumber(roomRocketTargets[state.activeStage]) +
-                    ' cumulative coins',
-                  textAlign: TextAlign.center),
-              ],
-            ),
+              const SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color: _rocketNavy,
+                ),
+                child: Row(
+                  children: [
+                    for (final tab in [false, true])
+                      Expanded(
+                        child: TextButton(
+                          key: ValueKey(tab
+                              ? 'rocket-rewards-tab' : 'rocket-ranking-tab'),
+                          onPressed: () =>
+                              setState(() => showRewards = tab),
+                          child: Text(
+                            tab ? 'Rewards Top 1–3' : 'Gifting Top 1–3',
+                            style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w800,
+                              color: showRewards == tab
+                                  ? _rocketTones[4] : Colors.white54,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              if (showRewards)
+                const _RocketRewardsPanel()
+              else if (id == null)
+                const EmptyContent('Join a room to view real gifting rankings.')
+              else
+                AsyncContent(
+                  value: ref.watch(roomRocketLeaderboardProvider(id)),
+                  onRetry: () =>
+                      ref.invalidate(roomRocketLeaderboardProvider(id)),
+                  builder: (leaders) => leaders.isEmpty
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Text('No verified room gifts in this cycle yet.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: NimzoStyle.muted)),
+                      )
+                    : Column(
+                        children: [
+                          for (final leader in leaders)
+                            _RocketPodiumItem(leader: leader),
+                        ],
+                      ),
+                ),
+              const SizedBox(height: 12),
+              const Text('Verified gifts only · no extra wallet rewards',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: NimzoStyle.muted, fontSize: 11)),
+              const Text('Daily reset · 11:00 p.m. Saudi time',
+                style: TextStyle(color: NimzoStyle.muted, fontSize: 11)),
+            ],
           ),
-        const SizedBox(height: 14),
-        const Text('Verified gifts only · no extra wallet rewards',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: NimzoStyle.muted, fontSize: 12)),
-        const Text('Daily reset · 11:00 p.m. Saudi time',
-          style: TextStyle(color: NimzoStyle.muted, fontSize: 12)),
-      ],
+        ),
+      ),
     );
   }
 }
 
-class _RocketLevelIcon extends StatelessWidget {
-  const _RocketLevelIcon({
-    required this.stage, required this.completed, required this.active,
+class _RocketStageTile extends StatelessWidget {
+  const _RocketStageTile({
+    required this.stage, required this.selected,
+    required this.completed, required this.onTap,
   });
   final int stage;
-  final bool completed, active;
+  final bool selected, completed;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => AnimatedOpacity(
-    opacity: active ? 1 : .35,
-    duration: const Duration(milliseconds: 220),
-    child: SizedBox(
-      width: 68,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+  Widget build(BuildContext context) => InkWell(
+    key: ValueKey('rocket-stage-' + stage.toString()),
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(11),
+    child: Container(
+      width: 78, height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      decoration: BoxDecoration(
+        color: selected
+            ? _rocketTones[stage].withValues(alpha: .24)
+            : const Color(0xff28354e),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(
+          width: selected ? 2 : 1,
+          color: selected ? _rocketTones[stage] : Colors.white24,
+        ),
+      ),
+      child: Row(
         children: [
-          Stack(alignment: Alignment.center, children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                color: const Color(0xff102a28),
-                border: Border.all(color: _rocketTones[stage]),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Icon(Icons.rocket_launch,
-                  size: 31, color: _rocketTones[stage]),
-              ),
-            ),
-            if (completed) const Positioned(
-              right: 0, bottom: 0,
-              child: Icon(Icons.check_circle, size: 17,
-                color: Color(0xff53db8c)),
-            ),
-          ]),
-          const SizedBox(height: 6),
-          Text('L' + (stage + 1).toString(), style: const TextStyle(
-            fontWeight: FontWeight.w800, fontSize: 12,
-          )),
-          Text(compactNumber(roomRocketTargets[stage]), style: const TextStyle(
-            fontSize: 10, color: NimzoStyle.muted,
-          )),
+          Icon(completed ? Icons.check_circle : Icons.rocket_launch_rounded,
+            color: _rocketTones[stage], size: 19),
+          const SizedBox(width: 3),
+          Text('Lv' + (stage + 1).toString(),
+            style: const TextStyle(
+              fontSize: 13, color: Colors.white,
+              fontWeight: FontWeight.w800,
+            )),
         ],
       ),
     ),
   );
+}
+
+class _RocketPodiumItem extends ConsumerWidget {
+  const _RocketPodiumItem({required this.leader});
+  final RoomRocketLeader leader;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accents = [
+      const Color(0xffdba926),
+      const Color(0xff8ba4bd),
+      const Color(0xffb78163),
+    ];
+    final accent = accents[leader.rank - 1];
+    final avatar = leader.avatarPath == null ? null : ref
+        .read(supabaseProvider)
+        .storage
+        .from('avatars')
+        .getPublicUrl(leader.avatarPath!);
+    return Container(
+      key: ValueKey('rocket-top-' + leader.rank.toString()),
+      margin: const EdgeInsets.only(bottom: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9),
+      decoration: BoxDecoration(
+        color: const Color(0xff172647),
+        borderRadius: BorderRadius.circular(13),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.emoji_events_rounded, color: accent, size: 22),
+          const SizedBox(width: 6),
+          Text(leader.rank.toString(),
+            style: TextStyle(
+              color: accent, fontWeight: FontWeight.w900,
+            )),
+          const SizedBox(width: 9),
+          NimzoAvatar(name: leader.displayName, url: avatar, size: 37),
+          const SizedBox(width: 9),
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(leader.displayName, maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.w700)),
+              Text('ID:' + leader.nimzoId.toString(),
+                style: const TextStyle(color: Colors.white60, fontSize: 10)),
+            ],
+          )),
+          const SizedBox(width: 5),
+          Text(compactNumber(leader.giftedCoins),
+            style: TextStyle(color: accent, fontWeight: FontWeight.w900)),
+        ],
+      ),
+    );
+  }
+}
+
+class _RocketRewardsPanel extends StatelessWidget {
+  const _RocketRewardsPanel();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      for (var rank = 1; rank <= 3; rank++)
+        Container(
+          key: ValueKey('rocket-reward-rank-' + rank.toString()),
+          margin: const EdgeInsets.only(bottom: 7),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xff172647),
+            borderRadius: BorderRadius.circular(13),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.workspace_premium_rounded,
+                color: _rocketTones[rank + 2], size: 25),
+              const SizedBox(width: 10),
+              Text('Top ' + rank.toString(),
+                style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.w900)),
+              const Spacer(),
+              const Text('Prize not configured',
+                style: TextStyle(color: Colors.white70, fontSize: 11)),
+            ],
+          ),
+        ),
+      const Text(
+        'The six Rocket levels unlock animation milestones only. '
+        'Coin, car, frame or VIP prizes need a verified payout policy '
+        'before they can be awarded.',
+        textAlign: TextAlign.center,
+        style: TextStyle(color: NimzoStyle.muted, fontSize: 11),
+      ),
+    ],
+  );
+}
+
+class _ResetCountdown extends StatelessWidget {
+  const _ResetCountdown({required this.resetAt, required this.serverNow});
+  final DateTime resetAt, serverNow;
+
+  @override
+  Widget build(BuildContext context) {
+    final left = resetAt.difference(serverNow);
+    final safe = left.isNegative ? Duration.zero : left;
+    final hours = safe.inHours;
+    final minutes = safe.inMinutes.remainder(60).toString().padLeft(2, '0');
+    return Text('Reset countdown: ' + hours.toString() + ':' + minutes,
+      style: const TextStyle(
+        color: Color(0xffa87c2b), fontWeight: FontWeight.w700,
+        fontSize: 11,
+      ));
+  }
 }
 
 /// Uses the existing server-settled milestone event stream. The legacy
