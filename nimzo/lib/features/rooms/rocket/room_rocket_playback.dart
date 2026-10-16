@@ -134,7 +134,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
     if (!mounted || _finished) return;
     final controller = VapPlayerController.asset(
       path,
-      options: const VapPlayerOptions(
+      options: VapPlayerOptions(
         viewType: VapViewType.textureView,
         scaleType: VapScaleType.fitCenter,
         repeatCount: 0,
