@@ -183,3 +183,39 @@ final run published successfully from the current tip. Its one-off pinned
 artifact push trigger was removed after publication; normal dispatch again
 requires an explicit source/checksum manifest. App source was unchanged during
 these publication-only retries.
+
+
+## Compact APK delivery after repeated phone parsing errors
+
+The user continued seeing parsing errors. Their Files screenshot shows the
+latest download at 171 MB and another at 116 MB, versus the published artifact's
+202,578,183 bytes. This supports an incomplete-download diagnosis but does not
+prove the exact phone file contents. A 171 MB prefix of the original APK fails
+ZIP parsing locally; the full published APK passes. HTTP range reads beyond
+171 MB succeed, so no server-side truncation at that boundary was reproduced.
+
+The opt-in Test variant now uses AGP's compressed JNI packaging, with
+extractNativeLibs=true. All three ABIs remain. Comparing uncompressed ZIP
+entries against the previous APK finds only AndroidManifest.xml changed; every
+asset, class, resource and native library is identical. Compressed native
+libraries are extracted by Android during installation instead of being mapped
+directly from the APK. No feature asset was removed.
+
+New APK: 130,230,263 bytes (130 MB), reduced from 202,578,183 bytes.
+SHA-256: `508a143c5a8fca2a0cc0e2f7dfb88cd47cd12776eef2a4bb5495ffe9e7fc73bc`.
+Eleven Python tool tests and two Node publication tests pass. Full APK signature,
+ZIP/alignment, manifest, font license and three-ABI Vivox checks pass.
+
+Workflow `38940998503` successfully installed this exact compact APK on Android
+14 and 15, preserved a differently signed original app's UID, and verified
+20-second process survival. Published a distinct filename to avoid confusing
+it with prior incomplete downloads:
+https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-test-38940998503/nimzo-compact-test.apk
+
+Downloaded the first 1 MiB with an Android/Moto browser user agent, resumed the
+remaining bytes using HTTP Range (206, Content-Range
+1048576-130230262/130230263), and confirmed the complete byte count and SHA-256.
+No automatic updater metadata was published. The existing Test-app limitations
+still apply: separate package/local session, no real store payments, and no
+physical Moto G35 install confirmation. This is a verified packaging/delivery
+improvement, not a claim that the phone-specific error has been reproduced.
