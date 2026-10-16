@@ -20,6 +20,10 @@ void main() {
       expect(giftMatchesCategory('premium', 'PREMIUM'), isTrue);
       expect(giftMatchesCategory('classic', 'premium'), isFalse);
       expect(giftMatchesCategory('Dragon', 'All'), isTrue);
+      expect(giftMatchesCategory(
+        'premium', 'Cars', giftName: 'Sports Car'), isTrue);
+      expect(giftMatchesCategory(
+        'premium', 'Cars', giftName: 'Luxury Rose'), isFalse);
     },
   );
 }
