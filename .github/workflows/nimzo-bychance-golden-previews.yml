@@ -1,0 +1,38 @@
+name: NIMZO Updated Screen Previews
+
+on:
+  pull_request:
+    branches:
+      - feature/profile-reference-redesign
+
+permissions:
+  contents: read
+
+jobs:
+  generate-preview-artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.6"
+          channel: stable
+          cache: true
+      - name: Resolve Flutter dependencies
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Render new screenshot baselines WITHOUT committing them
+        working-directory: nimzo
+        run: >
+          flutter test --update-goldens
+          test/reference_preview_test.dart
+          test/master_visual_preview_test.dart
+          test/remaining_visual_qa_test.dart
+      - name: Save visual comparisons for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-bychance-screen-previews
+          path: nimzo/test/goldens/
+          if-no-files-found: error
