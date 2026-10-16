@@ -22,7 +22,7 @@ class _State extends ConsumerState<ProfileSetupScreen> {
       bio = TextEditingController(),
       language = TextEditingController();
   final form = GlobalKey<FormState>();
-  String? gender, countryCode, countryName, avatar, cover;
+  String? gender, countryCode, countryName, avatar, cover, existingAvatar;
   DateTime? dob;
   bool loaded = false, busy = false;
   String? failure;
@@ -42,6 +42,7 @@ class _State extends ConsumerState<ProfileSetupScreen> {
       bio.text = p.bio ?? '';
       language.text = p.language ?? '';
       setState(() {
+        existingAvatar = p.avatarPath;
         gender = p.gender;
         dob = p.dateOfBirth;
         countryCode = p.countryCode;
@@ -167,103 +168,192 @@ class _State extends ConsumerState<ProfileSetupScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(widget.edit ? 'Edit profile' : 'Set up your profile'),
+  static const _pageColor = Color(0xffe9f3ef);
+
+  Widget _section(Widget child) => Container(
+        margin: const EdgeInsets.only(bottom: 18),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(23),
         ),
-        body: failure != null
-            ? DataFailure(message: failure!, onRetry: load)
-            : !loaded
-                ? const Center(child: CircularProgressIndicator())
-                : Form(
-                    key: form,
-                    child: ListView(
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        OutlinedButton(
-                          onPressed: busy ? null : () => photo(false),
-                          child: Text(
-                            avatar == null
-                                ? 'Profile photo'
-                                : 'Profile photo selected',
-                          ),
-                        ),
-                        OutlinedButton(
-                          onPressed: busy ? null : () => photo(true),
-                          child: Text(
-                            cover == null
-                                ? 'Cover photo'
-                                : 'Cover photo selected',
-                          ),
-                        ),
-                        TextFormField(
-                          controller: name,
-                          maxLength: 30,
-                          decoration:
-                              const InputDecoration(labelText: 'Display name'),
-                          validator: (s) => (s?.trim().length ?? 0) >= 2
-                              ? null
-                              : 'Name is too short',
-                        ),
-                        DropdownButtonFormField<String>(
-                          initialValue:
-                              ['Male', 'Female', 'Other'].contains(gender)
-                                  ? gender
-                                  : null,
-                          decoration:
-                              const InputDecoration(labelText: 'Gender'),
-                          items: [
-                            for (final g in ['Male', 'Female', 'Other'])
-                              DropdownMenuItem(value: g, child: Text(g)),
-                          ],
-                          onChanged: (v) => setState(() => gender = v),
-                        ),
-                        ListTile(
-                          title: const Text('Date of birth'),
-                          subtitle: Text(
-                            dob?.toIso8601String().split('T').first ??
-                                'Choose date',
-                          ),
-                          onTap: () async {
-                            final date = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime(1900),
-                              lastDate: DateTime.now(),
-                              initialDate: dob ?? DateTime(2000),
-                            );
-                            if (date != null) setState(() => dob = date);
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Country'),
-                          subtitle: Text(countryName ?? 'Choose country'),
-                          onTap: () => showCountryPicker(
-                            context: context,
-                            onSelect: (c) => setState(() {
-                              countryCode = c.countryCode;
-                              countryName = c.name;
-                            }),
-                          ),
-                        ),
-                        TextField(
-                          controller: language,
-                          decoration:
-                              const InputDecoration(labelText: 'Language'),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: bio,
-                          maxLength: 300,
-                          maxLines: 3,
-                          decoration: const InputDecoration(labelText: 'Bio'),
-                        ),
-                        FilledButton(
-                          onPressed: busy ? null : save,
-                          child: Text(busy ? 'Saving…' : 'Save'),
-                        ),
-                      ],
-                    ),
-                  ),
+        child: child,
       );
+
+  Widget _line() => const Divider(height: 1, color: Color(0xfff0f3f2));
+
+  InputDecoration _fieldDecoration(String label) => InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(
+          color: Color(0xff132a24), fontWeight: FontWeight.w700,
+        ),
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        contentPadding: const EdgeInsets.symmetric(vertical: 13),
+        counterText: '',
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final id = ref.watch(currentUserIdProvider);
+    final storedAvatar = avatar ?? existingAvatar;
+    final avatarUrl = storedAvatar == null
+        ? null
+        : ref.read(supabaseProvider).storage.from('avatars')
+            .getPublicUrl(storedAvatar);
+    return Scaffold(
+      backgroundColor: _pageColor,
+      appBar: AppBar(
+        title: Text(widget.edit ? 'Modify Profile' : 'Set up your profile',
+          style: const TextStyle(
+            fontSize: 20, fontWeight: FontWeight.w800,
+          )),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xff132a24),
+      ),
+      body: failure != null
+          ? DataFailure(message: failure!, onRetry: load)
+          : !loaded
+              ? const Center(child: CircularProgressIndicator())
+              : Form(
+                  key: form,
+                  child: ListView(
+                    key: const ValueKey('modify-profile-clean-list'),
+                    padding: const EdgeInsets.fromLTRB(16, 22, 16, 36),
+                    children: [
+                      _section(Column(
+                        children: [
+                          ListTile(
+                            key: const ValueKey('modify-avatar'),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 2),
+                            title: const Text('Avatar',
+                              style: TextStyle(fontSize: 17,
+                                fontWeight: FontWeight.w800)),
+                            trailing: Row(mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircleAvatar(
+                                  radius: 38,
+                                  backgroundColor: const Color(0xffd9f0e5),
+                                  backgroundImage: avatarUrl == null
+                                      ? null : NetworkImage(avatarUrl),
+                                  child: avatarUrl == null
+                                      ? const Icon(Icons.person,
+                                        color: Color(0xff19956c), size: 32)
+                                      : null,
+                                ),
+                                const SizedBox(width: 10),
+                                const Icon(Icons.chevron_right,
+                                  color: Color(0xffacb7b3)),
+                              ],
+                            ),
+                            onTap: busy ? null : () => photo(false),
+                          ),
+                          _line(),
+                          ListTile(
+                            title: const Text('Cover photo',
+                              style: TextStyle(fontWeight: FontWeight.w700)),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: busy ? null : () => photo(true),
+                            subtitle: cover == null
+                                ? null : const Text('New cover selected'),
+                          ),
+                        ],
+                      )),
+                      _section(Column(
+                        children: [
+                          TextFormField(
+                            key: const ValueKey('modify-nickname'),
+                            controller: name,
+                            maxLength: 30,
+                            decoration: _fieldDecoration('Nickname'),
+                            validator: (s) => (s?.trim().length ?? 0) >= 2
+                                ? null : 'Name is too short',
+                          ),
+                          _line(),
+                          DropdownButtonFormField<String>(
+                            key: const ValueKey('modify-gender'),
+                            initialValue:
+                                ['Male', 'Female', 'Other'].contains(gender)
+                                    ? gender : null,
+                            decoration: _fieldDecoration('Gender'),
+                            items: [
+                              for (final g in ['Male', 'Female', 'Other'])
+                                DropdownMenuItem(value: g, child: Text(g)),
+                            ],
+                            onChanged: (v) => setState(() => gender = v),
+                          ),
+                          _line(),
+                          ListTile(
+                            key: const ValueKey('modify-birthday'),
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Birthday',
+                              style: TextStyle(fontWeight: FontWeight.w700)),
+                            trailing: Text(
+                              dob?.toIso8601String().split('T').first
+                                  ?? 'Choose date',
+                              style: const TextStyle(color: Color(0xff64736e)),
+                            ),
+                            onTap: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime.now(),
+                                initialDate: dob ?? DateTime(2000),
+                              );
+                              if (date != null) setState(() => dob = date);
+                            },
+                          ),
+                          _line(),
+                          ListTile(
+                            key: const ValueKey('modify-country'),
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Country',
+                              style: TextStyle(fontWeight: FontWeight.w700)),
+                            trailing: Flexible(child: Text(
+                              countryName ?? 'Choose country',
+                              maxLines: 1, overflow: TextOverflow.ellipsis)),
+                            onTap: () => showCountryPicker(
+                              context: context,
+                              onSelect: (c) => setState(() {
+                                countryCode = c.countryCode;
+                                countryName = c.name;
+                              }),
+                            ),
+                          ),
+                          _line(),
+                          TextField(
+                            controller: language,
+                            decoration: _fieldDecoration('Language'),
+                          ),
+                          _line(),
+                          TextFormField(
+                            key: const ValueKey('modify-signature'),
+                            controller: bio,
+                            maxLength: 300,
+                            maxLines: 2,
+                            decoration:
+                                _fieldDecoration('Personalized Signature'),
+                          ),
+                        ],
+                      )),
+                      const SizedBox(height: 8),
+                      FilledButton(
+                        key: const ValueKey('modify-profile-save'),
+                        onPressed: busy || id == null ? null : save,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xff14b889),
+                          minimumSize: const Size.fromHeight(52),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
+                        ),
+                        child: Text(busy ? 'Saving…' : 'Save'),
+                      ),
+                    ],
+                  ),
+                ),
+    );
+  }
 }
