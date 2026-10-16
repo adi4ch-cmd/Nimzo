@@ -1,0 +1,360 @@
+{
+  "status": "PROPOSED_NOT_APPROVED_NOT_DEPLOYED",
+  "version": 1,
+  "probability_denominator": 1000000,
+  "gross_payout_includes_original_stake": true,
+  "bet_increment_coins": 100,
+  "max_option_or_spin_bet_coins": 50000,
+  "max_round_total_bet_coins": 100000,
+  "server_authoritative": true,
+  "games": [
+    {
+      "slug": "fruit_party_jackpot",
+      "title": "Fruit Party Jackpot",
+      "mode": "round",
+      "max_selections": 6,
+      "min_bet": 100,
+      "outcomes": [
+        {
+          "outcome": "Orange",
+          "gross_multiplier": 5,
+          "weight": 180000,
+          "bettable": true
+        },
+        {
+          "outcome": "Kiwi",
+          "gross_multiplier": 5,
+          "weight": 180000,
+          "bettable": true
+        },
+        {
+          "outcome": "Apple",
+          "gross_multiplier": 5,
+          "weight": 180000,
+          "bettable": true
+        },
+        {
+          "outcome": "Avocado",
+          "gross_multiplier": 45,
+          "weight": 20000,
+          "bettable": true
+        },
+        {
+          "outcome": "Watermelon",
+          "gross_multiplier": 5,
+          "weight": 180000,
+          "bettable": true
+        },
+        {
+          "outcome": "Lemon",
+          "gross_multiplier": 25,
+          "weight": 36000,
+          "bettable": true
+        },
+        {
+          "outcome": "Mango",
+          "gross_multiplier": 15,
+          "weight": 60000,
+          "bettable": true
+        },
+        {
+          "outcome": "Pomegranate",
+          "gross_multiplier": 10,
+          "weight": 90000,
+          "bettable": true
+        },
+        {
+          "outcome": "No Win",
+          "gross_multiplier": 0,
+          "weight": 74000,
+          "bettable": false
+        }
+      ]
+    },
+    {
+      "slug": "grady_lion",
+      "title": "Grady Pro",
+      "mode": "round",
+      "max_selections": 6,
+      "min_bet": 5000,
+      "outcomes": [
+        {
+          "outcome": "Tomato",
+          "gross_multiplier": 5,
+          "weight": 180000,
+          "bettable": true
+        },
+        {
+          "outcome": "Mushroom",
+          "gross_multiplier": 5,
+          "weight": 180000,
+          "bettable": true
+        },
+        {
+          "outcome": "Onion",
+          "gross_multiplier": 5,
+          "weight": 180000,
+          "bettable": true
+        },
+        {
+          "outcome": "Shaljam",
+          "gross_multiplier": 5,
+          "weight": 180000,
+          "bettable": true
+        },
+        {
+          "outcome": "Meat",
+          "gross_multiplier": 10,
+          "weight": 90000,
+          "bettable": true
+        },
+        {
+          "outcome": "Fish",
+          "gross_multiplier": 15,
+          "weight": 60000,
+          "bettable": true
+        },
+        {
+          "outcome": "Jinga",
+          "gross_multiplier": 25,
+          "weight": 36000,
+          "bettable": true
+        },
+        {
+          "outcome": "Chicken",
+          "gross_multiplier": 45,
+          "weight": 20000,
+          "bettable": true
+        },
+        {
+          "outcome": "No Win",
+          "gross_multiplier": 0,
+          "weight": 74000,
+          "bettable": false
+        }
+      ]
+    },
+    {
+      "slug": "bigetar",
+      "title": "Bigetar",
+      "mode": "round",
+      "max_selections": 6,
+      "min_bet": 100,
+      "outcomes": [
+        {
+          "outcome": "BMW",
+          "gross_multiplier": 8,
+          "weight": 112500,
+          "bettable": true
+        },
+        {
+          "outcome": "Porsche",
+          "gross_multiplier": 18,
+          "weight": 50000,
+          "bettable": true
+        },
+        {
+          "outcome": "Land Rover",
+          "gross_multiplier": 66,
+          "weight": 13636,
+          "bettable": true
+        },
+        {
+          "outcome": "Ferrari",
+          "gross_multiplier": 50,
+          "weight": 18000,
+          "bettable": true
+        },
+        {
+          "outcome": "Lamborghini",
+          "gross_multiplier": 100,
+          "weight": 9000,
+          "bettable": true
+        },
+        {
+          "outcome": "Bugatti",
+          "gross_multiplier": 88,
+          "weight": 10227,
+          "bettable": true
+        },
+        {
+          "outcome": "Rolls-Royce",
+          "gross_multiplier": 30,
+          "weight": 30000,
+          "bettable": true
+        },
+        {
+          "outcome": "Mercedes",
+          "gross_multiplier": 20,
+          "weight": 45000,
+          "bettable": true
+        },
+        {
+          "outcome": "No Win",
+          "gross_multiplier": 0,
+          "weight": 711637,
+          "bettable": false
+        }
+      ]
+    },
+    {
+      "slug": "slot",
+      "title": "Slot Jackpots",
+      "mode": "spin",
+      "min_bet": 5000,
+      "outcomes": [
+        {
+          "outcome": "No Win",
+          "gross_multiplier": 0,
+          "weight": 700000
+        },
+        {
+          "outcome": "Mini",
+          "gross_multiplier": 2,
+          "weight": 230000
+        },
+        {
+          "outcome": "Minor",
+          "gross_multiplier": 5,
+          "weight": 60000
+        },
+        {
+          "outcome": "Major",
+          "gross_multiplier": 10,
+          "weight": 9000
+        },
+        {
+          "outcome": "Grand",
+          "gross_multiplier": 50,
+          "weight": 1000
+        }
+      ]
+    },
+    {
+      "slug": "teen_patti",
+      "title": "Teen Patti \u2014 A/B/C draw",
+      "mode": "round",
+      "max_selections": 3,
+      "min_bet": 100,
+      "outcomes": [
+        {
+          "outcome": "Player A",
+          "gross_multiplier": 2,
+          "weight": 450000,
+          "bettable": true
+        },
+        {
+          "outcome": "Player B",
+          "gross_multiplier": 9,
+          "weight": 100000,
+          "bettable": true
+        },
+        {
+          "outcome": "Player C",
+          "gross_multiplier": 2,
+          "weight": 450000,
+          "bettable": true
+        }
+      ]
+    },
+    {
+      "slug": "lucky_wheel_77",
+      "title": "Lucky Wheel 77",
+      "mode": "spin",
+      "min_bet": 100,
+      "outcomes": [
+        {
+          "outcome": "No Win",
+          "gross_multiplier": 0,
+          "weight": 690300
+        },
+        {
+          "outcome": "2x",
+          "gross_multiplier": 2,
+          "weight": 250000
+        },
+        {
+          "outcome": "5x A",
+          "gross_multiplier": 5,
+          "weight": 50000
+        },
+        {
+          "outcome": "10x",
+          "gross_multiplier": 10,
+          "weight": 5000
+        },
+        {
+          "outcome": "20x",
+          "gross_multiplier": 20,
+          "weight": 2000
+        },
+        {
+          "outcome": "50x",
+          "gross_multiplier": 50,
+          "weight": 500
+        },
+        {
+          "outcome": "100x",
+          "gross_multiplier": 100,
+          "weight": 100
+        },
+        {
+          "outcome": "150x",
+          "gross_multiplier": 150,
+          "weight": 100
+        },
+        {
+          "outcome": "5x B",
+          "gross_multiplier": 5,
+          "weight": 2000
+        }
+      ]
+    },
+    {
+      "slug": "bounty_football",
+      "title": "Bounty Football \u2014 virtual round",
+      "mode": "round",
+      "max_selections": 3,
+      "min_bet": 100,
+      "outcomes": [
+        {
+          "outcome": "Home",
+          "gross_multiplier": 2.25,
+          "weight": 400000,
+          "bettable": true
+        },
+        {
+          "outcome": "Draw",
+          "gross_multiplier": 4.5,
+          "weight": 200000,
+          "bettable": true
+        },
+        {
+          "outcome": "Away",
+          "gross_multiplier": 2.25,
+          "weight": 400000,
+          "bettable": true
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "slug": "daily_check_in",
+      "reward_coins": 1000
+    },
+    {
+      "slug": "send_a_gift",
+      "reward_coins": 500,
+      "minimum_qualifying_paid_gift_coins": 1000,
+      "allow_self_gifts": false
+    },
+    {
+      "slug": "room_ten_minutes",
+      "reward_coins": 500,
+      "minimum_server_credited_minutes": 10
+    }
+  ],
+  "daily_task_cap_coins": 2000,
+  "proposed_global_daily_task_budget_coins": 10000000
+}
