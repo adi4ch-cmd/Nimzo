@@ -1,6 +1,4 @@
 import '../core/providers/supabase_provider.dart';
-import '../features/membership/royal_membership_screen.dart';
-import '../features/membership/royal_membership_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -127,8 +125,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
-      GoRoute(
-          path: '/svip', builder: (_, __) => const RoyalMembershipScreen(kind: RoyalKind.svip)),
+      // Historical links cannot reopen a removed membership screen.
+      GoRoute(path: '/svip', redirect: (_, __) => Routes.profile),
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
@@ -162,9 +160,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.recharge,
         builder: (_, __) => const RechargeScreen(),
       ),
-      GoRoute(
-          path: Routes.vip,
-          builder: (_, __) => const RoyalMembershipScreen(kind: RoyalKind.vip)),
+      GoRoute(path: '/vip', redirect: (_, __) => Routes.profile),
       GoRoute(
         path: '/profile/:id',
         builder: (_, s) => ProfileScreen(userId: s.pathParameters['id']),
