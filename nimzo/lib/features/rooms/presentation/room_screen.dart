@@ -311,7 +311,7 @@ class _State extends ConsumerState<RoomScreen> {
                       children: [
                         ReferenceRoomAvatar(
                           key: const ValueKey('room-header-avatar'),
-                          size: 48,
+                          size: 54,
                           url: room.valueOrNull?.avatarPath == null
                               ? null
                               : ref
@@ -357,7 +357,7 @@ class _State extends ConsumerState<RoomScreen> {
                         alignment: Alignment.centerLeft,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: const Color(0xff1c2b2a).withValues(alpha: .08),
+                            color: NimzoStyle.orange.withValues(alpha: .11),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Padding(
@@ -367,7 +367,7 @@ class _State extends ConsumerState<RoomScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Icon(Icons.emoji_events_rounded,
-                                  size: 17, color: Color(0xffd6a542)),
+                                  size: 17, color: NimzoStyle.orange),
                                 const SizedBox(width: 6),
                                 Text(
                                   compactNumber(
@@ -375,7 +375,7 @@ class _State extends ConsumerState<RoomScreen> {
                                   ),
                                   key: const ValueKey('room-header-total-gifting'),
                                   style: const TextStyle(
-                                    color: Color(0xffbb8d2b),
+                                    color: NimzoStyle.royal,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w800,
                                   ),
@@ -603,7 +603,7 @@ class _State extends ConsumerState<RoomScreen> {
                               vertical: 7,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xfff1e6ff),
+                              color: NimzoStyle.surface,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -720,7 +720,7 @@ class _State extends ConsumerState<RoomScreen> {
                                       height: 46,
                                       padding: const EdgeInsets.all(4),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xfff1e6ff),
+                                        color: NimzoStyle.surface,
                                         borderRadius: BorderRadius.circular(14),
                                       ),
                                       child: Column(
