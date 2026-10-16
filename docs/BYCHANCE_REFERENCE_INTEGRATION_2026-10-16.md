@@ -19,7 +19,14 @@ Source: user-supplied ByChance 9.2.2 XAPK, inspected offline on 2026-10-16. This
 | Home | Reworked own-room gradient hero, visible room metrics and styled cards; all current data providers retained | Changed |
 | Me profile | Violet/coral cover gradient; preserves real profile, level, wallet and links | Changed |
 | Royal Store | Violet header and pastel catalog cards; existing purchase/equip transaction code unchanged | Changed |
-| Tests | Palette and Material theme assertions | Added |
+| Games catalog | Rounded illustrated game tiles with proper two-line labels | Changed |
+| Messages | Rounded conversation cards retaining existing unread and follow logic | Changed |
+| Moments | Unified border and soft violet shadow while keeping like/comment/gift logic | Changed |
+| Gift sheet | Violet/rose premium cards and category accents; no gift settlement changes | Changed |
+| Wallet | Updated violet gradient balance panel; diamond exchange logic preserved | Changed |
+| Public profile | Violet cover fallback with existing upload image support | Changed |
+| Login / onboarding | Shared violet/rose backdrop and high-contrast white CTA | Changed |
+| Tests | Palette and Material theme assertions; pull-request QA workflow | Added |
 
 ## Feature parity investigation — no invented working features
 
@@ -41,7 +48,8 @@ Source: user-supplied ByChance 9.2.2 XAPK, inspected offline on 2026-10-16. This
 - This branch makes **no database migrations** or account/coin changes.
 - Original third-party binary/native libs are **not** copied into the Flutter build.
 - Color inspiration is distinct from copying trademarks, private endpoints or UI art.
-- Run `flutter analyze`, `flutter test`, device voice, purchases, and the existing Android verification workflow before shipping.
+- The draft PR executes `flutter analyze`, `flutter test test/bychance_palette_test.dart` and the full `flutter test` suite; wait for successful results.
+- Test physical-device voice, purchases, and the existing Android verification workflow before shipping.
 - Passing UI tests alone does not validate Agora ↔ Vivox compatibility or server-dependent gameplay.
 
 ## Remaining work (not completed in this branch)
