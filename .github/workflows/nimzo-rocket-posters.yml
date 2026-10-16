@@ -23,6 +23,8 @@ jobs:
           ref: feature/profile-reference-redesign
       - name: Prepare original-video poster generator
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
           python3 -m pip install --quiet Pillow
           ffmpeg -version | head -1
       - name: Extract six original Rocket stills
