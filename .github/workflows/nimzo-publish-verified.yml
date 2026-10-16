@@ -1,7 +1,7 @@
 name: Publish Verified Signed NIMZO APK
 on:
   push:
-    branches: [feature/profile-reference-redesign, fix/nimzo-completion-audit-20261016]
+    branches: [feature/profile-reference-redesign]
     paths: [tools/prebuilt_apk_manifest.json, tools/verify_prebuilt_apk.py, .github/workflows/nimzo-publish-verified.yml]
   workflow_dispatch:
     inputs:
@@ -16,7 +16,7 @@ permissions:
   contents: write
 jobs:
   publish:
-    if: ${{ inputs.test_only != true && github.ref_name != 'fix/nimzo-completion-audit-20261016' }}
+    if: ${{ inputs.test_only != true }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -88,7 +88,7 @@ jobs:
             await github.rest.repos.updateRelease({owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, tag_name: tag, target_commitish: manifest.sourceSha, draft: false});
             await core.summary.addLink('Verified APK', update.apkUrl).write();
   publish_test:
-    if: ${{ inputs.test_only == true || (github.event_name == 'push' && github.ref_name == 'fix/nimzo-completion-audit-20261016') }}
+    if: ${{ inputs.test_only == true }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -105,8 +105,7 @@ jobs:
         with:
           script: |
             const {retrieve}=require(process.env.GITHUB_WORKSPACE+'/tools/publish_test_apk.cjs');
-            const manifest=JSON.parse(process.env.PREBUILT_MANIFEST || "{\"sha256\": \"8459800b54a3a8da0a42fbd5f5ad3bd031c2ba24d96ed92691d91496b5a90417\", \"bytes\": 202578183, \"blobs\": [\"d1559181fdc8a65411311e8f62e282b22af5a842\", \"6baa766f83e4b534cd1ca7ea2291193277fe5044\", \"b38a113988bf74f9b9dac4fc64cf35ec0efee2d6\", \"0833caca385bca665e06c36fb8c31744d096940d\", \"3190a957d49d10f0bf94aff8bb4985ce1e859255\", \"300a45c9158c9eb267077f8d3437b83a7ae26280\", \"04158e113829409cb3afd570c17b22ef92d69669\"], \"packageName\": \"io.nimzo.app.test\"}");
-            if (!process.env.PREBUILT_MANIFEST) manifest.sourceSha=context.sha;
+            const manifest=JSON.parse(process.env.PREBUILT_MANIFEST);
             await retrieve({github,context,manifest});
             core.exportVariable('NIMZO_TEST_PACKAGE',manifest.packageName||'io.nimzo.app');
       - name: Verify actual APK signature package OAuth and native voice
