@@ -608,6 +608,7 @@ void main() {
         'profile_edit',
         'room_settings',
         'wallet',
+        'home',
       }.contains(entry.key)) {
         // These screens were explicitly redesigned. The old pixel files
         // describe retired large color blocks and childish Moment cards.
@@ -635,6 +636,9 @@ void main() {
         if (entry.key == 'profile' || entry.key == 'public_profile') {
           expect(find.byKey(const ValueKey('profile-level-badges')),
               findsOneWidget);
+        }
+        if (entry.key == 'home') {
+          expect(find.byType(HomeScreen), findsOneWidget);
         }
         if (entry.key == 'wallet') {
           expect(find.byKey(const ValueKey('wallet-coin-diamond-balances')),
