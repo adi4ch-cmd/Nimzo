@@ -55,7 +55,15 @@ class ConversationTile extends ConsumerWidget {
         row['username']?.toString() ??
         'Nimzo user';
     final unread = int.tryParse(row['unread']?.toString() ?? '') ?? 0;
-    return ListTile(
+    return Card(
+      color: Colors.white,
+      elevation: 0,
+      margin: const EdgeInsets.fromLTRB(16, 6, 16, 5),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: NimzoStyle.line),
+      ),
+      child: ListTile(
       leading: NimzoAvatar(
         name: name,
         url: profile?.avatarPath == null
@@ -89,6 +97,7 @@ class ConversationTile extends ConsumerWidget {
             )
           : null,
       onTap: () => context.push('/chat/$id'),
+      ),
     );
   }
 }
