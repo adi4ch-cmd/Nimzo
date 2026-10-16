@@ -170,13 +170,11 @@ void main() {
     (tester) async {
       await openProfile(tester);
       expect(find.text('Amina'), findsOneWidget);
-      expect(find.text('Wealth'), findsOneWidget);
-      expect(find.text('Charm'), findsOneWidget);
-      expect(find.text('Active'), findsOneWidget);
-      expect(find.text('1,250,000 coins'), findsOneWidget);
-      expect(find.text('2,345 diamonds'), findsOneWidget);
-      expect(find.text('89 points'), findsOneWidget);
-      expect(find.text('Level unavailable'), findsNWidgets(3));
+      expect(find.byKey(const ValueKey('profile-level-badges')), findsOneWidget);
+      expect(find.text('1,250,000 coins'), findsNothing);
+      expect(find.text('2,345 diamonds'), findsNothing);
+      expect(find.text('89 points'), findsNothing);
+      expect(find.text('—'), findsNWidgets(3));
       final id = tester.getRect(find.text('ID:101 · '));
       final badges = tester.getRect(
         find.byKey(const ValueKey('profile-level-badges')),
