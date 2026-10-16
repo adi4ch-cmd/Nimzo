@@ -19,6 +19,7 @@ import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
 import '../store/store_badge.dart';
+import '../membership/royal_membership_badge.dart';
 import '../gifts/gift_artwork.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -237,6 +238,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   )),
                         ),
                         EquippedRoyalMedal(userId: id, compact: true),
+                        RoyalIdentityBadge(userId: id),
                         if (p.dateOfBirth != null)
                           Container(
                             padding: const EdgeInsets.symmetric(
