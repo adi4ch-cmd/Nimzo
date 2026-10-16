@@ -202,13 +202,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        child: NimzoAvatar(
+                        child: RoyalAvatarHalo(userId: id, child: NimzoAvatar(
                           name: p.displayName ?? p.username ?? 'N',
                           url: image('avatars', p.avatarPath),
                           size: 70,
                           backgroundColor: NimzoStyle.ink,
                           online: id == me,
-                        ),
+                        )),
                       ),
                     ),
                   ],
