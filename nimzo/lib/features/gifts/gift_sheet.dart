@@ -255,12 +255,24 @@ class _State extends ConsumerState<GiftSheet> {
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(
-                        'NIMZO Gifts · ${wallet.valueOrNull == null ? 'Balance unavailable' : '${compactNumber(wallet.valueOrNull!.coins)} coins'}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('NIMZO Gifts',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800, fontSize: 16)),
+                          Text(
+                            wallet.valueOrNull == null
+                              ? 'Wallet balance unavailable'
+                              : '${compactNumber(wallet.valueOrNull!.coins)} coins  ·  ${compactNumber(wallet.valueOrNull!.diamonds)} diamonds',
+                            key: const ValueKey('gift-tray-coin-diamond-balances'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 12,
+                              color: Color(0xffd2c4aa)),
+                          ),
+                        ],
                       ),
                     ),
                   ],
