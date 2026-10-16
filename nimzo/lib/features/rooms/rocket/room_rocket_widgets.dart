@@ -133,7 +133,7 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
                             )),
                           const SizedBox(height: 3),
                           Text(
-                            current == null ? 'Waiting for verified status' :
+                            current == null ? 'Room status not available' :
                             selection < current.completedStages
                                 ? 'Completed'
                                 : selection == current.activeStage
