@@ -15,7 +15,13 @@ class MainShell extends ConsumerWidget {
         body: SafeArea(bottom: false, child: shell),
         bottomNavigationBar: Container(
           decoration: const BoxDecoration(
+            color: Colors.white,
             border: Border(top: BorderSide(color: NimzoStyle.line)),
+            boxShadow: [BoxShadow(
+              color: Color(0x126628cf),
+              offset: Offset(0, -2),
+              blurRadius: 14,
+            )],
           ),
           child: SafeArea(
             top: false,
@@ -33,12 +39,23 @@ class MainShell extends ConsumerWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            ReferenceIcon(
-                              ['home', 'game', 'moments', 'msg', 'user'][i],
-                              size: 22,
-                              color: i == shell.currentIndex
-                                  ? NimzoStyle.primary
-                                  : NimzoStyle.muted,
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 180),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 19, vertical: 5),
+                              decoration: BoxDecoration(
+                                gradient: i == shell.currentIndex
+                                    ? NimzoStyle.heroGradient
+                                    : null,
+                                borderRadius: BorderRadius.circular(22),
+                              ),
+                              child: ReferenceIcon(
+                                ['home', 'game', 'moments', 'msg', 'user'][i],
+                                size: 21,
+                                color: i == shell.currentIndex
+                                    ? Colors.white
+                                    : NimzoStyle.muted,
+                              ),
                             ),
                             const SizedBox(height: 2),
                             Text(
