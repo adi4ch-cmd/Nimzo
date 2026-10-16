@@ -419,18 +419,29 @@ class _State extends ConsumerState<RoomScreen> {
                                                                 n,
                                                               );
                                                         } else {
-                                                          await showModalBottomSheet<
-                                                              void>(
+                                                          await showDialog<void>(
                                                             context: context,
-                                                            isScrollControlled:
-                                                                true,
-                                                            builder: (_) =>
-                                                                RoomUserSheet(
-                                                              roomId:
-                                                                  widget.roomId,
-                                                              userId: s.userId!,
-                                                              seatNo: n,
-                                                              muted: s.muted,
+                                                            builder: (_) => Dialog(
+                                                              backgroundColor: Colors.transparent,
+                                                              insetPadding: const EdgeInsets.symmetric(
+                                                                horizontal: 18,
+                                                                vertical: 24,
+                                                              ),
+                                                              child: RoomUserSheet(
+                                                                roomId: widget.roomId,
+                                                                userId: s.userId!,
+                                                                seatNo: n,
+                                                                muted: s.muted,
+                                                                onMention: (name) {
+                                                                  final mention = '@$name ';
+                                                                  text.value = TextEditingValue(
+                                                                    text: mention + text.text,
+                                                                    selection: TextSelection.collapsed(
+                                                                      offset: mention.length,
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
                                                             ),
                                                           );
                                                         }
