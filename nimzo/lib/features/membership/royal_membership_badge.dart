@@ -85,3 +85,32 @@ class RoyalAvatarHalo extends ConsumerWidget {
     );
   }
 }
+
+
+/// Decorates real voice-room chat bubbles without changing message content.
+class RoyalChatHalo extends ConsumerWidget {
+  final String userId;
+  final Widget child;
+  const RoyalChatHalo({super.key, required this.userId, required this.child});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(freeRoyalSelectionProvider(userId))
+        .valueOrNull?.visibleTheme;
+    if (theme == null) return child;
+    return Container(
+      key: ValueKey('royal-chat-bubble-$userId'),
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [
+          theme.accent, theme.shadow, theme.accent,
+        ]),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [BoxShadow(
+          color: theme.accent.withValues(alpha: .17), blurRadius: 7,
+        )],
+      ),
+      child: child,
+    );
+  }
+}
