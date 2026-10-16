@@ -27,6 +27,7 @@ test('test APK release excludes automatic-update metadata and publishes after up
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'nimzo-publish-'));
  try {
   fs.writeFileSync(path.join(dir,'nimzo-test.apk'),'apk');
+  fs.writeFileSync(path.join(dir,'manifest.json'),JSON.stringify({packageName:'io.nimzo.app.test',compactNativeLibraries:true}));
   fs.writeFileSync(path.join(dir,'nimzo-test.apk.signing.txt'),'test-signature');
   const calls=[];
   const github={rest:{repos:{createRelease:async x=>{calls.push(['create',x]);return {data:{id:1}};},
@@ -34,8 +35,8 @@ test('test APK release excludes automatic-update metadata and publishes after up
   const context={sha:'a'.repeat(40),runId:123,repo:{owner:'o',repo:'r'}};
   const url=await publish({github,context,dir});
   assert.equal(calls[0][1].draft,true);assert.equal(calls[0][1].prerelease,true);
-  assert.deepEqual(calls.filter(c=>c[0]==='asset').map(c=>c[1]),['nimzo-test.apk','nimzo-test.apk.sha256','nimzo-test.apk.signing.txt']);
+  assert.deepEqual(calls.filter(c=>c[0]==='asset').map(c=>c[1]),['nimzo-compact-test.apk','nimzo-compact-test.apk.sha256','nimzo-compact-test.apk.signing.txt']);
   assert.equal(calls.at(-1)[0],'publish');assert.equal(calls.at(-1)[1].draft,false);
-  assert.match(url,/https:\/\/github.com\/o\/r\/releases\/download\/nimzo-test-123\/nimzo-test.apk/);
+  assert.match(url,/https:\/\/github.com\/o\/r\/releases\/download\/nimzo-test-123\/nimzo-compact-test.apk/);
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });

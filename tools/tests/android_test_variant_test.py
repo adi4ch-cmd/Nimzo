@@ -22,6 +22,7 @@ class AndroidTestVariantTest(unittest.TestCase):
             module.configure(root)
             self.assertIn('namespace = "io.nimzo.app"', gradle.read_text())
             self.assertIn('applicationId = "io.nimzo.app.test"', gradle.read_text())
+            self.assertIn('useLegacyPackaging = true', gradle.read_text())
             self.assertIn('android:authorities="${applicationId}.apk_updates"', manifest.read_text())
             self.assertIn('android:name="io.nimzo.app.MainActivity"', manifest.read_text())
             self.assertIn('android:label="Nimzo Test"', manifest.read_text())

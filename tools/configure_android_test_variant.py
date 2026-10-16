@@ -20,6 +20,10 @@ def configure(android: Path):
                      'android:authorities="${applicationId}.apk_updates"'):
         if required not in xml:
             raise ValueError('Missing test identity contract: ' + required)
+    # Compress native libraries to reduce interrupted mobile downloads. Android
+    # extracts them at install time; retain every ABI and all feature assets.
+    if "// Compact Nimzo test APK" not in build:
+        build += "\n// Compact Nimzo test APK\nandroid { packaging { jniLibs { useLegacyPackaging = true } } }\n"
     gradle.write_text(build)
     manifest.write_text(xml)
     print('Side-by-side test identity: io.nimzo.app.test; native namespace preserved')
