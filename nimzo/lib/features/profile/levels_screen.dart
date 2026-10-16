@@ -28,12 +28,12 @@ class _LevelState extends ConsumerState<LevelsScreen> {
   }
 
   static const bands = [
-    (1, 20, 'Brown', Color(0xffa16207)),
-    (21, 39, 'Green', Color(0xff16a34a)),
-    (40, 59, 'Blue', Color(0xff2563eb)),
-    (60, 79, 'Pink', Color(0xffdb2777)),
-    (80, 99, 'Red', Color(0xffdc2626)),
-    (100, 120, 'Gold', Color(0xffd4a017)),
+    (1, 20),
+    (21, 39),
+    (40, 59),
+    (60, 79),
+    (80, 99),
+    (100, 120),
   ];
   @override
   Widget build(BuildContext context) {
@@ -67,9 +67,6 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                   p.charmDiamonds,
                   p.activePoints,
                 ][selected];
-                final band = bands
-                    .where((b) => level >= b.$1 && level <= b.$2)
-                    .firstOrNull;
                 final next = total == null || level >= 120 || level < 1
                     ? null
                     : (ProfileLevelScale.nextRequirement(selected, level) - total)
@@ -84,8 +81,8 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                       const SizedBox(height: 16),
                       Text(
                         selected == 0
-                            ? 'Tier: ${band?.$3 ?? 'Unavailable'}'
-                            : '$label level',
+                            ? 'Tier: ${ProfileLevelScale.tierName(selected, level)}'
+                            : '$label level · ${ProfileLevelScale.tierName(selected, level)}',
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 10),
@@ -171,7 +168,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(child: Text(band.$3)),
+                    Expanded(child: Text(ProfileLevelScale.tierName(selected, band.$1))),
                     Text(
                       'Level ${band.$1}-${band.$2}',
                       style: const TextStyle(color: NimzoStyle.muted),
