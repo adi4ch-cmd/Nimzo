@@ -123,3 +123,22 @@ https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-test-38914870371/nim
 An unauthenticated public range request returned the valid APK ZIP header, and
 the public checksum file matches the original SHA-256 above. The artifact remains
 test-signed with the original certificate; this repair changes delivery only.
+
+## Reported Moto G35 parsing error
+
+The user reported Android's “There was a problem parsing the package” on a Moto
+G35. Previous verification had omitted an actual Android install, which was a
+coverage gap. Re-downloaded all 202,578,171 bytes through the public release URL;
+SHA-256 and APK signature match the original. ARM64 native libraries have the
+correct AArch64 ELF machine type and LOAD alignment of at least 16 KiB.
+
+Added actual installation/launch gates to test publication. Workflow
+`38922939608` successfully installed the identical APK on Android 14 (API 34) and
+Android 15 (API 35) x86_64 emulators, then verified that the process survived for
+20 seconds. Android 14 screenshot also showed the Nimzo onboarding screen, with
+no Flutter exception in launch logs. This is not an ARM64 Moto G35 device test.
+
+The Moto-specific failure is not reproduced or declared fixed. Existing-install
+status, actual phone OS version and opening the downloaded file through Files
+rather than Chrome remain useful device diagnostics. No existing app or local
+data has been removed, and no speculative app-code fix has been applied.
