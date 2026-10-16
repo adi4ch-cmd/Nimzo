@@ -105,9 +105,20 @@ jobs:
         with:
           script: |
             const {retrieve}=require(process.env.GITHUB_WORKSPACE+'/tools/publish_test_apk.cjs');
-            await retrieve({github,context,manifest:JSON.parse(process.env.PREBUILT_MANIFEST)});
+            const manifest=JSON.parse(process.env.PREBUILT_MANIFEST);
+            await retrieve({github,context,manifest});
+            core.exportVariable('NIMZO_TEST_PACKAGE',manifest.packageName||'io.nimzo.app');
       - name: Verify actual APK signature package OAuth and native voice
-        run: python3 tools/verify_test_apk.py verified-test-apk/nimzo-test.apk
+        run: python3 tools/verify_test_apk.py verified-test-apk/nimzo-test.apk --package "$NIMZO_TEST_PACKAGE"
+      - name: Prepare a differently signed existing-app fixture
+        if: env.NIMZO_TEST_PACKAGE == 'io.nimzo.app.test'
+        run: |
+          curl -fL --retry 2 'https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-test-38914870371/nimzo-test.apk' -o verified-test-apk/baseline.apk
+          echo '9f95e133c3a77816111946577055ab3725fe851d63af78566fb49a45680943bf  verified-test-apk/baseline.apk' | sha256sum -c -
+          keytool -genkeypair -keystore "$RUNNER_TEMP/coexist-fixture.jks" -storepass android -keypass android -alias fixture -dname 'CN=Temporary Coexistence Test' -keyalg RSA -keysize 2048 -validity 2
+          signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
+          "$signer" sign --ks "$RUNNER_TEMP/coexist-fixture.jks" --ks-pass pass:android --key-pass pass:android --ks-key-alias fixture --out verified-test-apk/existing-app.apk verified-test-apk/baseline.apk
+          "$signer" verify --verbose verified-test-apk/existing-app.apk
       - name: Enable Android emulator acceleration
         run: sudo chmod 666 /dev/kvm
       - name: Install and launch on Android 14
@@ -117,7 +128,12 @@ jobs:
           arch: x86_64
           target: google_apis
           disable-animations: true
-          script: python3 tools/verify_android_launch.py verified-test-apk/nimzo-test.apk
+          script: |
+            if [ "$NIMZO_TEST_PACKAGE" = 'io.nimzo.app.test' ]; then
+              python3 tools/verify_android_launch.py verified-test-apk/nimzo-test.apk --package "$NIMZO_TEST_PACKAGE" --coexist-with verified-test-apk/existing-app.apk
+            else
+              python3 tools/verify_android_launch.py verified-test-apk/nimzo-test.apk
+            fi
       - name: Upload installation and launch diagnostics
       # Android 15 is also shipped as an update on the Moto G35.
         if: always()
@@ -133,7 +149,12 @@ jobs:
           arch: x86_64
           target: google_apis
           disable-animations: true
-          script: python3 tools/verify_android_launch.py verified-test-apk/nimzo-test.apk
+          script: |
+            if [ "$NIMZO_TEST_PACKAGE" = 'io.nimzo.app.test' ]; then
+              python3 tools/verify_android_launch.py verified-test-apk/nimzo-test.apk --package "$NIMZO_TEST_PACKAGE" --coexist-with verified-test-apk/existing-app.apk
+            else
+              python3 tools/verify_android_launch.py verified-test-apk/nimzo-test.apk
+            fi
       - name: Upload Android 15 installation diagnostics
         if: always()
         uses: actions/upload-artifact@v4

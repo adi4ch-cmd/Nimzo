@@ -16,6 +16,9 @@ test('reassembles only checksum-verified APK blobs for the current source',async
   await retrieve({github,context,manifest,dir});
   assert.deepEqual(fs.readFileSync(path.join(dir,'nimzo-test.apk')),bytes);
   await assert.rejects(retrieve({github,context,manifest:{...manifest,sourceSha:'c'.repeat(40)},dir}),/source/);
+  await assert.rejects(retrieve({github,context,manifest:{...manifest,packageName:'com.other.app'},dir}),/package/);
+  await retrieve({github,context,manifest:{...manifest,packageName:'io.nimzo.app.test'},dir});
+  assert.equal(JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'))).packageName,'io.nimzo.app.test');
   await assert.rejects(retrieve({github,context,manifest:{...manifest,sha256:'d'.repeat(64)},dir}),/checksum/);
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });

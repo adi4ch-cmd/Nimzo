@@ -1,5 +1,6 @@
 """Verify development-signed APK artifacts without accepting them as updater releases."""
 import hashlib
+import argparse
 import os
 from pathlib import Path
 import re
@@ -8,7 +9,8 @@ import sys
 import zipfile
 
 
-def verify(apk):
+def verify(apk, package='io.nimzo.app'):
+    assert package in ('io.nimzo.app', 'io.nimzo.app.test'), 'Unsupported test package'
     tools = sorted(Path(os.environ['ANDROID_HOME']).glob('build-tools/*/apksigner'))[-1].parent
     signature = subprocess.check_output(
         [str(tools / 'apksigner'), 'verify', '--verbose', '--print-certs', str(apk)], text=True)
@@ -20,12 +22,14 @@ def verify(apk):
     version, build = re.search(r'^version:\s*([^+\n]+)\+(\d+)',
                               (root / 'nimzo/pubspec.yaml').read_text(), re.M).groups()
     badging = subprocess.check_output([str(tools / 'aapt'), 'dump', 'badging', str(apk)], text=True)
-    for expected in ("package: name='io.nimzo.app'", f"versionCode='{build}'", f"versionName='{version}'",
+    if package == 'io.nimzo.app.test':
+        assert "application-label:'Nimzo Test'" in badging, 'Test app must have a distinct launcher label'
+    for expected in (f"package: name='{package}'", f"versionCode='{build}'", f"versionName='{version}'",
                      'android.permission.INTERNET', 'android.permission.RECORD_AUDIO'):
         assert expected in badging, f'Missing package/version/permission: {expected}'
     manifest = subprocess.check_output([str(tools / 'aapt'), 'dump', 'xmltree', str(apk), 'AndroidManifest.xml'], text=True)
     for expected in ('login-callback', 'io.nimzo.app', 'android.intent.category.LAUNCHER',
-                     'flutter_deeplinking_enabled', 'io.nimzo.app.apk_updates'):
+                     'flutter_deeplinking_enabled', package + '.apk_updates'):
         assert expected in manifest, f'Missing manifest contract: {expected}'
     with zipfile.ZipFile(apk) as archive:
         assert archive.testzip() is None, 'APK ZIP integrity failure'
@@ -43,4 +47,8 @@ def verify(apk):
 
 
 if __name__ == '__main__':
-    verify(Path(sys.argv[1]))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('apk', type=Path)
+    parser.add_argument('--package', choices=('io.nimzo.app', 'io.nimzo.app.test'), default='io.nimzo.app')
+    args = parser.parse_args()
+    verify(args.apk, args.package)
