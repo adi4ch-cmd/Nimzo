@@ -1,5 +1,6 @@
 -- NIMZO gift economics: receiver earns 45% diamonds on EVERY settled gift,
--- including gifts sent to self.  No ledger records are rewritten or backfilled.
+-- including room and moment gifts sent to self. Existing profile-gift rules
+-- are unchanged here. No ledger records are rewritten or backfilled.
 -- Settlement/idempotency/room authorization remain server-side.
 DO $$
 DECLARE
@@ -24,23 +25,6 @@ BEGIN
     EXECUTE func;
   END LOOP;
 
-  f:='nimzo_private.send_profile_gift(uuid,uuid,integer,text)'::regprocedure;
-  SELECT pg_get_functiondef(f::oid) INTO func;
-  IF position('p_receiver is null or p_receiver=s or p_gift is null' IN func)=0
-     OR position('(select count(*) from public.wallets where user_id in(s,p_receiver))<>2' IN func)=0 THEN
-    RAISE EXCEPTION 'Existing profile gift settlement contract changed. Manual review required';
-  END IF;
-  func:=replace(func,
-    'p_receiver is null or p_receiver=s or p_gift is null',
-    'p_receiver is null or p_gift is null');
-  func:=replace(func,
-    '(select count(*) from public.wallets where user_id in(s,p_receiver))<>2',
-    '(select count(*) from public.wallets where user_id in(s,p_receiver))<>case when s=p_receiver then 1 else 2 end');
-  -- Normalize legacy function body terminator before recompiling.
-  func:=replace(func,
-    'end '||chr(36)||'function'||chr(36),
-    'end; '||chr(36)||'function'||chr(36));
-  EXECUTE func;
 END $$;
 
 -- Exchange one diamond for one coin. An idempotency key is mandatory,
