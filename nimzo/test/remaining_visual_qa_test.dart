@@ -594,7 +594,7 @@ void main() {
       } else if (const {
         'moments', 'me', 'profile', 'public_profile', 'room_profile',
         'levels', 'comments', 'gifts', 'room_tools', 'room_games',
-        'profile_edit', 'room_settings',
+        'profile_edit', 'room_settings', 'wallet',
       }.contains(entry.key)) {
         // These screens were explicitly redesigned. The old pixel files
         // describe retired large color blocks and childish Moment cards.
@@ -623,6 +623,12 @@ void main() {
         if (entry.key == 'profile' || entry.key == 'public_profile') {
           expect(find.byKey(const ValueKey('profile-level-badges')),
             findsOneWidget);
+        }
+        if (entry.key == 'wallet') {
+          expect(find.byKey(const ValueKey('wallet-coin-diamond-balances')),
+              findsOneWidget);
+          expect(find.byKey(const ValueKey('exchange-diamonds-1-to-1')),
+              findsOneWidget);
         }
         if (entry.key == 'room_profile') {
           expect(find.byKey(const ValueKey('room-real-stats')), findsOneWidget);
