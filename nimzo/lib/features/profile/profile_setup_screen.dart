@@ -170,14 +170,17 @@ class _State extends ConsumerState<ProfileSetupScreen> {
 
   static const _pageColor = Color(0xffe9f3ef);
 
-  Widget _section(Widget child) => Container(
-        margin: const EdgeInsets.only(bottom: 18),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-        decoration: BoxDecoration(
+  Widget _section(Widget child) => Padding(
+        padding: const EdgeInsets.only(bottom: 18),
+        child: Material(
           color: Colors.white,
           borderRadius: BorderRadius.circular(23),
+          clipBehavior: Clip.antiAlias,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+            child: child,
+          ),
         ),
-        child: child,
       );
 
   Widget _line() => const Divider(height: 1, color: Color(0xfff0f3f2));
