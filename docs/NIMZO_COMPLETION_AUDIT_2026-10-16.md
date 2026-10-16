@@ -100,3 +100,9 @@ APK SHA-256: `9f95e133c3a77816111946577055ab3725fe851d63af78566fb49a45680943bf`.
 Test signing certificate SHA-256:
 `0fef00ebb79c39a1da4ce07ee9f2aa998cc93bc8530a06a8d00d48dfc1e106de`.
 No permanent-update manifest is generated for this artifact.
+
+GitHub source pushes succeeded. Release asset upload to uploads.github.com
+returned HTTP 401 from the connected integration; the resulting empty draft was
+removed. The actual verified APK, checksum, signing report and audit are delivered
+under `/workspace/shared/downloads/nimzo-1.0.28/` instead. No public release URL is
+claimed for the failed upload.

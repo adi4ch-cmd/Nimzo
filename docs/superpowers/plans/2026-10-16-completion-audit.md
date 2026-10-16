@@ -12,6 +12,6 @@
 - [x] Repair and verify live private profile API entry points and the concurrently enabled self-profile gift wallet count.
 - [x] Run complete Flutter tests, native/update checks, server authorization checks and asset integrity checks.
 - [x] Generate Android platform, install the verified Vivox SDK, build APK and verify its package/signature/native libraries.
-- [ ] Record audit findings and remaining provider/device prerequisites; deliver the actual APK with checksum.
+- [x] Record audit findings and remaining provider/device prerequisites; deliver the actual APK with checksum. GitHub binary upload returned HTTP 401, so the verified APK is provided in shared downloads.
 
 **Review focus:** Kotlin compilation with AGP 8; idempotent project configuration; unchanged dependency lockfile; native voice libraries included; test signing clearly identified and kept out of production updater publication.
