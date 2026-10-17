@@ -39,7 +39,7 @@ class _FriendsState extends ConsumerState<TingleFriendsScreen> {
   Widget build(BuildContext context) {
     final ids = ref.watch(tinglePeopleProvider(tab));
     return Scaffold(
-      backgroundColor: const Color(0xfff6f4ff),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white, centerTitle: true,
         title: const Text('Friends',
@@ -51,38 +51,42 @@ class _FriendsState extends ConsumerState<TingleFriendsScreen> {
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(13, 0, 13, 26),
           children: [
             Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(22)),
+              margin: const EdgeInsets.fromLTRB(-13, 0, -13, 0),
+              padding: const EdgeInsets.fromLTRB(13, 8, 13, 8),
+              color: const Color(0xfff3f5ff),
               child: Row(children: [
                 for (var i = 0; i < 3; i++)
-                  Expanded(child: InkWell(
-                    key: ValueKey('friends-tab-$i'),
-                    onTap: () => setState(() => tab = i),
-                    borderRadius: BorderRadius.circular(18),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 160),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      decoration: BoxDecoration(
-                        color: tab == i ? NimzoStyle.primary
-                          : Colors.transparent,
-                        borderRadius: BorderRadius.circular(18)),
-                      child: Text(
-                        const ['Friends', 'Following', 'Followers'][i],
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w800,
-                          color: tab == i ? Colors.white
-                            : const Color(0xff897a99))),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: InkWell(
+                      key: ValueKey('friends-tab-$i'),
+                      onTap: () => setState(() => tab = i),
+                      borderRadius: BorderRadius.circular(32),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 160),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: tab == i ? NimzoStyle.primary
+                            : Colors.transparent,
+                          borderRadius: BorderRadius.circular(32)),
+                        child: Text(
+                          const ['Friends', 'Follow', 'Followers'][i],
+                          style: TextStyle(
+                            fontSize: 13, fontWeight: tab == i
+                              ? FontWeight.w800 : FontWeight.w500,
+                            color: tab == i ? Colors.white
+                              : const Color(0xff998eae)),
+                        ),
+                      ),
                     ),
-                  )),
+                  ),
               ]),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             ids.when(
               loading: () => const Center(
                 child: Padding(padding: EdgeInsets.all(25),
@@ -151,11 +155,16 @@ class _FriendCardState extends ConsumerState<_FriendCard> {
     final follow = widget.tab == 0
         ? null : ref.watch(isFollowingProvider(widget.userId));
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Material(
         color: Colors.white,
+        elevation: 1,
+        shadowColor: const Color(0x331c6ccf),
         clipBehavior: Clip.antiAlias,
-        borderRadius: BorderRadius.circular(21),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+          side: const BorderSide(color: Color(0xffe9eaff)),
+        ),
         child: profile.when(
           loading: () => const ListTile(title: Text('Loading profile…')),
           error: (_, __) => ListTile(
@@ -175,7 +184,7 @@ class _FriendCardState extends ConsumerState<_FriendCard> {
             final following = follow?.valueOrNull ?? false;
             return ListTile(
               key: ValueKey('friend-profile-${widget.userId}'),
-              minTileHeight: 92,
+              minTileHeight: 88,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 13, vertical: 5),
               onTap: () => context.push('/profile/${widget.userId}'),
@@ -232,9 +241,13 @@ class _FriendCardState extends ConsumerState<_FriendCard> {
                           ? null
                           : () => toggleFollow(following),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: NimzoStyle.primary,
-                        side: const BorderSide(
-                          color: Color(0xffdfc7f4)),
+                        foregroundColor: following
+                          ? NimzoStyle.primary : Colors.white,
+                        backgroundColor: following
+                          ? const Color(0xfff5eaff) : NimzoStyle.primary,
+                        side: BorderSide.none,
+                        minimumSize: const Size(88, 36),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                         shape: const StadiumBorder()),
                       child: Text(
                         working ? 'Wait…'
