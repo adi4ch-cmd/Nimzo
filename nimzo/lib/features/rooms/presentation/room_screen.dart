@@ -594,7 +594,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                     maxLines: 1,
                                                     overflow:
                                                         TextOverflow.ellipsis,
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
                                                       fontSize: 12,
                                                       color: RoomTheme.byId(
                                                         room.valueOrNull?.theme
