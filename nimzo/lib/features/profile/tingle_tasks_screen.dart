@@ -114,18 +114,18 @@ class TingleTasksScreen extends ConsumerWidget {
           await ref.read(taskProgressProvider.future);
         },
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
+          padding: const EdgeInsets.fromLTRB(14, 16, 14, 24),
           children: [
             const Text('Daily Tasks', style: TextStyle(
-              fontSize: 19, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 13),
+              fontSize: 16, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 9),
             for (final task in daily)
               _TaskCard(task: task,
                 verified: state == null ? null : state[task.id]),
             const SizedBox(height: 16),
             const Text('Growth Tasks', style: TextStyle(
-              fontSize: 19, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 13),
+              fontSize: 16, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 9),
             for (final task in growth)
               _TaskCard(task: task,
                 verified: state == null ? null : state[task.id]),
@@ -161,31 +161,31 @@ class _TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.only(bottom: 13),
+    margin: const EdgeInsets.only(bottom: 8),
     decoration: BoxDecoration(
       color: Colors.white,
       border: Border.all(color: const Color(0xfff0eefa)),
-      borderRadius: BorderRadius.circular(25),
+      borderRadius: BorderRadius.circular(14),
       boxShadow: const [
         BoxShadow(color: Color(0x0f4a327a),
-          blurRadius: 10, offset: Offset(0, 3)),
+          blurRadius: 5, offset: Offset(0, 2)),
       ],
     ),
     child: ListTile(
-      minTileHeight: 111,
-      contentPadding: const EdgeInsets.fromLTRB(15, 5, 16, 5),
+      minTileHeight: 67,
+      contentPadding: const EdgeInsets.fromLTRB(11, 2, 10, 2),
       leading: Container(
-        width: 74, height: 74,
+        width: 40, height: 40,
         decoration: BoxDecoration(
           color: task.color.withValues(alpha: .09),
-          borderRadius: BorderRadius.circular(19),
+          borderRadius: BorderRadius.circular(11),
           border: Border.all(color: task.color.withValues(alpha: .12)),
         ),
-        child: Icon(task.icon, color: task.color, size: 38),
+        child: Icon(task.icon, color: task.color, size: 24),
       ),
       title: Text(task.label, maxLines: 2,
         style: const TextStyle(
-          fontWeight: FontWeight.w800, fontSize: 17)),
+          fontWeight: FontWeight.w800, fontSize: 12)),
       subtitle: Text(
         verified == true ? 'Completed' :
           verified == false ? 'Not completed yet' : 'Progress not verified',
@@ -194,16 +194,17 @@ class _TaskCard extends StatelessWidget {
           color: verified == true ? const Color(0xff16a34a)
             : const Color(0xff887bb1))),
       trailing: SizedBox(
-        height: 51,
+        height: 32, width: 59,
         child: FilledButton(
           style: FilledButton.styleFrom(
             backgroundColor: NimzoStyle.primary,
+            padding: EdgeInsets.zero,
             shape: const StadiumBorder(),
           ),
           onPressed: () => context.go(task.route),
           child: Text(verified == true ? 'View' : 'Go',
             style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.w800,
+              fontSize: 12, fontWeight: FontWeight.w800,
               color: Colors.white)),
         ),
       ),
