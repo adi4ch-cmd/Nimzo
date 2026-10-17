@@ -89,6 +89,13 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'New post');
+    await tester.pump();
+    expect(
+      tester.widget<TextButton>(
+        find.byKey(const ValueKey('moment-top-post'))).onPressed,
+      isNotNull,
+      reason: 'Typing must visibly enable Post before submitting',
+    );
     // The user can publish through the visible reference AppBar action
     // even when the keyboard is open and the long draft scrolls below.
     expect(find.byKey(const ValueKey('moment-top-post')), findsOneWidget);
