@@ -54,16 +54,16 @@ class MainShell extends StatelessWidget {
                             padding: const EdgeInsets.all(7),
                             decoration: BoxDecoration(
                               color: shell.currentIndex == i
-                                  ? NimzoStyle.primary.withValues(alpha: .09)
+                                  ? NimzoStyle.primary
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(18),
                             ),
                             child: Icon(
                               _icons[i],
-                              size: 29,
+                              size: 27,
                               color: shell.currentIndex == i
-                                  ? NimzoStyle.primary
-                                  : const Color(0xffa39abc),
+                                  ? Colors.white
+                                  : const Color(0xff9d99b0),
                             ),
                           ),
                         ),
