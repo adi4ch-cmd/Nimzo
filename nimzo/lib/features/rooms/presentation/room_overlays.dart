@@ -183,13 +183,13 @@ class _ToolFormState extends State<RoomToolForm> {
           Text(
             tool == 'Vote'
                 ? 'Start a vote'
-                    : tool == 'Calculator'
-                        ? 'Gift calculator'
-                        : tool == 'Prize'
-                            ? 'Prize draw'
-                            : tool == 'Wheel'
-                                ? 'Room wheel'
-                                : tool,
+                : tool == 'Calculator'
+                    ? 'Gift calculator'
+                    : tool == 'Prize'
+                        ? 'Prize draw'
+                        : tool == 'Wheel'
+                            ? 'Room wheel'
+                            : tool,
             style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
           ),
           const SizedBox(height: 12),
