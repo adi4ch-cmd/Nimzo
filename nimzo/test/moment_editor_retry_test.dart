@@ -45,8 +45,12 @@ class PhotoStorage extends StorageService {
 class SaveRepository extends MomentRepository {
   SaveRepository(super.db);
   final pending = Completer<void>();
+  int creates = 0;
   @override
-  Future<void> create({String? text, String? imagePath}) => pending.future;
+  Future<void> create({String? text, String? imagePath}) {
+    creates++;
+    return pending.future;
+  }
 }
 
 void main() {
@@ -90,6 +94,8 @@ void main() {
     expect(find.byKey(const ValueKey('moment-top-post')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('moment-top-post')));
     await tester.pump();
+    expect(repo.creates, 1,
+      reason: 'Post must initiate the real repository save before dismissal');
     await tester.pumpWidget(const SizedBox());
     repo.pending.complete();
     await tester.pumpAndSettle();
