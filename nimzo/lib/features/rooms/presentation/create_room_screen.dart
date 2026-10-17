@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../profile/profile_image_format.dart';
+import '../../profile/profile_repository.dart';
 import 'room_controller.dart';
 
 /// Tingle-reference room creator using the existing Supabase room contract.
@@ -105,8 +106,20 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
     }
     setState(() => busy = true);
     try {
+      // Store the signed-in profile country with the permanent room so
+      // country-filtered discovery works for newly created audio rooms.
+      final userId = ref.read(currentUserIdProvider);
+      if (userId == null) throw StateError('Sign in required');
+      final owner = await ref.read(profileProvider(userId).future);
+      final code = owner.countryCode?.trim();
+      final name = owner.countryName?.trim();
+      final roomCountry = code != null && code.isNotEmpty
+          ? code
+          : name != null && name.isNotEmpty ? name : null;
       final id = await ref.read(roomRepositoryProvider).create(
-        name.text.trim(), password: isPrivate ? password.text.trim() : null,
+        name.text.trim(),
+        country: roomCountry,
+        password: isPrivate ? password.text.trim() : null,
       );
       String? metadataError;
       final db = ref.read(sessionSupabaseProvider).client;
