@@ -111,6 +111,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const ProfileSetupScreen(),
       ),
       GoRoute(
+        path: '/edit-profile',
+        builder: (_, __) => const ProfileSetupScreen(edit: true),
+      ),
+      GoRoute(
         path: '/create-room',
         builder: (_, __) => const CreateRoomScreen(),
       ),
