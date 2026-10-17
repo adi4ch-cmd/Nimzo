@@ -429,8 +429,14 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+        backgroundColor: const Color(0xfff5f2ff),
         appBar: AppBar(
-          title: Text(widget.id == null ? 'New moment' : 'Edit Moment'),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          foregroundColor: const Color(0xff332347),
+          title: Text(widget.id == null ? 'New moment' : 'Edit Moment',
+            style: const TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w900)),
         ),
         body: loadFailed
             ? Center(
@@ -446,25 +452,34 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
             : !ready
                 ? const Center(child: CircularProgressIndicator())
                 : ListView(
-                    padding: const EdgeInsets.all(16),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(17, 20, 17, 36),
                     children: [
                        Container(
                          padding: const EdgeInsets.all(16),
                          margin: const EdgeInsets.only(bottom: 14),
                          decoration: BoxDecoration(
-                           gradient: NimzoStyle.heroGradient,
-                           borderRadius: BorderRadius.circular(17),
+                           gradient: const LinearGradient(
+                             colors: [
+                               Color(0xff6638b5),
+                               Color(0xffa44ce4),
+                               Color(0xffe67dc7),
+                             ],
+                             begin: Alignment.topLeft,
+                             end: Alignment.bottomRight,
+                           ),
+                           borderRadius: BorderRadius.circular(25),
                          ),
                          child: const Row(children: [
                            Icon(Icons.auto_awesome_outlined,
-                             color: Colors.white, size: 25),
+                             color: Color(0xffffd87e), size: 34),
                            SizedBox(width: 12),
                            Expanded(child: Column(
                              crossAxisAlignment: CrossAxisAlignment.start,
                              children: [
                                Text('Share your story',
                                  style: TextStyle(color: Colors.white,
-                                   fontWeight: FontWeight.w800, fontSize: 17)),
+                                   fontWeight: FontWeight.w900, fontSize: 20)),
                                SizedBox(height: 3),
                                Text('Photos and words for your NIMZO community',
                                  style: TextStyle(color: Color(0xfff5eaff),
@@ -476,16 +491,37 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                       TextField(
                         controller: text,
                         maxLength: 2000,
-                        maxLines: 5,
+                        minLines: 5,
+                        maxLines: 8,
+                        textCapitalization: TextCapitalization.sentences,
                         decoration: const InputDecoration(
-                          hintText: 'Write a moment worth sharing…',
+                          hintText: 'Share your story with friends…',
+                          hintStyle: TextStyle(
+                            color: Color(0xffa99dbb),
+                            fontSize: 16),
                           filled: true,
-                          fillColor: NimzoStyle.surface,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(16)),
-                            borderSide: BorderSide(color: NimzoStyle.line)),
+                          fillColor: Colors.white,
+                          contentPadding: EdgeInsets.fromLTRB(
+                            19, 22, 19, 16),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(24)),
+                            borderSide: BorderSide(
+                              color: Color(0xffe5dff2))),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(24)),
+                            borderSide: BorderSide(
+                              color: NimzoStyle.primary, width: 1.8)),
                         ),
                       ),
+                      const SizedBox(height: 13),
+                      const Text('Photo',
+                        style: TextStyle(
+                          color: Color(0xff3b2a52),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 17)),
+                      const SizedBox(height: 10),
                       OutlinedButton.icon(
                         icon: const Icon(Icons.add_photo_alternate_outlined),
                         onPressed: busy
@@ -534,10 +570,23 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                   if (mounted) setState(() => busy = false);
                                 }
                               },
-                        label: Text(
-                            image == null ? 'Choose photo' : 'Replace photo'),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: NimzoStyle.primary,
+                          side: const BorderSide(
+                            color: Color(0xffdfd4ed)),
+                          minimumSize: const Size.fromHeight(75),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(23))),
+                        label: Text(image == null
+                          ? 'Choose photo from camera or gallery'
+                          : 'Replace photo',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15)),
                       ),
                       if (image != null) ...[
+                        const SizedBox(height: 14),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(14),
                           child: Image.network(
@@ -546,7 +595,8 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                 .storage
                                 .from('moments')
                                 .getPublicUrl(image!),
-                            height: 220,
+                            height: 230,
+                            width: double.infinity,
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) =>
                                 const EmptyContent('Image unavailable'),
@@ -558,7 +608,16 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                           child: const Text('Remove photo'),
                         ),
                       ],
+                      const SizedBox(height: 24),
                       FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: NimzoStyle.primary,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size.fromHeight(67),
+                          shape: const StadiumBorder(),
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 18)),
                         onPressed: busy
                             ? null
                             : () async {
