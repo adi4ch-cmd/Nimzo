@@ -173,4 +173,39 @@ void main() {
     expect(find.text('Existing post'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  testWidgets('reference Moment topics and Mention edit the actual draft',
+      (tester) async {
+    final db = (await tester.runAsync(() async => SupabaseClient(
+      'https://example.supabase.co', 'test-key',
+      authOptions: const AuthClientOptions(autoRefreshToken: false),
+    )))!;
+    addTearDown(() => tester.runAsync(db.dispose));
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        momentRepositoryProvider.overrideWithValue(SaveRepository(db)),
+      ],
+      child: const MaterialApp(home: CreateMomentScreen()),
+    ));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('moment-topic-#Bookworm')), 140,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.byKey(const ValueKey('moment-topic-#Bookworm')));
+    await tester.pump();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      contains('#Bookworm'),
+    );
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('moment-mention-entry')));
+    await tester.tap(find.byKey(const ValueKey('moment-mention-entry')));
+    await tester.pump();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      endsWith('@'),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
 }
