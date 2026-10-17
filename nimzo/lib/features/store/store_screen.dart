@@ -11,13 +11,19 @@ import '../wallet/wallet_screen.dart';
 import 'store_repository.dart';
 
 class RoyalStoreScreen extends ConsumerStatefulWidget {
-  const RoyalStoreScreen({super.key});
+  const RoyalStoreScreen({super.key, this.initialBag = false});
+  final bool initialBag;
   @override
   ConsumerState<RoyalStoreScreen> createState() => _RoyalStoreScreenState();
 }
 
 class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
-  bool bag = false;
+  late bool bag;
+  @override
+  void initState() {
+    super.initState();
+    bag = widget.initialBag;
+  }
   String? busy;
   String? pendingKey;
   String? pendingItem;
