@@ -149,32 +149,61 @@ class _State extends ConsumerState<RoomScreen> {
       confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
-      builder: (dialog) => AlertDialog(
-        backgroundColor: const Color(0xfff9f5ff),
+      builder: (dialog) => Dialog(
+        backgroundColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 46),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(26)),
-        title: const Row(
-          children: [
-            Icon(Icons.logout_rounded, color: Color(0xffa246ef), size: 30),
-            SizedBox(width: 10),
-            Expanded(child: Text('Leave audio room?',
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900))),
-          ],
+          borderRadius: BorderRadius.circular(36)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(23, 27, 23, 30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.exit_to_app_rounded,
+                color: Color(0xffff1515), size: 86),
+              const SizedBox(height: 15),
+              const Text(
+                'Are you sure you want to leave the audio room?',
+                key: ValueKey('confirm-audio-room-exit-question'),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18, color: Color(0xff111111),
+                  fontWeight: FontWeight.w800, height: 1.35)),
+              const SizedBox(height: 27),
+              SizedBox(
+                width: double.infinity, height: 51,
+                child: TextButton(
+                  key: const ValueKey('cancel-room-exit'),
+                  onPressed: () => Navigator.of(dialog).pop(false),
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xfff3eafe),
+                    foregroundColor: const Color(0xffaa49ed),
+                    shape: const StadiumBorder(),
+                  ),
+                  child: const Text('Keep',
+                    style: TextStyle(
+                      fontSize: 17, fontWeight: FontWeight.w800)),
+                ),
+              ),
+              const SizedBox(height: 11),
+              SizedBox(
+                width: double.infinity, height: 51,
+                child: TextButton(
+                  key: const ValueKey('confirm-room-exit'),
+                  onPressed: () => Navigator.of(dialog).pop(true),
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xffffeded),
+                    foregroundColor: const Color(0xffe31414),
+                    shape: const StadiumBorder(),
+                  ),
+                  child: const Text('Exit',
+                    style: TextStyle(
+                      fontSize: 17, fontWeight: FontWeight.w800)),
+                ),
+              ),
+            ],
+          ),
         ),
-        content: const Text(
-          'You will leave the microphones and voice session. '
-          'Your NIMZO account, room and coins will remain saved.',
-          style: TextStyle(fontSize: 14, height: 1.5)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(false),
-            child: const Text('Stay')),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xffa246ef)),
-            onPressed: () => Navigator.of(dialog).pop(true),
-            child: const Text('Leave room')),
-        ],
       ),
     );
     } finally {
