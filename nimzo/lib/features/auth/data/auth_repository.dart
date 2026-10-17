@@ -13,7 +13,8 @@ class AuthRepository {
       : AuthUser(
           id: u.id,
           email: u.email,
-          emailVerified: u.emailConfirmedAt != null,
+          emailVerified: u.emailConfirmedAt != null ||
+              (u.email == null && u.phoneConfirmedAt != null),
         );
 
   Stream<AuthUser?> watch() => _s.changes.map((e) => _map(e.session?.user));
@@ -41,6 +42,7 @@ class AuthRepository {
   Future<bool> verifyEmail({String? resendTo}) => _guard(() async {
         if (resendTo != null) await _s.resendVerification(resendTo);
         final r = await _s.refreshUser();
-        return r.user?.emailConfirmedAt != null;
+        return r.user?.emailConfirmedAt != null ||
+            (r.user?.email == null && r.user?.phoneConfirmedAt != null);
       });
 }
