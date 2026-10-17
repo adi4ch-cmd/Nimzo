@@ -123,6 +123,13 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('room-reactions-button')));
+    await tester.pumpAndSettle();
+    expect(find.text('Reactions'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('room-reaction-0')));
+    await tester.pumpAndSettle();
+    expect(tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      '😍');
     final seatTiles = [
       for (var seat = 1; seat <= 10; seat++)
         find.byKey(ValueKey('room-mic-seat-$seat')),
