@@ -77,8 +77,12 @@ Future<void> showPartyTools(BuildContext context, {String? roomId}) async {
     return;
   }
   if (tool == 10) {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoomMusicScreen()),
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: const Color(0x99080013),
+      isScrollControlled: true,
+      builder: (_) => const RoomMusicScreen(compact: true),
     );
     return;
   }
