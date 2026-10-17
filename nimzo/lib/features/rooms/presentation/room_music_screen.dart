@@ -152,6 +152,73 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
                   ),
                 ),
               ),
+              if (tracks.isNotEmpty) ...[
+                const SizedBox(height: 9),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Added music (${tracks.length})',
+                    style: const TextStyle(
+                      color: Color(0xff625577),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                SizedBox(
+                  height: (tracks.length * 48.0).clamp(48.0, 144.0),
+                  child: ListView.builder(
+                    key: const ValueKey('music-compact-track-list'),
+                    padding: EdgeInsets.zero,
+                    itemCount: tracks.length,
+                    itemExtent: 48,
+                    itemBuilder: (context, index) {
+                      final selected = playingIndex == index;
+                      return ListTile(
+                        key: ValueKey('music-compact-track-$index'),
+                        dense: true,
+                        visualDensity: VisualDensity.compact,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        tileColor: selected
+                            ? const Color(0xfff5ebff)
+                            : Colors.white,
+                        leading: Icon(
+                          selected
+                              ? Icons.equalizer_rounded
+                              : Icons.music_note_outlined,
+                          color: purple,
+                          size: 20,
+                        ),
+                        title: Text(
+                          tracks[index].name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: selected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                          ),
+                        ),
+                        trailing: Icon(
+                          selected
+                              ? Icons.pause_circle_outline_rounded
+                              : Icons.play_circle_outline_rounded,
+                          color: purple,
+                          size: 23,
+                        ),
+                        onTap: busy ? null : () => playTrack(index),
+                      );
+                    },
+                  ),
+                ),
+              ],
               StreamBuilder<Duration>(
                 stream: player.positionStream,
                 builder: (context, snap) {
