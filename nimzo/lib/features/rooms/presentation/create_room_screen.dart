@@ -175,8 +175,10 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           ],
         ),
       ),
-      child: SafeArea(
-        child: Column(children: [
+      child: CustomPaint(
+        painter: const _RoomMountainBackdrop(),
+        child: SafeArea(
+          child: Column(children: [
           Row(children: [
             IconButton(
               onPressed: () => context.pop(),
@@ -274,10 +276,67 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               ],
             ),
           ),
-        ]),
+          ]),
+        ),
       ),
     ),
   );
+}
+
+class _RoomMountainBackdrop extends CustomPainter {
+  const _RoomMountainBackdrop();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width, h = size.height;
+    final ridge = Path()
+      ..moveTo(0, h * .38)
+      ..lineTo(w * .17, h * .31)
+      ..lineTo(w * .29, h * .35)
+      ..lineTo(w * .47, h * .25)
+      ..lineTo(w * .61, h * .31)
+      ..lineTo(w * .79, h * .23)
+      ..lineTo(w, h * .3)
+      ..lineTo(w, h)
+      ..lineTo(0, h)
+      ..close();
+    canvas.drawPath(ridge, Paint()
+      ..color = const Color(0x3367b2ff));
+    final distant = Path()
+      ..moveTo(0, h * .61)
+      ..lineTo(w * .12, h * .51)
+      ..lineTo(w * .27, h * .56)
+      ..lineTo(w * .41, h * .47)
+      ..lineTo(w * .57, h * .53)
+      ..lineTo(w * .7, h * .44)
+      ..lineTo(w * .83, h * .50)
+      ..lineTo(w, h * .38)
+      ..lineTo(w, h)
+      ..lineTo(0, h)
+      ..close();
+    canvas.drawPath(distant, Paint()
+      ..color = const Color(0x336600e9));
+    final near = Path()
+      ..moveTo(0, h * .87)
+      ..quadraticBezierTo(w * .23, h * .75, w * .46, h * .84)
+      ..quadraticBezierTo(w * .70, h * .98, w, h * .76)
+      ..lineTo(w, h)
+      ..lineTo(0, h)
+      ..close();
+    canvas.drawPath(near, Paint()
+      ..color = const Color(0x663000d6));
+    final horizon = Paint()
+      ..color = const Color(0x8affccf9)
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+    canvas.drawPath(Path()
+      ..moveTo(0, h * .87)
+      ..quadraticBezierTo(w * .23, h * .75, w * .46, h * .84)
+      ..quadraticBezierTo(w * .70, h * .98, w, h * .76), horizon);
+  }
+
+  @override
+  bool shouldRepaint(covariant _RoomMountainBackdrop old) => false;
 }
 
 class _Label extends StatelessWidget {
