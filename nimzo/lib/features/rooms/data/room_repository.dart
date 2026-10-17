@@ -8,10 +8,25 @@ class RoomRepository {
   final SupabaseClient _db;
   RoomRepository(this._db);
 
-  Future<List<Room>> popular({String? country}) async {
+  Future<List<Room>> popular({
+    String? country,
+    String? alternateCountry,
+  }) async {
     try {
       var q = _db.from('rooms_ranked').select().eq('status', 'open');
-      if (country != null) q = q.eq('country', country);
+      if (country != null) {
+        // Historical rooms can use full country names while new profiles
+        // record ISO codes. Use a parameterized PostgREST filter for both.
+        final accepted = <String>{
+          country.trim(),
+          if (alternateCountry != null) alternateCountry.trim(),
+        }..remove('');
+        if (accepted.length == 1) {
+          q = q.eq('country', accepted.single);
+        } else if (accepted.isNotEmpty) {
+          q = q.inFilter('country', accepted.toList());
+        }
+      }
       final rows = await q.order('member_count', ascending: false).limit(50);
       return rows.map(Room.fromJson).toList();
     } catch (e) {
