@@ -64,6 +64,7 @@ jobs:
               manifest.write_text(src)
           print('Android host restored using io.nimzo.app')
           PY
+          rm -f test/widget_test.dart # Flutter's generated starter test references nonexistent MyApp
       - name: Fetch packages
         run: flutter pub get
       - name: Check source
