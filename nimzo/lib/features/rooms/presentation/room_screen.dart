@@ -325,7 +325,7 @@ class _State extends ConsumerState<RoomScreen> {
         child: PopScope(
           canPop: _allowPop,
           onPopInvokedWithResult: (didPop, _) {
-            if (!didPop) unawaited(_exitRoom());
+            if (!didPop) unawaited(_confirmRoomExit());
           },
           child: Stack(
             children: [
