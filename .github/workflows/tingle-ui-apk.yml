@@ -30,6 +30,40 @@ jobs:
           cache: true
       - name: Show Flutter version
         run: flutter --version
+      - name: Restore missing Android host project
+        run: |
+          flutter create . --org io.nimzo --project-name nimzo --platforms android
+          python3 - <<'PY'
+          from pathlib import Path
+          base = Path('android/app')
+          for target in [base/'build.gradle.kts',base/'build.gradle']:
+              if target.exists():
+                  src=target.read_text().replace('io.nimzo.nimzo','io.nimzo.app')
+                  target.write_text(src)
+          old=base/'src/main/kotlin/io/nimzo/nimzo/MainActivity.kt'
+          if old.exists():
+              new=base/'src/main/kotlin/io/nimzo/app/MainActivity.kt'
+              new.parent.mkdir(parents=True,exist_ok=True)
+              new.write_text(old.read_text().replace('io.nimzo.nimzo','io.nimzo.app'))
+              old.unlink()
+          manifest=base/'src/main/AndroidManifest.xml'
+          if manifest.exists():
+              src=manifest.read_text()
+              if 'android.permission.INTERNET' not in src:
+                  src=src.replace('<application','<uses-permission android:name="android.permission.INTERNET"/>\\n    <application',1)
+              if 'android.permission.RECORD_AUDIO' not in src:
+                  src=src.replace('<application','<uses-permission android:name="android.permission.RECORD_AUDIO"/>\\n    <application',1)
+              if 'login-callback' not in src:
+                  callback='''<intent-filter android:autoVerify="false">
+                      <action android:name="android.intent.action.VIEW"/>
+                      <category android:name="android.intent.category.DEFAULT"/>
+                      <category android:name="android.intent.category.BROWSABLE"/>
+                      <data android:scheme="io.nimzo.app" android:host="login-callback"/>
+                    </intent-filter>'''
+                  src=src.replace('</activity>',callback+'\\n        </activity>',1)
+              manifest.write_text(src)
+          print('Android host restored using io.nimzo.app')
+          PY
       - name: Fetch packages
         run: flutter pub get
       - name: Check source
