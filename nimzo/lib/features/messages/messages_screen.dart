@@ -16,7 +16,22 @@ class MessagesScreen extends ConsumerWidget {
   const MessagesScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(title: const GradientText('Messages')),
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          title: const Text('Messages',
+            style: TextStyle(fontWeight: FontWeight.w900,
+              color: Color(0xff2b2239))),
+          actions: [
+            IconButton(
+              tooltip: 'Friends and followers',
+              onPressed: () => context.push('/friends'),
+              icon: const Icon(Icons.people_alt_outlined,
+                color: NimzoStyle.primary),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xfff6f5ff),
         body: RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(conversationsProvider);
