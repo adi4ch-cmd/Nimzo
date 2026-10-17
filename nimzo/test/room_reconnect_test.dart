@@ -251,8 +251,8 @@ void main() {
       reason: 'Opening then canceling a seat sheet never rejoins');
     await tester.tap(find.byKey(const ValueKey('room-confirm-exit')));
     await tester.pumpAndSettle();
-    expect(find.text('Leave audio room?'), findsOneWidget);
-    await tester.tap(find.text('Stay'));
+    expect(find.byKey(const ValueKey('confirm-audio-room-exit-question')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('cancel-room-exit')));
     await tester.pumpAndSettle();
     expect(find.text('Leave audio room?'), findsNothing);
     expect(voice.leaves, 0,
