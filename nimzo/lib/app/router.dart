@@ -17,7 +17,7 @@ import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/auth_controller.dart';
 import '../features/auth/presentation/forgot_screen.dart';
 import '../features/auth/presentation/tingle_login_screen.dart';
-import '../features/auth/presentation/register_screen.dart';
+import '../features/auth/presentation/tingle_register_screen.dart';
 import '../features/auth/presentation/verify_screen.dart';
 import '../features/discover/discover_screen.dart';
 import '../features/settings/settings_screen.dart';
@@ -99,7 +99,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.login, builder: (_, __) => const TingleLoginScreen()),
       GoRoute(
         path: Routes.register,
-        builder: (_, __) => const RegisterScreen(),
+        builder: (_, __) => const TingleRegisterScreen(),
       ),
       GoRoute(path: Routes.forgot, builder: (_, __) => const ForgotScreen()),
       GoRoute(
