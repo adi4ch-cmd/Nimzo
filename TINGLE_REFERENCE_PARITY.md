@@ -218,3 +218,16 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 - Added source-only CI tests for valid phone formats and login redirect.
 - Real PK scoring, consent and OTP work do not modify the ten-seat rule.
 - Full clone / reference match is NOT complete; final APK build remains locked.
+
+## 2026-10-17 latest verified source-only QA (no APK)
+- Source-only workflow run **39053724116**: analyzer, asset integrity,
+  ten-mic constraints, Friends, PK score and Mobile OTP routing all passed.
+- Full Flutter suite **310 passed, 3 failed**. The three failures are
+  previous visual golden comparisons in `master_visual_preview_test.dart`,
+  `reference_preview_test.dart`, and `remaining_visual_qa_test.dart`.
+- Golden candidate/diff files exist as CI review artifacts only. No golden
+  baselines were auto-approved; no APK/AAB/release workflow was triggered.
+- Remaining launch blockers include original-quality licensed animated
+  media, server-catalog frames/entries/bubbles, phone SMS delivery QA,
+  in-room Vivox PK and ten-mic device testing, and direct reference
+  screenshot parity review.
