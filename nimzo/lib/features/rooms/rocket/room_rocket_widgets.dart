@@ -287,6 +287,10 @@ class _RocketStageTile extends StatelessWidget {
             child: Image.asset(
               'assets/room_rocket/posters/rocket_stage_${stage + 1}.png',
               fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => Icon(
+                Icons.rocket_launch_rounded,
+                size: 20, color: _rocketTones[stage],
+              ),
             ),
           ),
           const SizedBox(width: 3),
