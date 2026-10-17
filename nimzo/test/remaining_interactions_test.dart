@@ -37,6 +37,7 @@ class PendingLanguage extends ProfileRepository {
   @override
   Future<void> update({
     String? displayName,
+    String? username,
     String? bio,
     String? avatarPath,
     String? coverPath,

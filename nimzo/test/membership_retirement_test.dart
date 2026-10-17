@@ -8,7 +8,7 @@ import 'package:nimzo/features/auth/domain/auth_user.dart';
 import 'package:nimzo/features/auth/presentation/auth_controller.dart';
 import 'package:nimzo/features/profile/profile.dart';
 import 'package:nimzo/features/profile/profile_repository.dart';
-import 'package:nimzo/features/profile/retired_membership_screen.dart';
+import 'package:nimzo/features/profile/tingle_membership_screen.dart';
 
 void main() {
   test('stale server membership cannot restore retired identity', () {
@@ -25,7 +25,7 @@ void main() {
   });
   for (final svip in [false, true]) {
     testWidgets(
-        'retired ${svip ? 'SVIP' : 'VIP'} destination is completely empty',
+        '${svip ? 'SVIP' : 'VIP'} reference preview never grants a paid entitlement',
         (tester) async {
       final db = (await tester.runAsync(() async => SupabaseClient(
             'https://example.supabase.co',
@@ -52,11 +52,11 @@ void main() {
         child: MaterialApp.router(routerConfig: router),
       ));
       await tester.pumpAndSettle();
-      expect(find.byType(RetiredMembershipScreen), findsOneWidget);
+      expect(find.byType(TingleMembershipScreen), findsOneWidget);
       expect(router.routeInformationProvider.value.uri.path,
           svip ? '/svip' : '/vip');
-      expect(find.byType(Text), findsNothing);
-      expect(find.byType(IconButton), findsNothing);
+      expect(find.text('Membership privileges'), findsOneWidget);
+      expect(find.text(svip ? 'SVIP' : 'VIP'), findsOneWidget);
       expect(find.byType(FilledButton), findsNothing);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());

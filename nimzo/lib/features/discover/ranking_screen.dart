@@ -23,10 +23,52 @@ class _State extends ConsumerState<RankingScreen> {
     );
     final supported = (category == 1 || category == 2) && period > 0;
     return Scaffold(
-      appBar: AppBar(title: const Text('Ranking')),
+      backgroundColor: const Color(0xfff6f4ff),
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: const Text('Ranking', style: TextStyle(
+          color: Color(0xff2d1c46),
+          fontWeight: FontWeight.w900, fontSize: 21))),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(15, 16, 15, 50),
         children: [
+          Container(
+            height: 145,
+            padding: const EdgeInsets.fromLTRB(23, 15, 23, 15),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xff422489), Color(0xff8243d0),
+                  Color(0xffd47add),
+                ]),
+              borderRadius: BorderRadius.circular(27)),
+            child: Row(children: [
+              const Expanded(child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('NIMZO RANKING',
+                    style: TextStyle(
+                      color: Color(0xffffd18c),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 12, letterSpacing: 2)),
+                  SizedBox(height: 9),
+                  Text('Top Stars',
+                    style: TextStyle(color: Colors.white,
+                      fontSize: 28, fontWeight: FontWeight.w900)),
+                  SizedBox(height: 5),
+                  Text('Live verified leaderboards',
+                    style: TextStyle(color: Color(0xfff1dcff),
+                      fontSize: 12)),
+                ],
+              )),
+              const Icon(Icons.emoji_events_rounded,
+                color: Color(0xffffdf7b), size: 85),
+            ]),
+          ),
+          const SizedBox(height: 19),
           ReferenceTabs(
             labels: const ['Gift', 'Wealth', 'Charm', 'Active'],
             selected: category,
@@ -41,7 +83,7 @@ class _State extends ConsumerState<RankingScreen> {
           ),
           const SizedBox(height: 12),
           if (!supported)
-            const EmptyContent('This ranking is unavailable.')
+            const EmptyContent('Only verified Wealth/Charm weekly and monthly rankings are available.')
           else
             AsyncContent(
               value: ref.watch(leaderboardProvider(key)),
@@ -53,10 +95,14 @@ class _State extends ConsumerState<RankingScreen> {
                         RankingPodium(rows: rows.take(3).toList()),
                         for (var i = 3; i < rows.length; i++)
                           Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(color: NimzoStyle.line),
-                              ),
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(19),
+                              border: Border.all(
+                                color: NimzoStyle.line),
                             ),
                             child: ListTile(
                               contentPadding: EdgeInsets.zero,

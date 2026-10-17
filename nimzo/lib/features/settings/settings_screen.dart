@@ -5,99 +5,159 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../auth/presentation/auth_controller.dart';
 import '../voice/voice_controller.dart';
-import '../../core/services/app_update_service.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/theme/app_theme.dart';
+import '../support/legal_content.dart';
 import 'reference_info_content.dart';
 import 'user_preferences.dart';
-import '../support/legal_content.dart';
 
+/// Settings screen patterned on the provided Tingle screenshot.
+/// Only backend-supported settings are mutable.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
+
+  void _notice(BuildContext context, String text) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  Future<void> _logout(BuildContext context, WidgetRef ref) async {
+    final auth = ref.read(authControllerProvider.notifier);
+    final voice = ref.read(voiceServiceProvider);
+    try {
+      try { await voice.leave(); } catch (_) {}
+      await auth.signOut();
+      if (ref.read(authControllerProvider).hasError && context.mounted) {
+        _notice(context, 'Could not log out. Please retry.');
+      }
+    } catch (_) {
+      if (context.mounted) _notice(context, 'Could not log out. Please retry.');
+    }
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(title: const Text('Settings')),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Material(
-              color: NimzoStyle.surface,
-              borderRadius: BorderRadius.circular(14),
-              child: Column(
-                children: [
-                  for (final label in [
-                    'Account',
-                    'Privacy',
-                    'Language',
-                    'Help and feedback',
-                    'About',
-                  ])
-                    ListTile(
-                      title: Text(label),
-                      minTileHeight: 46,
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 14),
-                      shape: const Border(
-                        bottom: BorderSide(color: NimzoStyle.line),
-                      ),
-                      onTap: () =>
-                          context.push('/info/${Uri.encodeComponent(label)}'),
-                    ),
-                  const PreferenceControls(),
-                ],
-              ),
-            ),
-            const SizedBox(height: 14),
-            ListTile(
-              leading: const Icon(Icons.system_update),
-              title: const Text('Check for updates'),
-              subtitle: const Text('Check NIMZO testing APK releases'),
-              onTap: () =>
-                  NimzoAppUpdateService.prompt(context, showUpToDate: true),
-            ),
-            OutlinedButton(
-              onPressed: ref.watch(authControllerProvider).isLoading
-                  ? null
-                  : () async {
-                      final auth = ref.read(authControllerProvider.notifier);
-                      final voice = ref.read(voiceServiceProvider);
-                      final container = ProviderScope.containerOf(
-                        context,
-                        listen: false,
-                      );
-                      try {
-                        try {
-                          await voice.leave();
-                        } catch (_) {
-                          /* Session logout must still run. */
-                        }
-                        await auth.signOut();
-                        if (container.read(authControllerProvider).hasError &&
-                            context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Logout could not be completed. Retry.',
-                              ),
-                            ),
-                          );
-                        }
-                      } catch (_) {
-                        if (context.mounted)
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Logout could not be completed. Retry.',
-                              ),
-                            ),
-                          );
-                      }
-                    },
-              child: const Text('Logout'),
-            ),
-          ],
-        ),
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prefs = ref.watch(userPreferencesProvider);
+    final current = prefs.valueOrNull;
+    final notifications = current?.messages == true && current?.gifts == true;
+    Future<void> setNotifications(bool value) async {
+      try {
+        await ref.read(userPreferencesProvider.notifier)
+            .change(messages: value, gifts: value);
+      } catch (_) {
+        if (context.mounted) _notice(context, 'Failed to save setting.');
+      }
+    }
+
+    return Scaffold(
+      backgroundColor: const Color(0xfff8f8f8),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        title: const Text('Settings',
+          style: TextStyle(color: Colors.black, fontSize: 20,
+            fontWeight: FontWeight.w800)),
+      ),
+      body: ListView(children: [
+        const SizedBox(height: 12),
+        Material(color: Colors.white, child: Column(children: [
+          _SettingRow(
+            title: 'Notify Me',
+            trailing: current == null
+              ? const Icon(Icons.hourglass_empty, color: Colors.grey)
+              : Switch(
+                  value: notifications,
+                  onChanged: prefs.isLoading ? null : setNotifications,
+                  activeTrackColor: NimzoStyle.primary,
+                ),
+          ),
+          _SettingRow(
+            title: 'Audio Calls',
+            trailing: const Icon(Icons.chevron_right, color: Color(0xffc5c2d5)),
+            onTap: () => _notice(context,
+              'NIMZO supports voice rooms; private calls are not available.'),
+          ),
+          _SettingRow(
+            title: 'Video Calls',
+            trailing: const Icon(Icons.chevron_right, color: Color(0xffc5c2d5)),
+            onTap: () => _notice(context,
+              'NIMZO is an audio-only application.'),
+          ),
+          _SettingRow(
+            title: 'Blocked Users',
+            onTap: () => context.push('/settings/blocked'),
+          ),
+          for (final title in const [
+            'Verification Request', 'Private Call Charges',
+          ]) _SettingRow(
+            title: title,
+            onTap: () => _notice(context,
+              'This setting needs a verified backend workflow.'),
+          ),
+          _SettingRow(
+            title: 'Languages',
+            onTap: () => context.push('/info/Language'),
+          ),
+          _SettingRow(
+            title: 'Privacy Policy',
+            onTap: () => context.push('/info/Privacy Policy'),
+          ),
+          _SettingRow(
+            title: 'Terms Of Use',
+            onTap: () => context.push('/info/Terms Of Use'),
+          ),
+        ])),
+        const SizedBox(height: 12),
+        Material(color: Colors.white, child: Column(children: [
+          _SettingRow(
+            title: 'Logout',
+            titleColor: Colors.red,
+            trailing: const SizedBox.shrink(),
+            onTap: ref.watch(authControllerProvider).isLoading
+              ? null : () => _logout(context, ref),
+          ),
+          _SettingRow(
+            title: 'Delete Account',
+            titleColor: Colors.red,
+            trailing: const SizedBox.shrink(),
+            onTap: () => context.push('/info/Account'),
+          ),
+        ])),
+      ]),
+    );
+  }
+}
+
+class _SettingRow extends StatelessWidget {
+  final String title;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final Color titleColor;
+  const _SettingRow({
+    required this.title, this.trailing, this.onTap,
+    this.titleColor = Colors.black,
+  });
+
+  @override
+  Widget build(BuildContext context) => Column(children: [
+    Material(
+      color: Colors.white,
+      child: ListTile(
+      minTileHeight: 49,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 17),
+      title: Text(title,
+        style: TextStyle(fontSize: 14, color: titleColor,
+          fontWeight: FontWeight.w500)),
+      trailing: trailing ?? const Icon(Icons.chevron_right,
+        color: Color(0xffd0cddb)),
+      onTap: onTap,
+    ),
+    ),
+    const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 17),
+      child: Divider(height: 1, color: Color(0xffeeeeee)),
+    ),
+  ]);
 }
 
 class InfoScreen extends StatelessWidget {
@@ -109,7 +169,7 @@ class InfoScreen extends StatelessWidget {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: title == 'About'
+            child: ['About', 'Privacy Policy', 'Terms Of Use'].contains(title)
                 ? const Column(
                     children: [_InstalledAppAbout(), LegalPoliciesContent()],
                   )

@@ -136,7 +136,11 @@ class CouplePanel extends StatelessWidget {
 class CollectibleArtwork extends StatelessWidget {
   final Map<String, dynamic> item;
   final double size;
-  const CollectibleArtwork({super.key, required this.item, this.size = 58});
+  final bool iconOnlyFallback;
+  const CollectibleArtwork({
+    super.key, required this.item, this.size = 58,
+    this.iconOnlyFallback = false,
+  });
   @override
   Widget build(BuildContext context) {
     final path = item['image_path']?.toString() ??
@@ -167,7 +171,10 @@ class CollectibleArtwork extends StatelessWidget {
         width: size,
         height: size,
         child: Center(
-          child: Text(
+          child: iconOnlyFallback
+              ? const Icon(Icons.image_not_supported_outlined,
+                  color: NimzoStyle.muted, size: 33)
+              : Text(
             item['name']?.toString() ?? 'Artwork unavailable',
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 11, color: NimzoStyle.muted),

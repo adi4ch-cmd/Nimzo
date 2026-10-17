@@ -3,16 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/core/theme/app_theme.dart';
 
 void main() {
-  test('ByChance-inspired palette keeps NIMZO identity consistent', () {
-    expect(NimzoStyle.primary, const Color(0xff8b3dff));
-    expect(NimzoStyle.pink, const Color(0xfff45191));
-    expect(NimzoStyle.blue, const Color(0xff298df5));
-    expect(NimzoStyle.orange, const Color(0xffff941f));
-    expect(NimzoStyle.royal, const Color(0xff6628cf));
+  test('Tingle-reference lavender palette keeps NIMZO identity consistent', () {
+    expect(NimzoStyle.primary, const Color(0xffa243f5));
+    expect(NimzoStyle.pink, const Color(0xffed428c));
+    expect(NimzoStyle.blue, const Color(0xff3a85ff));
+    expect(NimzoStyle.orange, const Color(0xffffab21));
+    expect(NimzoStyle.royal, const Color(0xff7439d4));
     expect(NimzoStyle.heroGradient.colors, <Color>[
-      NimzoStyle.royal,
       NimzoStyle.primary,
-      NimzoStyle.pink,
+      NimzoStyle.royal,
     ]);
   });
 

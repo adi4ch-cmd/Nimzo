@@ -15,7 +15,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('No rooms available yet.'), findsOneWidget);
+    expect(find.text('No rooms found.'), findsOneWidget);
     expect(find.textContaining('FAISALABAD'), findsNothing);
     expect(find.textContaining('128 online'), findsNothing);
     expect(tester.takeException(), isNull);

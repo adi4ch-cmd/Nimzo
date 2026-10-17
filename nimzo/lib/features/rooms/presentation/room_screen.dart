@@ -15,6 +15,7 @@ import '../../../core/widgets/reference_widgets.dart';
 import '../../gifts/gift_sheet.dart';
 import '../../gifts/yo2_gift_ui.dart';
 import '../../games/games_catalog_screen.dart';
+import '../../home/pk_battles_screen.dart';
 import '../../games/room_game_host.dart';
 import '../../voice/voice_controller.dart';
 import '../../voice/vivox_voice_service.dart';
@@ -44,6 +45,7 @@ class _State extends ConsumerState<RoomScreen> {
   Timer? _voiceDropTimer;
   bool joining = true, joined = false, mic = false, leaving = false;
   bool _allowPop = false;
+  bool _exitPromptVisible = false;
   bool micBusy = false;
   bool chatBusy = false;
   String? failure;
@@ -137,6 +139,50 @@ class _State extends ConsumerState<RoomScreen> {
     }
   }
 
+  /// Explicit header exit follows the reference confirmation design.
+  /// A cancellation does not drop the Vivox connection or room membership.
+  Future<void> _confirmRoomExit() async {
+    if (!mounted || leaving || _allowPop || _exitPromptVisible) return;
+    _exitPromptVisible = true;
+    bool? confirmed;
+    try {
+      confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialog) => AlertDialog(
+        backgroundColor: const Color(0xfff9f5ff),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(26)),
+        title: const Row(
+          children: [
+            Icon(Icons.logout_rounded, color: Color(0xffa246ef), size: 30),
+            SizedBox(width: 10),
+            Expanded(child: Text('Leave audio room?',
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900))),
+          ],
+        ),
+        content: const Text(
+          'You will leave the microphones and voice session. '
+          'Your NIMZO account, room and coins will remain saved.',
+          style: TextStyle(fontSize: 14, height: 1.5)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialog).pop(false),
+            child: const Text('Stay')),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xffa246ef)),
+            onPressed: () => Navigator.of(dialog).pop(true),
+            child: const Text('Leave room')),
+        ],
+      ),
+    );
+    } finally {
+      _exitPromptVisible = false;
+    }
+    if (confirmed == true && mounted) await _exitRoom();
+  }
+
   Future<void> _exitRoom() async {
     if (leaving || _allowPop || !mounted) return;
     try {
@@ -176,6 +222,127 @@ class _State extends ConsumerState<RoomScreen> {
             content: Text('Action could not be completed. Please retry.'),
           ),
         );
+    }
+  }
+
+  /// Matches the reference empty-seat action sheet without inventing
+  /// moderation RPCs. Taking a seat keeps using the verified current RPC.
+  Future<void> _showOpenSeatActions(int seatNo) async {
+    if (!mounted || !joined) return;
+    final chosen = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.white,
+      barrierColor: const Color(0xaa080411),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(34)),
+      ),
+      builder: (sheet) => SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 13),
+            ListTile(
+              key: const ValueKey('room-seat-here'),
+              minTileHeight: 58,
+              title: const Center(child: Text('Seat Here',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+              onTap: () => Navigator.of(sheet).pop(true),
+            ),
+            const Divider(height: 1, color: Color(0xfff2f2f2)),
+            const ListTile(
+              key: ValueKey('room-seat-give'),
+              enabled: false,
+              minTileHeight: 58,
+              title: Center(child: Text('Give the Mic')),
+            ),
+            const Divider(height: 1, color: Color(0xfff2f2f2)),
+            const ListTile(
+              key: ValueKey('room-seat-lock'),
+              enabled: false,
+              minTileHeight: 58,
+              title: Center(child: Text('Lock the Mic')),
+            ),
+            const Divider(height: 1, color: Color(0xfff2f2f2)),
+            const ListTile(
+              key: ValueKey('room-seat-mute'),
+              enabled: false,
+              minTileHeight: 58,
+              title: Center(child: Text('Mute the Mic')),
+            ),
+            const SizedBox(height: 8),
+            const Divider(thickness: 7, height: 7,
+              color: Color(0xfff8f8fa)),
+            TextButton(
+              key: const ValueKey('room-seat-cancel'),
+              style: TextButton.styleFrom(
+                minimumSize: const Size.fromHeight(61),
+                foregroundColor: Colors.red,
+              ),
+              onPressed: () => Navigator.of(sheet).pop(false),
+              child: const Text('Cancel',
+                style: TextStyle(fontSize: 17,
+                  fontWeight: FontWeight.w800)),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (chosen == true && mounted && joined) {
+      await ref.read(roomRepositoryProvider).takeSeat(widget.roomId, seatNo);
+    }
+  }
+
+  Future<void> _showRoomReactions() async {
+    if (!mounted || !joined) return;
+    final chosen = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
+      builder: (sheet) => SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(15, 18, 15, 18),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Row(children: [
+              const Expanded(child: Text('Reactions',
+                style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800))),
+              IconButton(
+                tooltip: 'Close reactions',
+                onPressed: () => Navigator.of(sheet).pop(),
+                icon: const Icon(Icons.close_rounded),
+              ),
+            ]),
+            const SizedBox(height: 12),
+            Row(children: [
+              for (final (index, emoji) in const [
+                '😍', '🥰', '😂', '😎', '😭', '🎉',
+              ].indexed)
+                Expanded(
+                  child: InkWell(
+                    key: ValueKey('room-reaction-$index'),
+                    onTap: () => Navigator.of(sheet).pop(emoji),
+                    borderRadius: BorderRadius.circular(14),
+                    child: SizedBox(height: 58,
+                      child: Center(child: Text(emoji,
+                        style: const TextStyle(fontSize: 32)))),
+                  ),
+                ),
+            ]),
+          ]),
+        ),
+      ),
+    );
+    if (chosen != null && mounted) {
+      // In the UI-first stage, a reaction edits the real outgoing draft.
+      // Do not fabricate a broadcast or write an unverified server event.
+      text.value = TextEditingValue(
+        text: text.text + chosen,
+        selection: TextSelection.collapsed(
+          offset: text.text.length + chosen.length),
+      );
     }
   }
 
@@ -287,7 +454,7 @@ class _State extends ConsumerState<RoomScreen> {
         child: PopScope(
           canPop: _allowPop,
           onPopInvokedWithResult: (didPop, _) {
-            if (!didPop) unawaited(_exitRoom());
+            if (!didPop) unawaited(_confirmRoomExit());
           },
           child: Stack(
             children: [
@@ -296,8 +463,33 @@ class _State extends ConsumerState<RoomScreen> {
                   room.valueOrNull?.theme ?? 'nimzo_white',
                 ).gradient.last,
                 appBar: AppBar(
+                  backgroundColor: RoomTheme.byId(
+                    room.valueOrNull?.theme ?? 'nimzo_white',
+                  ).gradient.first,
+                  foregroundColor: RoomTheme.byId(
+                    room.valueOrNull?.theme ?? 'nimzo_white',
+                  ).text,
                   toolbarHeight: 64,
                   titleSpacing: 0,
+                  actions: [
+                    IconButton(
+                      key: const ValueKey('room-live-pk'),
+                      tooltip: 'Room PK Battle',
+                      onPressed: joined ? () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const PkBattlesScreen(),
+                        ),
+                      ) : null,
+                      icon: const Icon(Icons.bolt_rounded,
+                        size: 25, color: Color(0xffa84bdc)),
+                    ),
+                    IconButton(
+                      key: const ValueKey('room-confirm-exit'),
+                      tooltip: 'Leave audio room',
+                      onPressed: leaving ? null : _confirmRoomExit,
+                      icon: const Icon(Icons.close_rounded, size: 26),
+                    ),
+                  ],
                   title: InkWell(
                     onTap: room.valueOrNull == null
                         ? null
@@ -338,9 +530,11 @@ class _State extends ConsumerState<RoomScreen> {
                               ),
                               Text(
                                 'ID:${room.valueOrNull?.roomNo ?? '—'} · ${ref.watch(onlineCountProvider(widget.roomId)).valueOrNull?.toString() ?? '—'} online',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
-                                  color: NimzoStyle.muted,
+                                  color: RoomTheme.byId(
+                                    room.valueOrNull?.theme ?? 'nimzo_white',
+                                  ).text.withValues(alpha: .8),
                                 ),
                               ),
                             ],
@@ -415,7 +609,7 @@ class _State extends ConsumerState<RoomScreen> {
                             for (var row = 0; row < 2; row++)
                               Padding(
                                 padding: EdgeInsets.only(
-                                  bottom: row == 0 ? 14 : 0,
+                                  bottom: row == 0 ? 8 : 0,
                                 ),
                                 child: Row(
                                   children: [
@@ -439,14 +633,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                   ? null
                                                   : () => action(() async {
                                                         if (s.userId == null) {
-                                                          await ref
-                                                              .read(
-                                                                roomRepositoryProvider,
-                                                              )
-                                                              .takeSeat(
-                                                                widget.roomId,
-                                                                n,
-                                                              );
+                                                          await _showOpenSeatActions(n);
                                                         } else {
                                                           await showDialog<
                                                               void>(
@@ -491,18 +678,62 @@ class _State extends ConsumerState<RoomScreen> {
                                                           );
                                                         }
                                                       }),
-                                              child: Column(
-                                                children: [
+                                              child: Container(
+                                                key: ValueKey('room-mic-seat-$n'),
+                                                height: 88,
+                                                margin: const EdgeInsets.symmetric(
+                                                  horizontal: 1.5),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0x665e337e),
+                                                  border: Border.all(
+                                                    color: const Color(0x667c548d),
+                                                    width: .8),
+                                                  borderRadius:
+                                                    BorderRadius.circular(5),
+                                                ),
+                                                child: Stack(children: [
+                                                  Positioned(
+                                                    left: 3, top: 3,
+                                                    child: Container(
+                                                      padding: const EdgeInsets.symmetric(
+                                                        horizontal: 4, vertical: 1),
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(0x666e4e86),
+                                                        borderRadius:
+                                                          BorderRadius.circular(6)),
+                                                      child: Text('$n',
+                                                        style: const TextStyle(
+                                                          fontSize: 10,
+                                                          color: Color(0xfff0d9ff))),
+                                                    ),
+                                                  ),
+                                                  Center(child: Column(
+                                                    mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                    children: [
                                                   if (s.userId == null)
-                                                    DashedCircle(
-                                                      child: ReferenceIcon(
-                                                        s.locked
-                                                            ? 'lock'
-                                                            : 'mic',
-                                                        size: 22,
-                                                        color:
-                                                            NimzoStyle.primary,
-                                                      ),
+                                                    SizedBox(
+                                                      width: 46, height: 48,
+                                                      child: s.locked
+                                                        ? const Icon(
+                                                            Icons.lock_outline_rounded,
+                                                            size: 30,
+                                                            color: Color(0xffd8b9e8))
+                                                        : Stack(
+                                                            alignment: Alignment.center,
+                                                            children: const [
+                                                              Icon(
+                                                                Icons.weekend_rounded,
+                                                                size: 43,
+                                                                color: Color(0xffd8b9e8)),
+                                                              Positioned(
+                                                                top: 5, right: 7,
+                                                                child: Icon(
+                                                                  Icons.add_rounded,
+                                                                  size: 12,
+                                                                  color: Color(0xff513064))),
+                                                            ],
+                                                          ),
                                                     )
                                                   else
                                                     Stack(
@@ -568,17 +799,26 @@ class _State extends ConsumerState<RoomScreen> {
                                                     maxLines: 1,
                                                     overflow:
                                                         TextOverflow.ellipsis,
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
                                                       fontSize: 12,
-                                                      color: NimzoStyle.muted,
+                                                      color: RoomTheme.byId(
+                                                        room.valueOrNull?.theme
+                                                          ?? 'nimzo_white',
+                                                      ).text.withValues(alpha: .88),
                                                     ),
                                                   ),
                                                   if (s.muted)
-                                                    const Icon(
+                                                    Icon(
                                                       LucideIcons.micOff,
                                                       size: 12,
+                                                      color: RoomTheme.byId(
+                                                        room.valueOrNull?.theme
+                                                          ?? 'nimzo_white',
+                                                      ).text,
                                                     ),
                                                 ],
+                                              )),
+                                                ]),
                                               ),
                                             );
                                           },
@@ -859,6 +1099,13 @@ class _State extends ConsumerState<RoomScreen> {
                                       gameHost.currentState?.open(slug),
                                 ),
                                 icon: const ReferenceIcon('game'),
+                              ),
+                              IconButton(
+                                key: const ValueKey('room-reactions-button'),
+                                tooltip: 'Reactions',
+                                onPressed: joined ? _showRoomReactions : null,
+                                icon: const Icon(Icons.emoji_emotions_rounded,
+                                  color: Color(0xffa74be7)),
                               ),
                               IconButton(
                                 tooltip: 'Gift',

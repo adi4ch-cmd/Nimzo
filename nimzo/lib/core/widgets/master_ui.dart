@@ -165,6 +165,20 @@ class ReferenceArtwork extends StatelessWidget {
         width: size,
         height: size,
         fit: fit,
+        errorBuilder: (context, error, stack) => SizedBox(
+          width: size,
+          height: size,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: const Color(0xfff0eafa),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(
+              child: Icon(Icons.broken_image_outlined,
+                color: Color(0xff9683b6), size: 27),
+            ),
+          ),
+        ),
       );
 }
 

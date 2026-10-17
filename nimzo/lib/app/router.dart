@@ -1,10 +1,11 @@
 import '../core/providers/supabase_provider.dart';
-import '../features/profile/retired_membership_screen.dart';
+import '../features/profile/tingle_membership_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'auth_redirect.dart';
 import '../features/social/social_screens.dart';
+import '../features/social/tingle_friends_screen.dart';
 import '../features/discover/ranking_screen.dart';
 import '../features/profile/levels_screen.dart';
 import '../features/profile/profile_repository.dart';
@@ -15,12 +16,16 @@ import 'package:go_router/go_router.dart';
 
 import '../features/auth/presentation/auth_controller.dart';
 import '../features/auth/presentation/forgot_screen.dart';
-import '../features/auth/presentation/login_screen.dart';
-import '../features/auth/presentation/register_screen.dart';
+import '../features/auth/presentation/tingle_login_screen.dart';
+import '../features/auth/presentation/mobile_otp_login_screen.dart';
+import '../features/auth/presentation/tingle_register_screen.dart';
 import '../features/auth/presentation/verify_screen.dart';
 import '../features/discover/discover_screen.dart';
 import '../features/settings/settings_screen.dart';
-import '../features/profile/me_screen.dart';
+import '../features/settings/tingle_blocked_users_screen.dart';
+import '../features/profile/tingle_me_screen.dart';
+import '../features/profile/tingle_tasks_screen.dart';
+import '../features/profile/tingle_daily_checkin_screen.dart';
 import '../features/games/game_screen.dart';
 import '../features/games/game_level_screen.dart';
 import '../features/store/store_screen.dart';
@@ -28,6 +33,7 @@ import '../features/games/games_catalog_screen.dart';
 import '../features/rooms/presentation/create_room_screen.dart';
 import '../features/rooms/presentation/room_settings_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/home/pk_battles_screen.dart';
 import '../features/messages/messages_screen.dart';
 import '../features/moments/moments_screen.dart';
 import '../features/notifications/notifications_screen.dart';
@@ -37,6 +43,7 @@ import '../features/profile/profile_setup_screen.dart';
 import '../features/recharge/recharge_screen.dart';
 import '../features/rooms/presentation/room_screen.dart';
 import '../features/wallet/wallet_screen.dart';
+import '../features/wallet/tingle_coins_screen.dart';
 import 'routes.dart';
 import 'shell.dart';
 
@@ -92,10 +99,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.onboarding,
         builder: (_, __) => const OnboardingScreen(),
       ),
-      GoRoute(path: Routes.login, builder: (_, __) => const LoginScreen()),
+      GoRoute(path: Routes.login, builder: (_, __) => const TingleLoginScreen()),
+      GoRoute(path: '/phone-login', builder: (_, __) => const MobileOtpLoginScreen()),
       GoRoute(
         path: Routes.register,
-        builder: (_, __) => const RegisterScreen(),
+        builder: (_, __) => const TingleRegisterScreen(),
       ),
       GoRoute(path: Routes.forgot, builder: (_, __) => const ForgotScreen()),
       GoRoute(
@@ -106,6 +114,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.profileSetup,
         builder: (_, __) => const ProfileSetupScreen(),
+      ),
+      GoRoute(
+        path: '/edit-profile',
+        builder: (_, __) => const ProfileSetupScreen(edit: true),
       ),
       GoRoute(
         path: '/create-room',
@@ -126,13 +138,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+      GoRoute(path: '/friends', builder: (_, __) => const TingleFriendsScreen()),
+      GoRoute(path: '/pk', builder: (_, __) => const PkBattlesScreen()),
+      GoRoute(path: '/settings/blocked', builder: (_, __) => const TingleBlockedUsersScreen()),
       GoRoute(
-          path: '/svip', builder: (_, __) => const RetiredMembershipScreen()),
+          path: '/svip', builder: (_, __) => const TingleMembershipScreen(svip: true)),
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
+      GoRoute(path: '/task', builder: (_, __) => const TingleTasksScreen()),
+      GoRoute(path: '/daily-checkin', builder: (_, __) => const TingleDailyCheckinScreen()),
       GoRoute(path: '/game-level', builder: (_, __) => const GameLevelScreen()),
-      GoRoute(path: '/store', builder: (_, __) => const RoyalStoreScreen()),
+      GoRoute(path: '/store', builder: (_, s) => RoyalStoreScreen(initialBag: s.uri.queryParameters['bag'] == '1')),
       GoRoute(
         path: '/social/:kind/:id',
         builder: (_, s) => SocialListScreen(
@@ -148,7 +165,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/room/:id',
         builder: (_, s) => RoomScreen(roomId: s.pathParameters['id']!),
       ),
-      GoRoute(path: Routes.wallet, builder: (_, __) => const WalletScreen()),
+      GoRoute(path: Routes.wallet, builder: (_, __) => const TingleCoinsScreen()),
+      GoRoute(path: '/wallet/exchange', builder: (_, __) => const WalletScreen()),
       GoRoute(
         path: Routes.discover,
         builder: (_, __) => const DiscoverScreen(),
@@ -163,7 +181,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
           path: Routes.vip,
-          builder: (_, __) => const RetiredMembershipScreen()),
+          builder: (_, __) => const TingleMembershipScreen(svip: false)),
       GoRoute(
         path: '/profile/:id',
         builder: (_, s) => ProfileScreen(userId: s.pathParameters['id']),
@@ -224,7 +242,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.profile,
-                builder: (_, __) => const MeScreen(),
+                builder: (_, __) => const TingleMeScreen(),
               ),
             ],
           ),

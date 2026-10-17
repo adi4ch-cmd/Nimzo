@@ -264,6 +264,7 @@ class _HonorWallContentState extends ConsumerState<HonorWallContent> {
                 child: CollectibleArtwork(
                   item: {'name': name, 'image_path': image},
                   size: 88,
+                  iconOnlyFallback: true,
                 ),
               ),
             ),

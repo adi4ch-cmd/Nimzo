@@ -31,9 +31,15 @@ final seatsProvider = StreamProvider.autoDispose.family<List<MicSeat>, String>(
   (ref, id) => ref.watch(roomRepositoryProvider).watchSeats(id),
 );
 
-/// country == null means all countries.
-final popularRoomsProvider = FutureProvider.family<List<Room>, String?>(
-  (ref, c) => ref.watch(roomRepositoryProvider).popular(country: c),
+/// Country filter carries both the ISO code and historical display name.
+/// Null means all countries; record equality keeps provider caching stable.
+typedef RoomCountrySelection = ({String code, String name});
+final popularRoomsProvider =
+    FutureProvider.family<List<Room>, RoomCountrySelection?>(
+  (ref, selected) => ref.watch(roomRepositoryProvider).popular(
+    country: selected?.code,
+    alternateCountry: selected?.name,
+  ),
 );
 final newRoomsProvider = FutureProvider<List<Room>>(
   (ref) => ref.watch(roomRepositoryProvider).newRooms(),

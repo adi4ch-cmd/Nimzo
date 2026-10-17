@@ -10,11 +10,14 @@ import 'profile_repository.dart';
 import 'profile_screen.dart';
 import 'profile_level_scale.dart';
 
+/// Tingle-reference wealth/charm/activity presentation with NIMZO data.
+/// Level, earned progress and the next threshold remain server-derived.
 class LevelsScreen extends ConsumerStatefulWidget {
   final int initialKind;
   final String? userId;
   const LevelsScreen({super.key, this.initialKind = 0, this.userId})
       : assert(initialKind >= 0 && initialKind < 3);
+
   @override
   ConsumerState<LevelsScreen> createState() => _LevelState();
 }
@@ -27,159 +30,252 @@ class _LevelState extends ConsumerState<LevelsScreen> {
     selected = widget.initialKind;
   }
 
-  static const bands = [
-    (1, 20, 'Brown', Color(0xffa16207)),
-    (21, 39, 'Green', Color(0xff16a34a)),
-    (40, 59, 'Blue', Color(0xff2563eb)),
-    (60, 79, 'Pink', Color(0xffdb2777)),
-    (80, 99, 'Red', Color(0xffdc2626)),
-    (100, 120, 'Gold', Color(0xffd4a017)),
+  static const bands = <({int from, int to, String label, Color color})>[
+    (from: 1, to: 20, label: 'Brown', color: Color(0xffa16207)),
+    (from: 21, to: 39, label: 'Green', color: Color(0xff16a34a)),
+    (from: 40, to: 59, label: 'Blue', color: Color(0xff2563eb)),
+    (from: 60, to: 79, label: 'Pink', color: Color(0xffdb2777)),
+    (from: 80, to: 99, label: 'Red', color: Color(0xffdc2626)),
+    (from: 100, to: 120, label: 'Gold', color: Color(0xffd4a017)),
   ];
+  static const tabs = <String>['Wealth', 'Charm', 'Active'];
+  static const icons = <IconData>[
+    Icons.workspace_premium_rounded,
+    Icons.favorite_rounded,
+    Icons.flash_on_rounded,
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final id = widget.userId ?? ref.watch(currentUserIdProvider),
-        label = ['Wealth', 'Charm', 'Active'][selected];
+    final id = widget.userId ?? ref.watch(currentUserIdProvider);
+    final label = tabs[selected];
     return Scaffold(
-      appBar: AppBar(title: const Text('Level')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          ReferenceTabs(
-            labels: const ['Wealth', 'Charm', 'Active'],
-            selected: selected,
-            onSelected: (i) => setState(() => selected = i),
-          ),
-          const SizedBox(height: 12),
-          if (id == null)
-            const EmptyContent('Please sign in.')
-          else
-            AsyncContent(
-              value: ref.watch(profileProvider(id)),
-              onRetry: () => ref.invalidate(profileProvider(id)),
-              builder: (p) {
-                final level = [
-                  p.wealthLevel,
-                  p.charmLevel,
-                  p.activeLevel,
-                ][selected];
-                final total = [
-                  p.wealthCoins,
-                  p.charmDiamonds,
-                  p.activePoints,
-                ][selected];
-                final band = bands
-                    .where((b) => level >= b.$1 && level <= b.$2)
-                    .firstOrNull;
-                final next = total == null || level >= 120 || level < 1
-                    ? null
-                    : (ProfileLevelScale.nextRequirement(selected, level) - total)
-                        .clamp(0, 1 << 62);
-                return ReferenceCard(
-                  child: Column(
-                    children: [
-                      Transform.scale(
-                        scale: 1.4,
-                        child: LevelBadge(kind: selected, level: level),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        selected == 0
-                            ? 'Tier: ${band?.$3 ?? 'Unavailable'}'
-                            : '$label level',
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        level > 0 ? 'Level $level / 120' : 'Level unavailable',
-                        style: const TextStyle(color: NimzoStyle.muted),
-                      ),
-                      if (total != null && level > 0) ...[
-                        const SizedBox(height: 10),
-                        LinearProgressIndicator(
-                          key: const ValueKey('verified-level-progress'),
-                          value: ProfileLevelScale.fraction(selected, level, total),
-                          minHeight: 6,
-                          color: ProfileLevelScale.color(selected, level),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ],
-                      const SizedBox(height: 8),
-                      Text(
-                        total == null
-                            ? 'Earned progress unavailable'
-                            : '${referenceNumber(total)} ${ProfileLevelScale.units[selected]}'
-                              '${next == null ? ' · Maximum tier or unavailable' : ' · ${referenceNumber(next)} to next level'}',
-                        style: const TextStyle(
-                          color: NimzoStyle.muted,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ReferenceCard(
-            child: ListTile(
-              leading: const Icon(Icons.emoji_events_outlined),
-              title: const Text('Game Level'),
-              subtitle: const Text('Verified settled-game progress'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push('/game-level'),
-            ),
-          ),
-          ReferenceCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'How $label grows',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  [
-                    'Grows when you send gifts.',
-                    'Grows when you receive gifts.',
-                    'Grows while you stay active.',
-                  ][selected],
-                  style: const TextStyle(color: NimzoStyle.muted, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-          const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                'Tier colors',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
-          for (final band in bands)
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 13),
-                decoration: const BoxDecoration(
-                  border: Border(bottom: BorderSide(color: NimzoStyle.line)),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 14,
-                      height: 14,
+      backgroundColor: const Color(0xfff7f5ff),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        title: const Text('Level',
+          style: TextStyle(
+            color: Color(0xff2e233c),
+            fontSize: 21, fontWeight: FontWeight.w900)),
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          if (id == null) return;
+          ref.invalidate(profileProvider(id));
+          await ref.read(profileProvider(id).future);
+        },
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(17, 17, 17, 35),
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(23)),
+              child: Row(children: [
+                for (var tab = 0; tab < 3; tab++)
+                  Expanded(child: InkWell(
+                    key: ValueKey('level-tab-$tab'),
+                    onTap: () => setState(() => selected = tab),
+                    borderRadius: BorderRadius.circular(19),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 160),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: ProfileLevelScale.color(selected, band.$1),
-                      ),
+                        gradient: selected == tab
+                          ? const LinearGradient(
+                              colors: [Color(0xffa546f0), Color(0xff7236c8)])
+                          : null,
+                        borderRadius: BorderRadius.circular(19)),
+                      child: Text(tabs[tab],
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: selected == tab ? Colors.white
+                            : const Color(0xff8e829f),
+                          fontWeight: FontWeight.w800)),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(child: Text(band.$3)),
-                    Text(
-                      'Level ${band.$1}-${band.$2}',
-                      style: const TextStyle(color: NimzoStyle.muted),
+                  )),
+              ]),
+            ),
+            const SizedBox(height: 16),
+            if (id == null)
+              const EmptyContent('Please sign in to see your level.')
+            else
+              AsyncContent(
+                value: ref.watch(profileProvider(id)),
+                onRetry: () => ref.invalidate(profileProvider(id)),
+                builder: (p) {
+                  final level = [
+                    p.wealthLevel, p.charmLevel, p.activeLevel,
+                  ][selected];
+                  final earned = [
+                    p.wealthCoins, p.charmDiamonds, p.activePoints,
+                  ][selected];
+                  final progress = earned == null || level <= 0
+                    ? null
+                    : ProfileLevelScale.fraction(selected, level, earned);
+                  final next = earned == null || level <= 0 || level >= 120
+                    ? null
+                    : (ProfileLevelScale.nextRequirement(selected, level)
+                      - earned).clamp(0, 1 << 62);
+                  final band = bands.where(
+                    (b) => level >= b.from && level <= b.to).firstOrNull;
+                  return Column(children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 23, vertical: 28),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xff6134bb),
+                            Color(0xffa64aee),
+                            Color(0xffcb6cd0),
+                          ]),
+                        borderRadius: BorderRadius.circular(28),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x285b2a99),
+                            blurRadius: 18, offset: Offset(0, 7)),
+                        ]),
+                      child: Column(children: [
+                        Container(
+                          height: 99, width: 99,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: const Color(0x24ffffff),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0x88ffffff),
+                              width: 2)),
+                          child: LevelBadge(kind: selected, level: level),
+                        ),
+                        const SizedBox(height: 10),
+                        Text('$label Level',
+                          style: const TextStyle(
+                            color: Color(0xfff2deff),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 4),
+                        Text(level > 0 ? 'Lv. $level' : 'Level unavailable',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 30, fontWeight: FontWeight.w900)),
+                        const SizedBox(height: 7),
+                        Text(band?.label ?? 'Tier unavailable',
+                          style: const TextStyle(
+                            color: Color(0xffffe6ab),
+                            fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 23),
+                        if (progress != null)
+                          LinearProgressIndicator(
+                            key: const ValueKey('verified-level-progress'),
+                            value: progress,
+                            minHeight: 9,
+                            borderRadius: BorderRadius.circular(20),
+                            backgroundColor: const Color(0x57ffffff),
+                            color: const Color(0xffffd95f)),
+                        const SizedBox(height: 13),
+                        Text(
+                          earned == null
+                            ? 'Verified progress unavailable'
+                            : '${referenceNumber(earned)} '
+                              '${ProfileLevelScale.units[selected]}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800)),
+                        if (progress == null)
+                          const Text('Maximum tier or unavailable',
+                            style: TextStyle(color: Color(0xffefdeff), fontSize: 12)),
+                        if (next != null) Text(
+                          '${referenceNumber(next)} to the next level',
+                          style: const TextStyle(
+                            color: Color(0xffefdeff),
+                            fontSize: 12)),
+                      ]),
                     ),
-                  ],
-                ),
+                    const SizedBox(height: 16),
+                  ]);
+                },
               ),
-        ],
+            Material(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(23),
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 6),
+                leading: const Icon(Icons.sports_esports_rounded,
+                  color: NimzoStyle.primary, size: 29),
+                title: const Text('Game Level',
+                  style: TextStyle(fontWeight: FontWeight.w800)),
+                subtitle: const Text(
+                  'Verified settled-game experience',
+                  style: TextStyle(fontSize: 12)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/game-level'),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text('$label level collection', style: const TextStyle(
+              fontSize: 19,
+              color: Color(0xff2b243c),
+              fontWeight: FontWeight.w900)),
+            const SizedBox(height: 12),
+            for (final band in bands)
+              Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 14, horizontal: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: const Color(0xffede8f5))),
+                child: Row(children: [
+                  Container(
+                    width: 48, height: 48,
+                    decoration: BoxDecoration(
+                      color: band.color.withValues(alpha: .13),
+                      borderRadius: BorderRadius.circular(15)),
+                    child: Icon(icons[selected],
+                      color: band.color, size: 27)),
+                  const SizedBox(width: 14),
+                  Expanded(child: Text(band.label,
+                    style: const TextStyle(
+                      color: Color(0xff433850),
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16))),
+                  Text('Lv. ${band.from}–${band.to}',
+                    style: const TextStyle(
+                      color: Color(0xff83798e),
+                      fontSize: 12, fontWeight: FontWeight.w600)),
+                ]),
+              ),
+            const SizedBox(height: 15),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20)),
+              padding: const EdgeInsets.all(18),
+              child: Text(
+                [
+                  'Wealth grows from coins sent in verified gifts.',
+                  'Charm grows from diamonds received in verified gifts.',
+                  'Active grows from recorded activity points.',
+                ][selected],
+                style: const TextStyle(
+                  color: Color(0xff84798e), height: 1.5),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
