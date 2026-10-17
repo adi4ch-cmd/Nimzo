@@ -60,7 +60,7 @@ class SettingsScreen extends ConsumerWidget {
       ),
       body: ListView(children: [
         const SizedBox(height: 22),
-        Container(color: Colors.white, child: Column(children: [
+        Material(color: Colors.white, child: Column(children: [
           _SettingRow(
             title: 'Notify Me',
             trailing: current == null
@@ -108,7 +108,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ])),
         const SizedBox(height: 22),
-        Container(color: Colors.white, child: Column(children: [
+        Material(color: Colors.white, child: Column(children: [
           _SettingRow(
             title: 'Log Out',
             titleColor: Colors.red,
