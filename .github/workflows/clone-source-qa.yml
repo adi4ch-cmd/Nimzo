@@ -44,6 +44,8 @@ jobs:
         run: flutter analyze --no-fatal-infos
       - name: Clone constraints
         run: flutter test test/clone_constraints_test.dart
+      - name: 390px Friends reference interaction test
+        run: flutter test test/tingle_friends_screen_test.dart
       - name: Full Flutter regression suite
         run: flutter test --reporter expanded
       # Intentionally no Android SDK, APK, AAB, release or artifact steps.
