@@ -258,7 +258,10 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                             child: InkWell(
                               key: ValueKey('store-category-${c.value}'),
                               onTap: () {
-                                setState(() => category = c.value);
+                                if (c.value == 'Medals') {
+                                  setState(() => category = c.value);
+                                  return;
+                                }
                                 if (c.value != 'Medals') {
                                   Navigator.of(context).push(
                                     MaterialPageRoute<void>(
