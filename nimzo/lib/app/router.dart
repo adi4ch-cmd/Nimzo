@@ -20,7 +20,7 @@ import '../features/auth/presentation/register_screen.dart';
 import '../features/auth/presentation/verify_screen.dart';
 import '../features/discover/discover_screen.dart';
 import '../features/settings/settings_screen.dart';
-import '../features/profile/me_screen.dart';
+import '../features/profile/tingle_me_screen.dart';
 import '../features/games/game_screen.dart';
 import '../features/games/game_level_screen.dart';
 import '../features/store/store_screen.dart';
@@ -224,7 +224,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.profile,
-                builder: (_, __) => const MeScreen(),
+                builder: (_, __) => const TingleMeScreen(),
               ),
             ],
           ),
