@@ -42,6 +42,8 @@ jobs:
           PY
       - name: Static analysis
         run: flutter analyze --no-fatal-infos
+      - name: Verify Flutter asset bundle
+        run: flutter test test/asset_bundle_integrity_test.dart --reporter expanded
       - name: Clone constraints
         run: flutter test test/clone_constraints_test.dart
       - name: 390px Friends reference interaction test
