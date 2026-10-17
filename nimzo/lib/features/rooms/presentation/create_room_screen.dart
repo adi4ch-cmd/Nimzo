@@ -40,9 +40,43 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       .showSnackBar(SnackBar(content: Text(message)));
 
   Future<void> chooseImage() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 4, 20, 12),
+              child: Text('Select Room Photo',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            ),
+            ListTile(
+              key: const ValueKey('room-photo-camera'),
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('Camera'),
+              onTap: () => Navigator.of(sheetContext).pop(ImageSource.camera),
+            ),
+            ListTile(
+              key: const ValueKey('room-photo-gallery'),
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Gallery'),
+              onTap: () => Navigator.of(sheetContext).pop(ImageSource.gallery),
+            ),
+            TextButton(
+              key: const ValueKey('room-photo-cancel'),
+              onPressed: () => Navigator.of(sheetContext).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || source == null) return;
     try {
       final selected = await ImagePicker().pickImage(
-        source: ImageSource.gallery, imageQuality: 85, maxWidth: 1440,
+        source: source, imageQuality: 85, maxWidth: 1440,
       );
       if (selected == null) return;
       final bytes = await selected.readAsBytes();
