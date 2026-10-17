@@ -16,39 +16,171 @@ import '../gifts/gift_sheet.dart';
 import '../gifts/yo2_gift_ui.dart';
 import 'moment_repository.dart';
 
-class MomentsScreen extends ConsumerWidget {
+final followedMomentsAuthorsProvider =
+    FutureProvider.autoDispose<Set<String>>((ref) async {
+  final me = ref.watch(currentUserIdProvider);
+  if (me == null) return <String>{};
+  final rows = await ref.watch(sessionSupabaseProvider).client
+      .from('follows').select('followee_id')
+      .eq('follower_id', me).limit(300);
+  return rows.map((row) => row['followee_id'].toString()).toSet();
+});
+
+/// Reference-style Moments feed, retaining the real MomentCard actions.
+class MomentsScreen extends ConsumerStatefulWidget {
   const MomentsScreen({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(
-          title: const GradientText('Moments'),
-          actions: [
-            IconButton(
-              onPressed: () => context.push('/moments/create'),
-              icon: const Icon(Icons.add),
+  ConsumerState<MomentsScreen> createState() => _MomentsState();
+}
+
+class _MomentsState extends ConsumerState<MomentsScreen> {
+  int selected = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final moments = ref.watch(momentsFeedProvider);
+    final following = ref.watch(followedMomentsAuthorsProvider);
+    return Scaffold(
+      backgroundColor: const Color(0xfff6f5ff),
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: const Text('Moments', style: TextStyle(
+          color: Color(0xff302349), fontWeight: FontWeight.w900)),
+        actions: [
+          IconButton(
+            tooltip: 'Create moment',
+            onPressed: () => context.push('/moments/create'),
+            icon: const Icon(Icons.add_box_outlined,
+              color: NimzoStyle.primary, size: 27),
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(momentsFeedProvider);
+          ref.invalidate(followedMomentsAuthorsProvider);
+          await ref.read(momentsFeedProvider.future);
+          if (selected == 1) {
+            await ref.read(followedMomentsAuthorsProvider.future);
+          }
+        },
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(14, 13, 14, 96),
+          children: [
+            Container(
+              padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(23),
+                boxShadow: const [
+                  BoxShadow(color: Color(0x0f6740bb), blurRadius: 12),
+                ],
+              ),
+              child: Row(children: [
+                for (var tab = 0; tab < 2; tab++)
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => setState(() => selected = tab),
+                      borderRadius: BorderRadius.circular(21),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 160),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          gradient: selected == tab
+                            ? const LinearGradient(colors: [
+                                Color(0xffa248f7), Color(0xff7641dd),
+                              ])
+                            : null,
+                          borderRadius: BorderRadius.circular(19),
+                        ),
+                        child: Text(
+                          tab == 0 ? 'Discover' : 'Following',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: selected == tab ? Colors.white
+                              : const Color(0xff82769e),
+                            fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                    ),
+                  ),
+              ]),
+            ),
+            const SizedBox(height: 16),
+            moments.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(35),
+                child: Center(child: CircularProgressIndicator())),
+              error: (_, __) => Column(
+                children: [
+                  const Text('Moments could not be loaded'),
+                  TextButton(
+                    onPressed: () => ref.invalidate(momentsFeedProvider),
+                    child: const Text('Retry')),
+                ],
+              ),
+              data: (all) {
+                if (selected == 1 && following.isLoading) {
+                  return const Padding(
+                    padding: EdgeInsets.all(35),
+                    child: Center(child: CircularProgressIndicator()));
+                }
+                if (selected == 1 && following.hasError) {
+                  return Column(children: [
+                    const Text('Following list unavailable'),
+                    TextButton(
+                      onPressed: () =>
+                        ref.invalidate(followedMomentsAuthorsProvider),
+                      child: const Text('Retry')),
+                  ]);
+                }
+                final authors = following.valueOrNull ?? <String>{};
+                final visible = selected == 0
+                    ? all
+                    : all.where((m) => authors.contains(m.authorId)).toList();
+                if (visible.isEmpty) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 55, horizontal: 18),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(23)),
+                    child: Column(children: [
+                      const Icon(Icons.auto_awesome_outlined,
+                        size: 56, color: Color(0xffb09cda)),
+                      const SizedBox(height: 12),
+                      Text(selected == 0 ? 'No Moments yet'
+                        : 'Nothing from people you follow',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xff716687))),
+                      if (selected == 0) TextButton(
+                        onPressed: () => context.push('/moments/create'),
+                        child: const Text('Share a moment')),
+                    ]),
+                  );
+                }
+                return Column(children: [
+                  for (final moment in visible) MomentCard(moment: moment),
+                ]);
+              },
             ),
           ],
         ),
-        body: RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(momentsFeedProvider);
-            await ref.read(momentsFeedProvider.future);
-          },
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              AsyncContent(
-                value: ref.watch(momentsFeedProvider),
-                onRetry: () => ref.invalidate(momentsFeedProvider),
-                builder: (p) => p.isEmpty
-                    ? const EmptyContent('No Moments yet')
-                    : Column(
-                        children: [for (final m in p) MomentCard(moment: m)]),
-              ),
-            ],
-          ),
-        ),
-      );
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        key: const ValueKey('moments-post-button'),
+        backgroundColor: const Color(0xff9b3de5),
+        foregroundColor: Colors.white,
+        onPressed: () => context.push('/moments/create'),
+        icon: const Icon(Icons.edit_note_rounded),
+        label: const Text('Post'),
+      ),
+    );
+  }
 }
 
 class MomentCard extends ConsumerStatefulWidget {
