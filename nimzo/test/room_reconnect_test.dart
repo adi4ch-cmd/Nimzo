@@ -236,6 +236,19 @@ void main() {
     for (var seat = 1; seat <= 10; seat++) {
       expect(find.byKey(ValueKey('room-mic-seat-$seat')), findsOneWidget);
     }
+    await tester.tap(find.byKey(const ValueKey('room-mic-seat-1')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('room-seat-here')), findsOneWidget);
+    for (final key in const [
+      'room-seat-give', 'room-seat-lock', 'room-seat-mute',
+    ]) {
+      expect(tester.widget<ListTile>(find.byKey(ValueKey(key))).enabled,
+        isFalse, reason: 'Unverified moderation must not be tappable');
+    }
+    await tester.tap(find.byKey(const ValueKey('room-seat-cancel')));
+    await tester.pumpAndSettle();
+    expect(repo.memberships, 1,
+      reason: 'Opening then canceling a seat sheet never rejoins');
     await tester.tap(find.byKey(const ValueKey('room-confirm-exit')));
     await tester.pumpAndSettle();
     expect(find.text('Leave audio room?'), findsOneWidget);
