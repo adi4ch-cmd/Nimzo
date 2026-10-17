@@ -24,6 +24,7 @@ import '../features/settings/settings_screen.dart';
 import '../features/settings/tingle_blocked_users_screen.dart';
 import '../features/profile/tingle_me_screen.dart';
 import '../features/profile/tingle_tasks_screen.dart';
+import '../features/profile/tingle_daily_checkin_screen.dart';
 import '../features/games/game_screen.dart';
 import '../features/games/game_level_screen.dart';
 import '../features/store/store_screen.dart';
@@ -142,6 +143,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
       GoRoute(path: '/task', builder: (_, __) => const TingleTasksScreen()),
+      GoRoute(path: '/daily-checkin', builder: (_, __) => const TingleDailyCheckinScreen()),
       GoRoute(path: '/game-level', builder: (_, __) => const GameLevelScreen()),
       GoRoute(path: '/store', builder: (_, s) => RoyalStoreScreen(initialBag: s.uri.queryParameters['bag'] == '1')),
       GoRoute(
