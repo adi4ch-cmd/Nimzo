@@ -186,4 +186,57 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
+
+  testWidgets('cancelled room exit keeps ten-seat voice session alive', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final db = (await tester.runAsync(
+      () async => SupabaseClient(
+        'https://example.supabase.co',
+        'test-key',
+        authOptions: const AuthClientOptions(autoRefreshToken: false),
+      ),
+    ))!;
+    addTearDown(() => tester.runAsync(db.dispose));
+    final repo = ReconnectRepository(db);
+    final voice = ReconnectVoice();
+    addTearDown(voice.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          currentUserIdProvider.overrideWithValue('viewer'),
+          roomRepositoryProvider.overrideWithValue(repo),
+          roomProvider('room').overrideWith((_) async => room),
+          seatsProvider('room').overrideWith(
+            (_) => Stream.value(List.generate(
+              10, (i) => MicSeat(seatNo: i + 1)))),
+          roomSeatProfilesProvider('room').overrideWith((_) async => {}),
+          onlineCountProvider('room').overrideWith((_) => Stream.value(1)),
+          roomChatProvider('room').overrideWith((_) => Stream.value([])),
+          voiceServiceProvider.overrideWithValue(voice),
+        ],
+        child: const MaterialApp(home: RoomScreen(roomId: 'room')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(repo.memberships, 1);
+    expect(voice.joins, 1);
+    expect(find.byType(DashedCircle), findsNWidgets(10));
+    await tester.tap(find.byKey(const ValueKey('room-confirm-exit')));
+    await tester.pumpAndSettle();
+    expect(find.text('Leave audio room?'), findsOneWidget);
+    await tester.tap(find.text('Stay'));
+    await tester.pumpAndSettle();
+    expect(find.text('Leave audio room?'), findsNothing);
+    expect(voice.leaves, 0,
+      reason: 'Cancel must not disconnect microphone playback');
+    expect(repo.memberships, 1,
+      reason: 'Cancel must not rejoin or remove the member');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
 }
