@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../support/legal_content.dart';
 import 'auth_controller.dart';
 
 /// Auth UI based on the supplied Tingle login screenshot.
-/// Uses only the existing verified NIMZO email/Google authentication methods.
+/// Uses the existing NIMZO email, Facebook and Google authentication methods.
 /// Unsupported shortcuts are visibly explained rather than silently creating
 /// an account with unpredictable retention.
 class TingleLoginScreen extends ConsumerStatefulWidget {
@@ -75,7 +76,7 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
           child: LayoutBuilder(
             builder: (context, constraints) => SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              padding: const EdgeInsets.fromLTRB(24, 58, 24, 24),
+              padding: const EdgeInsets.fromLTRB(14, 60, 14, 24),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: constraints.maxHeight - 82,
@@ -88,10 +89,10 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                       Row(
                         children: [
                           Container(
-                            width: 100,
-                            height: 100,
+                            width: 58,
+                            height: 58,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(28),
+                              borderRadius: BorderRadius.circular(14),
                               gradient: const LinearGradient(
                                 colors: [Color(0xffff8fcc), Color(0xff8c82ff)],
                                 begin: Alignment.topLeft,
@@ -102,7 +103,7 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                             child: const Text(
                               'N',
                               style: TextStyle(
-                                fontSize: 69,
+                                fontSize: 42,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w900,
                                 fontStyle: FontStyle.italic,
@@ -110,22 +111,25 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 22),
+                          const SizedBox(width: 16),
                           const Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('NIMZO',
+                                Text(
+                                  'NIMZO',
                                   style: TextStyle(
-                                    fontSize: 35,
+                                    fontSize: 28,
                                     fontWeight: FontWeight.w900,
                                     color: Colors.black,
                                   ),
                                 ),
                                 SizedBox(height: 4),
-                                Text('Love begins here. Log in to connect.',
+                                Text(
+                                  'Love begins here. Log in to connect.',
                                   style: TextStyle(
-                                    fontSize: 14, color: Colors.black,
+                                    fontSize: 12,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ],
@@ -133,7 +137,7 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 62),
+                      const SizedBox(height: 20),
                       const _FieldLabel('Enter your email id'),
                       const SizedBox(height: 10),
                       TextFormField(
@@ -149,7 +153,7 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                               : 'Enter a valid email address';
                         },
                       ),
-                      const SizedBox(height: 26),
+                      const SizedBox(height: 5),
                       const _FieldLabel('Enter your password'),
                       const SizedBox(height: 10),
                       TextFormField(
@@ -178,7 +182,12 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () => context.push('/forgot'),
-                          child: const Text('Forgot Password?',
+                          style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(0, 32),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                          child: const Text(
+                            'Forgot Password?',
                             style: TextStyle(
                               color: Colors.black,
                               decoration: TextDecoration.underline,
@@ -191,17 +200,20 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                         text: loading ? 'Please wait…' : 'Continue',
                         onPressed: loading ? null : _login,
                       ),
-                      const SizedBox(height: 25),
-                      Row(
+                      const SizedBox(height: 10),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           const Text('If you have a new user?  ',
-                            style: TextStyle(fontSize: 14, color: Colors.black)),
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.black)),
                           GestureDetector(
                             onTap: () => context.go('/register'),
                             child: const Text(
                               'Get Register',
                               style: TextStyle(
-                                fontSize: 14, color: Colors.black,
+                                fontSize: 12,
+                                color: Colors.black,
                                 fontWeight: FontWeight.w700,
                                 decoration: TextDecoration.underline,
                               ),
@@ -209,9 +221,8 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 28),
-                      const Divider(color: Color(0xffd9d4ec)),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 22),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           Expanded(
@@ -222,7 +233,8 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                                   ? null
                                   : () {
                                       if (!_terms) {
-                                        _notice('Please accept the terms first.');
+                                        _notice(
+                                            'Please accept the terms first.');
                                         return;
                                       }
                                       ref
@@ -240,7 +252,8 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                                   ? null
                                   : () {
                                       if (!_terms) {
-                                        _notice('Please accept the terms first.');
+                                        _notice(
+                                            'Please accept the terms first.');
                                         return;
                                       }
                                       ref
@@ -251,7 +264,7 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 26),
+                      const SizedBox(height: 16),
                       InkWell(
                         onTap: () => setState(() => _terms = !_terms),
                         child: Row(
@@ -259,14 +272,55 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                             Checkbox(
                               value: _terms,
                               activeColor: NimzoStyle.primary,
-                              onChanged: (v) => setState(() => _terms = v ?? false),
+                              onChanged: (v) =>
+                                  setState(() => _terms = v ?? false),
                             ),
-                            const Flexible(
-                              child: Text(
-                                'I have accept all terms & condition.',
-                                style: TextStyle(fontSize: 14, color: Colors.black),
-                              ),
-                            ),
+                            Flexible(
+                                child: TextButton(
+                              key: const ValueKey('login-terms-link'),
+                              style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  alignment: Alignment.centerLeft,
+                                  foregroundColor: Colors.black),
+                              onPressed: () => Navigator.of(context)
+                                  .push(MaterialPageRoute<void>(
+                                      builder: (_) => Scaffold(
+                                            appBar: AppBar(
+                                                centerTitle: true,
+                                                title: const Text(
+                                                    'Terms & Conditions')),
+                                            body: ListView(
+                                                padding:
+                                                    const EdgeInsets.all(18),
+                                                children: [
+                                                  const Text(legalDraftNotice,
+                                                      style: TextStyle(
+                                                          color: Color(
+                                                              0xff81749c))),
+                                                  const SizedBox(height: 20),
+                                                  for (final title in const [
+                                                    'Terms of Service',
+                                                    'Privacy Policy'
+                                                  ]) ...[
+                                                    Text(title,
+                                                        style: const TextStyle(
+                                                            fontSize: 22,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700)),
+                                                    const SizedBox(height: 14),
+                                                    Text(legalPolicies[title]!,
+                                                        style: const TextStyle(
+                                                            height: 1.6)),
+                                                    const SizedBox(height: 24),
+                                                  ],
+                                                ]),
+                                          ))),
+                              child: const Text(
+                                  'I have accept all terms & condition.',
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black)),
+                            )),
                           ],
                         ),
                       ),
@@ -283,10 +337,11 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
 
   InputDecoration _field(String hint) => InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Color(0xffaba3c2), fontSize: 18),
+        hintStyle: const TextStyle(color: Color(0xffaba3c2), fontSize: 13),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: _outline(),
         enabledBorder: _outline(),
         focusedBorder: _outline(color: NimzoStyle.primary),
@@ -295,7 +350,7 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
 
   OutlineInputBorder _outline({Color color = const Color(0xffeeeaf6)}) =>
       OutlineInputBorder(
-        borderRadius: BorderRadius.circular(17),
+        borderRadius: BorderRadius.circular(9),
         borderSide: BorderSide(color: color),
       );
 }
@@ -307,7 +362,7 @@ class _FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
         text,
-        style: const TextStyle(fontSize: 15, color: Color(0xff8179ac)),
+        style: const TextStyle(fontSize: 11, color: Color(0xff8179ac)),
       );
 }
 
@@ -318,20 +373,20 @@ class _PurpleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: 69,
+        height: 48,
         child: DecoratedBox(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Color(0xffa243f5), Color(0xff7439d4)],
             ),
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: TextButton(
             onPressed: onPressed,
             style: TextButton.styleFrom(
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Row(
@@ -339,7 +394,8 @@ class _PurpleButton extends StatelessWidget {
               children: [
                 Text(
                   text,
-                  style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -356,7 +412,7 @@ class _SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: 68,
+        height: 48,
         child: OutlinedButton.icon(
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(
@@ -370,7 +426,8 @@ class _SocialButton extends StatelessWidget {
           ),
           icon: Icon(icon, size: 24, color: NimzoStyle.primary),
           label: Text(text,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              style:
+                  const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
         ),
       );
 }

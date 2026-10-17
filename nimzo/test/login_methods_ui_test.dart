@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/auth/presentation/tingle_login_screen.dart';
 
 void main() {
-  for (final width in [320.0, 390.0]) {
+  for (final width in [320.0, 360.0, 390.0]) {
     testWidgets('login UI shows only email, Facebook and Google at ${width}dp',
         (tester) async {
       await tester.binding.setSurfaceSize(Size(width, 850));

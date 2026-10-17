@@ -55,9 +55,10 @@ class _LevelState extends ConsumerState<LevelsScreen> {
         backgroundColor: Colors.white,
         centerTitle: true,
         title: const Text('Level',
-          style: TextStyle(
-            color: Color(0xff2e233c),
-            fontSize: 21, fontWeight: FontWeight.w900)),
+            style: TextStyle(
+                color: Color(0xff2e233c),
+                fontSize: 14,
+                fontWeight: FontWeight.w900)),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -66,36 +67,39 @@ class _LevelState extends ConsumerState<LevelsScreen> {
           await ref.read(profileProvider(id).future);
         },
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(17, 17, 17, 35),
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(23)),
+                  color: Colors.white, borderRadius: BorderRadius.circular(23)),
               child: Row(children: [
                 for (var tab = 0; tab < 3; tab++)
-                  Expanded(child: InkWell(
+                  Expanded(
+                      child: InkWell(
                     key: ValueKey('level-tab-$tab'),
                     onTap: () => setState(() => selected = tab),
                     borderRadius: BorderRadius.circular(19),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 160),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        gradient: selected == tab
-                          ? const LinearGradient(
-                              colors: [Color(0xffa546f0), Color(0xff7236c8)])
-                          : null,
-                        borderRadius: BorderRadius.circular(19)),
+                          gradient: selected == tab
+                              ? const LinearGradient(colors: [
+                                  Color(0xffa546f0),
+                                  Color(0xff7236c8)
+                                ])
+                              : null,
+                          borderRadius: BorderRadius.circular(19)),
                       child: Text(tabs[tab],
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: selected == tab ? Colors.white
-                            : const Color(0xff8e829f),
-                          fontWeight: FontWeight.w800)),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: selected == tab
+                                  ? Colors.white
+                                  : const Color(0xff8e829f),
+                              fontWeight: FontWeight.w800)),
                     ),
                   )),
               ]),
@@ -109,95 +113,103 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                 onRetry: () => ref.invalidate(profileProvider(id)),
                 builder: (p) {
                   final level = [
-                    p.wealthLevel, p.charmLevel, p.activeLevel,
+                    p.wealthLevel,
+                    p.charmLevel,
+                    p.activeLevel,
                   ][selected];
                   final earned = [
-                    p.wealthCoins, p.charmDiamonds, p.activePoints,
+                    p.wealthCoins,
+                    p.charmDiamonds,
+                    p.activePoints,
                   ][selected];
                   final progress = earned == null || level <= 0
-                    ? null
-                    : ProfileLevelScale.fraction(selected, level, earned);
+                      ? null
+                      : ProfileLevelScale.fraction(selected, level, earned);
                   final next = earned == null || level <= 0 || level >= 120
-                    ? null
-                    : (ProfileLevelScale.nextRequirement(selected, level)
-                      - earned).clamp(0, 1 << 62);
-                  final band = bands.where(
-                    (b) => level >= b.from && level <= b.to).firstOrNull;
+                      ? null
+                      : (ProfileLevelScale.nextRequirement(selected, level) -
+                              earned)
+                          .clamp(0, 1 << 62);
+                  final band = bands
+                      .where((b) => level >= b.from && level <= b.to)
+                      .firstOrNull;
                   return Column(children: [
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 23, vertical: 28),
+                          horizontal: 18, vertical: 18),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xff6134bb),
-                            Color(0xffa64aee),
-                            Color(0xffcb6cd0),
+                          gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xff101b3c),
+                                Color(0xff203769),
+                                Color(0xff344978),
+                              ]),
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: const [
+                            BoxShadow(
+                                color: Color(0x285b2a99),
+                                blurRadius: 18,
+                                offset: Offset(0, 7)),
                           ]),
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x285b2a99),
-                            blurRadius: 18, offset: Offset(0, 7)),
-                        ]),
                       child: Column(children: [
                         Container(
-                          height: 99, width: 99,
+                          height: 99,
+                          width: 99,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: const Color(0x24ffffff),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color(0x88ffffff),
-                              width: 2)),
+                              color: const Color(0x24ffffff),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: const Color(0x88ffffff), width: 2)),
                           child: LevelBadge(kind: selected, level: level),
                         ),
                         const SizedBox(height: 10),
                         Text('$label Level',
-                          style: const TextStyle(
-                            color: Color(0xfff2deff),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700)),
+                            style: const TextStyle(
+                                color: Color(0xfff2deff),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700)),
                         const SizedBox(height: 4),
                         Text(level > 0 ? 'Lv. $level' : 'Level unavailable',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 30, fontWeight: FontWeight.w900)),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 30,
+                                fontWeight: FontWeight.w900)),
                         const SizedBox(height: 7),
                         Text(band?.label ?? 'Tier unavailable',
-                          style: const TextStyle(
-                            color: Color(0xffffe6ab),
-                            fontWeight: FontWeight.w800)),
+                            style: const TextStyle(
+                                color: Color(0xffffe6ab),
+                                fontWeight: FontWeight.w800)),
                         const SizedBox(height: 23),
                         if (progress != null)
                           LinearProgressIndicator(
-                            key: const ValueKey('verified-level-progress'),
-                            value: progress,
-                            minHeight: 9,
-                            borderRadius: BorderRadius.circular(20),
-                            backgroundColor: const Color(0x57ffffff),
-                            color: const Color(0xffffd95f)),
+                              key: const ValueKey('verified-level-progress'),
+                              value: progress,
+                              minHeight: 9,
+                              borderRadius: BorderRadius.circular(20),
+                              backgroundColor: const Color(0x57ffffff),
+                              color: const Color(0xffffd95f)),
                         const SizedBox(height: 13),
                         Text(
-                          earned == null
-                            ? 'Verified progress unavailable'
-                            : '${referenceNumber(earned)} '
-                              '${ProfileLevelScale.units[selected]}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800)),
+                            earned == null
+                                ? 'Verified progress unavailable'
+                                : '${referenceNumber(earned)} '
+                                    '${ProfileLevelScale.units[selected]}',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800)),
                         if (progress == null)
                           const Text('Maximum tier or unavailable',
-                            style: TextStyle(color: Color(0xffefdeff), fontSize: 12)),
-                        if (next != null) Text(
-                          '${referenceNumber(next)} to the next level',
-                          style: const TextStyle(
-                            color: Color(0xffefdeff),
-                            fontSize: 12)),
+                              style: TextStyle(
+                                  color: Color(0xffefdeff), fontSize: 12)),
+                        if (next != null)
+                          Text('${referenceNumber(next)} to the next level',
+                              style: const TextStyle(
+                                  color: Color(0xffefdeff), fontSize: 12)),
                       ]),
                     ),
                     const SizedBox(height: 16),
@@ -209,60 +221,61 @@ class _LevelState extends ConsumerState<LevelsScreen> {
               borderRadius: BorderRadius.circular(23),
               clipBehavior: Clip.antiAlias,
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20, vertical: 6),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                 leading: const Icon(Icons.sports_esports_rounded,
-                  color: NimzoStyle.primary, size: 29),
+                    color: NimzoStyle.primary, size: 29),
                 title: const Text('Game Level',
-                  style: TextStyle(fontWeight: FontWeight.w800)),
-                subtitle: const Text(
-                  'Verified settled-game experience',
-                  style: TextStyle(fontSize: 12)),
+                    style: TextStyle(fontWeight: FontWeight.w800)),
+                subtitle: const Text('Verified settled-game experience',
+                    style: TextStyle(fontSize: 12)),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.push('/game-level'),
               ),
             ),
             const SizedBox(height: 24),
-            Text('$label level collection', style: const TextStyle(
-              fontSize: 19,
-              color: Color(0xff2b243c),
-              fontWeight: FontWeight.w900)),
+            Text('$label level collection',
+                style: const TextStyle(
+                    fontSize: 15,
+                    color: Color(0xff2b243c),
+                    fontWeight: FontWeight.w900)),
             const SizedBox(height: 12),
             for (final band in bands)
               Container(
                 margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 14, horizontal: 15),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: const Color(0xffede8f5))),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xffede8f5))),
                 child: Row(children: [
                   Container(
-                    width: 48, height: 48,
-                    decoration: BoxDecoration(
-                      color: band.color.withValues(alpha: .13),
-                      borderRadius: BorderRadius.circular(15)),
-                    child: Icon(icons[selected],
-                      color: band.color, size: 27)),
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                          color: band.color.withValues(alpha: .13),
+                          borderRadius: BorderRadius.circular(15)),
+                      child:
+                          Icon(icons[selected], color: band.color, size: 27)),
                   const SizedBox(width: 14),
-                  Expanded(child: Text(band.label,
-                    style: const TextStyle(
-                      color: Color(0xff433850),
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16))),
+                  Expanded(
+                      child: Text(band.label,
+                          style: const TextStyle(
+                              color: Color(0xff433850),
+                              fontWeight: FontWeight.w800,
+                              fontSize: 14))),
                   Text('Lv. ${band.from}–${band.to}',
-                    style: const TextStyle(
-                      color: Color(0xff83798e),
-                      fontSize: 12, fontWeight: FontWeight.w600)),
+                      style: const TextStyle(
+                          color: Color(0xff83798e),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600)),
                 ]),
               ),
             const SizedBox(height: 15),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20)),
+                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
               padding: const EdgeInsets.all(18),
               child: Text(
                 [
@@ -270,8 +283,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                   'Charm grows from diamonds received in verified gifts.',
                   'Active grows from recorded activity points.',
                 ][selected],
-                style: const TextStyle(
-                  color: Color(0xff84798e), height: 1.5),
+                style: const TextStyle(color: Color(0xff84798e), height: 1.5),
               ),
             ),
           ],

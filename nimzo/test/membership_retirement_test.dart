@@ -36,9 +36,13 @@ void main() {
       final container = ProviderContainer(overrides: [
         supabaseProvider.overrideWithValue(db),
         profileProvider('u').overrideWith((_) async => Profile(
-          id: 'u', nimzoId: 100001, displayName: 'Nimzo User',
-          gender: 'female', dateOfBirth: DateTime(2000), countryCode: 'PK',
-        )),
+              id: 'u',
+              nimzoId: 100001,
+              displayName: 'Nimzo User',
+              gender: 'female',
+              dateOfBirth: DateTime(2000),
+              countryCode: 'PK',
+            )),
         authStateProvider.overrideWith((_) => Stream.value(
               const AuthUser(id: 'u', emailVerified: true),
             )),
@@ -58,10 +62,11 @@ void main() {
       // The premium reference banner and 3x2 perk tiles put this heading
       // below the fold on phones. Scroll to the genuine section first.
       await tester.scrollUntilVisible(
-        find.text('Membership privileges'), 160,
+        find.text('Identification'),
+        160,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(find.text('Membership privileges'), findsOneWidget);
+      expect(find.text('Identification'), findsOneWidget);
       expect(find.text(svip ? 'SVIP' : 'VIP'), findsOneWidget);
       expect(find.byType(FilledButton), findsNothing);
       expect(tester.takeException(), isNull);
