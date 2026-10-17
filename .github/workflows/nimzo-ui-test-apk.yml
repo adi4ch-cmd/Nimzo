@@ -1,0 +1,99 @@
+name: NIMZO UI Branch Test APK
+# Explicit owner-requested device test only. NOT a signed production release.
+on:
+  push:
+    branches:
+      - feature/tingle-ui-rebuild-20261017
+    paths:
+      - .github/workflows/nimzo-ui-test-apk.yml
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  android-ui-test-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    defaults:
+      run:
+        working-directory: nimzo
+    steps:
+      - name: Checkout exact UI branch
+        uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Flutter 3.47.6
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Generate Android host and configure package
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter create . --org io.nimzo --project-name nimzo --platforms android
+          python3 ../tools/configure_android_gradle.py android
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          g = Path('android/app/build.gradle.kts')
+          if not g.exists(): raise SystemExit('Missing generated Kotlin Gradle script')
+          s = g.read_text()
+          s, n = re.subn(r'namespace\s*=\s*"[^"]+"', 'namespace = "io.nimzo.app"', s, count=1)
+          if n != 1: raise SystemExit('Could not set namespace')
+          s, n = re.subn(r'applicationId\s*=\s*"[^"]+"', 'applicationId = "io.nimzo.app"', s, count=1)
+          if n != 1: raise SystemExit('Could not set app ID')
+          g.write_text(s)
+          old = Path('android/app/src/main/kotlin/io/nimzo/nimzo/MainActivity.kt')
+          if old.exists():
+              new = Path('android/app/src/main/kotlin/io/nimzo/app/MainActivity.kt')
+              new.parent.mkdir(parents=True, exist_ok=True)
+              new.write_text(old.read_text().replace('package io.nimzo.nimzo', 'package io.nimzo.app'))
+              old.unlink()
+          manifest = Path('android/app/src/main/AndroidManifest.xml')
+          m = manifest.read_text()
+          m = re.sub(r'android:label="[^"]+"', 'android:label="NIMZO UI Test"', m, count=1)
+          for perm in ['android.permission.INTERNET', 'android.permission.RECORD_AUDIO',
+                       'android.permission.MODIFY_AUDIO_SETTINGS']:
+              if perm not in m:
+                  m = m.replace('<application', f'<uses-permission android:name="{perm}" />\n    <application', 1)
+          if 'android:scheme="io.nimzo.app"' not in m:
+              intent = '''<intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="io.nimzo.app" android:host="login-callback" />
+              </intent-filter>'''
+              m = m.replace('</activity>', intent+'\n        </activity>', 1)
+          manifest.write_text(m)
+          print('UI APK package set to io.nimzo.app')
+          PY
+          rm -f test/widget_test.dart
+      - name: Install Flutter packages
+        run: flutter pub get
+      - name: Analyzer
+        run: flutter analyze --no-fatal-infos
+      - name: Build Android debug APK (device UI QA)
+        run: flutter build apk --debug
+      - name: Validate APK, checksum and package
+        run: |
+          set -euo pipefail
+          APK=build/app/outputs/flutter-apk/app-debug.apk
+          test -s "$APK"
+          sha256sum "$APK" > build/app/outputs/flutter-apk/app-debug.apk.sha256
+          ls -lh "$APK"
+          grep -n 'applicationId = "io.nimzo.app"' android/app/build.gradle.kts
+      - name: Upload Android test APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-ui-test-apk
+          path: |
+            nimzo/build/app/outputs/flutter-apk/app-debug.apk
+            nimzo/build/app/outputs/flutter-apk/app-debug.apk.sha256
+          retention-days: 14
+          if-no-files-found: error
