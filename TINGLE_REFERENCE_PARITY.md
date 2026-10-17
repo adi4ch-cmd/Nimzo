@@ -20,16 +20,16 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 ## Checklist (each row requires screenshot comparison + button/data QA)
 | Reference | Present state | Blocking work |
 |---|---|---|
-| Splash/Login/OAuth | Login reference layout, email/Google linked | Mobile/quick auth, icon/pixel QA, on-device OAuth |
-| Register/Profile details | Rebuilt reference-like profile form, real avatar save | Referral service, exact artwork, edit/picker device tests |
+| Splash/Login/OAuth | New lavender splash/onboarding + linked email/Google login | Exact artwork, mobile/quick auth, pixel QA, on-device OAuth |
+| Register/Profile details | New lavender signup, password confirmation, terms toggle, real Supabase sign-up; profile edit/upload preserved | Referral backend, exact artwork and device tests |
 | Explore/New/Follow/PK | Three tabs + real country filtering | PK live data, full visual parity, badge/frame artwork |
 | Daily Check-in | Unavailable | Verified daily attendance RPC and reward settlement |
 | Profile summary | Purple reference-inspired menu + level + edit + VIP links | Complete badge/account stats and avatar decoration art |
 | Coins/History/Recharge | Real wallet/ledger and navigation | Full payment QA, visual parity, offline recharge integration |
 | Store | Server-authoritative medals, Bag, category tabs | Catalog for frames/entries/bubbles/rides, premium assets |
 | VIP/SVIP | Tier previews based on backend membership state | Server grants, artwork, 3D effects, rewards, eligibility |
-| Levels/Game Levels | Existing working counters UI | Reference layout, progress validation |
-| CP Space | Existing CP backend | Reference graphics, interactions |
+| Levels/Game Levels | Compact reference-inspired Wealth/Charm/Active progress UI using verified server totals | Pixel parity, all tier icons and device QA |
+| CP Space | Pink reference-inspired CP hero + real search/invite/accept/decline and couple status | Exact licensed graphics, timing/badge artwork and device QA |
 | Daily/Growth Tasks | Real event-backed indicators | Server payout and reset contract, mic duration attestation |
 | Settings/Blocked/Help/Delete request | Database-backed screens | Exact designs, private call scope, request policy QA |
 | Audio Room | Existing NIMZO room and Vivox | Reference mic layout, controls, entry/profile/permission QA |
@@ -39,11 +39,11 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 | Moments feed | Discover/Following real filters, existing actions | Post-editor parity, attach/mentions, image tests |
 | Messages | Existing chat | Reference header/tabs/cards, unread/blocked QA |
 | Gifts | Existing gifts/settlement contract | Licensed premium 3D animations + native playback QA |
-| Games | Existing catalog/round backend | UI/icon parity for every game and fair settlement QA |
+| Games | Premium seven-game tab/categories and existing room game picker; unsupported game boards clearly marked Preview | Backend games for missing slugs, real payouts, artwork and QA |
 | Room photo/create | Reference UI, real upload path | Camera/device/storage policies/private room end-to-end |
 | Ranks/families/agency | Existing partial or missing | Service contracts and design matching |
 | Visual QA | Not performed | Record comparison of every supplied screenshot at same device |
-| Automated QA | Existing old suite had 44 failed tests | Fix regressions and ensure all critical tests pass |
+| Automated QA | Source-only PR QA: Flutter analyze + ten-seat/roster tests passed (run 39019844054); old full suite previously 44 fails | Fix full-suite regressions and device checks |
 | Native Android/iOS | Existing repo Android scaffold only in CI | Final packaging, permissions, SDK QA, release signing |
 
 ## Definition of complete
@@ -67,3 +67,14 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 - Store category UI for active medals and honest empty categories.
 - Existing backend auth, profile, wallet, room/photo, social data remain
   available. More work is required to call this a full clone.
+
+## 2026-10-17 continuation checkpoint
+- New reference-inspired account registration and onboarding are wired to
+  the original Supabase auth flow, with no extra temporary account tables.
+- Level, CP and game catalog pages redesigned; real NIMZO data is used and
+  no pretend membership/grants/bets are accepted.
+- A new 7-game roster test and a server-unavailable preview test guard against
+  misrepresenting gambling or rewards as real settlements.
+- Verified source-only GitHub Actions PR run **39019844054** passed (Flutter
+  analyzer and focused tests). This run contained **NO APK/AAB build steps**.
+- Full reference matching is **NOT** achieved. The release lock remains.
