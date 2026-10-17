@@ -46,13 +46,15 @@ class _NotificationState extends ConsumerState<NotificationsScreen> {
           style: TextStyle(color: Color(0xff281d3e),
             fontSize: 21, fontWeight: FontWeight.w900)),
         actions: [
-          TextButton.icon(
+          Tooltip(
+            message: 'Mark all read',
+            child: TextButton.icon(
             onPressed: marking ? null : markRead,
             icon: const Icon(Icons.done_all_rounded, size: 18),
             label: Text(marking ? 'Wait…' : 'Read all'),
             style: TextButton.styleFrom(
               foregroundColor: NimzoStyle.primary),
-          ),
+          )),
         ],
       ),
       body: RefreshIndicator(
