@@ -25,6 +25,7 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
     super.initState();
     bag = widget.initialBag;
   }
+
   String? busy;
   String? pendingKey;
   String? pendingItem;
@@ -124,14 +125,21 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
         backgroundColor: const Color(0xffb4b7ff),
         foregroundColor: Colors.white,
         title: const Text('My Store',
-          style: TextStyle(fontWeight: FontWeight.w900,
-            color: Colors.white)),
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white)),
         actions: [
+          IconButton(
+              tooltip: 'Wallet',
+              onPressed: () => context.push('/wallet'),
+              icon: const Icon(Icons.account_balance_wallet_outlined,
+                  color: Colors.white)),
           IconButton(
             tooltip: 'Open Backpack',
             onPressed: () => setState(() => bag = true),
             icon: const Icon(Icons.inventory_2_outlined,
-              color: NimzoStyle.primary),
+                color: NimzoStyle.primary),
           ),
         ],
       ),
@@ -146,69 +154,6 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(13, 14, 13, 24),
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(13),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(colors: [Color(0xff817cde), Color(0xffb5a2ef)]),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x248b3dff),
-                          blurRadius: 18,
-                          offset: Offset(0, 7),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Expanded(
-                              child: Text(
-                                'NIMZO Collection',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ),
-                            TextButton.icon(
-                              onPressed: () => context.push('/wallet'),
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.white,
-                              ),
-                              icon: const Icon(
-                                Icons.account_balance_wallet_outlined,
-                                size: 18,
-                              ),
-                              label: const Text('Wallet'),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        ref.watch(walletProvider).when(
-                          data: (balance) => Text(
-                            '${compactNumber(balance.coins)} coins available',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                            ),
-                          ),
-                          loading: () => const LinearProgressIndicator(
-                            color: Colors.white,
-                          ),
-                          error: (_, __) => const Text(
-                            'Wallet balance unavailable',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
                   SegmentedButton<bool>(
                     segments: const [
                       ButtonSegment(
@@ -232,29 +177,50 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 3),
                       child: Row(children: [
                         for (final c in const <({
-                          String value, String label, IconData icon, Color color
+                          String value,
+                          String label,
+                          IconData icon,
+                          Color color
                         })>[
-                          (value: 'Frames', label: 'Avatar Frame',
+                          (
+                            value: 'Frames',
+                            label: 'Avatar Frame',
                             icon: Icons.filter_frames_rounded,
-                            color: Color(0xffa546e7)),
-                          (value: 'Entry', label: 'Party Theme',
+                            color: Color(0xffa546e7)
+                          ),
+                          (
+                            value: 'Entry',
+                            label: 'Party Theme',
                             icon: Icons.palette_rounded,
-                            color: Color(0xffab32e2)),
-                          (value: 'Rides', label: 'Rides',
+                            color: Color(0xffab32e2)
+                          ),
+                          (
+                            value: 'Rides',
+                            label: 'Rides',
                             icon: Icons.directions_car_rounded,
-                            color: Color(0xfff4a20c)),
-                          (value: 'Bubbles', label: 'Chat Bubble',
+                            color: Color(0xfff4a20c)
+                          ),
+                          (
+                            value: 'Bubbles',
+                            label: 'Chat Bubble',
                             icon: Icons.chat_bubble_rounded,
-                            color: Color(0xff12adf3)),
-                          (value: 'LiveFrames', label: 'Live Frame',
+                            color: Color(0xff12adf3)
+                          ),
+                          (
+                            value: 'LiveFrames',
+                            label: 'Live Frame',
                             icon: Icons.crop_square_rounded,
-                            color: Color(0xfff05eaa)),
-                          (value: 'Medals', label: 'Featured',
+                            color: Color(0xfff05eaa)
+                          ),
+                          (
+                            value: 'Medals',
+                            label: 'Featured',
                             icon: Icons.workspace_premium_rounded,
-                            color: Color(0xffef9b26)),
+                            color: Color(0xffef9b26)
+                          ),
                         ])
                           Padding(
-                            padding: const EdgeInsets.only(right: 12),
+                            padding: const EdgeInsets.only(right: 7),
                             child: InkWell(
                               key: ValueKey('store-category-${c.value}'),
                               onTap: () {
@@ -278,30 +244,32 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                               child: Column(children: [
                                 AnimatedContainer(
                                   duration: const Duration(milliseconds: 160),
-                                  width: 60, height: 62,
+                                  width: 44,
+                                  height: 44,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: category == c.value
-                                        ? NimzoStyle.primary
-                                        : const Color(0xfff1e9fe),
-                                      width: category == c.value ? 2 : 1)),
-                                  child: Icon(c.icon,
-                                    color: c.color, size: 32),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: category == c.value
+                                              ? NimzoStyle.primary
+                                              : const Color(0xfff1e9fe),
+                                          width: category == c.value ? 2 : 1)),
+                                  child: Icon(c.icon, color: c.color, size: 25),
                                 ),
                                 const SizedBox(height: 5),
                                 SizedBox(
-                                  width: 70,
-                                  child: Text(c.label,
+                                  width: 58,
+                                  child: Text(
+                                    c.label,
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: category == c.value
-                                        ? FontWeight.w800 : FontWeight.w500,
-                                      color: const Color(0xff77648f)),
+                                        fontSize: 10,
+                                        fontWeight: category == c.value
+                                            ? FontWeight.w800
+                                            : FontWeight.w500,
+                                        color: const Color(0xff77648f)),
                                   ),
                                 ),
                               ]),
@@ -311,8 +279,10 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                     ),
                     const SizedBox(height: 14),
                     const Text('Hot recommendation',
-                      style: TextStyle(fontSize: 21, fontWeight: FontWeight.w900,
-                        color: Color(0xff18141f))),
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xff18141f))),
                     const SizedBox(height: 13),
                   ],
                   if (!bag && category != 'Medals')
@@ -324,17 +294,17 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                       ),
                       child: Column(children: [
                         const Icon(Icons.inventory_2_outlined,
-                          size: 46, color: Color(0xffb0a0d4)),
+                            size: 46, color: Color(0xffb0a0d4)),
                         const SizedBox(height: 15),
                         Text('No active $category catalog',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w800, fontSize: 17)),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w800, fontSize: 17)),
                         const SizedBox(height: 9),
                         const Text(
-                          'Only verified store items with real coin prices '
-                          'and purchase settlement can be shown here.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: NimzoStyle.muted)),
+                            'Only verified store items with real coin prices '
+                            'and purchase settlement can be shown here.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: NimzoStyle.muted)),
                       ]),
                     )
                   else if (!bag)
@@ -497,7 +467,9 @@ class StoreCategoryPreview extends StatefulWidget {
   final IconData icon;
   final Color accent;
   const StoreCategoryPreview({
-    super.key, required this.category, required this.icon,
+    super.key,
+    required this.category,
+    required this.icon,
     required this.accent,
   });
 
@@ -520,17 +492,20 @@ class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
   @override
   Widget build(BuildContext context) {
     final colors = <Color>[
-      const Color(0xffffd277), const Color(0xfff577bf),
-      const Color(0xfff49bb6), const Color(0xffb48afa),
-      const Color(0xff91e7c4), const Color(0xff7dc6f7),
+      const Color(0xffffd277),
+      const Color(0xfff577bf),
+      const Color(0xfff49bb6),
+      const Color(0xffb48afa),
+      const Color(0xff91e7c4),
+      const Color(0xff7dc6f7),
       const Color(0xffeac19b),
     ];
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(widget.category,
-          style: const TextStyle(color: Colors.white,
-            fontWeight: FontWeight.w800)),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w800)),
         centerTitle: true,
         foregroundColor: Colors.white,
         backgroundColor: const Color(0xffabb2fa),
@@ -540,10 +515,12 @@ class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 12),
           child: Row(children: [
-            Expanded(child: Text(styles[selected].name,
-              maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 16,
-                fontWeight: FontWeight.w800))),
+            Expanded(
+                child: Text(styles[selected].name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w800))),
             const SizedBox(width: 12),
             const Chip(
               key: ValueKey('store-category-preview-only'),
@@ -568,24 +545,26 @@ class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
             alignment: Alignment.center,
             child: Stack(alignment: Alignment.center, children: [
               Container(
-                width: 167, height: 167,
+                width: 167,
+                height: 167,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: colors[selected], width: 7),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colors[selected].withValues(alpha: .45),
-                      blurRadius: 17, spreadRadius: 8),
-                  ]),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: colors[selected], width: 7),
+                    boxShadow: [
+                      BoxShadow(
+                          color: colors[selected].withValues(alpha: .45),
+                          blurRadius: 17,
+                          spreadRadius: 8),
+                    ]),
               ),
               CircleAvatar(
                 radius: 64,
                 backgroundColor: const Color(0xffefe9ff),
-                child: Icon(widget.icon,
-                  color: widget.accent, size: 62),
+                child: Icon(widget.icon, color: widget.accent, size: 62),
               ),
               SizedBox(
-                width: 189, height: 189,
+                width: 189,
+                height: 189,
                 child: CircularProgressIndicator(
                   value: 1,
                   strokeWidth: 3,
@@ -594,15 +573,16 @@ class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
                 ),
               ),
               Positioned(
-                top: 15,
-                child: Icon(styles[selected].icon,
-                  size: 35, color: colors[selected])),
+                  top: 15,
+                  child: Icon(styles[selected].icon,
+                      size: 35, color: colors[selected])),
             ]),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(widget.category, style: const TextStyle(
-              fontSize: 20, fontWeight: FontWeight.w900)),
+            child: Text(widget.category,
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
           ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -629,27 +609,29 @@ class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
               borderRadius: BorderRadius.circular(17),
               onTap: () => setState(() => selected = index),
               child: Column(children: [
-                Expanded(child: Container(
+                Expanded(
+                    child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: const Color(0xfff4f2ff),
                     borderRadius: BorderRadius.circular(17),
                     border: Border.all(
-                      color: selected == index
-                        ? const Color(0xffa343ed)
-                        : Colors.transparent,
-                      width: 2),
+                        color: selected == index
+                            ? const Color(0xffa343ed)
+                            : Colors.transparent,
+                        width: 2),
                   ),
                   child: Center(
                     child: Icon(styles[index].icon,
-                      size: 48, color: colors[index]),
+                        size: 48, color: colors[index]),
                   ),
                 )),
                 const SizedBox(height: 5),
-                Text(styles[index].name, maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 11, fontWeight: FontWeight.w700)),
+                Text(styles[index].name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 11, fontWeight: FontWeight.w700)),
               ]),
             ),
           ),

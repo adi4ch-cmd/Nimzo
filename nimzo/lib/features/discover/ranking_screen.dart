@@ -25,50 +25,17 @@ class _State extends ConsumerState<RankingScreen> {
     return Scaffold(
       backgroundColor: const Color(0xfff6f4ff),
       appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        title: const Text('Ranking', style: TextStyle(
-          color: Color(0xff2d1c46),
-          fontWeight: FontWeight.w900, fontSize: 21))),
+          centerTitle: true,
+          backgroundColor: const Color(0xff8944ed),
+          title: const Text('Ranking',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16))),
       body: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(15, 16, 15, 50),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
         children: [
-          Container(
-            height: 145,
-            padding: const EdgeInsets.fromLTRB(23, 15, 23, 15),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  Color(0xff422489), Color(0xff8243d0),
-                  Color(0xffd47add),
-                ]),
-              borderRadius: BorderRadius.circular(27)),
-            child: Row(children: [
-              const Expanded(child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('NIMZO RANKING',
-                    style: TextStyle(
-                      color: Color(0xffffd18c),
-                      fontWeight: FontWeight.w900,
-                      fontSize: 12, letterSpacing: 2)),
-                  SizedBox(height: 9),
-                  Text('Top Stars',
-                    style: TextStyle(color: Colors.white,
-                      fontSize: 28, fontWeight: FontWeight.w900)),
-                  SizedBox(height: 5),
-                  Text('Live verified leaderboards',
-                    style: TextStyle(color: Color(0xfff1dcff),
-                      fontSize: 12)),
-                ],
-              )),
-              const Icon(Icons.emoji_events_rounded,
-                color: Color(0xffffdf7b), size: 85),
-            ]),
-          ),
-          const SizedBox(height: 19),
           ReferenceTabs(
             labels: const ['Gift', 'Wealth', 'Charm', 'Active'],
             selected: category,
@@ -83,7 +50,8 @@ class _State extends ConsumerState<RankingScreen> {
           ),
           const SizedBox(height: 12),
           if (!supported)
-            const EmptyContent('Only verified Wealth/Charm weekly and monthly rankings are available.')
+            const EmptyContent(
+                'Only verified Wealth/Charm weekly and monthly rankings are available.')
           else
             AsyncContent(
               value: ref.watch(leaderboardProvider(key)),
@@ -92,17 +60,15 @@ class _State extends ConsumerState<RankingScreen> {
                   ? const EmptyContent('No rankings yet')
                   : Column(
                       children: [
-                        RankingPodium(rows: rows.take(3).toList()),
-                        for (var i = 3; i < rows.length; i++)
+                        for (var i = 0; i < rows.length; i++)
                           Container(
-                            margin: const EdgeInsets.only(bottom: 10),
+                            margin: const EdgeInsets.only(bottom: 5),
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
+                                horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(19),
-                              border: Border.all(
-                                color: NimzoStyle.line),
+                              border: Border.all(color: NimzoStyle.line),
                             ),
                             child: ListTile(
                               contentPadding: EdgeInsets.zero,

@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'auth_redirect.dart';
 import '../features/social/social_screens.dart';
+import '../features/social/family_screen.dart';
 import '../features/social/tingle_friends_screen.dart';
 import '../features/discover/ranking_screen.dart';
 import '../features/profile/levels_screen.dart';
@@ -32,6 +33,7 @@ import '../features/games/games_catalog_screen.dart';
 import '../features/rooms/presentation/create_room_screen.dart';
 import '../features/rooms/presentation/room_settings_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/home/party_screen.dart';
 import '../features/home/pk_battles_screen.dart';
 import '../features/messages/messages_screen.dart';
 import '../features/moments/moments_screen.dart';
@@ -98,7 +100,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.onboarding,
         builder: (_, __) => const OnboardingScreen(),
       ),
-      GoRoute(path: Routes.login, builder: (_, __) => const TingleLoginScreen()),
+      GoRoute(
+          path: Routes.login, builder: (_, __) => const TingleLoginScreen()),
       GoRoute(
         path: Routes.register,
         builder: (_, __) => const TingleRegisterScreen(),
@@ -136,18 +139,27 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
-      GoRoute(path: '/friends', builder: (_, __) => const TingleFriendsScreen()),
-      GoRoute(path: '/pk', builder: (_, __) => const PkBattlesScreen()),
-      GoRoute(path: '/settings/blocked', builder: (_, __) => const TingleBlockedUsersScreen()),
       GoRoute(
-          path: '/svip', builder: (_, __) => const TingleMembershipScreen(svip: true)),
+          path: '/friends', builder: (_, __) => const TingleFriendsScreen()),
+      GoRoute(path: '/pk', builder: (_, __) => const PkBattlesScreen()),
+      GoRoute(
+          path: '/settings/blocked',
+          builder: (_, __) => const TingleBlockedUsersScreen()),
+      GoRoute(
+          path: '/svip',
+          builder: (_, __) => const TingleMembershipScreen(svip: true)),
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
       GoRoute(path: '/task', builder: (_, __) => const TingleTasksScreen()),
-      GoRoute(path: '/daily-checkin', builder: (_, __) => const TingleDailyCheckinScreen()),
+      GoRoute(
+          path: '/daily-checkin',
+          builder: (_, __) => const TingleDailyCheckinScreen()),
       GoRoute(path: '/game-level', builder: (_, __) => const GameLevelScreen()),
-      GoRoute(path: '/store', builder: (_, s) => RoyalStoreScreen(initialBag: s.uri.queryParameters['bag'] == '1')),
+      GoRoute(
+          path: '/store',
+          builder: (_, s) => RoyalStoreScreen(
+              initialBag: s.uri.queryParameters['bag'] == '1')),
       GoRoute(
         path: '/social/:kind/:id',
         builder: (_, s) => SocialListScreen(
@@ -157,14 +169,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/info/:title',
-        builder: (_, s) => InfoScreen(title: s.pathParameters['title']!),
+        builder: (_, s) => s.pathParameters['title'] == 'Family'
+            ? const FamilyScreen()
+            : InfoScreen(title: s.pathParameters['title']!),
       ),
       GoRoute(
         path: '/room/:id',
         builder: (_, s) => RoomScreen(roomId: s.pathParameters['id']!),
       ),
-      GoRoute(path: Routes.wallet, builder: (_, __) => const TingleCoinsScreen()),
-      GoRoute(path: '/wallet/exchange', builder: (_, __) => const WalletScreen()),
+      GoRoute(
+          path: Routes.wallet, builder: (_, __) => const TingleCoinsScreen()),
+      GoRoute(
+          path: '/wallet/exchange', builder: (_, __) => const WalletScreen()),
       GoRoute(
         path: Routes.discover,
         builder: (_, __) => const DiscoverScreen(),
@@ -215,8 +231,9 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.games,
-                builder: (_, s) =>
-                    GamesCatalogScreen(roomId: s.uri.queryParameters['room']),
+                builder: (_, s) => s.uri.queryParameters['room'] == null
+                    ? const PartyScreen()
+                    : GamesCatalogScreen(roomId: s.uri.queryParameters['room']),
               ),
             ],
           ),

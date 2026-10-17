@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/tingle_surface.dart';
 import '../rooms/domain/room.dart';
 import '../rooms/presentation/room_controller.dart';
 
@@ -17,7 +18,8 @@ final ownedRoomPreviewProvider = FutureProvider<Room?>((ref) async {
 
 /// Historical rooms may store either an ISO country code or a country name.
 /// Do not silently drop real followed/new rooms when formats differ.
-bool roomCountryMatches(String? stored, String? selectedCode, String selectedName) {
+bool roomCountryMatches(
+    String? stored, String? selectedCode, String selectedName) {
   if (selectedCode == null) return true;
   final value = stored?.trim().toLowerCase();
   if (value == null || value.isEmpty) return false;
@@ -55,9 +57,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     setState(() => opening = true);
     try {
       final id = await ref.read(roomRepositoryProvider).ownedRoomId();
-      if (mounted) context.push(
-        id == null ? '/create-room' : '/room/' + id,
-      );
+      if (mounted)
+        context.push(
+          id == null ? '/create-room' : '/room/' + id,
+        );
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -80,27 +83,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       builder: (sheetContext) => StatefulBuilder(
         builder: (sheetContext, updateSheet) {
-          final filtered = CountryService().getAll().where((c) =>
-            c.name.toLowerCase().contains(searchText.toLowerCase()) ||
-            c.countryCode.toLowerCase().contains(searchText.toLowerCase()),
-          ).take(70).toList();
+          final filtered = CountryService()
+              .getAll()
+              .where(
+                (c) =>
+                    c.name.toLowerCase().contains(searchText.toLowerCase()) ||
+                    c.countryCode
+                        .toLowerCase()
+                        .contains(searchText.toLowerCase()),
+              )
+              .take(70)
+              .toList();
           return SafeArea(
             top: false,
             child: SizedBox(
               height: MediaQuery.sizeOf(sheetContext).height * .70,
               child: Column(children: [
                 const SizedBox(height: 11),
-                Container(width: 32, height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffc7bfe0),
-                    borderRadius: BorderRadius.circular(5))),
+                Container(
+                    width: 32,
+                    height: 4,
+                    decoration: BoxDecoration(
+                        color: const Color(0xffc7bfe0),
+                        borderRadius: BorderRadius.circular(5))),
                 Row(children: [
                   const Spacer(),
                   const Text('Apply Filter',
-                    style: TextStyle(
-                      color: Color(0xff23182f),
-                      fontSize: 20, fontWeight: FontWeight.w800)),
-                  Expanded(child: Align(
+                      style: TextStyle(
+                          color: Color(0xff23182f),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800)),
+                  Expanded(
+                      child: Align(
                     alignment: Alignment.centerRight,
                     child: IconButton(
                       tooltip: 'Close country filter',
@@ -115,31 +129,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text('Country',
-                      style: TextStyle(
-                        color: Color(0xff17111d),
-                        fontSize: 17, fontWeight: FontWeight.w800)),
+                        style: TextStyle(
+                            color: Color(0xff17111d),
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800)),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: TextField(
                     key: const ValueKey('room-country-search'),
-                    onChanged: (value) =>
-                      updateSheet(() => searchText = value),
+                    onChanged: (value) => updateSheet(() => searchText = value),
                     decoration: InputDecoration(
                       hintText: 'Search...',
                       filled: true,
                       fillColor: const Color(0xfff6f5fb),
                       prefixIcon: const Icon(Icons.search_rounded,
-                        color: Color(0xffb2aaca)),
+                          color: Color(0xffb2aaca)),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide.none),
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide.none),
                     ),
                   ),
                 ),
                 const SizedBox(height: 10),
-                Expanded(child: ListView(
+                Expanded(
+                    child: ListView(
                   padding: const EdgeInsets.fromLTRB(14, 0, 14, 16),
                   children: [
                     Wrap(spacing: 8, runSpacing: 6, children: [
@@ -152,7 +167,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         backgroundColor: const Color(0xfff2eeff),
                         labelStyle: TextStyle(
                           color: country == null
-                            ? Colors.white : const Color(0xff726290),
+                              ? Colors.white
+                              : const Color(0xff726290),
                         ),
                         onSelected: (_) {
                           setState(() {
@@ -166,14 +182,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ChoiceChip(
                           key: ValueKey('room-country-${c.countryCode}'),
                           label: Text('${c.flagEmoji} ${c.name}',
-                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                              maxLines: 1, overflow: TextOverflow.ellipsis),
                           selected: country == c.countryCode,
                           showCheckmark: false,
                           backgroundColor: const Color(0xfff2eeff),
                           selectedColor: const Color(0xffe4d2ff),
                           side: BorderSide.none,
                           labelStyle: const TextStyle(
-                            color: Color(0xff6f6289), fontSize: 12),
+                              color: Color(0xff6f6289), fontSize: 12),
                           onSelected: (_) {
                             setState(() {
                               country = c.countryCode;
@@ -200,162 +216,192 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       data = ref.watch(newRoomsProvider);
     } else if (tab == 3) {
       data = ref.watch(myRoomsProvider).whenData(
-        (m) => m['followed'] ?? const <Room>[],
-      );
+            (m) => m['followed'] ?? const <Room>[],
+          );
     } else {
       data = ref.watch(popularRoomsProvider(selectedCountry));
     }
     if (country != null && tab != 0) {
       data = data.whenData(
-        (rooms) => rooms.where(
-          (r) => roomCountryMatches(r.country, country, countryName),
-        ).toList(),
+        (rooms) => rooms
+            .where(
+              (r) => roomCountryMatches(r.country, country, countryName),
+            )
+            .toList(),
       );
     }
 
     return Scaffold(
       backgroundColor: const Color(0xfff5f4ff),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(popularRoomsProvider(selectedCountry));
-          ref.invalidate(newRoomsProvider);
-          ref.invalidate(myRoomsProvider);
-          if (tab == 1) {
-            await ref.read(newRoomsProvider.future);
-          } else if (tab == 3) {
-            await ref.read(myRoomsProvider.future);
-          } else {
-            await ref.read(popularRoomsProvider(selectedCountry).future);
-          }
-        },
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xff283e6d), Color(0xff2068a5)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              padding: const EdgeInsets.fromLTRB(24, 26, 18, 14),
-              child: Column(children: [
-                Row(children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(children: [
-                        for (var i = 0; i < 4; i++)
-                          InkWell(
-                            key: ValueKey('explore-tab-$i'),
-                            onTap: () => selectTab(i),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                right: 17, bottom: 14),
-                              child: Text(
-                                const ['Explore', 'New', 'PK', 'Follow'][i],
-                                style: TextStyle(
-                                  color: tab == i
-                                    ? Colors.white : Colors.white54,
-                                  fontSize: i == 0 ? 22 : 16,
-                                  fontWeight: tab == i
-                                    ? FontWeight.w800 : FontWeight.w500,
+      body: DecoratedBox(
+        decoration: const BoxDecoration(gradient: tingleSky),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(popularRoomsProvider(selectedCountry));
+            ref.invalidate(newRoomsProvider);
+            ref.invalidate(myRoomsProvider);
+            if (tab == 1) {
+              await ref.read(newRoomsProvider.future);
+            } else if (tab == 3) {
+              await ref.read(myRoomsProvider.future);
+            } else {
+              await ref.read(popularRoomsProvider(selectedCountry).future);
+            }
+          },
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                  child: Container(
+                padding: const EdgeInsets.fromLTRB(14, 5, 8, 4),
+                child: Column(children: [
+                  Row(children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(children: [
+                          for (var i = 0; i < 4; i++)
+                            InkWell(
+                              key: ValueKey('explore-tab-$i'),
+                              onTap: () => selectTab(i),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 12, bottom: 4),
+                                child: Text(
+                                  const ['Explore', 'New', 'PK', 'Follow'][i],
+                                  style: TextStyle(
+                                    color: tab == i
+                                        ? Colors.white
+                                        : Colors.white54,
+                                    fontSize: tab == i ? 16 : 12,
+                                    fontWeight: tab == i
+                                        ? FontWeight.w800
+                                        : FontWeight.w500,
+                                  ),
                                 ),
                               ),
                             ),
+                        ]),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Search rooms and users',
+                      onPressed: () => context.push('/discover'),
+                      icon: const Icon(Icons.search_rounded,
+                          color: Colors.white70),
+                    ),
+                    IconButton(
+                      tooltip: 'Rankings',
+                      onPressed: () => context.push('/ranking'),
+                      icon: const Icon(Icons.emoji_events_rounded,
+                          color: Color(0xffffc547)),
+                    ),
+                  ]),
+                  Row(children: [
+                    ActionChip(
+                      key: const ValueKey('home-country-all'),
+                      label: const Text('All'),
+                      backgroundColor:
+                          country == null ? NimzoStyle.primary : Colors.white24,
+                      labelStyle:
+                          const TextStyle(color: Colors.white, fontSize: 11),
+                      side: BorderSide.none,
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () => setState(() {
+                        country = null;
+                        countryName = 'All';
+                      }),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                        child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(children: [
+                        for (final group in const [
+                          '🇦🇪 🇺🇸 🇸🇦',
+                          '🇦🇺 🇫🇷 🇧🇭',
+                          '🇸🇪'
+                        ])
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: InkWell(
+                              onTap: selectCountry,
+                              borderRadius: BorderRadius.circular(20),
+                              child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Text(group,
+                                      style: const TextStyle(fontSize: 16))),
+                            ),
                           ),
+                        _CountryChip(
+                            label: country == null
+                                ? 'Select country'
+                                : countryName,
+                            onTap: selectCountry),
                       ]),
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: 'Search rooms and users',
-                    onPressed: () => context.push('/discover'),
-                    icon: const Icon(Icons.search_rounded,
-                      color: Colors.white70),
-                  ),
-                  IconButton(
-                    tooltip: 'Rankings',
-                    onPressed: () => context.push('/ranking'),
-                    icon: const Icon(Icons.emoji_events_rounded,
-                      color: Color(0xffffc547)),
-                  ),
+                    )),
+                    IconButton(
+                        tooltip: 'Filter by country',
+                        onPressed: selectCountry,
+                        icon: const Icon(Icons.filter_list,
+                            color: Colors.white, size: 20)),
+                  ]),
                 ]),
-                Row(children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: _CountryChip(
-                        label: countryName, onTap: selectCountry,
+              )),
+              data.when(
+                loading: () => const SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator())),
+                error: (error, _) => SliverFillRemaining(
+                  child: Center(
+                      child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Rooms could not be loaded.'),
+                      TextButton(
+                          onPressed: () {
+                            ref.invalidate(
+                                popularRoomsProvider(selectedCountry));
+                            ref.invalidate(myRoomsProvider);
+                            ref.invalidate(newRoomsProvider);
+                          },
+                          child: const Text('Retry')),
+                    ],
+                  )),
+                ),
+                data: (rooms) => rooms.isEmpty
+                    ? const SliverFillRemaining(
+                        child: Center(child: Text('No rooms found.')),
+                      )
+                    : SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 80),
+                        sliver: SliverGrid(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 6,
+                            crossAxisSpacing: 6,
+                            childAspectRatio: .81,
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (context, i) => _LiveCard(room: rooms[i]),
+                            childCount: rooms.length,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 7),
-                  ActionChip(
-                    label: const Text('All'),
-                    avatar: const Icon(Icons.public, size: 16),
-                    backgroundColor: NimzoStyle.primary,
-                    labelStyle: const TextStyle(color: Colors.white),
-                    side: BorderSide.none,
-                    onPressed: () => setState(() {
-                      country = null;
-                      countryName = 'All';
-                    }),
-                  ),
-                  IconButton(
-                    tooltip: 'Filter by country',
-                    onPressed: selectCountry,
-                    icon: const Icon(Icons.filter_list, color: Colors.white),
-                  ),
-                ]),
-              ]),
-            )),
-            data.when(
-              loading: () => const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator())),
-              error: (error, _) => SliverFillRemaining(
-                child: Center(child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Rooms could not be loaded.'),
-                    TextButton(onPressed: () {
-                      ref.invalidate(popularRoomsProvider(selectedCountry));
-                      ref.invalidate(myRoomsProvider);
-                      ref.invalidate(newRoomsProvider);
-                    }, child: const Text('Retry')),
-                  ],
-                )),
               ),
-              data: (rooms) => rooms.isEmpty
-                  ? const SliverFillRemaining(
-                      child: Center(child: Text('No rooms found.')),
-                    )
-                  : SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(15, 18, 15, 105),
-                      sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: .76,
-                        ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, i) => _LiveCard(room: rooms[i]),
-                          childCount: rooms.length,
-                        ),
-                      ),
-                    ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: const Color(0xfff34c94),
+        extendedPadding: const EdgeInsets.symmetric(horizontal: 14),
+        elevation: 0,
+        backgroundColor: const Color(0xffff4e91),
         foregroundColor: Colors.white,
         onPressed: opening ? null : openMine,
-        icon: const Icon(Icons.videocam_off_rounded),
-        label: Text(opening ? 'Opening...' : 'Go Audio Live'),
+        icon: const Icon(Icons.mic_rounded),
+        label: Text(opening ? 'Opening...' : 'Go Live'),
       ),
     );
   }
@@ -367,24 +413,26 @@ class _CountryChip extends StatelessWidget {
   const _CountryChip({required this.label, required this.onTap});
   @override
   Widget build(BuildContext context) => InkWell(
-    onTap: onTap,
-    child: Container(
-      constraints: const BoxConstraints(maxWidth: 200),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: .13),
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        const Icon(Icons.public, size: 16, color: Colors.white),
-        const SizedBox(width: 5),
-        Flexible(child: Text(label,
-          maxLines: 1, overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: Colors.white))),
-        const Icon(Icons.expand_more, color: Colors.white),
-      ]),
-    ),
-  );
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: .13),
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            const Icon(Icons.public, size: 16, color: Colors.white),
+            const SizedBox(width: 5),
+            Flexible(
+                child: Text(label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.white))),
+            const Icon(Icons.expand_more, color: Colors.white),
+          ]),
+        ),
+      );
 }
 
 class _LiveCard extends ConsumerWidget {
@@ -393,8 +441,13 @@ class _LiveCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final path = room.avatarPath;
-    final url = path == null ? null : ref.read(supabaseProvider)
-        .storage.from('room-images').getPublicUrl(path);
+    final url = path == null
+        ? null
+        : ref
+            .read(supabaseProvider)
+            .storage
+            .from('room-images')
+            .getPublicUrl(path);
     return InkWell(
       onTap: () => context.push('/room/' + room.id),
       child: Container(
@@ -402,8 +455,10 @@ class _LiveCard extends ConsumerWidget {
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [
-              Color(0xff9b501a), Color(0xffffd680),
-              Color(0xff9d641c), Color(0xffeac061),
+              Color(0xff9b501a),
+              Color(0xffffd680),
+              Color(0xff9d641c),
+              Color(0xffeac061),
             ],
           ),
           borderRadius: BorderRadius.circular(9),
@@ -415,12 +470,13 @@ class _LiveCard extends ConsumerWidget {
           borderRadius: BorderRadius.circular(6),
           child: Stack(fit: StackFit.expand, children: [
             if (url != null)
-              Image.network(url, fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) =>
-                    const _MissingAvatar())
+              Image.network(url,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const _MissingAvatar())
             else
               const _MissingAvatar(),
-            const DecoratedBox(decoration: BoxDecoration(
+            const DecoratedBox(
+                decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -433,7 +489,8 @@ class _LiveCard extends ConsumerWidget {
               ),
             )),
             Positioned(
-              top: 10, left: 7,
+              top: 10,
+              left: 7,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
@@ -441,24 +498,28 @@ class _LiveCard extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text('🎙 Audio Live',
-                  style: TextStyle(color: Colors.white, fontSize: 10)),
+                    style: TextStyle(color: Colors.white, fontSize: 10)),
               ),
             ),
             Positioned(
-              left: 9, right: 6, bottom: 9,
+              left: 9,
+              right: 6,
+              bottom: 9,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(room.name,
-                    maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14, color: Colors.white)),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
+                          color: Colors.white)),
                   const SizedBox(height: 3),
                   Text('ID: ' + room.roomNo.toString(),
-                    style: const TextStyle(
-                      fontSize: 10, color: Colors.white70)),
+                      style:
+                          const TextStyle(fontSize: 10, color: Colors.white70)),
                 ],
               ),
             ),
@@ -473,12 +534,12 @@ class _MissingAvatar extends StatelessWidget {
   const _MissingAvatar();
   @override
   Widget build(BuildContext context) => const DecoratedBox(
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        colors: [Color(0xff533a71), Color(0xff1e2455)],
-      ),
-    ),
-    child: Center(child: Icon(Icons.mic_rounded,
-      size: 59, color: Color(0xffe9c776))),
-  );
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xff533a71), Color(0xff1e2455)],
+          ),
+        ),
+        child: Center(
+            child: Icon(Icons.mic_rounded, size: 59, color: Color(0xffe9c776))),
+      );
 }

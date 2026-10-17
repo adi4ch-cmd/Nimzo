@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/tingle_surface.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,9 +21,13 @@ final followedMomentsAuthorsProvider =
     FutureProvider.autoDispose<Set<String>>((ref) async {
   final me = ref.watch(currentUserIdProvider);
   if (me == null) return <String>{};
-  final rows = await ref.watch(sessionSupabaseProvider).client
-      .from('follows').select('followee_id')
-      .eq('follower_id', me).limit(300);
+  final rows = await ref
+      .watch(sessionSupabaseProvider)
+      .client
+      .from('follows')
+      .select('followee_id')
+      .eq('follower_id', me)
+      .limit(300);
   return rows.map((row) => row['followee_id'].toString()).toSet();
 });
 
@@ -42,142 +47,123 @@ class _MomentsState extends ConsumerState<MomentsScreen> {
     final following = ref.watch(followedMomentsAuthorsProvider);
     return Scaffold(
       backgroundColor: const Color(0xfff6f5ff),
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        title: const Text('Moments', style: TextStyle(
-          color: Color(0xff302349), fontWeight: FontWeight.w900)),
-        actions: [
-          IconButton(
-            tooltip: 'Create moment',
-            onPressed: () => context.push('/moments/create'),
-            icon: const Icon(Icons.add_box_outlined,
-              color: NimzoStyle.primary, size: 27),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(gradient: tingleSky),
+        child: Column(children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 4, 6, 0),
+            child: Row(children: [
+              Expanded(
+                  child: TingleTabs(
+                      labels: const ['Square', 'Follow'],
+                      selected: selected,
+                      light: true,
+                      onSelected: (value) => setState(() => selected = value))),
+              IconButton(
+                  tooltip: 'Search people',
+                  onPressed: () => context.push('/discover'),
+                  icon: const Icon(Icons.search_rounded,
+                      color: Colors.white, size: 22)),
+              IconButton(
+                  key: const ValueKey('moments-post-button'),
+                  tooltip: 'Create moment',
+                  onPressed: () => context.push('/moments/create'),
+                  icon: const Icon(Icons.add_box_outlined,
+                      color: Colors.white, size: 22)),
+            ]),
           ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(momentsFeedProvider);
-          ref.invalidate(followedMomentsAuthorsProvider);
-          await ref.read(momentsFeedProvider.future);
-          if (selected == 1) {
-            await ref.read(followedMomentsAuthorsProvider.future);
-          }
-        },
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(14, 13, 14, 96),
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(23),
-                boxShadow: const [
-                  BoxShadow(color: Color(0x0f6740bb), blurRadius: 12),
-                ],
-              ),
-              child: Row(children: [
-                for (var tab = 0; tab < 2; tab++)
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => setState(() => selected = tab),
-                      borderRadius: BorderRadius.circular(21),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 160),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        decoration: BoxDecoration(
-                          gradient: selected == tab
-                            ? const LinearGradient(colors: [
-                                Color(0xffa248f7), Color(0xff7641dd),
-                              ])
-                            : null,
-                          borderRadius: BorderRadius.circular(19),
-                        ),
-                        child: Text(
-                          tab == 0 ? 'Discover' : 'Following',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: selected == tab ? Colors.white
-                              : const Color(0xff82769e),
-                            fontWeight: FontWeight.w800),
-                        ),
-                      ),
-                    ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(14, 0, 14, 8),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Moments',
+                    style: TextStyle(
+                        color: Color(0xffa32cf4),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700))),
+          ),
+          Expanded(
+              child: RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(momentsFeedProvider);
+              ref.invalidate(followedMomentsAuthorsProvider);
+              await ref.read(momentsFeedProvider.future);
+              if (selected == 1) {
+                await ref.read(followedMomentsAuthorsProvider.future);
+              }
+            },
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 24),
+              children: [
+                moments.when(
+                  loading: () => const Padding(
+                      padding: EdgeInsets.all(35),
+                      child: Center(child: CircularProgressIndicator())),
+                  error: (_, __) => Column(
+                    children: [
+                      const Text('Moments could not be loaded'),
+                      TextButton(
+                          onPressed: () => ref.invalidate(momentsFeedProvider),
+                          child: const Text('Retry')),
+                    ],
                   ),
-              ]),
+                  data: (all) {
+                    if (selected == 1 && following.isLoading) {
+                      return const Padding(
+                          padding: EdgeInsets.all(35),
+                          child: Center(child: CircularProgressIndicator()));
+                    }
+                    if (selected == 1 && following.hasError) {
+                      return Column(children: [
+                        const Text('Following list unavailable'),
+                        TextButton(
+                            onPressed: () =>
+                                ref.invalidate(followedMomentsAuthorsProvider),
+                            child: const Text('Retry')),
+                      ]);
+                    }
+                    final authors = following.valueOrNull ?? <String>{};
+                    final visible = selected == 0
+                        ? all
+                        : all
+                            .where((m) => authors.contains(m.authorId))
+                            .toList();
+                    if (visible.isEmpty) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 55, horizontal: 18),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(23)),
+                        child: Column(children: [
+                          const Icon(Icons.auto_awesome_outlined,
+                              size: 56, color: Color(0xffb09cda)),
+                          const SizedBox(height: 12),
+                          Text(
+                              selected == 0
+                                  ? 'No Moments yet'
+                                  : 'Nothing from people you follow',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xff716687))),
+                          if (selected == 0)
+                            TextButton(
+                                onPressed: () =>
+                                    context.push('/moments/create'),
+                                child: const Text('Share a moment')),
+                        ]),
+                      );
+                    }
+                    return Column(children: [
+                      for (final moment in visible) MomentCard(moment: moment),
+                    ]);
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            moments.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.all(35),
-                child: Center(child: CircularProgressIndicator())),
-              error: (_, __) => Column(
-                children: [
-                  const Text('Moments could not be loaded'),
-                  TextButton(
-                    onPressed: () => ref.invalidate(momentsFeedProvider),
-                    child: const Text('Retry')),
-                ],
-              ),
-              data: (all) {
-                if (selected == 1 && following.isLoading) {
-                  return const Padding(
-                    padding: EdgeInsets.all(35),
-                    child: Center(child: CircularProgressIndicator()));
-                }
-                if (selected == 1 && following.hasError) {
-                  return Column(children: [
-                    const Text('Following list unavailable'),
-                    TextButton(
-                      onPressed: () =>
-                        ref.invalidate(followedMomentsAuthorsProvider),
-                      child: const Text('Retry')),
-                  ]);
-                }
-                final authors = following.valueOrNull ?? <String>{};
-                final visible = selected == 0
-                    ? all
-                    : all.where((m) => authors.contains(m.authorId)).toList();
-                if (visible.isEmpty) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 55, horizontal: 18),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(23)),
-                    child: Column(children: [
-                      const Icon(Icons.auto_awesome_outlined,
-                        size: 56, color: Color(0xffb09cda)),
-                      const SizedBox(height: 12),
-                      Text(selected == 0 ? 'No Moments yet'
-                        : 'Nothing from people you follow',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xff716687))),
-                      if (selected == 0) TextButton(
-                        onPressed: () => context.push('/moments/create'),
-                        child: const Text('Share a moment')),
-                    ]),
-                  );
-                }
-                return Column(children: [
-                  for (final moment in visible) MomentCard(moment: moment),
-                ]);
-              },
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        key: const ValueKey('moments-post-button'),
-        backgroundColor: const Color(0xff9b3de5),
-        foregroundColor: Colors.white,
-        onPressed: () => context.push('/moments/create'),
-        icon: const Icon(Icons.edit_note_rounded),
-        label: const Text('Post'),
+          )),
+        ]),
       ),
     );
   }
@@ -202,182 +188,185 @@ class _MomentCardState extends ConsumerState<MomentCard> {
     final author = ref.watch(profileProvider(moment.authorId)).valueOrNull;
     return Container(
       key: const ValueKey('premium-moment-card'),
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.fromLTRB(10, 9, 10, 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: NimzoStyle.line),
-        boxShadow: const [BoxShadow(
-          color: Color(0x176628cf), blurRadius: 12, offset: Offset(0, 3))],
+        boxShadow: const [
+          BoxShadow(
+              color: Color(0x176628cf), blurRadius: 12, offset: Offset(0, 3))
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            minTileHeight: 42,
-            leading: NimzoAvatar(
-              name: author?.displayName ?? 'N',
-              url: author?.avatarPath == null
-                  ? null
-                  : ref
-                      .watch(supabaseProvider)
-                      .storage
-                      .from('avatars')
-                      .getPublicUrl(author!.avatarPath!),
-            ),
-            title: Tooltip(
-              message: moment.createdAt.toLocal().toString().split('.').first,
-              child: Text(author?.displayName ?? 'Nimzo user'),
-            ),
-            onTap: () => context.push('/profile/${moment.authorId}'),
-          ),
-          if (moment.text != null) Text(moment.text!),
-          if (moment.imagePath != null)
-            Image.network(
-              ref
-                  .watch(supabaseProvider)
-                  .storage
-                  .from('moments')
-                  .getPublicUrl(moment.imagePath!),
-              errorBuilder: (_, __, ___) =>
-                  const EmptyContent('Image unavailable'),
-            ),
-          Wrap(
-            children: [
-              TextButton(
-                onPressed: _likeBusy
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              minTileHeight: 42,
+              leading: NimzoAvatar(
+                name: author?.displayName ?? 'N',
+                url: author?.avatarPath == null
                     ? null
-                    : () async {
-                        final id = moment.id;
-                        final authorId = moment.authorId;
-                        final container = ProviderScope.containerOf(
-                          context,
-                          listen: false,
-                        );
-                        setState(() => _likeBusy = true);
-                        try {
-                          await ref
-                              .read(momentRepositoryProvider)
-                              .toggleLike(id);
-                          container.invalidate(momentsFeedProvider);
-                          container.invalidate(momentDetailProvider(id));
-                          container.invalidate(
-                            profileMomentsProvider(authorId),
+                    : ref
+                        .watch(supabaseProvider)
+                        .storage
+                        .from('avatars')
+                        .getPublicUrl(author!.avatarPath!),
+              ),
+              title: Tooltip(
+                message: moment.createdAt.toLocal().toString().split('.').first,
+                child: Text(author?.displayName ?? 'Nimzo user'),
+              ),
+              onTap: () => context.push('/profile/${moment.authorId}'),
+            ),
+            if (moment.text != null) Text(moment.text!),
+            if (moment.imagePath != null)
+              Image.network(
+                ref
+                    .watch(supabaseProvider)
+                    .storage
+                    .from('moments')
+                    .getPublicUrl(moment.imagePath!),
+                errorBuilder: (_, __, ___) =>
+                    const EmptyContent('Image unavailable'),
+              ),
+            Wrap(
+              children: [
+                TextButton(
+                  onPressed: _likeBusy
+                      ? null
+                      : () async {
+                          final id = moment.id;
+                          final authorId = moment.authorId;
+                          final container = ProviderScope.containerOf(
+                            context,
+                            listen: false,
                           );
-                        } catch (_) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Unable to update like.'),
-                              ),
+                          setState(() => _likeBusy = true);
+                          try {
+                            await ref
+                                .read(momentRepositoryProvider)
+                                .toggleLike(id);
+                            container.invalidate(momentsFeedProvider);
+                            container.invalidate(momentDetailProvider(id));
+                            container.invalidate(
+                              profileMomentsProvider(authorId),
                             );
+                          } catch (_) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Unable to update like.'),
+                                ),
+                              );
+                            }
+                          } finally {
+                            if (mounted) setState(() => _likeBusy = false);
                           }
-                        } finally {
-                          if (mounted) setState(() => _likeBusy = false);
-                        }
-                      },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ReferenceIcon(
-                      moment.liked ? 'cp_filled' : 'cp',
-                      size: 18,
-                      color: moment.liked ? NimzoStyle.pink : NimzoStyle.muted,
-                    ),
-                    const SizedBox(width: 4),
-                    Text('${moment.likes} likes'),
-                  ],
-                ),
-              ),
-              TextButton(
-                onPressed: () => showReferenceSheet(
-                  context,
-                  MomentDetailScreen(id: moment.id, sheet: true),
-                ),
-                child: Text('Comment ${moment.comments}'),
-              ),
-              TextButton(
-                onPressed: () =>
-                    showMomentGiftSheet(context, moment.id, moment.authorId),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Yo2GiftPanelArt(
-                      'ic_moment_gift.webp',
-                      width: 18,
-                      height: 18,
-                      fallback: Icon(Icons.card_giftcard, size: 17),
-                    ),
-                    SizedBox(width: 5),
-                    Text('Gift'),
-                  ],
-                ),
-              ),
-              if (ref.watch(currentUserIdProvider) == moment.authorId)
-                TextButton(
-                  child: const Text('Delete'),
-                  onPressed: () async {
-                    final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (c) => AlertDialog(
-                        title: const Text('Delete this Moment?'),
-                        content: const Text(
-                          'This removes your post from Moments.',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(c, false),
-                            child: const Text('Cancel'),
-                          ),
-                          FilledButton(
-                            onPressed: () => Navigator.pop(c, true),
-                            child: const Text('Delete'),
-                          ),
-                        ],
+                        },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ReferenceIcon(
+                        moment.liked ? 'cp_filled' : 'cp',
+                        size: 18,
+                        color:
+                            moment.liked ? NimzoStyle.pink : NimzoStyle.muted,
                       ),
-                    );
-                    if (confirmed != true || !context.mounted) return;
-                    final container = ProviderScope.containerOf(
-                      context,
-                      listen: false,
-                    );
-                    final repo = ref.read(momentRepositoryProvider);
-                    try {
-                      await repo.delete(moment.id);
-                      container.invalidate(momentsFeedProvider);
-                      container.invalidate(
-                        profileMomentsProvider(moment.authorId),
-                      );
-                      container.invalidate(
-                        profileStatsProvider(moment.authorId),
-                      );
-                      container.invalidate(momentDetailProvider(moment.id));
-                      if (context.mounted) widget.onDeleted?.call();
-                    } catch (_) {
-                      if (context.mounted)
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Moment could not be deleted. Please retry.',
-                            ),
-                          ),
-                        );
-                    }
-                  },
+                      const SizedBox(width: 4),
+                      Text('${moment.likes} likes'),
+                    ],
+                  ),
                 ),
-              if (ref.watch(currentUserIdProvider) == moment.authorId)
                 TextButton(
-                  onPressed: () => context.push('/moments/${moment.id}/edit'),
-                  child: const Text('Edit'),
+                  onPressed: () => showReferenceSheet(
+                    context,
+                    MomentDetailScreen(id: moment.id, sheet: true),
+                  ),
+                  child: Text('Comment ${moment.comments}'),
                 ),
-            ],
-          ),
-        ],
-      ),
+                TextButton(
+                  onPressed: () =>
+                      showMomentGiftSheet(context, moment.id, moment.authorId),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Yo2GiftPanelArt(
+                        'ic_moment_gift.webp',
+                        width: 18,
+                        height: 18,
+                        fallback: Icon(Icons.card_giftcard, size: 17),
+                      ),
+                      SizedBox(width: 5),
+                      Text('Gift'),
+                    ],
+                  ),
+                ),
+                if (ref.watch(currentUserIdProvider) == moment.authorId)
+                  TextButton(
+                    child: const Text('Delete'),
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (c) => AlertDialog(
+                          title: const Text('Delete this Moment?'),
+                          content: const Text(
+                            'This removes your post from Moments.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(c, false),
+                              child: const Text('Cancel'),
+                            ),
+                            FilledButton(
+                              onPressed: () => Navigator.pop(c, true),
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed != true || !context.mounted) return;
+                      final container = ProviderScope.containerOf(
+                        context,
+                        listen: false,
+                      );
+                      final repo = ref.read(momentRepositoryProvider);
+                      try {
+                        await repo.delete(moment.id);
+                        container.invalidate(momentsFeedProvider);
+                        container.invalidate(
+                          profileMomentsProvider(moment.authorId),
+                        );
+                        container.invalidate(
+                          profileStatsProvider(moment.authorId),
+                        );
+                        container.invalidate(momentDetailProvider(moment.id));
+                        if (context.mounted) widget.onDeleted?.call();
+                      } catch (_) {
+                        if (context.mounted)
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Moment could not be deleted. Please retry.',
+                              ),
+                            ),
+                          );
+                      }
+                    },
+                  ),
+                if (ref.watch(currentUserIdProvider) == moment.authorId)
+                  TextButton(
+                    onPressed: () => context.push('/moments/${moment.id}/edit'),
+                    child: const Text('Edit'),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -436,7 +425,9 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
   }
 
   Future<void> _saveMoment() async {
-    if (!mounted || !ready || busy ||
+    if (!mounted ||
+        !ready ||
+        busy ||
         (text.text.trim().isEmpty && image == null)) return;
 
     // Capture providers and the container before the await. A successful
@@ -476,24 +467,24 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: const Color(0xfff5f2ff),
+        backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           centerTitle: true,
           foregroundColor: const Color(0xff332347),
           title: Text(widget.id == null ? 'Post Moments' : 'Edit Moment',
-            style: const TextStyle(
-              fontSize: 20, fontWeight: FontWeight.w900)),
+              style:
+                  const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
           actions: [
             TextButton(
               key: const ValueKey('moment-top-post'),
-              onPressed: busy || !ready || !canPost
-                ? null : _saveMoment,
+              onPressed: busy || !ready || !canPost ? null : _saveMoment,
               child: Text(widget.id == null ? 'Post' : 'Save',
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  color: busy || !ready || !canPost
-                    ? const Color(0xffaaa5bc) : NimzoStyle.primary)),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: busy || !ready || !canPost
+                          ? const Color(0xffaaa5bc)
+                          : NimzoStyle.primary)),
             ),
           ],
         ),
@@ -512,87 +503,100 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(17, 20, 17, 36),
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 24),
                     children: [
                       const SizedBox(height: 8),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Tooltip(
-                          message: image == null ? 'Choose photo' : 'Replace photo',
+                          message:
+                              image == null ? 'Choose photo' : 'Replace photo',
                           child: SizedBox(
-                            width: 124,
-                            height: 124,
+                            width: 88,
+                            height: 88,
                             child: OutlinedButton(
                               key: const ValueKey('moment-photo-picker'),
-                            onPressed: busy
-                                ? null
-                                : () async {
-                                    final source =
-                                        await showModalBottomSheet<ImageSource>(
-                                      context: context,
-                                      builder: (c) => SafeArea(
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            ListTile(
-                                              leading: const Icon(Icons.photo_library_outlined),
-                                              title: const Text('Choose from gallery'),
-                                              onTap: () => Navigator.pop(
-                                                  c, ImageSource.gallery),
-                                            ),
-                                            ListTile(
-                                              leading: const Icon(Icons.camera_alt_outlined),
-                                              title: const Text('Take a photo'),
-                                              onTap: () => Navigator.pop(
-                                                  c, ImageSource.camera),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                    if (source == null || !mounted) return;
-                                    setState(() => busy = true);
-                                    try {
-                                      final path = await ref
-                                          .read(storageServiceProvider)
-                                          .pickAndUpload('moments', source: source);
-                                      if (path != null && mounted)
-                                        setState(() => image = path);
-                                    } catch (_) {
-                                      if (context.mounted)
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                                'Image could not be uploaded.'),
+                              onPressed: busy
+                                  ? null
+                                  : () async {
+                                      final source = await showModalBottomSheet<
+                                          ImageSource>(
+                                        context: context,
+                                        builder: (c) => SafeArea(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              ListTile(
+                                                leading: const Icon(Icons
+                                                    .photo_library_outlined),
+                                                title: const Text(
+                                                    'Choose from gallery'),
+                                                onTap: () => Navigator.pop(
+                                                    c, ImageSource.gallery),
+                                              ),
+                                              ListTile(
+                                                leading: const Icon(
+                                                    Icons.camera_alt_outlined),
+                                                title:
+                                                    const Text('Take a photo'),
+                                                onTap: () => Navigator.pop(
+                                                    c, ImageSource.camera),
+                                              ),
+                                            ],
                                           ),
-                                        );
-                                    } finally {
-                                      if (mounted) setState(() => busy = false);
-                                    }
-                                  },
-    
+                                        ),
+                                      );
+                                      if (source == null || !mounted) return;
+                                      setState(() => busy = true);
+                                      try {
+                                        final path = await ref
+                                            .read(storageServiceProvider)
+                                            .pickAndUpload('moments',
+                                                source: source);
+                                        if (path != null && mounted)
+                                          setState(() => image = path);
+                                      } catch (_) {
+                                        if (context.mounted)
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Image could not be uploaded.'),
+                                            ),
+                                          );
+                                      } finally {
+                                        if (mounted)
+                                          setState(() => busy = false);
+                                      }
+                                    },
                               style: OutlinedButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 backgroundColor: const Color(0xfff2f4fb),
                                 foregroundColor: const Color(0xff9d99b0),
-                                side: const BorderSide(color: Color(0xffe5e9f4)),
+                                side:
+                                    const BorderSide(color: Color(0xffe5e9f4)),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(17)),
+                                    borderRadius: BorderRadius.circular(10)),
                               ),
                               child: image == null
-                                ? const Icon(Icons.add_rounded, size: 42)
-                                : ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Image.network(
-                                      ref.watch(supabaseProvider).storage
-                                        .from('moments').getPublicUrl(image!),
-                                      width: 124, height: 124,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) =>
-                                        const Icon(Icons.photo_rounded,
-                                          color: Color(0xff948aa8), size:40),
+                                  ? const Icon(Icons.add_rounded, size: 28)
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        ref
+                                            .watch(supabaseProvider)
+                                            .storage
+                                            .from('moments')
+                                            .getPublicUrl(image!),
+                                        width: 88,
+                                        height: 88,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) =>
+                                            const Icon(Icons.photo_rounded,
+                                                color: Color(0xff948aa8),
+                                                size: 40),
+                                      ),
                                     ),
-                                  ),
                             ),
                           ),
                         ),
@@ -601,8 +605,9 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: TextButton(
-                            onPressed: busy ? null
-                              : () => setState(() => image = null),
+                            onPressed: busy
+                                ? null
+                                : () => setState(() => image = null),
                             child: const Text('Remove photo'),
                           ),
                         ),
@@ -614,23 +619,20 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                         textCapitalization: TextCapitalization.sentences,
                         decoration: const InputDecoration(
                           hintText: 'Say something to record this moment...',
-                          hintStyle: TextStyle(
-                            color: Color(0xff9b98a9),
-                            fontSize: 16),
+                          hintStyle:
+                              TextStyle(color: Color(0xff9b98a9), fontSize: 12),
                           filled: true,
                           fillColor: Color(0xfff2f4fb),
-                          contentPadding: EdgeInsets.fromLTRB(
-                            19, 22, 19, 16),
+                          contentPadding: EdgeInsets.fromLTRB(12, 12, 12, 12),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(24)),
-                            borderSide: BorderSide(
-                              color: Color(0xffe5dff2))),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(color: Color(0xffe5dff2))),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(24)),
-                            borderSide: BorderSide(
-                              color: NimzoStyle.primary, width: 1.8)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                  color: NimzoStyle.primary, width: 1.8)),
                         ),
                       ),
                       const SizedBox(height: 11),
@@ -638,52 +640,59 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                         key: const ValueKey('moment-mention-entry'),
                         onTap: () {
                           text.text = text.text.trimRight() + ' @';
-                          text.selection = TextSelection.collapsed(
-                            offset: text.text.length);
+                          text.selection =
+                              TextSelection.collapsed(offset: text.text.length);
                         },
                         child: Container(
-                          height: 50,
+                          height: 44,
                           padding: const EdgeInsets.symmetric(horizontal: 14),
                           color: const Color(0xfff2f4fb),
                           child: const Row(children: [
                             Icon(Icons.alternate_email_rounded,
-                              color: Color(0xff292332)),
+                                color: Color(0xff292332)),
                             SizedBox(width: 10),
                             Text('Mention',
-                              style: TextStyle(fontSize: 15,
-                                fontWeight: FontWeight.w700)),
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.w700)),
                             Spacer(),
                             Icon(Icons.chevron_right_rounded,
-                              color: Color(0xff9a93b1)),
+                                color: Color(0xff9a93b1)),
                           ]),
                         ),
                       ),
                       const SizedBox(height: 13),
                       const Text('#  Recommended topics',
-                        style: TextStyle(fontSize: 15,
-                          fontWeight: FontWeight.w800)),
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w800)),
                       const SizedBox(height: 8),
                       Wrap(
-                        spacing: 7, runSpacing: 6,
+                        spacing: 7,
+                        runSpacing: 6,
                         children: [
                           for (final topic in const [
-                            '#Bookworm', '#OpenMinded', '#Photography',
-                            '#KindHearted', '#JustFriends',
-                            '#LongTermOnly', '#SeriousRelationship',
+                            '#Bookworm',
+                            '#OpenMinded',
+                            '#Photography',
+                            '#KindHearted',
+                            '#JustFriends',
+                            '#LongTermOnly',
+                            '#SeriousRelationship',
                             '#LookingForLove',
                           ])
                             ActionChip(
                               key: ValueKey('moment-topic-' + topic),
-                              label: Text(topic, style: const TextStyle(
-                                fontSize: 11, color: Color(0xff79659c))),
+                              label: Text(topic,
+                                  style: const TextStyle(
+                                      fontSize: 11, color: Color(0xff79659c))),
                               backgroundColor: const Color(0xfff3efff),
                               side: BorderSide.none,
                               onPressed: () {
                                 final current = text.text.trimRight();
                                 text.text = current.isEmpty
-                                  ? topic : current + ' ' + topic;
+                                    ? topic
+                                    : current + ' ' + topic;
                                 text.selection = TextSelection.collapsed(
-                                  offset: text.text.length);
+                                    offset: text.text.length);
                               },
                             ),
                         ],
@@ -691,16 +700,16 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                       const SizedBox(height: 16),
                       FilledButton(
                         style: FilledButton.styleFrom(
-                          backgroundColor: NimzoStyle.primary,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size.fromHeight(67),
-                          shape: const StadiumBorder(),
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 18)),
-                        onPressed: busy || !canPost
-                          ? null : _saveMoment,
-                        child: Text(widget.id == null ? 'Publish moment' : 'Save changes'),
+                            backgroundColor: NimzoStyle.primary,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size.fromHeight(67),
+                            shape: const StadiumBorder(),
+                            textStyle: const TextStyle(
+                                fontWeight: FontWeight.w900, fontSize: 18)),
+                        onPressed: busy || !canPost ? null : _saveMoment,
+                        child: Text(widget.id == null
+                            ? 'Publish moment'
+                            : 'Save changes'),
                       ),
                     ],
                   ),
@@ -803,7 +812,7 @@ class _DetailState extends ConsumerState<MomentDetailScreen> {
             children: [
               const Text(
                 'Comments',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
               ),
               content,
             ],

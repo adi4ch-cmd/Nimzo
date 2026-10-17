@@ -18,7 +18,11 @@ class MainShell extends StatelessWidget {
     Icons.person_rounded,
   ];
   static const _labels = <String>[
-    'Live', 'Games', 'Moments', 'Messages', 'My Profile',
+    'Live',
+    'Party',
+    'Moments',
+    'Messages',
+    'My Profile',
   ];
 
   @override
@@ -33,7 +37,7 @@ class MainShell extends StatelessWidget {
         child: SafeArea(
           top: false,
           child: SizedBox(
-            height: 65,
+            height: 56,
             child: Row(
               children: [
                 for (var i = 0; i < _icons.length; i++)
@@ -51,18 +55,18 @@ class MainShell extends StatelessWidget {
                         child: Center(
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 170),
-                            padding: const EdgeInsets.all(7),
+                            padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
                               color: shell.currentIndex == i
-                                  ? NimzoStyle.primary
+                                  ? const Color(0xfff0e3ff)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(18),
                             ),
                             child: Icon(
                               _icons[i],
-                              size: 27,
+                              size: 24,
                               color: shell.currentIndex == i
-                                  ? Colors.white
+                                  ? NimzoStyle.primary
                                   : const Color(0xff9d99b0),
                             ),
                           ),
