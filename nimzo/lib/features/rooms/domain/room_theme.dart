@@ -11,12 +11,12 @@ class RoomTheme {
   static const all = [
     RoomTheme(
         'nimzo_white',
-        'Nimzo White',
+        'Royal Lavender',
         [
-          Color(0xFFFFFFFF),
-          Color(0xFFF0FDF4),
+          Color(0xFFF8F6FF),
+          Color(0xFFDCD0FA),
         ],
-        Color(0xFF111827)),
+        Color(0xFF302044)),
     RoomTheme(
         'sage',
         'Sage',
