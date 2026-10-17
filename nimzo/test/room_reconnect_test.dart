@@ -125,11 +125,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('room-reactions-button')));
     await tester.pumpAndSettle();
-    expect(find.text('Reactions'), findsOneWidget);
+    expect(find.text('Reaction'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('room-reaction-0')));
     await tester.pumpAndSettle();
     expect(tester.widget<TextField>(find.byType(TextField)).controller!.text,
-      '😍');
+        '😆');
     final seatTiles = [
       for (var seat = 1; seat <= 10; seat++)
         find.byKey(ValueKey('room-mic-seat-$seat')),
@@ -219,9 +219,8 @@ void main() {
           currentUserIdProvider.overrideWithValue('viewer'),
           roomRepositoryProvider.overrideWithValue(repo),
           roomProvider('room').overrideWith((_) async => room),
-          seatsProvider('room').overrideWith(
-            (_) => Stream.value(List.generate(
-              10, (i) => MicSeat(seatNo: i + 1)))),
+          seatsProvider('room').overrideWith((_) =>
+              Stream.value(List.generate(10, (i) => MicSeat(seatNo: i + 1)))),
           roomSeatProfilesProvider('room').overrideWith((_) async => {}),
           onlineCountProvider('room').overrideWith((_) => Stream.value(1)),
           roomChatProvider('room').overrideWith((_) => Stream.value([])),
@@ -240,25 +239,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('room-seat-here')), findsOneWidget);
     for (final key in const [
-      'room-seat-give', 'room-seat-lock', 'room-seat-mute',
+      'room-seat-give',
+      'room-seat-lock',
+      'room-seat-mute',
     ]) {
-      expect(tester.widget<ListTile>(find.byKey(ValueKey(key))).enabled,
-        isFalse, reason: 'Unverified moderation must not be tappable');
+      expect(
+          tester.widget<ListTile>(find.byKey(ValueKey(key))).enabled, isFalse,
+          reason: 'Unverified moderation must not be tappable');
     }
     await tester.tap(find.byKey(const ValueKey('room-seat-cancel')));
     await tester.pumpAndSettle();
     expect(repo.memberships, 1,
-      reason: 'Opening then canceling a seat sheet never rejoins');
+        reason: 'Opening then canceling a seat sheet never rejoins');
     await tester.tap(find.byKey(const ValueKey('room-confirm-exit')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('confirm-audio-room-exit-question')), findsOneWidget);
+    expect(find.byKey(const ValueKey('confirm-audio-room-exit-question')),
+        findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('cancel-room-exit')));
     await tester.pumpAndSettle();
     expect(find.text('Leave audio room?'), findsNothing);
     expect(voice.leaves, 0,
-      reason: 'Cancel must not disconnect microphone playback');
+        reason: 'Cancel must not disconnect microphone playback');
     expect(repo.memberships, 1,
-      reason: 'Cancel must not rejoin or remove the member');
+        reason: 'Cancel must not rejoin or remove the member');
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });

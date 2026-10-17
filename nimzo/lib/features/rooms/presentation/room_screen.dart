@@ -147,65 +147,68 @@ class _State extends ConsumerState<RoomScreen> {
     bool? confirmed;
     try {
       confirmed = await showDialog<bool>(
-      context: context,
-      barrierDismissible: true,
-      builder: (dialog) => Dialog(
-        backgroundColor: Colors.white,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 46),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(36)),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(23, 27, 23, 30),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.exit_to_app_rounded,
-                color: Color(0xffff1515), size: 86),
-              const SizedBox(height: 15),
-              const Text(
-                'Are you sure you want to leave the audio room?',
-                key: ValueKey('confirm-audio-room-exit-question'),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18, color: Color(0xff111111),
-                  fontWeight: FontWeight.w800, height: 1.35)),
-              const SizedBox(height: 27),
-              SizedBox(
-                width: double.infinity, height: 51,
-                child: TextButton(
-                  key: const ValueKey('cancel-room-exit'),
-                  onPressed: () => Navigator.of(dialog).pop(false),
-                  style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xfff3eafe),
-                    foregroundColor: const Color(0xffaa49ed),
-                    shape: const StadiumBorder(),
-                  ),
-                  child: const Text('Keep',
+        context: context,
+        barrierDismissible: true,
+        builder: (dialog) => Dialog(
+          backgroundColor: Colors.white,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 46),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(36)),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(23, 27, 23, 30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.exit_to_app_rounded,
+                    color: Color(0xffff1515), size: 86),
+                const SizedBox(height: 15),
+                const Text('Are you sure you want to leave the audio room?',
+                    key: ValueKey('confirm-audio-room-exit-question'),
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 17, fontWeight: FontWeight.w800)),
-                ),
-              ),
-              const SizedBox(height: 11),
-              SizedBox(
-                width: double.infinity, height: 51,
-                child: TextButton(
-                  key: const ValueKey('confirm-room-exit'),
-                  onPressed: () => Navigator.of(dialog).pop(true),
-                  style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xffffeded),
-                    foregroundColor: const Color(0xffe31414),
-                    shape: const StadiumBorder(),
+                        fontSize: 18,
+                        color: Color(0xff111111),
+                        fontWeight: FontWeight.w800,
+                        height: 1.35)),
+                const SizedBox(height: 27),
+                SizedBox(
+                  width: double.infinity,
+                  height: 51,
+                  child: TextButton(
+                    key: const ValueKey('cancel-room-exit'),
+                    onPressed: () => Navigator.of(dialog).pop(false),
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xfff3eafe),
+                      foregroundColor: const Color(0xffaa49ed),
+                      shape: const StadiumBorder(),
+                    ),
+                    child: const Text('Keep',
+                        style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.w800)),
                   ),
-                  child: const Text('Exit',
-                    style: TextStyle(
-                      fontSize: 17, fontWeight: FontWeight.w800)),
                 ),
-              ),
-            ],
+                const SizedBox(height: 11),
+                SizedBox(
+                  width: double.infinity,
+                  height: 51,
+                  child: TextButton(
+                    key: const ValueKey('confirm-room-exit'),
+                    onPressed: () => Navigator.of(dialog).pop(true),
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xffffeded),
+                      foregroundColor: const Color(0xffe31414),
+                      shape: const StadiumBorder(),
+                    ),
+                    child: const Text('Exit',
+                        style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.w800)),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
     } finally {
       _exitPromptVisible = false;
     }
@@ -274,8 +277,10 @@ class _State extends ConsumerState<RoomScreen> {
             ListTile(
               key: const ValueKey('room-seat-here'),
               minTileHeight: 58,
-              title: const Center(child: Text('Seat Here',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+              title: const Center(
+                  child: Text('Seat Here',
+                      style: TextStyle(
+                          fontSize: 17, fontWeight: FontWeight.w700))),
               onTap: () => Navigator.of(sheet).pop(true),
             ),
             const Divider(height: 1, color: Color(0xfff2f2f2)),
@@ -300,8 +305,7 @@ class _State extends ConsumerState<RoomScreen> {
               title: Center(child: Text('Mute the Mic')),
             ),
             const SizedBox(height: 8),
-            const Divider(thickness: 7, height: 7,
-              color: Color(0xfff8f8fa)),
+            const Divider(thickness: 7, height: 7, color: Color(0xfff8f8fa)),
             TextButton(
               key: const ValueKey('room-seat-cancel'),
               style: TextButton.styleFrom(
@@ -310,8 +314,7 @@ class _State extends ConsumerState<RoomScreen> {
               ),
               onPressed: () => Navigator.of(sheet).pop(false),
               child: const Text('Cancel',
-                style: TextStyle(fontSize: 17,
-                  fontWeight: FontWeight.w800)),
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
             ),
           ],
         ),
@@ -336,8 +339,10 @@ class _State extends ConsumerState<RoomScreen> {
           padding: const EdgeInsets.fromLTRB(15, 18, 15, 18),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             Row(children: [
-              const Expanded(child: Text('Reactions',
-                style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800))),
+              const Expanded(
+                  child: Text('Reaction',
+                      style: TextStyle(
+                          fontSize: 19, fontWeight: FontWeight.w800))),
               IconButton(
                 tooltip: 'Close reactions',
                 onPressed: () => Navigator.of(sheet).pop(),
@@ -345,21 +350,35 @@ class _State extends ConsumerState<RoomScreen> {
               ),
             ]),
             const SizedBox(height: 12),
-            Row(children: [
-              for (final (index, emoji) in const [
-                '😍', '🥰', '😂', '😎', '😭', '🎉',
-              ].indexed)
-                Expanded(
-                  child: InkWell(
-                    key: ValueKey('room-reaction-$index'),
-                    onTap: () => Navigator.of(sheet).pop(emoji),
-                    borderRadius: BorderRadius.circular(14),
-                    child: SizedBox(height: 58,
-                      child: Center(child: Text(emoji,
-                        style: const TextStyle(fontSize: 32)))),
-                  ),
-                ),
-            ]),
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 4,
+              childAspectRatio: .95,
+              children: [
+                for (final (index, item) in const [
+                  ('😆', 'Cool'),
+                  ('🤗', 'Hug'),
+                  ('🥱', 'Sleepy'),
+                  ('😱', 'Wow'),
+                  ('😘', 'Kiss'),
+                  ('😂', 'Laugh'),
+                ].indexed)
+                  InkWell(
+                      key: ValueKey('room-reaction-$index'),
+                      onTap: () => Navigator.of(sheet).pop(item.$1),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(item.$1, style: const TextStyle(fontSize: 34)),
+                            const SizedBox(height: 4),
+                            Text(item.$2,
+                                style: const TextStyle(
+                                    fontSize: 10, color: Color(0xffaaa0bb))),
+                          ])),
+              ],
+            ),
           ]),
         ),
       ),
@@ -369,8 +388,8 @@ class _State extends ConsumerState<RoomScreen> {
       // Do not fabricate a broadcast or write an unverified server event.
       text.value = TextEditingValue(
         text: text.text + chosen,
-        selection: TextSelection.collapsed(
-          offset: text.text.length + chosen.length),
+        selection:
+            TextSelection.collapsed(offset: text.text.length + chosen.length),
       );
     }
   }
@@ -498,19 +517,21 @@ class _State extends ConsumerState<RoomScreen> {
                   foregroundColor: RoomTheme.byId(
                     room.valueOrNull?.theme ?? 'nimzo_white',
                   ).text,
-                  toolbarHeight: 64,
+                  toolbarHeight: 50,
                   titleSpacing: 0,
                   actions: [
                     IconButton(
                       key: const ValueKey('room-live-pk'),
                       tooltip: 'Room PK Battle',
-                      onPressed: joined ? () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => const PkBattlesScreen(),
-                        ),
-                      ) : null,
+                      onPressed: joined
+                          ? () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const PkBattlesScreen(),
+                                ),
+                              )
+                          : null,
                       icon: const Icon(Icons.bolt_rounded,
-                        size: 25, color: Color(0xffa84bdc)),
+                          size: 25, color: Color(0xffa84bdc)),
                     ),
                     IconButton(
                       key: const ValueKey('room-confirm-exit'),
@@ -532,7 +553,7 @@ class _State extends ConsumerState<RoomScreen> {
                       children: [
                         ReferenceRoomAvatar(
                           key: const ValueKey('room-header-avatar'),
-                          size: 54,
+                          size: 38,
                           url: room.valueOrNull?.avatarPath == null
                               ? null
                               : ref
@@ -585,18 +606,19 @@ class _State extends ConsumerState<RoomScreen> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                                horizontal: 10, vertical: 4),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Icon(Icons.emoji_events_rounded,
-                                  size: 17, color: NimzoStyle.orange),
+                                    size: 17, color: NimzoStyle.orange),
                                 const SizedBox(width: 6),
                                 Text(
                                   compactNumber(
                                     room.valueOrNull?.lifetimeGiftCoins ?? 0,
                                   ),
-                                  key: const ValueKey('room-header-total-gifting'),
+                                  key: const ValueKey(
+                                      'room-header-total-gifting'),
                                   style: const TextStyle(
                                     color: NimzoStyle.royal,
                                     fontSize: 13,
@@ -662,7 +684,8 @@ class _State extends ConsumerState<RoomScreen> {
                                                   ? null
                                                   : () => action(() async {
                                                         if (s.userId == null) {
-                                                          await _showOpenSeatActions(n);
+                                                          await _showOpenSeatActions(
+                                                              n);
                                                         } else {
                                                           await showDialog<
                                                               void>(
@@ -708,145 +731,177 @@ class _State extends ConsumerState<RoomScreen> {
                                                         }
                                                       }),
                                               child: Container(
-                                                key: ValueKey('room-mic-seat-$n'),
+                                                key: ValueKey(
+                                                    'room-mic-seat-$n'),
                                                 height: 88,
-                                                margin: const EdgeInsets.symmetric(
-                                                  horizontal: 1.5),
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 1.5),
                                                 decoration: BoxDecoration(
-                                                  color: const Color(0x665e337e),
+                                                  color:
+                                                      const Color(0x665e337e),
                                                   border: Border.all(
-                                                    color: const Color(0x667c548d),
-                                                    width: .8),
+                                                      color: const Color(
+                                                          0x667c548d),
+                                                      width: .8),
                                                   borderRadius:
-                                                    BorderRadius.circular(5),
+                                                      BorderRadius.circular(5),
                                                 ),
                                                 child: Stack(children: [
                                                   Positioned(
-                                                    left: 3, top: 3,
+                                                    left: 3,
+                                                    top: 3,
                                                     child: Container(
-                                                      padding: const EdgeInsets.symmetric(
-                                                        horizontal: 4, vertical: 1),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 4,
+                                                          vertical: 1),
                                                       decoration: BoxDecoration(
-                                                        color: const Color(0x666e4e86),
-                                                        borderRadius:
-                                                          BorderRadius.circular(6)),
+                                                          color: const Color(
+                                                              0x666e4e86),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(6)),
                                                       child: Text('$n',
-                                                        style: const TextStyle(
-                                                          fontSize: 10,
-                                                          color: Color(0xfff0d9ff))),
+                                                          style: const TextStyle(
+                                                              fontSize: 10,
+                                                              color: Color(
+                                                                  0xfff0d9ff))),
                                                     ),
                                                   ),
-                                                  Center(child: Column(
+                                                  Center(
+                                                      child: Column(
                                                     mainAxisAlignment:
-                                                      MainAxisAlignment.center,
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: [
-                                                  if (s.userId == null)
-                                                    SizedBox(
-                                                      width: 46, height: 48,
-                                                      child: s.locked
-                                                        ? const Icon(
-                                                            Icons.lock_outline_rounded,
-                                                            size: 30,
-                                                            color: Color(0xffd8b9e8))
-                                                        : Stack(
-                                                            alignment: Alignment.center,
-                                                            children: const [
-                                                              Icon(
-                                                                Icons.weekend_rounded,
-                                                                size: 43,
-                                                                color: Color(0xffd8b9e8)),
-                                                              Positioned(
-                                                                top: 5, right: 7,
-                                                                child: Icon(
-                                                                  Icons.add_rounded,
-                                                                  size: 12,
-                                                                  color: Color(0xff513064))),
-                                                            ],
-                                                          ),
-                                                    )
-                                                  else
-                                                    Stack(
-                                                      clipBehavior: Clip.none,
-                                                      children: [
-                                                        Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(
-                                                            2,
-                                                          ),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                              color: speaking
-                                                                      .contains(
-                                                                s.userId,
-                                                              )
-                                                                  ? NimzoStyle
-                                                                      .primary
-                                                                  : Colors
-                                                                      .transparent,
-                                                              width: 2,
+                                                      if (s.userId == null)
+                                                        SizedBox(
+                                                          width: 46,
+                                                          height: 48,
+                                                          child: s.locked
+                                                              ? const Icon(
+                                                                  Icons
+                                                                      .lock_outline_rounded,
+                                                                  size: 30,
+                                                                  color: Color(
+                                                                      0xffd8b9e8))
+                                                              : Stack(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  children: const [
+                                                                    Icon(
+                                                                        Icons
+                                                                            .weekend_rounded,
+                                                                        size:
+                                                                            43,
+                                                                        color: Color(
+                                                                            0xffd8b9e8)),
+                                                                    Positioned(
+                                                                        top: 5,
+                                                                        right:
+                                                                            7,
+                                                                        child: Icon(
+                                                                            Icons
+                                                                                .add_rounded,
+                                                                            size:
+                                                                                12,
+                                                                            color:
+                                                                                Color(0xff513064))),
+                                                                  ],
+                                                                ),
+                                                        )
+                                                      else
+                                                        Stack(
+                                                          clipBehavior:
+                                                              Clip.none,
+                                                          children: [
+                                                            Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                2,
+                                                              ),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                border:
+                                                                    Border.all(
+                                                                  color: speaking
+                                                                          .contains(
+                                                                    s.userId,
+                                                                  )
+                                                                      ? NimzoStyle
+                                                                          .primary
+                                                                      : Colors
+                                                                          .transparent,
+                                                                  width: 2,
+                                                                ),
+                                                              ),
+                                                              child:
+                                                                  NimzoAvatar(
+                                                                name:
+                                                                    p?.displayName ??
+                                                                        'N',
+                                                                size: 48,
+                                                                url: p?.avatarPath ==
+                                                                        null
+                                                                    ? null
+                                                                    : ref
+                                                                        .read(
+                                                                          supabaseProvider,
+                                                                        )
+                                                                        .storage
+                                                                        .from(
+                                                                          'avatars',
+                                                                        )
+                                                                        .getPublicUrl(
+                                                                          p!.avatarPath!,
+                                                                        ),
+                                                              ),
                                                             ),
-                                                          ),
-                                                          child: NimzoAvatar(
-                                                            name:
-                                                                p?.displayName ??
-                                                                    'N',
-                                                            size: 48,
-                                                            url: p?.avatarPath ==
-                                                                    null
-                                                                ? null
-                                                                : ref
-                                                                    .read(
-                                                                      supabaseProvider,
-                                                                    )
-                                                                    .storage
-                                                                    .from(
-                                                                      'avatars',
-                                                                    )
-                                                                    .getPublicUrl(
-                                                                      p!.avatarPath!,
-                                                                    ),
-                                                          ),
+                                                            Positioned(
+                                                              right: -8,
+                                                              bottom: -5,
+                                                              child:
+                                                                  EquippedRoyalMedal(
+                                                                userId:
+                                                                    s.userId!,
+                                                                compact: true,
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                        Positioned(
-                                                          right: -8,
-                                                          bottom: -5,
-                                                          child:
-                                                              EquippedRoyalMedal(
-                                                            userId: s.userId!,
-                                                            compact: true,
-                                                          ),
+                                                      const SizedBox(height: 3),
+                                                      Text(
+                                                        p?.displayName ?? '$n',
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: RoomTheme.byId(
+                                                            room.valueOrNull
+                                                                    ?.theme ??
+                                                                'nimzo_white',
+                                                          ).text.withValues(
+                                                              alpha: .88),
                                                         ),
-                                                      ],
-                                                    ),
-                                                  const SizedBox(height: 3),
-                                                  Text(
-                                                    p?.displayName ?? '$n',
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: RoomTheme.byId(
-                                                        room.valueOrNull?.theme
-                                                          ?? 'nimzo_white',
-                                                      ).text.withValues(alpha: .88),
-                                                    ),
-                                                  ),
-                                                  if (s.muted)
-                                                    Icon(
-                                                      LucideIcons.micOff,
-                                                      size: 12,
-                                                      color: RoomTheme.byId(
-                                                        room.valueOrNull?.theme
-                                                          ?? 'nimzo_white',
-                                                      ).text,
-                                                    ),
-                                                ],
-                                              )),
+                                                      ),
+                                                      if (s.muted)
+                                                        Icon(
+                                                          LucideIcons.micOff,
+                                                          size: 12,
+                                                          color: RoomTheme.byId(
+                                                            room.valueOrNull
+                                                                    ?.theme ??
+                                                                'nimzo_white',
+                                                          ).text,
+                                                        ),
+                                                    ],
+                                                  )),
                                                 ]),
                                               ),
                                             );
@@ -970,17 +1025,24 @@ class _State extends ConsumerState<RoomScreen> {
                                         : () => showModalBottomSheet<void>(
                                               context: context,
                                               isScrollControlled: true,
-                                              backgroundColor: const Color(0xff0c1728),
-                                              barrierColor: Colors.black.withValues(alpha: .72),
-                                              shape: const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.vertical(
+                                              backgroundColor:
+                                                  const Color(0xff0c1728),
+                                              barrierColor: Colors.black
+                                                  .withValues(alpha: .72),
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.vertical(
                                                   top: Radius.circular(24),
                                                 ),
                                               ),
                                               builder: (_) => SafeArea(
                                                 child: Padding(
-                                                  padding: const EdgeInsets.fromLTRB(17, 18, 17, 12),
-                                                  child: RoomRocketSheet(roomId: widget.roomId),
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          17, 18, 17, 12),
+                                                  child: RoomRocketSheet(
+                                                      roomId: widget.roomId),
                                                 ),
                                               ),
                                             ),
@@ -1134,7 +1196,7 @@ class _State extends ConsumerState<RoomScreen> {
                                 tooltip: 'Reactions',
                                 onPressed: joined ? _showRoomReactions : null,
                                 icon: const Icon(Icons.emoji_emotions_rounded,
-                                  color: Color(0xffa74be7)),
+                                    color: Color(0xffa74be7)),
                               ),
                               IconButton(
                                 tooltip: 'Gift',

@@ -161,9 +161,9 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
               margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
               padding: const EdgeInsets.fromLTRB(18, 20, 18, 14),
               decoration: BoxDecoration(
-                color: const Color(0xff302e31),
+                color: const Color(0xfffcf8ff),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xff484348)),
+                border: Border.all(color: const Color(0xffede4f5)),
                 boxShadow: const [
                   BoxShadow(
                     color: Color(0x50000000),
@@ -184,6 +184,43 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        Stack(children: [
+                          ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: SizedBox(
+                                  height: 180,
+                                  width: double.infinity,
+                                  child: p.coverPath == null
+                                      ? const DecoratedBox(
+                                          decoration: BoxDecoration(
+                                              gradient: LinearGradient(colors: [
+                                            Color(0xff9580b4),
+                                            Color(0xffd4b9eb),
+                                            Color(0xff4d386e)
+                                          ])),
+                                          child: Icon(Icons.person_outline,
+                                              size: 70,
+                                              color: Color(0x66ffffff)))
+                                      : Image.network(
+                                          ref
+                                              .read(supabaseProvider)
+                                              .storage
+                                              .from('covers')
+                                              .getPublicUrl(p.coverPath!),
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) =>
+                                              const ColoredBox(
+                                                  color: Color(0xffd4b9eb))))),
+                          Positioned(
+                              top: 0,
+                              right: 0,
+                              child: IconButton(
+                                  tooltip: 'Close profile',
+                                  onPressed: () => Navigator.pop(context),
+                                  icon: const Icon(Icons.cancel_rounded,
+                                      color: Colors.white))),
+                        ]),
+                        const SizedBox(height: 12),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -215,7 +252,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                          color: Colors.white,
+                                          color: Color(0xff30213d),
                                           fontSize: 19,
                                           fontWeight: FontWeight.w800,
                                         )),
@@ -226,7 +263,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                       Text(
                                         'ID:${p.nimzoId}',
                                         style: const TextStyle(
-                                          color: Color(0xffceccd1),
+                                          color: Color(0xff9684aa),
                                           fontSize: 12,
                                         ),
                                       ),
@@ -352,7 +389,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                     const Text(
                       'Working…',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Color(0xffd8d3db), fontSize: 11),
+                      style: TextStyle(color: Color(0xff9684aa), fontSize: 11),
                     ),
                   ],
                   const SizedBox(height: 10),
@@ -469,7 +506,7 @@ class _MiniAction extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xff30213d),
                     fontSize: 11,
                     height: 1.1,
                     fontWeight: FontWeight.w500,
