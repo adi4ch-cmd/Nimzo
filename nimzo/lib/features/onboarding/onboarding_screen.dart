@@ -47,8 +47,13 @@ class OnboardingScreen extends StatelessWidget {
         ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 22, 24, 35),
+        child: LayoutBuilder(
+          builder: (context, viewport) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: viewport.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 22, 24, 35),
           child: Column(children: [
             const Spacer(flex: 3),
             Center(
@@ -148,6 +153,10 @@ class OnboardingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
           ]),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     ),
