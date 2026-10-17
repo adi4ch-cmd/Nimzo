@@ -579,7 +579,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(23))),
                         label: Text(image == null
-                          ? 'Choose photo from camera or gallery'
+                          ? 'Choose photo'
                           : 'Replace photo',
                           style: const TextStyle(
                             fontWeight: FontWeight.w800,
