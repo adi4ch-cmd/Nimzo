@@ -293,6 +293,59 @@ class _State extends ConsumerState<RoomScreen> {
     }
   }
 
+  Future<void> _showRoomReactions() async {
+    if (!mounted || !joined) return;
+    final chosen = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
+      builder: (sheet) => SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(15, 18, 15, 18),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Row(children: [
+              const Expanded(child: Text('Reactions',
+                style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800))),
+              IconButton(
+                tooltip: 'Close reactions',
+                onPressed: () => Navigator.of(sheet).pop(),
+                icon: const Icon(Icons.close_rounded),
+              ),
+            ]),
+            const SizedBox(height: 12),
+            Row(children: [
+              for (final (index, emoji) in const [
+                '😍', '🥰', '😂', '😎', '😭', '🎉',
+              ].indexed)
+                Expanded(
+                  child: InkWell(
+                    key: ValueKey('room-reaction-$index'),
+                    onTap: () => Navigator.of(sheet).pop(emoji),
+                    borderRadius: BorderRadius.circular(14),
+                    child: SizedBox(height: 58,
+                      child: Center(child: Text(emoji,
+                        style: const TextStyle(fontSize: 32)))),
+                  ),
+                ),
+            ]),
+          ]),
+        ),
+      ),
+    );
+    if (chosen != null && mounted) {
+      // In the UI-first stage, a reaction edits the real outgoing draft.
+      // Do not fabricate a broadcast or write an unverified server event.
+      text.value = TextEditingValue(
+        text: text.text + chosen,
+        selection: TextSelection.collapsed(
+          offset: text.text.length + chosen.length),
+      );
+    }
+  }
+
   Widget _artButton(String group, VoidCallback onTap) => InkWell(
         onTap: onTap,
         child: Container(
@@ -1046,6 +1099,13 @@ class _State extends ConsumerState<RoomScreen> {
                                       gameHost.currentState?.open(slug),
                                 ),
                                 icon: const ReferenceIcon('game'),
+                              ),
+                              IconButton(
+                                key: const ValueKey('room-reactions-button'),
+                                tooltip: 'Reactions',
+                                onPressed: joined ? _showRoomReactions : null,
+                                icon: const Icon(Icons.emoji_emotions_rounded,
+                                  color: Color(0xffa74be7)),
                               ),
                               IconButton(
                                 tooltip: 'Gift',
