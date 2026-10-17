@@ -93,3 +93,28 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 - Existing `send_gift` implementation credits **45% diamonds** to recipient;
   no financial settlement code was edited in this run.
 - GitHub source-only QA **39020448164** passed; **no APK was built**.
+
+## 2026-10-17 continuation: regression and asset verification
+
+- Verified historical full-suite failure count: **248 passed / 57 failed** in
+  run 39020601556. Source/static analysis and 10-mic constraints passed.
+- Follow-up run 39021171755 improved this to **257 passed / 48 failed**.
+  Remaining failures include missing image/animation assets, older Hilo/ByChance
+  UI assumptions, narrow-phone room layout, and unfinished voice-room/game QA.
+- Regression fixes pushed in this continuation: Material ancestors around
+  Settings and Profile ListTiles; notification mark-read accessibility;
+  onboarding small-device scroll overflow; required scrolling when testing
+  logout; updated stale blank-UI, color, follow-label, and membership tests;
+  honest unavailable level labels and safe image fallbacks.
+- Production gift catalog has **20 active gifts** and paths recorded in the
+  gifts table, but **zero approved entries in gift_animation_media**, and no
+  animation objects in the gifts storage bucket. Original premium animated
+  gift parity remains blocked by missing verified media. Do not mark complete.
+- Checked real Supabase gift functions: room, moment and profile senders settle
+  **45% recipient diamonds**. No account, gift or wallet balances were
+  changed in this audit.
+- APK workflow has manual-only trigger and an additional non-existent
+  `CLONE_RELEASE_READY` file guard plus full-suite test requirement.
+  This gate intentionally blocks ALL early builds. It must not be created
+  until reference screenshots, device QA, animation/licensing, 10-seat and
+  all server-authoritative feature tests pass.
