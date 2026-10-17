@@ -296,6 +296,12 @@ class _State extends ConsumerState<RoomScreen> {
                   room.valueOrNull?.theme ?? 'nimzo_white',
                 ).gradient.last,
                 appBar: AppBar(
+                  backgroundColor: RoomTheme.byId(
+                    room.valueOrNull?.theme ?? 'nimzo_white',
+                  ).gradient.first,
+                  foregroundColor: RoomTheme.byId(
+                    room.valueOrNull?.theme ?? 'nimzo_white',
+                  ).text,
                   toolbarHeight: 64,
                   titleSpacing: 0,
                   title: InkWell(
@@ -340,7 +346,9 @@ class _State extends ConsumerState<RoomScreen> {
                                 'ID:${room.valueOrNull?.roomNo ?? '—'} · ${ref.watch(onlineCountProvider(widget.roomId)).valueOrNull?.toString() ?? '—'} online',
                                 style: const TextStyle(
                                   fontSize: 12,
-                                  color: NimzoStyle.muted,
+                                  color: RoomTheme.byId(
+                                    room.valueOrNull?.theme ?? 'nimzo_white',
+                                  ).text.withValues(alpha: .8),
                                 ),
                               ),
                             ],
