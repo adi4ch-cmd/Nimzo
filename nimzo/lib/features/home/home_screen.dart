@@ -69,19 +69,129 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  void selectCountry() => showCountryPicker(
-    context: context,
-    showPhoneCode: false,
-    favorite: const ['PK', 'SA', 'IN'],
-    countryListTheme: const CountryListThemeData(
-      bottomSheetHeight: 600,
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-    ),
-    onSelect: (c) => setState(() {
-      country = c.countryCode;
-      countryName = c.name;
-    }),
-  );
+  void selectCountry() {
+    var searchText = '';
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (sheetContext, updateSheet) {
+          final filtered = CountryService().getAll().where((c) =>
+            c.name.toLowerCase().contains(searchText.toLowerCase()) ||
+            c.countryCode.toLowerCase().contains(searchText.toLowerCase()),
+          ).take(70).toList();
+          return SafeArea(
+            top: false,
+            child: SizedBox(
+              height: MediaQuery.sizeOf(sheetContext).height * .70,
+              child: Column(children: [
+                const SizedBox(height: 11),
+                Container(width: 32, height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xffc7bfe0),
+                    borderRadius: BorderRadius.circular(5))),
+                Row(children: [
+                  const Spacer(),
+                  const Text('Apply Filter',
+                    style: TextStyle(
+                      color: Color(0xff23182f),
+                      fontSize: 20, fontWeight: FontWeight.w800)),
+                  Expanded(child: Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      tooltip: 'Close country filter',
+                      onPressed: () => Navigator.of(sheetContext).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  )),
+                ]),
+                const Divider(height: 1, color: Color(0xfff0edf8)),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(14, 14, 14, 8),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Country',
+                      style: TextStyle(
+                        color: Color(0xff17111d),
+                        fontSize: 17, fontWeight: FontWeight.w800)),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: TextField(
+                    key: const ValueKey('room-country-search'),
+                    onChanged: (value) =>
+                      updateSheet(() => searchText = value),
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      filled: true,
+                      fillColor: const Color(0xfff6f5fb),
+                      prefixIcon: const Icon(Icons.search_rounded,
+                        color: Color(0xffb2aaca)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Expanded(child: ListView(
+                  padding: const EdgeInsets.fromLTRB(14, 0, 14, 16),
+                  children: [
+                    Wrap(spacing: 8, runSpacing: 6, children: [
+                      ChoiceChip(
+                        key: const ValueKey('room-country-all'),
+                        label: const Text('All'),
+                        selected: country == null,
+                        showCheckmark: false,
+                        selectedColor: NimzoStyle.primary,
+                        backgroundColor: const Color(0xfff2eeff),
+                        labelStyle: TextStyle(
+                          color: country == null
+                            ? Colors.white : const Color(0xff726290),
+                        ),
+                        onSelected: (_) {
+                          setState(() {
+                            country = null;
+                            countryName = 'All';
+                          });
+                          Navigator.of(sheetContext).pop();
+                        },
+                      ),
+                      for (final c in filtered)
+                        ChoiceChip(
+                          key: ValueKey('room-country-${c.countryCode}'),
+                          label: Text('${c.flagEmoji} ${c.name}',
+                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                          selected: country == c.countryCode,
+                          showCheckmark: false,
+                          backgroundColor: const Color(0xfff2eeff),
+                          selectedColor: const Color(0xffe4d2ff),
+                          side: BorderSide.none,
+                          labelStyle: const TextStyle(
+                            color: Color(0xff6f6289), fontSize: 12),
+                          onSelected: (_) {
+                            setState(() {
+                              country = c.countryCode;
+                              countryName = c.name;
+                            });
+                            Navigator.of(sheetContext).pop();
+                          },
+                        ),
+                    ]),
+                  ],
+                )),
+              ]),
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
