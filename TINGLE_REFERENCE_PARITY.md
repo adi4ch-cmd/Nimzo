@@ -23,7 +23,7 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 | Splash/Login/OAuth | New lavender splash/onboarding + linked email/Google login | Exact artwork, mobile/quick auth, pixel QA, on-device OAuth |
 | Register/Profile details | New lavender signup, password confirmation, terms toggle, real Supabase sign-up; profile edit/upload preserved | Referral backend, exact artwork and device tests |
 | Explore/New/Follow/PK | Three tabs + real country filtering | PK live data, full visual parity, badge/frame artwork |
-| Daily Check-in | Unavailable | Verified daily attendance RPC and reward settlement |
+| Daily Check-in | Server-side UTC check-in table + idempotent RPC deployed; lavender 7-day claim UI wired | Reward amount intentionally unconfigured, authenticated device QA and full visual parity |
 | Profile summary | Purple reference-inspired menu + level + edit + VIP links | Complete badge/account stats and avatar decoration art |
 | Coins/History/Recharge | Real wallet/ledger and navigation | Full payment QA, visual parity, offline recharge integration |
 | Store | Server-authoritative medals, Bag, category tabs | Catalog for frames/entries/bubbles/rides, premium assets |
@@ -37,12 +37,13 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 | Music and reactions | Existing implementations | Exact player, real animation assets |
 | Friends list and filters | Existing follows and friends | Reference tabs, cards, actions and verification |
 | Moments feed | Discover/Following real filters, existing actions | Post-editor parity, attach/mentions, image tests |
-| Messages | Existing chat | Reference header/tabs/cards, unread/blocked QA |
+| Notifications | Rebuilt purple notifications page, real categories, unread state, mark-read RPC | Pixel parity and push delivery device QA |
+| Messages | Rebuilt Inbox with real conversation RPC, search/unread tabs, Friends/Notifications links | Screenshot parity, blocked/typing/receipt device QA |
 | Gifts | Existing gifts/settlement contract | Licensed premium 3D animations + native playback QA |
 | Games | Premium seven-game tab/categories and existing room game picker; unsupported game boards clearly marked Preview | Backend games for missing slugs, real payouts, artwork and QA |
 | Room photo/create | Reference UI, real upload path | Camera/device/storage policies/private room end-to-end |
 | Ranks/families/agency | Existing partial or missing | Service contracts and design matching |
-| Visual QA | Not performed | Record comparison of every supplied screenshot at same device |
+| Visual QA | No same-device screenshot pass yet | Record comparison of every supplied screenshot at same device |
 | Automated QA | Source-only PR QA: Flutter analyze + ten-seat/roster tests passed (run 39019844054); old full suite previously 44 fails | Fix full-suite regressions and device checks |
 | Native Android/iOS | Existing repo Android scaffold only in CI | Final packaging, permissions, SDK QA, release signing |
 
@@ -78,3 +79,17 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 - Verified source-only GitHub Actions PR run **39019844054** passed (Flutter
   analyzer and focused tests). This run contained **NO APK/AAB build steps**.
 - Full reference matching is **NOT** achieved. The release lock remains.
+
+## Latest continuation: Messaging and check-in
+- Inbox and Notification screens now use reference-like cards/filters while
+  keeping existing messages, notification RPCs, and unread states.
+- Migration `20261017090000_daily_checkins.sql` was syntax-tested with a
+  transaction rollback and deployed to the NIMZO Supabase project.
+- `daily_checkins` and `claim_daily_checkin()` exist with authenticated-only
+  access and own-row RLS. Unauthenticated RPC rejection was verified.
+- The reward setting `daily_checkin_reward_coins` has NOT been provisioned.
+  Claims are disabled by default until a deliberate economy decision. No
+  coins were created or balances changed during migration verification.
+- Existing `send_gift` implementation credits **45% diamonds** to recipient;
+  no financial settlement code was edited in this run.
+- GitHub source-only QA **39020448164** passed; **no APK was built**.
