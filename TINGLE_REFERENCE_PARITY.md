@@ -22,7 +22,7 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 |---|---|---|
 | Splash/Login/OAuth | New lavender splash/onboarding + linked email/Google login | Exact artwork, mobile/quick auth, pixel QA, on-device OAuth |
 | Register/Profile details | New lavender signup, password confirmation, terms toggle, real Supabase sign-up; profile edit/upload preserved | Referral backend, exact artwork and device tests |
-| Explore/New/Follow/PK | Three tabs + real country filtering | PK live data, full visual parity, badge/frame artwork |
+| Explore/New/Follow/PK | Explore/New/Follow plus consent-based live PK challenge screen and server gift-event score RPC | Battle device QA, timer/realtime refresh, full visual and licensed artwork parity |
 | Daily Check-in | Server-side UTC check-in table + idempotent RPC deployed; lavender 7-day claim UI wired | Reward amount intentionally unconfigured, authenticated device QA and full visual parity |
 | Profile summary | Purple reference-inspired menu + level + edit + VIP links | Complete badge/account stats and avatar decoration art |
 | Coins/History/Recharge | Real wallet/ledger and navigation | Full payment QA, visual parity, offline recharge integration |
@@ -187,3 +187,21 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
   screenshots and custom premium art still require device-by-device review.
 - **No APK/AAB/release build was triggered.** Ten microphone seats remain
   the locked audio-only configuration.
+
+## 2026-10-17 PK milestone — no APK
+- Added non-destructive migration `20261017210000_room_pk_challenges.sql`
+  and deployed it after successful transaction/rollback dry-run.
+- Only public room owners can request or accept five-minute PK. The invited
+  owner must explicitly consent; authenticated-only RPC grants and own-room
+  invitation row policies are enforced on the server.
+- `pk_live_board()` computes A/B scores only from committed gift events in
+  the match window; there are no new wager, coin, diamond or VIP mutations.
+- Real PK screen is reachable from Home/PK and active audio room header.
+  Room session remains mounted, and seat-count rules are untouched (10).
+- Anonymous RPC attempts were rejected. Verification showed **zero fabricated
+  invitations and zero PK matches**. User wallet balances were not changed.
+- PK room-to-room live device QA and visual comparison are pending; the
+  full clone is not complete and APK/release gates remain locked.
+- Latest source-only CI before PK passed 305 Flutter tests; only 3 golden
+  screenshot comparisons failed on run 39043313670. Those golden baselines
+  remain unapproved, NOT auto-updated.
