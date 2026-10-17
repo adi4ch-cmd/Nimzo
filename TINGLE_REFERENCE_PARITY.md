@@ -143,3 +143,28 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
   mobile/quick auth, signed device smoke on two phones, full 10-seat
   Vivox reconnect/permissions, and pixel-by-pixel review of every
   supplied reference page.
+
+
+## 2026-10-17 full-suite gate, run 39043031546
+
+- Flutter analysis, 10-seat constraint, asset bundle, and 390px Friends
+  interaction checks passed. **No APK or AAB was built.**
+- Whole Flutter suite: **305 passed, 3 failed**. Remaining failures
+  are screenshot/golden comparisons, NOT missing voice functionality:
+  1. `master_visual_preview_test.dart`: treasure_final golden 99.51% changed.
+  2. `reference_preview_test.dart`: home_empty golden 99.99% changed;
+     game boards also have a ~0.12% single-row/anti-alias variance.
+  3. `remaining_visual_qa_test.dart`: catalog golden 86.30% changed.
+- The proposed new screenshots are uploaded as
+  `nimzo-golden-candidates-unapproved` on that run. Do **not**
+  automatically approve/generate new baselines merely to turn CI green.
+  Compare with the provided Tingle references and review every altered
+  icon, frame, color and interactive state first.
+- Fixed Moments attachment widget test so the below-the-fold photo chooser
+  is reached by actual scrolling. Camera selection/remove UI now passes
+  with mocked uploads; no fake network photo is assumed.
+- Audio room Android back now uses the same exit confirmation as the
+  room-header close action, with duplicate-dialog protection and safe
+  Vivox cancellation.
+- The full clone, native device QA and the final APK remain blocked until
+  reference parity and backend coverage are actually complete.
