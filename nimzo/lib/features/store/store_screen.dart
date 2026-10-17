@@ -228,33 +228,68 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                   if (!bag) ...[
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(vertical: 3),
                       child: Row(children: [
-                        for (final name in const [
-                          'Medals', 'Frames', 'Entry', 'Bubbles', 'Rides',
-                        ]) Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ChoiceChip(
-                            label: Text(name),
-                            selected: category == name,
-                            onSelected: (_) =>
-                              setState(() => category = name),
-                            selectedColor: const Color(0xffeadbff),
-                            backgroundColor: Colors.white,
-                            labelStyle: TextStyle(
-                              color: category == name
-                                ? NimzoStyle.primary
-                                : const Color(0xff786e91),
-                              fontWeight: FontWeight.w700),
-                            side: BorderSide(
-                              color: category == name
-                                ? NimzoStyle.primary
-                                : NimzoStyle.line),
-                            showCheckmark: false,
+                        for (final c in const <({
+                          String value, String label, IconData icon, Color color
+                        })>[
+                          (value: 'Medals', label: 'Medals',
+                            icon: Icons.workspace_premium_rounded,
+                            color: Color(0xffef9b26)),
+                          (value: 'Frames', label: 'Avatar Frame',
+                            icon: Icons.face_retouching_natural_rounded,
+                            color: Color(0xffaa47e3)),
+                          (value: 'Entry', label: 'Entry',
+                            icon: Icons.auto_awesome_rounded,
+                            color: Color(0xfff1a522)),
+                          (value: 'Bubbles', label: 'Chat Bubble',
+                            icon: Icons.chat_bubble_rounded,
+                            color: Color(0xff15a3e9)),
+                          (value: 'Rides', label: 'Rides',
+                            icon: Icons.directions_car_rounded,
+                            color: Color(0xffefa20d)),
+                        ])
+                          Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: InkWell(
+                              key: ValueKey('store-category-${c.value}'),
+                              onTap: () => setState(() => category = c.value),
+                              borderRadius: BorderRadius.circular(15),
+                              child: Column(children: [
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 160),
+                                  width: 57, height: 56,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: category == c.value
+                                        ? NimzoStyle.primary
+                                        : const Color(0xfff1e9fe),
+                                      width: category == c.value ? 2 : 1)),
+                                  child: Icon(c.icon,
+                                    color: c.color, size: 31),
+                                ),
+                                const SizedBox(height: 5),
+                                SizedBox(
+                                  width: 70,
+                                  child: Text(c.label,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: category == c.value
+                                        ? FontWeight.w800 : FontWeight.w500,
+                                      color: const Color(0xff77648f)),
+                                  ),
+                                ),
+                              ]),
+                            ),
                           ),
-                        ),
                       ]),
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 16),
                   ],
                   if (!bag && category != 'Medals')
                     Container(
