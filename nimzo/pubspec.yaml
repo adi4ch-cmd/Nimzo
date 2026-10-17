@@ -31,3 +31,12 @@ dev_dependencies:
   video_player_platform_interface: 6.9.0
 flutter:
   uses-material-design: true
+  assets:
+    - assets/gifts/free/
+    - assets/reference/game/
+    - assets/reference/chest/
+    - assets/reference/fonts/
+    - assets/hilo/game_levels/
+    - assets/nimzo_custom_gifts/
+    - assets/nimzo/gift_controls/
+    - assets/room_rocket/posters/
