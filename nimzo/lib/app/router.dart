@@ -20,6 +20,7 @@ import '../features/auth/presentation/register_screen.dart';
 import '../features/auth/presentation/verify_screen.dart';
 import '../features/discover/discover_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/settings/tingle_blocked_users_screen.dart';
 import '../features/profile/tingle_me_screen.dart';
 import '../features/profile/tingle_tasks_screen.dart';
 import '../features/games/game_screen.dart';
@@ -128,6 +129,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+      GoRoute(path: '/settings/blocked', builder: (_, __) => const TingleBlockedUsersScreen()),
       GoRoute(
           path: '/svip', builder: (_, __) => const RetiredMembershipScreen()),
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
