@@ -488,33 +488,6 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                            )),
                          ]),
                        ),
-                      TextField(
-                        controller: text,
-                        maxLength: 2000,
-                        minLines: 5,
-                        maxLines: 8,
-                        textCapitalization: TextCapitalization.sentences,
-                        decoration: const InputDecoration(
-                          hintText: 'Share your story with friends…',
-                          hintStyle: TextStyle(
-                            color: Color(0xffa99dbb),
-                            fontSize: 16),
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.fromLTRB(
-                            19, 22, 19, 16),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(24)),
-                            borderSide: BorderSide(
-                              color: Color(0xffe5dff2))),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(24)),
-                            borderSide: BorderSide(
-                              color: NimzoStyle.primary, width: 1.8)),
-                        ),
-                      ),
                       const SizedBox(height: 13),
                       const Text('Photo',
                         style: TextStyle(
@@ -608,6 +581,33 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                           child: const Text('Remove photo'),
                         ),
                       ],
+                      TextField(
+                        controller: text,
+                        maxLength: 2000,
+                        minLines: 5,
+                        maxLines: 8,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: const InputDecoration(
+                          hintText: 'Share your story with friends…',
+                          hintStyle: TextStyle(
+                            color: Color(0xffa99dbb),
+                            fontSize: 16),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: EdgeInsets.fromLTRB(
+                            19, 22, 19, 16),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(24)),
+                            borderSide: BorderSide(
+                              color: Color(0xffe5dff2))),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(24)),
+                            borderSide: BorderSide(
+                              color: NimzoStyle.primary, width: 1.8)),
+                        ),
+                      ),
                       const SizedBox(height: 24),
                       FilledButton(
                         style: FilledButton.styleFrom(
