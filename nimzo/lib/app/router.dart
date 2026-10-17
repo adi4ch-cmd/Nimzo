@@ -135,7 +135,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
       GoRoute(path: '/task', builder: (_, __) => const TingleTasksScreen()),
       GoRoute(path: '/game-level', builder: (_, __) => const GameLevelScreen()),
-      GoRoute(path: '/store', builder: (_, __) => const RoyalStoreScreen()),
+      GoRoute(path: '/store', builder: (_, s) => RoyalStoreScreen(initialBag: s.uri.queryParameters['bag'] == '1')),
       GoRoute(
         path: '/social/:kind/:id',
         builder: (_, s) => SocialListScreen(
