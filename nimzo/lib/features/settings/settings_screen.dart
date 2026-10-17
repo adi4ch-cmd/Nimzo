@@ -140,7 +140,9 @@ class _SettingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(children: [
-    ListTile(
+    Material(
+      color: Colors.white,
+      child: ListTile(
       minTileHeight: 67,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24),
       title: Text(title,
@@ -149,6 +151,7 @@ class _SettingRow extends StatelessWidget {
       trailing: trailing ?? const Icon(Icons.chevron_right,
         color: Color(0xffd0cddb)),
       onTap: onTap,
+    ),
     ),
     const Padding(
       padding: EdgeInsets.symmetric(horizontal: 24),
