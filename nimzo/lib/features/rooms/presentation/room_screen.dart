@@ -564,36 +564,62 @@ class _State extends ConsumerState<RoomScreen> {
                                                           );
                                                         }
                                                       }),
-                                              child: Column(
-                                                children: [
+                                              child: Container(
+                                                key: ValueKey('room-mic-seat-$n'),
+                                                height: 102,
+                                                margin: const EdgeInsets.symmetric(
+                                                  horizontal: 1.5),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0x665e337e),
+                                                  border: Border.all(
+                                                    color: const Color(0x667c548d),
+                                                    width: .8),
+                                                  borderRadius:
+                                                    BorderRadius.circular(5),
+                                                ),
+                                                child: Stack(children: [
+                                                  Positioned(
+                                                    left: 3, top: 3,
+                                                    child: Container(
+                                                      padding: const EdgeInsets.symmetric(
+                                                        horizontal: 4, vertical: 1),
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(0x666e4e86),
+                                                        borderRadius:
+                                                          BorderRadius.circular(6)),
+                                                      child: Text('$n',
+                                                        style: const TextStyle(
+                                                          fontSize: 10,
+                                                          color: Color(0xfff0d9ff))),
+                                                    ),
+                                                  ),
+                                                  Center(child: Column(
+                                                    mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                    children: [
                                                   if (s.userId == null)
-                                                    DashedCircle(
-                                                      child: Container(
-                                                        width: 46,
-                                                        height: 46,
-                                                        alignment:
-                                                            Alignment.center,
-                                                        decoration:
-                                                            const BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          gradient:
-                                                              LinearGradient(
-                                                            colors: [
-                                                              Color(0xffac96ea),
-                                                              Color(0xff8265d2),
+                                                    SizedBox(
+                                                      width: 46, height: 48,
+                                                      child: s.locked
+                                                        ? const Icon(
+                                                            Icons.lock_outline_rounded,
+                                                            size: 30,
+                                                            color: Color(0xffd8b9e8))
+                                                        : Stack(
+                                                            alignment: Alignment.center,
+                                                            children: const [
+                                                              Icon(
+                                                                Icons.weekend_rounded,
+                                                                size: 43,
+                                                                color: Color(0xffd8b9e8)),
+                                                              Positioned(
+                                                                top: 5, right: 7,
+                                                                child: Icon(
+                                                                  Icons.add_rounded,
+                                                                  size: 12,
+                                                                  color: Color(0xff513064))),
                                                             ],
                                                           ),
-                                                        ),
-                                                        child: Icon(
-                                                          s.locked
-                                                              ? Icons.lock_outline_rounded
-                                                              : Icons.mic_none_rounded,
-                                                          size: 23,
-                                                          color:
-                                                              Colors.white,
-                                                        ),
-                                                      ),
                                                     )
                                                   else
                                                     Stack(
@@ -677,6 +703,8 @@ class _State extends ConsumerState<RoomScreen> {
                                                       ).text,
                                                     ),
                                                 ],
+                                              )),
+                                                ]),
                                               ),
                                             );
                                           },
