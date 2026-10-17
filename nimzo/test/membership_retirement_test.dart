@@ -55,6 +55,12 @@ void main() {
       expect(find.byType(TingleMembershipScreen), findsOneWidget);
       expect(router.routeInformationProvider.value.uri.path,
           svip ? '/svip' : '/vip');
+      // The premium reference banner and 3x2 perk tiles put this heading
+      // below the fold on phones. Scroll to the genuine section first.
+      await tester.scrollUntilVisible(
+        find.text('Membership privileges'), 160,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Membership privileges'), findsOneWidget);
       expect(find.text(svip ? 'SVIP' : 'VIP'), findsOneWidget);
       expect(find.byType(FilledButton), findsNothing);
