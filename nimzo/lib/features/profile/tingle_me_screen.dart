@@ -97,59 +97,6 @@ class TingleMeScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              if (id != null) ...[
-                InkWell(
-                  onTap: () => _go(context, '/profile/' + id),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 9),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 27,
-                          backgroundColor: NimzoStyle.primary,
-                          backgroundImage:
-                            avatar == null ? null : NetworkImage(avatar),
-                          child: avatar == null
-                            ? const Icon(Icons.person_rounded,
-                                color: Colors.white, size: 28)
-                            : null,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(p?.displayName ?? 'My NIMZO account',
-                              style: const TextStyle(fontSize: 17,
-                                fontWeight: FontWeight.w800)),
-                            Text('ID: ' + (p?.nimzoId.toString() ?? '…'),
-                              style: const TextStyle(
-                                color: Color(0xff6e638a), fontSize: 12)),
-                            const SizedBox(height: 4),
-                            if (p != null) Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: const Color(0xffeee6fc),
-                                borderRadius: BorderRadius.circular(9)),
-                              child: Text('Lv. ' + p.wealthLevel.toString(),
-                                style: const TextStyle(
-                                  color: NimzoStyle.primary,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700)),
-                            ),
-                          ],
-                        )),
-                        IconButton(
-                          tooltip: 'Edit profile',
-                          onPressed: () => _go(context, '/edit-profile'),
-                          icon: const Icon(Icons.edit_outlined,
-                            color: Color(0xff8579a7)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
               const SizedBox(height: 7),
               Container(
                 decoration: BoxDecoration(
@@ -229,30 +176,6 @@ class TingleMeScreen extends ConsumerWidget {
                 ]),
               ),
               const SizedBox(height: 16),
-              Row(children: [
-                Expanded(
-                  child: _MembershipShortcut(
-                    title: 'VIP',
-                    subtitle: 'Member collection',
-                    icon: Icons.workspace_premium_rounded,
-                    start: const Color(0xff1d133e),
-                    end: const Color(0xff8c44bc),
-                    onTap: () => _go(context, '/vip'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _MembershipShortcut(
-                    title: 'SVIP',
-                    subtitle: 'Luxury tiers',
-                    icon: Icons.diamond_rounded,
-                    start: const Color(0xff46143c),
-                    end: const Color(0xffcf3b86),
-                    onTap: () => _go(context, '/svip'),
-                  ),
-                ),
-              ]),
-              const SizedBox(height: 13),
               Material(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
@@ -293,6 +216,90 @@ class TingleMeScreen extends ConsumerWidget {
                 ),
               ),
               ),
+              const SizedBox(height: 16),
+              // The screenshot's first viewport is the quick navigation hub.
+              // Real account identity and optional VIP previews remain
+              // available below its reference menu instead of displacing it.
+              if (id != null) ...[
+                InkWell(
+                  onTap: () => _go(context, '/profile/' + id),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 9),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 27,
+                          backgroundColor: NimzoStyle.primary,
+                          backgroundImage:
+                            avatar == null ? null : NetworkImage(avatar),
+                          child: avatar == null
+                            ? const Icon(Icons.person_rounded,
+                                color: Colors.white, size: 28)
+                            : null,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(p?.displayName ?? 'My NIMZO account',
+                              style: const TextStyle(fontSize: 17,
+                                fontWeight: FontWeight.w800)),
+                            Text('ID: ' + (p?.nimzoId.toString() ?? '…'),
+                              style: const TextStyle(
+                                color: Color(0xff6e638a), fontSize: 12)),
+                            const SizedBox(height: 4),
+                            if (p != null) Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xffeee6fc),
+                                borderRadius: BorderRadius.circular(9)),
+                              child: Text('Lv. ' + p.wealthLevel.toString(),
+                                style: const TextStyle(
+                                  color: NimzoStyle.primary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700)),
+                            ),
+                          ],
+                        )),
+                        IconButton(
+                          tooltip: 'Edit profile',
+                          onPressed: () => _go(context, '/edit-profile'),
+                          icon: const Icon(Icons.edit_outlined,
+                            color: Color(0xff8579a7)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 8),
+              Row(children: [
+                Expanded(
+                  child: _MembershipShortcut(
+                    title: 'VIP',
+                    subtitle: 'Member collection',
+                    icon: Icons.workspace_premium_rounded,
+                    start: const Color(0xff1d133e),
+                    end: const Color(0xff8c44bc),
+                    onTap: () => _go(context, '/vip'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _MembershipShortcut(
+                    title: 'SVIP',
+                    subtitle: 'Luxury tiers',
+                    icon: Icons.diamond_rounded,
+                    start: const Color(0xff46143c),
+                    end: const Color(0xffcf3b86),
+                    onTap: () => _go(context, '/svip'),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 13),
+
             ],
           ),
         ),
