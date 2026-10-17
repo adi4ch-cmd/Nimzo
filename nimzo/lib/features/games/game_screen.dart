@@ -9,6 +9,7 @@ import '../../core/widgets/master_ui.dart';
 import '../../core/utils/formatters.dart';
 import 'game_catalog.dart';
 import 'grady_lion_practice.dart';
+import 'lucky77_room_webview.dart';
 
 /// Visual boards from nimzo-ui-2.html. Settlement is never simulated locally.
 class GameScreen extends ConsumerStatefulWidget {
@@ -124,6 +125,13 @@ class _GameState extends ConsumerState<GameScreen> {
   ];
   @override
   Widget build(BuildContext context) {
+    if (widget.slug == 'lucky_77') {
+      return Lucky77RoomWebView(
+        onMinimize: widget.onMinimize,
+        onExpand: widget.onExpand,
+        roomControls: widget.roomControls,
+      );
+    }
     final game = NimzoRoomGames.approved
             .where((g) => g.slug == widget.slug)
             .firstOrNull ??
