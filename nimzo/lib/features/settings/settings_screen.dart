@@ -110,7 +110,7 @@ class SettingsScreen extends ConsumerWidget {
         const SizedBox(height: 22),
         Material(color: Colors.white, child: Column(children: [
           _SettingRow(
-            title: 'Log Out',
+            title: 'Logout',
             titleColor: Colors.red,
             trailing: const SizedBox.shrink(),
             onTap: ref.watch(authControllerProvider).isLoading
