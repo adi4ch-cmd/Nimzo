@@ -32,8 +32,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/gifts/
     - assets/gifts/free/
     - assets/reference/game/
+    - assets/reference/gift/
+    - assets/reference/icons/
     - assets/reference/chest/
     - assets/reference/fonts/
     - assets/hilo/game_levels/
