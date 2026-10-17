@@ -253,11 +253,11 @@ class TingleMeScreen extends ConsumerWidget {
                 ),
               ]),
               const SizedBox(height: 22),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                ),
+              Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                clipBehavior: Clip.antiAlias,
+                child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 21, vertical: 9),
                 child: Column(
@@ -291,6 +291,7 @@ class TingleMeScreen extends ConsumerWidget {
                     ],
                   ],
                 ),
+              ),
               ),
             ],
           ),
