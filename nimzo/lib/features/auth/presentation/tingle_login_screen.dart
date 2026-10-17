@@ -218,9 +218,13 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                             child: _SocialButton(
                               icon: Icons.phone_android_rounded,
                               text: 'Mobile',
-                              onPressed: () => _notice(
-                                'Mobile OTP login is not configured yet.',
-                              ),
+                              onPressed: () {
+                                if (!_terms) {
+                                  _notice('Please accept the terms first.');
+                                  return;
+                                }
+                                context.push('/phone-login');
+                              },
                             ),
                           ),
                           const SizedBox(width: 15),
