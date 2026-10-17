@@ -204,14 +204,13 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                   ]);
                 },
               ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(23)),
+            Material(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(23),
+              clipBehavior: Clip.antiAlias,
               child: ListTile(
-                contentPadding: EdgeInsets.zero,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 6),
                 leading: const Icon(Icons.sports_esports_rounded,
                   color: NimzoStyle.primary, size: 29),
                 title: const Text('Game Level',
