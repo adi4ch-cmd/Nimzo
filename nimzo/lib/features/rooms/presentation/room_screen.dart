@@ -609,7 +609,7 @@ class _State extends ConsumerState<RoomScreen> {
                             for (var row = 0; row < 2; row++)
                               Padding(
                                 padding: EdgeInsets.only(
-                                  bottom: row == 0 ? 14 : 0,
+                                  bottom: row == 0 ? 8 : 0,
                                 ),
                                 child: Row(
                                   children: [
@@ -680,7 +680,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                       }),
                                               child: Container(
                                                 key: ValueKey('room-mic-seat-$n'),
-                                                height: 102,
+                                                height: 88,
                                                 margin: const EdgeInsets.symmetric(
                                                   horizontal: 1.5),
                                                 decoration: BoxDecoration(
