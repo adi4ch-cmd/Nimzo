@@ -189,7 +189,7 @@ class TingleMeScreen extends ConsumerWidget {
                           onTap: () {
                             if (i == 0) _go(context, '/cp');
                             if (i == 1) _go(context, '/levels');
-                            if (i == 2) _go(context, '/info/Daily%20Rewards');
+                            if (i == 2) _go(context, '/daily-checkin');
                             if (i == 3) _go(context, '/task');
                           },
                           child: Column(
