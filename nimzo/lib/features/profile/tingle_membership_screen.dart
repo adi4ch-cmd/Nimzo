@@ -57,24 +57,24 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
   int selected = 1;
 
   static const themes = [
-    [Color(0xff210c43), Color(0xff6730b4), Color(0xffb685ff)],
-    [Color(0xff06372f), Color(0xff087a60), Color(0xff79ebc4)],
-    [Color(0xff42132e), Color(0xffa92366), Color(0xffffacdb)],
+    [Color(0xff160720), Color(0xff59208d), Color(0xffd4abff)],
+    [Color(0xff051e13), Color(0xff076638), Color(0xffacffbd)],
+    [Color(0xff290719), Color(0xff97114d), Color(0xffffaedc)],
   ];
 
   static const perks = <({IconData icon, String label})>[
-    (icon: Icons.workspace_premium_outlined, label: 'Identity Badge'),
-    (icon: Icons.auto_awesome_outlined, label: 'Profile Halo'),
-    (icon: Icons.directions_car_filled_outlined, label: 'Entry Effect'),
+    (icon: Icons.workspace_premium_outlined, label: 'SVIP Title'),
+    (icon: Icons.auto_awesome_outlined, label: 'Exclusive Avatar Frame'),
+    (icon: Icons.credit_card_rounded, label: 'Distinguished Card'),
     (icon: Icons.chat_bubble_outline_rounded, label: 'Chat Bubble'),
     (icon: Icons.shield_outlined, label: 'Avatar Frame'),
-    (icon: Icons.mic_external_on_outlined, label: 'Mic Decoration'),
+    (icon: Icons.card_giftcard_outlined, label: 'Special Gift Tassel'),
   ];
 
   @override
   Widget build(BuildContext context) {
     final current = ref.watch(membershipSnapshotProvider(widget.svip));
-    final colors = themes[selected == 1 ? 0 : selected == 2 ? 1 : 2];
+    final colors = themes[(selected - 1) % themes.length];
     final name = widget.svip ? 'SVIP' : 'VIP';
     return Scaffold(
       backgroundColor: const Color(0xff100e19),
@@ -103,7 +103,38 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
           padding: const EdgeInsets.fromLTRB(18, 12, 18, 34),
           children: [
             SizedBox(
-              height: 340,
+              height: 59,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  for (var tier = 1; tier <= 5; tier++)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 25),
+                      child: InkWell(
+                        key: ValueKey('membership-tier-$tier'),
+                        onTap: () => setState(() => selected = tier),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('$name $tier', style: TextStyle(
+                              color: selected == tier
+                                ? Colors.white : Colors.white54,
+                              fontSize: 19, fontWeight: FontWeight.w800)),
+                            const SizedBox(height: 5),
+                            Container(
+                              width: 25, height: 3,
+                              color: selected == tier
+                                ? Colors.white : Colors.transparent),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 11),
+            SizedBox(
+              height: 430,
               child: Container(
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
@@ -111,7 +142,7 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
                     colors: [colors[0], colors[1], colors[0]],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight),
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(13),
                   border: Border.all(color: colors[2]
                     .withValues(alpha: .6), width: 1.5),
                   boxShadow: [
@@ -129,19 +160,39 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
                     left: -40, bottom: -145,
                     child: CircleAvatar(radius: 155,
                       backgroundColor: colors[2].withValues(alpha: .08))),
+                  Positioned.fill(child: CustomPaint(
+                    painter: _MembershipCurtainPainter(accent: colors[2]))),
                   Center(child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.diamond_outlined,
-                        color: colors[2], size: 52),
-                      const SizedBox(height: 8),
-                      Icon(Icons.workspace_premium_rounded,
-                        color: colors[2], size: 116),
+                      Icon(Icons.military_tech_rounded,
+                        color: const Color(0xffffdf91), size: 49),
+                      const SizedBox(height: 13),
+                      Container(
+                        width: 188, height: 188,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color(0xffffd78c), width: 4),
+                          gradient: LinearGradient(colors: [
+                            colors[2], colors[1], colors[0]]),
+                          boxShadow: [BoxShadow(
+                            color: colors[2].withValues(alpha: .48),
+                            blurRadius: 22, spreadRadius: 4)]),
+                        alignment: Alignment.center,
+                        child: Container(
+                          height: 159, width: 159,
+                          decoration: BoxDecoration(
+                            color: colors[0], shape: BoxShape.circle,
+                            border: Border.all(color: colors[2], width: 3)),
+                          child: Icon(Icons.diamond_rounded,
+                            color: colors[2], size: 91))),
+                      const SizedBox(height: 12),
                       Text('$name $selected', style: TextStyle(
-                        color: colors[2], fontSize: 38,
+                        color: colors[2], fontSize: 29,
                         letterSpacing: 3, fontWeight: FontWeight.w900)),
                       const SizedBox(height: 6),
-                      const Text('MEMBERSHIP COLLECTION',
+                      const Text('IDENTITY COLLECTION',
                         style: TextStyle(
                           color: Colors.white70, fontSize: 11,
                           letterSpacing: 3)),
@@ -150,37 +201,6 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
                 ]),
               ),
             ),
-            const SizedBox(height: 22),
-            Row(children: [
-              for (var i = 1; i <= 3; i++) Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(right: i == 3 ? 0 : 8),
-                  child: InkWell(
-                    key: ValueKey('membership-tier-$i'),
-                    onTap: () => setState(() => selected = i),
-                    borderRadius: BorderRadius.circular(19),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      height: 67,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [
-                          themes[i - 1][0], themes[i - 1][1]]),
-                        borderRadius: BorderRadius.circular(19),
-                        border: Border.all(
-                          color: selected == i ? themes[i - 1][2]
-                            : Colors.white12,
-                          width: selected == i ? 2 : 1),
-                      ),
-                      child: Text('$name $i', style: TextStyle(
-                        fontWeight: FontWeight.w800, fontSize: 17,
-                        color: selected == i
-                          ? Colors.white : Colors.white70)),
-                    ),
-                  ),
-                ),
-              ),
-            ]),
             const SizedBox(height: 23),
             current.when(
               loading: () => const Center(
@@ -232,7 +252,7 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
               itemCount: perks.length,
               gridDelegate:
                 const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, childAspectRatio: .91,
+                  crossAxisCount: 3, childAspectRatio: .90,
                   mainAxisSpacing: 12, crossAxisSpacing: 12),
               itemBuilder: (context, index) {
                 final perk = perks[index];
@@ -246,7 +266,16 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(perk.icon, size: 38, color: colors[2]),
+                      Container(
+                        height: 65, width: 65,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(13),
+                          gradient: LinearGradient(colors: [
+                            colors[1], colors[0]]),
+                          border: Border.all(
+                            color: colors[2].withValues(alpha: .6))),
+                        child: Icon(perk.icon, size: 39, color: colors[2])), 
                       const SizedBox(height: 11),
                       Text(perk.label,
                         textAlign: TextAlign.center,
@@ -259,7 +288,7 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
             ),
             const SizedBox(height: 24),
             Container(
-              padding: const EdgeInsets.all(17),
+              padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
                 color: const Color(0xff231d31),
                 borderRadius: BorderRadius.circular(19)),
@@ -277,4 +306,36 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
       ),
     );
   }
+}
+
+class _MembershipCurtainPainter extends CustomPainter {
+  final Color accent;
+  const _MembershipCurtainPainter({required this.accent});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (var i = 0; i < 10; i++) {
+      final x = (i + 1) * size.width / 11;
+      final path = Path()
+        ..moveTo(x, 0)
+        ..cubicTo(x - 35, size.height * .25,
+          x + 23, size.height * .75, x - 10, size.height);
+      canvas.drawPath(path,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = i.isEven ? 15 : 8
+          ..color = accent.withValues(alpha: i.isEven ? .09 : .04));
+    }
+    final edge = Paint()
+      ..color = const Color(0x888a723c)
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+    canvas.drawRRect(RRect.fromRectAndRadius(
+      Rect.fromLTWH(10, 12, size.width - 20, size.height - 24),
+      const Radius.circular(15)), edge);
+  }
+
+  @override
+  bool shouldRepaint(covariant _MembershipCurtainPainter old) =>
+    old.accent != accent;
 }
