@@ -44,9 +44,13 @@ class _Lucky77RoomWebViewState extends State<Lucky77RoomWebView> {
               } else {
                 Navigator.of(context).maybePop();
               }
+              return;
             case 'expand':
               widget.onExpand?.call();
+              return;
             // Never accept wallet, room, or auth operations from HTML.
+            default:
+              return;
           }
         },
       )
