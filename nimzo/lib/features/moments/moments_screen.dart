@@ -506,92 +506,97 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                     padding: const EdgeInsets.fromLTRB(17, 20, 17, 36),
                     children: [
                       const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.add_photo_alternate_outlined),
-                        onPressed: busy
-                            ? null
-                            : () async {
-                                final source =
-                                    await showModalBottomSheet<ImageSource>(
-                                  context: context,
-                                  builder: (c) => SafeArea(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        ListTile(
-                                          leading: const Icon(Icons.photo_library_outlined),
-                                          title: const Text('Choose from gallery'),
-                                          onTap: () => Navigator.pop(
-                                              c, ImageSource.gallery),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Tooltip(
+                          message: image == null ? 'Choose photo' : 'Replace photo',
+                          child: SizedBox(
+                            width: 124,
+                            height: 124,
+                            child: OutlinedButton(
+                              key: const ValueKey('moment-photo-picker'),
+                            onPressed: busy
+                                ? null
+                                : () async {
+                                    final source =
+                                        await showModalBottomSheet<ImageSource>(
+                                      context: context,
+                                      builder: (c) => SafeArea(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            ListTile(
+                                              leading: const Icon(Icons.photo_library_outlined),
+                                              title: const Text('Choose from gallery'),
+                                              onTap: () => Navigator.pop(
+                                                  c, ImageSource.gallery),
+                                            ),
+                                            ListTile(
+                                              leading: const Icon(Icons.camera_alt_outlined),
+                                              title: const Text('Take a photo'),
+                                              onTap: () => Navigator.pop(
+                                                  c, ImageSource.camera),
+                                            ),
+                                          ],
                                         ),
-                                        ListTile(
-                                          leading: const Icon(Icons.camera_alt_outlined),
-                                          title: const Text('Take a photo'),
-                                          onTap: () => Navigator.pop(
-                                              c, ImageSource.camera),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                                if (source == null || !mounted) return;
-                                setState(() => busy = true);
-                                try {
-                                  final path = await ref
-                                      .read(storageServiceProvider)
-                                      .pickAndUpload('moments', source: source);
-                                  if (path != null && mounted)
-                                    setState(() => image = path);
-                                } catch (_) {
-                                  if (context.mounted)
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                            'Image could not be uploaded.'),
                                       ),
                                     );
-                                } finally {
-                                  if (mounted) setState(() => busy = false);
-                                }
-                              },
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: NimzoStyle.primary,
-                          side: const BorderSide(
-                            color: Color(0xffdfd4ed)),
-                          minimumSize: const Size.fromHeight(75),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(23))),
-                        label: Text(image == null
-                          ? 'Choose photo'
-                          : 'Replace photo',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 15)),
-                      ),
-                      if (image != null) ...[
-                        const SizedBox(height: 14),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Image.network(
-                            ref
-                                .watch(supabaseProvider)
-                                .storage
-                                .from('moments')
-                                .getPublicUrl(image!),
-                            height: 230,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                const EmptyContent('Image unavailable'),
+                                    if (source == null || !mounted) return;
+                                    setState(() => busy = true);
+                                    try {
+                                      final path = await ref
+                                          .read(storageServiceProvider)
+                                          .pickAndUpload('moments', source: source);
+                                      if (path != null && mounted)
+                                        setState(() => image = path);
+                                    } catch (_) {
+                                      if (context.mounted)
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                'Image could not be uploaded.'),
+                                          ),
+                                        );
+                                    } finally {
+                                      if (mounted) setState(() => busy = false);
+                                    }
+                                  },
+    
+                              style: OutlinedButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                backgroundColor: const Color(0xfff2f4fb),
+                                foregroundColor: const Color(0xff9d99b0),
+                                side: const BorderSide(color: Color(0xffe5e9f4)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(17)),
+                              ),
+                              child: image == null
+                                ? const Icon(Icons.add_rounded, size: 42)
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.network(
+                                      ref.watch(supabaseProvider).storage
+                                        .from('moments').getPublicUrl(image!),
+                                      width: 124, height: 124,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) =>
+                                        const Icon(Icons.photo_rounded,
+                                          color: Color(0xff948aa8), size:40),
+                                    ),
+                                  ),
+                            ),
                           ),
                         ),
-                        TextButton(
-                          onPressed:
-                              busy ? null : () => setState(() => image = null),
-                          child: const Text('Remove photo'),
+                      ),
+                      if (image != null)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton(
+                            onPressed: busy ? null
+                              : () => setState(() => image = null),
+                            child: const Text('Remove photo'),
+                          ),
                         ),
-                      ],
                       TextField(
                         controller: text,
                         maxLength: 2000,
