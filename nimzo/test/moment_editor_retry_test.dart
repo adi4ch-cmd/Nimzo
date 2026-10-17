@@ -96,8 +96,11 @@ void main() {
       isNotNull,
       reason: 'Typing must visibly enable Post before submitting',
     );
-    // The user can publish through the visible reference AppBar action
-    // even when the keyboard is open and the long draft scrolls below.
+    // Close the text IME before tapping the real Post action. This avoids
+    // dismissing the keyboard instead of activating the button on some
+    // Flutter test surface configurations.
+    await tester.testTextInput.hide();
+    await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('moment-top-post')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('moment-top-post')));
     await tester.pump();
