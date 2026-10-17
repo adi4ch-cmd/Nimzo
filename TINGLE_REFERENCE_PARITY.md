@@ -20,7 +20,7 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 ## Checklist (each row requires screenshot comparison + button/data QA)
 | Reference | Present state | Blocking work |
 |---|---|---|
-| Splash/Login/OAuth | New lavender splash/onboarding + linked email/Google login | Exact artwork, mobile/quick auth, pixel QA, on-device OAuth |
+| Splash/Login/OAuth | Lavender onboarding/email/Google + real Supabase phone SMS OTP login, complete E.164 guard | Phone provider/device SMS delivery, Quick Login, exact art, OAuth and pixel QA |
 | Register/Profile details | New lavender signup, password confirmation, terms toggle, real Supabase sign-up; profile edit/upload preserved | Referral backend, exact artwork and device tests |
 | Explore/New/Follow/PK | Explore/New/Follow plus consent-based live PK challenge screen and server gift-event score RPC | Battle device QA, timer/realtime refresh, full visual and licensed artwork parity |
 | Daily Check-in | Server-side UTC check-in table + idempotent RPC deployed; lavender 7-day claim UI wired | Reward amount intentionally unconfigured, authenticated device QA and full visual parity |
@@ -205,3 +205,16 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
 - Latest source-only CI before PK passed 305 Flutter tests; only 3 golden
   screenshot comparisons failed on run 39043313670. Those golden baselines
   remain unapproved, NOT auto-updated.
+
+## 2026-10-17 phone authentication continuation
+- Tingle-style Mobile login is no longer an inert shortcut: it requests a
+  real Supabase SMS OTP, verifies the code, and allows persistent auth sessions.
+- E.164 country prefix and OTP format validation implemented, plus visual
+  phone step, terms control, editable number and auth failure feedback.
+- Fixed auth domain mapping: phone-confirmed, email-less accounts no longer
+  get sent to an impossible email-verification page.
+- The Supabase SMS provider configuration and delivery on physical devices
+  remain unverified, so production SMS must **not** be declared complete.
+- Added source-only CI tests for valid phone formats and login redirect.
+- Real PK scoring, consent and OTP work do not modify the ten-seat rule.
+- Full clone / reference match is NOT complete; final APK build remains locked.
