@@ -117,40 +117,55 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               padding: const EdgeInsets.fromLTRB(24, 26, 18, 14),
               child: Column(children: [
                 Row(children: [
-                  for (var i = 0; i < 4; i++) ...[
-                    InkWell(
-                      onTap: () => selectTab(i),
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 18, bottom: 14),
-                        child: Text(
-                          const ['Explore', 'New', 'PK', 'Follow'][i],
-                          style: TextStyle(
-                            color: tab == i ? Colors.white : Colors.white54,
-                            fontSize: i == 0 ? 22 : 16,
-                            fontWeight: tab == i
-                                ? FontWeight.w800 : FontWeight.w500,
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(children: [
+                        for (var i = 0; i < 4; i++)
+                          InkWell(
+                            key: ValueKey('explore-tab-$i'),
+                            onTap: () => selectTab(i),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                right: 17, bottom: 14),
+                              child: Text(
+                                const ['Explore', 'New', 'PK', 'Follow'][i],
+                                style: TextStyle(
+                                  color: tab == i
+                                    ? Colors.white : Colors.white54,
+                                  fontSize: i == 0 ? 22 : 16,
+                                  fontWeight: tab == i
+                                    ? FontWeight.w800 : FontWeight.w500,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                      ]),
                     ),
-                  ],
-                  const Spacer(),
+                  ),
                   IconButton(
+                    tooltip: 'Search rooms and users',
                     onPressed: () => context.push('/discover'),
                     icon: const Icon(Icons.search_rounded,
                       color: Colors.white70),
                   ),
                   IconButton(
+                    tooltip: 'Rankings',
                     onPressed: () => context.push('/ranking'),
                     icon: const Icon(Icons.emoji_events_rounded,
                       color: Color(0xffffc547)),
                   ),
                 ]),
                 Row(children: [
-                  _CountryChip(
-                    label: countryName, onTap: selectCountry,
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: _CountryChip(
+                        label: countryName, onTap: selectCountry,
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 7),
                   ActionChip(
                     label: const Text('All'),
                     avatar: const Icon(Icons.public, size: 16),
@@ -162,8 +177,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       countryName = 'All';
                     }),
                   ),
-                  const Spacer(),
                   IconButton(
+                    tooltip: 'Filter by country',
                     onPressed: selectCountry,
                     icon: const Icon(Icons.filter_list, color: Colors.white),
                   ),
