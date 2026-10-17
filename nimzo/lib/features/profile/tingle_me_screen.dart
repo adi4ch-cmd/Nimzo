@@ -24,7 +24,7 @@ class TingleMeScreen extends ConsumerWidget {
     final top = <({String label, String route})>[
       (label: 'Ranking', route: '/ranking'),
       (label: 'My Store', route: '/store'),
-      (label: 'Backpack', route: '/store'),
+      (label: 'Backpack', route: '/store?bag=1'),
       (label: 'Family', route: '/social/following/' + (id ?? '')),
     ];
     const tiles = <({String label, IconData icon, Color first, Color last})>[
