@@ -18,6 +18,7 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
   final tracks = <PlatformFile>[];
   int? playingIndex;
   bool busy = false;
+  double volume = .55;
   String? error;
 
   Future<void> importTracks() async {
@@ -56,7 +57,7 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
     try {
       await player.stop();
       await player.setFilePath(tracks[index].path!);
-      await player.setVolume(.55);
+      await player.setVolume(volume);
       if (!mounted) return;
       setState(() => playingIndex = index);
       unawaited(player.play().catchError((Object _) {
@@ -82,9 +83,11 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xffeef5f2),
+    backgroundColor: const Color(0xfff6f4ff),
     appBar: AppBar(
-      title: const Text('Music'),
+      title: const Text('Music', style: TextStyle(
+        color: Color(0xff2f2149), fontWeight: FontWeight.w900)),
+      centerTitle: true,
       backgroundColor: Colors.white,
     ),
     body: ListView(
@@ -94,12 +97,14 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xff102f28),
-            borderRadius: BorderRadius.circular(21),
+            gradient: const LinearGradient(
+              colors: [Color(0xff6434b3), Color(0xffa94de8),
+                Color(0xffbc71e9)]),
+            borderRadius: BorderRadius.circular(26),
           ),
           child: Column(children: [
             const Icon(Icons.music_note_rounded,
-              size: 50, color: Color(0xff6af4bd)),
+              size: 50, color: Color(0xffffdb96)),
             const SizedBox(height: 11),
             Text(
               playingIndex == null
@@ -108,8 +113,8 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
               ),
             ),
             const SizedBox(height: 12),
@@ -125,6 +130,8 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
                 return Slider(
                   key: const ValueKey('music-playback-seek'),
                   value: progress,
+                  activeColor: const Color(0xffffd59a),
+                  inactiveColor: const Color(0x88ffffff),
                   onChanged: playingIndex == null || total == 0
                       ? null
                       : (value) => player.seek(
@@ -132,12 +139,28 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
                 );
               },
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  tooltip: 'Previous track',
+                  onPressed: busy || playingIndex == null
+                    || playingIndex! <= 0 ? null
+                    : () => playTrack(playingIndex! - 1),
+                  icon: const Icon(Icons.skip_previous_rounded,
+                    color: Colors.white, size: 33),
+                ),
+                const SizedBox(width: 18),
             StreamBuilder<bool>(
               stream: player.playingStream,
               builder: (context, snapshot) {
                 final playing = snapshot.data ?? false;
                 return IconButton.filledTonal(
                   tooltip: playing ? 'Pause' : 'Play',
+                  style: IconButton.styleFrom(
+                    foregroundColor: const Color(0xff762bc4),
+                    backgroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.white38),
                   onPressed: playingIndex == null || busy
                       ? null
                       : () => playing ? player.pause() : player.play(),
@@ -146,6 +169,34 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
                 );
               },
             ),
+                const SizedBox(width: 18),
+                IconButton(
+                  tooltip: 'Next track',
+                  onPressed: busy || playingIndex == null
+                    || playingIndex! >= tracks.length - 1 ? null
+                    : () => playTrack(playingIndex! + 1),
+                  icon: const Icon(Icons.skip_next_rounded,
+                    color: Colors.white, size: 33),
+                ),
+              ],
+            ),
+            const SizedBox(height: 9),
+            Row(children: [
+              const Icon(Icons.volume_down_rounded,
+                color: Colors.white70),
+              Expanded(child: Slider(
+                key: const ValueKey('music-volume'),
+                activeColor: const Color(0xffffd69d),
+                inactiveColor: const Color(0x77ffffff),
+                value: volume,
+                onChanged: (value) {
+                  setState(() => volume = value);
+                  unawaited(player.setVolume(value));
+                },
+              )),
+              const Icon(Icons.volume_up_rounded,
+                color: Colors.white70),
+            ]),
           ]),
         ),
         const SizedBox(height: 17),
@@ -155,7 +206,7 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
           icon: const Icon(Icons.library_music_outlined),
           label: Text(busy ? 'Loading…' : 'Choose Music From Phone'),
           style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xff149b73),
+            backgroundColor: const Color(0xff933be9),
             minimumSize: const Size.fromHeight(48),
           ),
         ),
@@ -164,7 +215,7 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
           'Personal playback only. This plays on your phone; it is not '
           'yet broadcast to other room members.',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12, color: Color(0xff657870)),
+          style: TextStyle(fontSize: 12, color: Color(0xff867397)),
         ),
         if (error != null) ...[
           const SizedBox(height: 10),
@@ -189,7 +240,7 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
               child: ListTile(
                 key: ValueKey('music-track-$index'),
                 leading: const Icon(Icons.audiotrack,
-                  color: Color(0xff14a782)),
+                  color: Color(0xffa145ee)),
                 title: Text(tracks[index].name,
                   maxLines: 1, overflow: TextOverflow.ellipsis),
                 subtitle: playingIndex == index
