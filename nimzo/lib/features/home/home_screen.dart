@@ -15,6 +15,16 @@ final ownedRoomPreviewProvider = FutureProvider<Room?>((ref) async {
   return id == null ? null : repo.get(id);
 });
 
+/// Historical rooms may store either an ISO country code or a country name.
+/// Do not silently drop real followed/new rooms when formats differ.
+bool roomCountryMatches(String? stored, String? selectedCode, String selectedName) {
+  if (selectedCode == null) return true;
+  final value = stored?.trim().toLowerCase();
+  if (value == null || value.isEmpty) return false;
+  return value == selectedCode.trim().toLowerCase() ||
+      value == selectedName.trim().toLowerCase();
+}
+
 /// Explore/New/Follow live-room screen derived from the supplied Tingle layout.
 /// Every card is backed by a real NIMZO room; no stock rooms or fake counts.
 class HomeScreen extends ConsumerStatefulWidget {
@@ -84,7 +94,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
     if (country != null && tab != 0) {
       data = data.whenData(
-        (rooms) => rooms.where((r) => r.country == country).toList(),
+        (rooms) => rooms.where(
+          (r) => roomCountryMatches(r.country, country, countryName),
+        ).toList(),
       );
     }
 
