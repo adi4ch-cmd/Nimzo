@@ -1,0 +1,31 @@
+name: NIMZO Clone Source QA (No APK)
+
+on:
+  push:
+    branches:
+      - feature/tingle-ui-rebuild-20261017
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: nimzo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Fetch packages
+        run: flutter pub get
+      - name: Static analysis
+        run: flutter analyze --no-fatal-infos
+      - name: Clone constraints
+        run: flutter test test/clone_constraints_test.dart
+      # Intentionally no Android SDK, APK, AAB, release or artifact steps.
