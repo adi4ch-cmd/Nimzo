@@ -48,4 +48,12 @@ jobs:
         run: flutter test test/tingle_friends_screen_test.dart
       - name: Full Flutter regression suite
         run: flutter test --reporter expanded
-      # Intentionally no Android SDK, APK, AAB, release or artifact steps.
+      - name: Preserve golden screenshot comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-ui-golden-diff
+          path: nimzo/test/failures/
+          if-no-files-found: ignore
+          retention-days: 7
+      # No Android SDK, APK, AAB, or app release steps.
