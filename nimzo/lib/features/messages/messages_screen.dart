@@ -12,98 +12,202 @@ import '../social/social_repositories.dart';
 import '../social/blocked_users_screen.dart';
 import '../profile/profile_repository.dart';
 
-class MessagesScreen extends ConsumerWidget {
+/// Reference-like Inbox using the existing conversation_list RPC and RLS.
+class MessagesScreen extends ConsumerStatefulWidget {
   const MessagesScreen({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          title: const Text('Messages',
-            style: TextStyle(fontWeight: FontWeight.w900,
-              color: Color(0xff2b2239))),
-          actions: [
-            IconButton(
-              tooltip: 'Friends and followers',
-              onPressed: () => context.push('/friends'),
-              icon: const Icon(Icons.people_alt_outlined,
-                color: NimzoStyle.primary),
+  ConsumerState<MessagesScreen> createState() => _InboxState();
+}
+
+class _InboxState extends ConsumerState<MessagesScreen> {
+  final search = TextEditingController();
+  int selection = 0;
+
+  @override
+  void dispose() {
+    search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final conversations = ref.watch(conversationsProvider);
+    return Scaffold(
+      backgroundColor: const Color(0xfff5f4ff),
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: const Text('Messages', style: TextStyle(
+          fontSize: 21, fontWeight: FontWeight.w900,
+          color: Color(0xff23183b))),
+        actions: [
+          IconButton(
+            tooltip: 'Friends',
+            onPressed: () => context.push('/friends'),
+            icon: const Icon(Icons.people_outline_rounded,
+              color: NimzoStyle.primary),
+          ),
+          IconButton(
+            tooltip: 'Notifications',
+            onPressed: () => context.push('/notifications'),
+            icon: const Icon(Icons.notifications_none_rounded,
+              color: NimzoStyle.primary),
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(conversationsProvider);
+          await ref.read(conversationsProvider.future);
+        },
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(15, 17, 15, 95),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xff8753de), Color(0xffb179f6)],
+                ),
+                borderRadius: BorderRadius.circular(26)),
+              child: Row(children: [
+                Container(
+                  width: 56, height: 56,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: .19),
+                    borderRadius: BorderRadius.circular(17)),
+                  child: const Icon(Icons.forum_rounded,
+                    color: Colors.white, size: 33)),
+                const SizedBox(width: 13),
+                const Expanded(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Stay Connected',
+                      style: TextStyle(color: Colors.white,
+                        fontWeight: FontWeight.w900, fontSize: 19)),
+                    SizedBox(height: 5),
+                    Text('Private chats with your NIMZO friends',
+                      style: TextStyle(color: Color(0xfff3e7ff),
+                        fontSize: 12)),
+                  ],
+                )),
+              ]),
+            ),
+            const SizedBox(height: 17),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 13),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: NimzoStyle.line)),
+              child: TextField(
+                key: const ValueKey('inbox-search'),
+                controller: search,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search_rounded,
+                    color: NimzoStyle.primary),
+                  hintText: 'Search conversations',
+                  hintStyle: const TextStyle(
+                    color: Color(0xff9a90af)),
+                  suffixIcon: search.text.isEmpty ? null
+                    : IconButton(
+                        tooltip: 'Clear',
+                        onPressed: () => setState(search.clear),
+                        icon: const Icon(Icons.close_rounded)),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20)),
+              child: Row(children: [
+                for (var index = 0; index < 2; index++)
+                  Expanded(child: InkWell(
+                    key: ValueKey('inbox-tab-$index'),
+                    onTap: () => setState(() => selection = index),
+                    borderRadius: BorderRadius.circular(17),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 160),
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: selection == index
+                          ? NimzoStyle.primary : Colors.transparent,
+                        borderRadius: BorderRadius.circular(17)),
+                      child: Text(index == 0 ? 'All Chats' : 'Unread',
+                        style: TextStyle(
+                          color: selection == index
+                            ? Colors.white : const Color(0xff8d809e),
+                          fontSize: 15, fontWeight: FontWeight.w800)),
+                    ),
+                  )),
+              ]),
+            ),
+            const SizedBox(height: 12),
+            conversations.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(30),
+                child: Center(child: CircularProgressIndicator())),
+              error: (_, __) => Column(children: [
+                const Text('Unable to load conversations'),
+                TextButton(
+                  onPressed: () => ref.invalidate(conversationsProvider),
+                  child: const Text('Retry')),
+              ]),
+              data: (rows) {
+                final term = search.text.trim().toLowerCase();
+                final visible = rows.where((item) {
+                  final unread = int.tryParse(
+                    item['unread']?.toString() ?? '') ?? 0;
+                  if (selection == 1 && unread <= 0) return false;
+                  if (term.isEmpty) return true;
+                  return [
+                    item['display_name'], item['username'],
+                    item['last_body'],
+                  ].any((v) => (v?.toString() ?? '')
+                      .toLowerCase().contains(term));
+                }).toList();
+                if (visible.isEmpty) {
+                  return Container(
+                    padding: const EdgeInsets.fromLTRB(15, 45, 15, 45),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22)),
+                    child: Column(children: [
+                      const Icon(Icons.chat_bubble_outline_rounded,
+                        color: Color(0xffb2a3d7), size: 52),
+                      const SizedBox(height: 13),
+                      Text(
+                        term.isNotEmpty ? 'No matching conversations'
+                          : selection == 1 ? 'No unread messages'
+                          : 'No conversations yet',
+                        style: const TextStyle(
+                          color: Color(0xff857695),
+                          fontWeight: FontWeight.w700)),
+                      if (selection == 0 && term.isEmpty) TextButton.icon(
+                        onPressed: () => context.push('/discover'),
+                        icon: const Icon(Icons.search),
+                        label: const Text('Discover people')),
+                    ]),
+                  );
+                }
+                return Column(children: [
+                  for (final row in visible) ConversationTile(row: row),
+                ]);
+              },
             ),
           ],
         ),
-        backgroundColor: const Color(0xfff6f5ff),
-        body: RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(conversationsProvider);
-            await ref.read(conversationsProvider.future);
-          },
-          child: ListView(
-            children: [
-              Container(
-                margin: const EdgeInsets.fromLTRB(16, 15, 16, 8),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: NimzoStyle.softGradient,
-                  borderRadius: BorderRadius.circular(17),
-                  border: Border.all(color: NimzoStyle.line),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.forum_rounded,
-                        size: 27, color: NimzoStyle.royal),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Your conversations',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 15,
-                              color: NimzoStyle.ink,
-                            )),
-                          Text('Private messages from your NIMZO friends',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: NimzoStyle.muted,
-                            )),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              AsyncContent(
-                value: ref.watch(conversationsProvider),
-                onRetry: () => ref.invalidate(conversationsProvider),
-                builder: (rows) => rows.isEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 28),
-                        child: Column(
-                          children: [
-                            const Icon(Icons.mark_chat_unread_outlined,
-                                size: 46, color: NimzoStyle.primary),
-                            const SizedBox(height: 12),
-                            const EmptyContent('No conversations yet'),
-                            OutlinedButton.icon(
-                              onPressed: () => context.push('/discover'),
-                              icon: const Icon(Icons.search),
-                              label: const Text('Discover people'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Column(
-                        children: [
-                          for (final r in rows) ConversationTile(row: r)
-                        ],
-                      ),
-              ),
-            ],
-          ),
-        ),
-      );
+      ),
+    );
+  }
 }
 
 class ConversationTile extends ConsumerWidget {
