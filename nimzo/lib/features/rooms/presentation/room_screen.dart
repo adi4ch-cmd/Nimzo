@@ -596,13 +596,20 @@ class _State extends ConsumerState<RoomScreen> {
                                                         TextOverflow.ellipsis,
                                                     style: const TextStyle(
                                                       fontSize: 12,
-                                                      color: NimzoStyle.muted,
+                                                      color: RoomTheme.byId(
+                                                        room.valueOrNull?.theme
+                                                          ?? 'nimzo_white',
+                                                      ).text.withValues(alpha: .88),
                                                     ),
                                                   ),
                                                   if (s.muted)
-                                                    const Icon(
+                                                    Icon(
                                                       LucideIcons.micOff,
                                                       size: 12,
+                                                      color: RoomTheme.byId(
+                                                        room.valueOrNull?.theme
+                                                          ?? 'nimzo_white',
+                                                      ).text,
                                                     ),
                                                 ],
                                               ),
