@@ -118,3 +118,28 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
   This gate intentionally blocks ALL early builds. It must not be created
   until reference screenshots, device QA, animation/licensing, 10-seat and
   all server-authoritative feature tests pass.
+
+## 2026-10-17 late continuation: Moments editor / remaining visual tests
+
+- Redesigned **Create/Edit Moment**: white app bar, lavender canvas,
+  premium share banner, accessible multi-line input, full-width
+  camera/gallery selector, same Supabase media upload and save/edit logic.
+- No fabricated comments, likes, gifts, media or post counts were added.
+- The last complete full-suite run **39027768033** passed **304 tests**
+  and failed **3 golden-visual test cases** (all the nonvisual and
+  server-related tests in that run passed). The failing visual baselines:
+  `master_visual_preview_test.dart` (treasure_final),
+  `reference_preview_test.dart` (empty Home and board images),
+  `remaining_visual_qa_test.dart` (catalog).
+- These goldens were created against prior NIMZO layouts and now differ
+  from the active Tingle-inspired redesign. **Do not delete golden tests,
+  silently update their baselines or mark them passed.** Review the actual
+  images against user references and approve replacement baselines only
+  after device screenshot inspection.
+- Latest Moments editor change is in commit `de7efb1404ce8b01bbe5c6f5f1e2b3bfed81b89a`.
+  Its source-only CI run is `39042436128`. No APK was requested or built.
+- Remaining high-priority release blockers: licensed premium media and
+  playback, real frames/entries/bubbles/rides catalogs, PK data/services,
+  mobile/quick auth, signed device smoke on two phones, full 10-seat
+  Vivox reconnect/permissions, and pixel-by-pixel review of every
+  supplied reference page.
