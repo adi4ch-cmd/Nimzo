@@ -29,7 +29,7 @@ void main() {
     expect(html, contains('if(index===0&&proposed[2]>0)return false'));
     expect(html, contains('if(index===2&&proposed[0]>0)return false'));
     expect(html, contains('if(source[0]>0&&source[2]>0)'));
-    expect(html, contains("$('#repeatBtn').onclick"));
+    expect(html, contains("\$('#repeatBtn').onclick"));
     expect(html, contains('if(autoRepeat&&previousBets.some(Boolean))'));
 
     // Native commands are minimized and expanded via a tightly scoped bridge.
