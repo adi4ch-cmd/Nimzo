@@ -650,16 +650,19 @@ void main() {
           expect(find.byKey(const ValueKey('room-real-stats')), findsOneWidget);
         }
         if (entry.key == 'levels') {
-          // The new reference layout shows an actual six-band ladder,
-          // not the retired 'Tier colors' header.
+          // Verify all three real tabs before scrolling the lazy tier list.
+          for (var tab = 0; tab < 3; tab++) {
+            expect(find.byKey(ValueKey('level-tab-$tab')), findsOneWidget);
+          }
           for (final label in const [
             'Brown', 'Green', 'Blue', 'Pink', 'Red', 'Gold',
           ]) {
+            await tester.scrollUntilVisible(
+              find.text(label), 120,
+              scrollable: find.byType(Scrollable).first,
+            );
             expect(find.text(label), findsWidgets,
-              reason: 'The $label level band must remain visible');
-          }
-          for (var tab = 0; tab < 3; tab++) {
-            expect(find.byKey(ValueKey('level-tab-$tab')), findsOneWidget);
+              reason: 'The $label level band must render when scrolled to');
           }
         }
       } else {
