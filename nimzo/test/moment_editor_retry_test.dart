@@ -85,6 +85,13 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'New post');
+    // On a phone the reference topics appear before the publish action.
+    // Reach the genuine action by scrolling rather than assuming all list
+    // children are built and visible before interaction.
+    await tester.scrollUntilVisible(
+      find.text('Publish moment'), 140,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(find.text('Publish moment'));
     await tester.pump();
     await tester.pumpWidget(const SizedBox());
@@ -142,6 +149,12 @@ void main() {
     expect(find.text('Replace photo'), findsOneWidget);
     await tester.tap(find.text('Remove photo'));
     await tester.pumpAndSettle();
+    // Removing the photo changes the scroll extent: scroll back to the
+    // picker before verifying the restored Choose photo action.
+    await tester.scrollUntilVisible(
+      find.text('Choose photo'), -140,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Choose photo'), findsOneWidget);
     expect(find.text('Remove photo'), findsNothing);
   });
