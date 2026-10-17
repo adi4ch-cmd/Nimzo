@@ -1,18 +1,20 @@
 name: NIMZO Tingle UI APK check
+# Do not build APKs during the UI clone work. Manual release gate only.
 on:
-  push:
-    branches:
-      - feature/tingle-ui-rebuild-20261017
-  pull_request:
-    branches:
-      - feature/nimzo-ui-reset-20261017
   workflow_dispatch:
+    inputs:
+      confirm_complete:
+        description: 'Only build after all required screens, interactions and QA pass'
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 jobs:
   android:
+    if: inputs.confirm_complete == true
     runs-on: ubuntu-latest
     timeout-minutes: 50
     defaults:
