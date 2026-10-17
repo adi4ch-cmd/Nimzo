@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../profile/profile_image_format.dart';
 import 'room_controller.dart';
 
 /// Tingle-reference room creator using the existing Supabase room contract.
@@ -21,6 +24,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   final description = TextEditingController();
   final password = TextEditingController();
   XFile? image;
+  Uint8List? imageBytes;
   bool isPrivate = false;
   bool busy = false;
 
@@ -40,9 +44,18 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       final selected = await ImagePicker().pickImage(
         source: ImageSource.gallery, imageQuality: 85, maxWidth: 1440,
       );
-      if (selected != null && mounted) setState(() => image = selected);
+      if (selected == null) return;
+      final bytes = await selected.readAsBytes();
+      if (bytes.length > 5 * 1024 * 1024) {
+        throw const FormatException('Room photo must be under 5 MB.');
+      }
+      profileImageFormat(bytes);
+      if (mounted) setState(() {
+        image = selected;
+        imageBytes = bytes;
+      });
     } catch (_) {
-      if (mounted) notice('Could not open image picker.');
+      if (mounted) notice('Choose a JPEG, PNG or WebP picture under 5 MB.');
     }
   }
 
@@ -61,31 +74,36 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       final id = await ref.read(roomRepositoryProvider).create(
         name.text.trim(), password: isPrivate ? password.text.trim() : null,
       );
+      String? metadataError;
       final db = ref.read(sessionSupabaseProvider).client;
       final uid = db.auth.currentUser?.id;
-      if (uid != null && (image != null || description.text.trim().isNotEmpty)) {
-        final changes = <String, dynamic>{};
-        if (description.text.trim().isNotEmpty) {
-          changes['rules'] = description.text.trim();
-        }
-        if (image != null) {
-          final bytes = await image!.readAsBytes();
-          if (bytes.length > 5 * 1024 * 1024) {
-            throw StateError('Room picture must be smaller than 5MB.');
+      if (uid != null && (imageBytes != null || description.text.trim().isNotEmpty)) {
+        try {
+          final changes = <String, dynamic>{};
+          final rules = description.text.trim();
+          if (rules.isNotEmpty) changes['rules'] = rules;
+          if (imageBytes != null) {
+            final format = profileImageFormat(imageBytes!);
+            final path = '$' + "{uid}/$" + "{id}/room_$" + "{DateTime.now().millisecondsSinceEpoch}.$" + "{format.$1}";
+            await db.storage.from('room-images').uploadBinary(
+              path, imageBytes!,
+              fileOptions: FileOptions(
+                contentType: format.$2, upsert: false,
+              ),
+            );
+            changes['avatar_path'] = path;
           }
-          final path = uid + '/' + id + '/room_' +
-              DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
-          await db.storage.from('room-images').uploadBinary(
-            path, bytes,
-            fileOptions: const FileOptions(
-              contentType: 'image/jpeg', upsert: false,
-            ),
-          );
-          changes['avatar_path'] = path;
+          final changed = await db.from('rooms').update(changes)
+            .eq('id', id).eq('owner_id', uid).select('id').maybeSingle();
+          if (changed == null) {
+            throw StateError('Room settings were not saved.');
+          }
+        } catch (_) {
+          metadataError = 'Room created, but photo or description was not saved. '
+            'You can retry from room settings.';
         }
-        await db.from('rooms').update(changes)
-            .eq('id', id).eq('owner_id', uid);
       }
+      if (mounted && metadataError != null) notice(metadataError);
       ref.invalidate(myRoomsProvider);
       ref.invalidate(popularRoomsProvider(null));
       if (mounted) context.go('/room/' + id);
@@ -137,17 +155,13 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                     border: Border.all(color: Colors.white38),
                     borderRadius: BorderRadius.circular(23),
                   ),
-                  child: image == null
+                  child: imageBytes == null
                     ? const Icon(Icons.add_photo_alternate_outlined,
                         color: Colors.white, size: 53)
-                    : const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.check_circle_outline,
-                            size: 44, color: Colors.white),
-                          SizedBox(height: 8),
-                          Text('Selected', style: TextStyle(color: Colors.white)),
-                        ],
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(21),
+                        child: Image.memory(imageBytes!, width: 155,
+                          height: 162, fit: BoxFit.cover),
                       ),
                 ),
               )),
