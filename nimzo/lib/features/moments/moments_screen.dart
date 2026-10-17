@@ -395,9 +395,16 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
   String? image;
   bool busy = false, ready = false;
   bool loadFailed = false;
+  bool get canPost => image != null || text.text.trim().isNotEmpty;
+
+  void _draftChanged() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
+    text.addListener(_draftChanged);
     Future.microtask(_load);
   }
 
@@ -423,6 +430,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
 
   @override
   void dispose() {
+    text.removeListener(_draftChanged);
     text.dispose();
     super.dispose();
   }
@@ -479,11 +487,12 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
           actions: [
             TextButton(
               key: const ValueKey('moment-top-post'),
-              onPressed: busy || !ready ? null : _saveMoment,
+              onPressed: busy || !ready || !canPost
+                ? null : _saveMoment,
               child: Text(widget.id == null ? 'Post' : 'Save',
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
-                  color: busy || !ready
+                  color: busy || !ready || !canPost
                     ? const Color(0xffaaa5bc) : NimzoStyle.primary)),
             ),
           ],
@@ -689,7 +698,8 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                           textStyle: const TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 18)),
-                        onPressed: busy ? null : _saveMoment,
+                        onPressed: busy || !canPost
+                          ? null : _saveMoment,
                         child: Text(widget.id == null ? 'Publish moment' : 'Save changes'),
                       ),
                     ],
