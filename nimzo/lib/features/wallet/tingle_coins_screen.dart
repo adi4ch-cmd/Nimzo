@@ -52,10 +52,10 @@ class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(24, 23, 24, 25),
+          padding: const EdgeInsets.fromLTRB(14, 14, 14, 26),
           children: [
             Container(
-              height: 184,
+              height: 112,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Color(0xffff9a17), Color(0xffffca3e),
@@ -63,40 +63,40 @@ class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(39),
+                borderRadius: BorderRadius.circular(14),
               ),
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 11),
+                      horizontal: 14, vertical: 7),
                     decoration: BoxDecoration(
                       color: const Color(0x667b4906),
                       borderRadius: BorderRadius.circular(35),
                     ),
                     child: const Text('Remaining coins',
                       style: TextStyle(color: Colors.white,
-                        fontSize: 15)),
+                        fontSize: 12)),
                   ),
                   const Spacer(),
                   Row(children: [
                     const Icon(Icons.stars_rounded,
-                      color: Color(0xffffe26c), size: 44),
-                    const SizedBox(width: 11),
+                      color: Color(0xffffe26c), size: 31),
+                    const SizedBox(width: 7),
                     Expanded(child: value.when(
                       data: (w) => Text(
                         referenceNumber(w.coins),
                         key: const ValueKey('tingle-coin-balance'),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 32,
+                          fontSize: 26,
                           shadows: [Shadow(color: Color(0x446b3100),
                             offset: Offset(1, 2), blurRadius: 2)],
                           fontWeight: FontWeight.w800)),
                       loading: () => const Text('…',
-                        style: TextStyle(fontSize: 30, color: Colors.white)),
+                        style: TextStyle(fontSize: 24, color: Colors.white)),
                       error: (_, __) => TextButton(
                         onPressed: () => ref.invalidate(walletProvider),
                         child: const Text('Retry',
@@ -110,7 +110,7 @@ class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
                         onPressed: () => context.push('/recharge'),
                         child: const Text('Top Up',
                           style: TextStyle(
-                            fontSize: 19,
+                            fontSize: 15,
                             color: Color(0xfff18a0d),
                             fontWeight: FontWeight.w800)),
                       ),
@@ -119,18 +119,18 @@ class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 14),
             Container(
-              height: 87,
+              height: 53,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Color(0xffa843f1), Color(0xff7634cb)]),
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(15),
               ),
               child: ListTile(
-                minTileHeight: 85,
+                minTileHeight: 52,
                 leading: const Icon(Icons.stars_rounded,
-                  size: 36, color: Color(0xffffbd30)),
+                  size: 27, color: Color(0xffffbd30)),
                 title: const Text('Offline Recharge',
                   style: TextStyle(color: Colors.white,
                     fontWeight: FontWeight.w800)),
@@ -142,10 +142,10 @@ class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
                     'Use Top Up for supported purchases.'))),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 16),
             Row(children: [
               const Expanded(child: Text('Coin History',
-                style: TextStyle(fontSize: 19, color: Colors.black,
+                style: TextStyle(fontSize: 16, color: Colors.black,
                   fontWeight: FontWeight.w800))),
               DropdownButton<String>(
                 value: filter,
@@ -155,7 +155,7 @@ class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
                 onChanged: (v) => setState(() => filter = v ?? 'All'),
               ),
             ]),
-            const SizedBox(height: 15),
+            const SizedBox(height: 12),
             history.when(
               loading: () => const Padding(
                 padding: EdgeInsets.all(20),
@@ -181,21 +181,21 @@ class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
                 return Column(children: [
                   for (final row in filtered)
                     Container(
-                      margin: const EdgeInsets.only(bottom: 10),
+                      margin: const EdgeInsets.only(bottom: 9),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border.all(color: const Color(0xffefedf5)),
                         borderRadius: BorderRadius.circular(23),
                       ),
                       child: ListTile(
-                        minTileHeight: 88,
+                        minTileHeight: 62,
                         leading: Container(
-                          width: 53, height: 53,
+                          width: 43, height: 43,
                           decoration: BoxDecoration(
                             color: const Color(0xfffffaf1),
                             borderRadius: BorderRadius.circular(16)),
                           child: const Icon(Icons.stars_rounded,
-                            size: 33, color: Color(0xffffb11d))),
+                            size: 28, color: Color(0xffffb11d))),
                         title: Text(
                           (row['kind'] ?? 'Transaction').toString()
                             .replaceAll('_', ' '),
@@ -213,7 +213,7 @@ class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
                             color: ((row['coin_delta'] as num?)?.toInt() ?? 0)
                               >= 0 ? const Color(0xff20bd49) : Colors.red,
                             fontWeight: FontWeight.w800,
-                            fontSize: 17)),
+                            fontSize: 14)),
                       ),
                     ),
                 ]);
