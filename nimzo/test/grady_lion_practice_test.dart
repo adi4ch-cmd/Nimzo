@@ -53,7 +53,11 @@ void main() {
     expect(find.textContaining('You won'), findsNothing);
 
     final reset = find.byKey(const ValueKey('grady-practice-reset'));
-    await tester.ensureVisible(reset);
+    await tester.scrollUntilVisible(
+      reset,
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(reset);
     await tester.pump();
     expect(find.text('0 / 6 selected'), findsOneWidget);
