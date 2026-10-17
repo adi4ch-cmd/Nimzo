@@ -168,3 +168,22 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
   Vivox cancellation.
 - The full clone, native device QA and the final APK remain blocked until
   reference parity and backend coverage are actually complete.
+
+## 2026-10-17 14:59 UTC regression checkpoint
+- Restored the real Moments photo choose action to the initially visible
+  position above the caption, keeping camera/gallery, upload, replace and
+  removal logic unchanged. The full-suite photo-picker regression now passes.
+- Validated repository image assets in both checkout and Flutter rootBundle;
+  the asset-bundle integrity test passes. Previous unbundled-image failures
+  must not be treated as missing source artwork without independent evidence.
+- Latest complete source-only CI run **39042948058**: 305 tests passed, 3
+  tests failed. Failures are screenshot comparisons in
+  `master_visual_preview_test.dart`, `reference_preview_test.dart`, and
+  `remaining_visual_qa_test.dart`. These are **NOT** marked as accepted.
+- CI now generates `nimzo-golden-candidates-unapproved` plus original
+  golden diff evidence for comparison. They are artifacts for manual visual
+  QA only: no automatic baseline updates are checked into the repository.
+- Golden differences do not prove Tingle pixel parity. Original reference
+  screenshots and custom premium art still require device-by-device review.
+- **No APK/AAB/release build was triggered.** Ten microphone seats remain
+  the locked audio-only configuration.
