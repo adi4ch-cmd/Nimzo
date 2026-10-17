@@ -14,6 +14,7 @@ String? authRedirect({
   const public = {
     Routes.onboarding,
     Routes.login,
+    '/phone-login',
     Routes.register,
     Routes.forgot,
   };
