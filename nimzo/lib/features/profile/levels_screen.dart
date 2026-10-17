@@ -162,7 +162,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                             fontSize: 14,
                             fontWeight: FontWeight.w700)),
                         const SizedBox(height: 4),
-                        Text(level > 0 ? 'Lv. $level' : 'Unavailable',
+                        Text(level > 0 ? 'Lv. $level' : 'Level unavailable',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 30, fontWeight: FontWeight.w900)),
@@ -190,6 +190,9 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                             color: Colors.white,
                             fontSize: 17,
                             fontWeight: FontWeight.w800)),
+                        if (progress == null)
+                          const Text('Maximum tier or unavailable',
+                            style: TextStyle(color: Color(0xffefdeff), fontSize: 12)),
                         if (next != null) Text(
                           '${referenceNumber(next)} to the next level',
                           style: const TextStyle(
@@ -264,9 +267,9 @@ class _LevelState extends ConsumerState<LevelsScreen> {
               padding: const EdgeInsets.all(18),
               child: Text(
                 [
-                  'Wealth grows when you send verified gifts.',
-                  'Charm grows when you receive verified gifts.',
-                  'Active grows from recorded activity.',
+                  'Wealth grows from coins sent in verified gifts.',
+                  'Charm grows from diamonds received in verified gifts.',
+                  'Active grows from recorded activity points.',
                 ][selected],
                 style: const TextStyle(
                   color: Color(0xff84798e), height: 1.5),
