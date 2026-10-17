@@ -12,7 +12,6 @@ import 'package:nimzo/features/rooms/presentation/room_controller.dart';
 import 'package:nimzo/features/rooms/presentation/room_screen.dart';
 import 'package:nimzo/features/voice/voice_service.dart';
 import 'package:nimzo/features/voice/voice_controller.dart';
-import 'package:nimzo/core/widgets/master_ui.dart';
 
 final room = Room(
   id: 'room',
@@ -124,12 +123,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byType(DashedCircle), findsNWidgets(10));
-    final seatCenters = find
-        .byType(DashedCircle)
-        .evaluate()
-        .map((e) => tester.getCenter(find.byWidget(e.widget)))
-        .toList();
+    final seatTiles = [
+      for (var seat = 1; seat <= 10; seat++)
+        find.byKey(ValueKey('room-mic-seat-$seat')),
+    ];
+    for (final tile in seatTiles) {
+      expect(tile, findsOneWidget);
+    }
+    final seatCenters = seatTiles.map(tester.getCenter).toList();
     expect(seatCenters.take(5).map((p) => p.dy).toSet().length, 1);
     expect(seatCenters.skip(5).map((p) => p.dy).toSet().length, 1);
     expect(seatCenters[5].dy, greaterThan(seatCenters[0].dy));
@@ -225,7 +226,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(repo.memberships, 1);
     expect(voice.joins, 1);
-    expect(find.byType(DashedCircle), findsNWidgets(10));
+    for (var seat = 1; seat <= 10; seat++) {
+      expect(find.byKey(ValueKey('room-mic-seat-$seat')), findsOneWidget);
+    }
     await tester.tap(find.byKey(const ValueKey('room-confirm-exit')));
     await tester.pumpAndSettle();
     expect(find.text('Leave audio room?'), findsOneWidget);
