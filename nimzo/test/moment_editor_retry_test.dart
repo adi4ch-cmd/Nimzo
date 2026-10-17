@@ -99,7 +99,7 @@ void main() {
     // Close the text IME before tapping the real Post action. This avoids
     // dismissing the keyboard instead of activating the button on some
     // Flutter test surface configurations.
-    await tester.testTextInput.hide();
+    tester.testTextInput.hide();
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('moment-top-post')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('moment-top-post')));
