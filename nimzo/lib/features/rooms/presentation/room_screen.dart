@@ -137,6 +137,44 @@ class _State extends ConsumerState<RoomScreen> {
     }
   }
 
+  /// Explicit header exit follows the reference confirmation design.
+  /// A cancellation does not drop the Vivox connection or room membership.
+  Future<void> _confirmRoomExit() async {
+    if (!mounted || leaving || _allowPop) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialog) => AlertDialog(
+        backgroundColor: const Color(0xfff9f5ff),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(26)),
+        title: const Row(
+          children: [
+            Icon(Icons.logout_rounded, color: Color(0xffa246ef), size: 30),
+            SizedBox(width: 10),
+            Expanded(child: Text('Leave audio room?',
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900))),
+          ],
+        ),
+        content: const Text(
+          'You will leave the microphones and voice session. '
+          'Your NIMZO account, room and coins will remain saved.',
+          style: TextStyle(fontSize: 14, height: 1.5)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialog).pop(false),
+            child: const Text('Stay')),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xffa246ef)),
+            onPressed: () => Navigator.of(dialog).pop(true),
+            child: const Text('Leave room')),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) await _exitRoom();
+  }
+
   Future<void> _exitRoom() async {
     if (leaving || _allowPop || !mounted) return;
     try {
@@ -304,6 +342,14 @@ class _State extends ConsumerState<RoomScreen> {
                   ).text,
                   toolbarHeight: 64,
                   titleSpacing: 0,
+                  actions: [
+                    IconButton(
+                      key: const ValueKey('room-confirm-exit'),
+                      tooltip: 'Leave audio room',
+                      onPressed: leaving ? null : _confirmRoomExit,
+                      icon: const Icon(Icons.close_rounded, size: 26),
+                    ),
+                  ],
                   title: InkWell(
                     onTap: room.valueOrNull == null
                         ? null
