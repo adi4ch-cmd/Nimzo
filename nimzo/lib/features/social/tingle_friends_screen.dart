@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../profile/profile_repository.dart';
+import 'social_repositories.dart';
 
 final tinglePeopleProvider =
     FutureProvider.autoDispose.family<List<String>, int>((ref, tab) async {
@@ -96,7 +97,7 @@ class _FriendsState extends ConsumerState<TingleFriendsScreen> {
                 : Column(children: [
                     for (final person in people)
                       _FriendCard(key: ValueKey('friend-$person'),
-                        userId: person),
+                        userId: person, tab: tab),
                   ]),
             ),
           ]),
@@ -105,46 +106,147 @@ class _FriendsState extends ConsumerState<TingleFriendsScreen> {
   }
 }
 
-class _FriendCard extends ConsumerWidget {
+
+class _FriendCard extends ConsumerStatefulWidget {
   final String userId;
-  const _FriendCard({super.key, required this.userId});
+  final int tab;
+  const _FriendCard({
+    super.key, required this.userId, required this.tab,
+  });
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(profileProvider(userId));
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
+  ConsumerState<_FriendCard> createState() => _FriendCardState();
+}
+
+class _FriendCardState extends ConsumerState<_FriendCard> {
+  bool working = false;
+
+  Future<void> toggleFollow(bool following) async {
+    if (working) return;
+    setState(() => working = true);
+    try {
+      final service = ref.read(followRepositoryProvider);
+      if (following) {
+        await service.unfollow(widget.userId);
+      } else {
+        await service.follow(widget.userId);
+      }
+      ref.invalidate(isFollowingProvider(widget.userId));
+      ref.invalidate(tinglePeopleProvider(1));
+      ref.invalidate(tinglePeopleProvider(2));
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Could not update follow status. Please retry.'),
+        ));
+      }
+    } finally {
+      if (mounted) setState(() => working = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final profile = ref.watch(profileProvider(widget.userId));
+    final follow = widget.tab == 0
+        ? null : ref.watch(isFollowingProvider(widget.userId));
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xffeae4f4))),
-      child: user.when(
-        loading: () => const ListTile(title: Text('Loading…')),
-        error: (_, __) => const ListTile(title: Text('Profile unavailable')),
-        data: (person) {
-          final avatar = person.avatarPath == null ? null
-              : ref.watch(sessionSupabaseProvider).client.storage
-                  .from('avatars').getPublicUrl(person.avatarPath!);
-          return ListTile(
-            minTileHeight: 90,
-            onTap: () => context.push('/profile/$userId'),
-            leading: CircleAvatar(
-              radius: 29,
-              backgroundColor: const Color(0xffe9dafa),
-              backgroundImage: avatar == null ? null : NetworkImage(avatar),
-              child: avatar == null
-                ? const Icon(Icons.person, color: NimzoStyle.primary)
-                : null),
-            title: Text(person.displayName ?? 'NIMZO user',
-              maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w800)),
-            subtitle: Text('ID: ' + person.nimzoId.toString()),
+        clipBehavior: Clip.antiAlias,
+        borderRadius: BorderRadius.circular(21),
+        child: profile.when(
+          loading: () => const ListTile(title: Text('Loading profile…')),
+          error: (_, __) => ListTile(
+            title: const Text('Profile unavailable'),
             trailing: IconButton(
-              tooltip: 'Message',
-              onPressed: () => context.push('/chat/$userId'),
-              icon: const Icon(Icons.chat_bubble_rounded,
-                color: NimzoStyle.primary)),
-          );
-        },
+              tooltip: 'Retry',
+              icon: const Icon(Icons.refresh),
+              onPressed: () => ref.invalidate(
+                profileProvider(widget.userId)),
+            ),
+          ),
+          data: (person) {
+            final avatarPath = person.avatarPath;
+            final avatar = avatarPath == null ? null
+                : ref.watch(sessionSupabaseProvider).client.storage
+                    .from('avatars').getPublicUrl(avatarPath);
+            final following = follow?.valueOrNull ?? false;
+            return ListTile(
+              key: ValueKey('friend-profile-${widget.userId}'),
+              minTileHeight: 92,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 13, vertical: 5),
+              onTap: () => context.push('/profile/${widget.userId}'),
+              leading: CircleAvatar(
+                radius: 28,
+                backgroundColor: const Color(0xffece0ff),
+                backgroundImage: avatar == null
+                    ? null : NetworkImage(avatar),
+                child: avatar == null
+                    ? const Icon(Icons.person_rounded,
+                        color: NimzoStyle.primary, size: 30)
+                    : null,
+              ),
+              title: Text(
+                person.displayName ?? 'NIMZO user',
+                maxLines: 1, overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Color(0xff2d233a),
+                  fontWeight: FontWeight.w800, fontSize: 16),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('ID: ${person.nimzoId}',
+                    maxLines: 1,
+                    style: const TextStyle(
+                      color: Color(0xff9788a9), fontSize: 12)),
+                  const SizedBox(height: 5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xfff2e8ff),
+                      borderRadius: BorderRadius.circular(8)),
+                    child: Text('Lv. ${person.wealthLevel}',
+                      style: const TextStyle(
+                        color: NimzoStyle.primary,
+                        fontSize: 10, fontWeight: FontWeight.w800)),
+                  ),
+                ],
+              ),
+              trailing: widget.tab == 0
+                  ? IconButton(
+                      tooltip: 'Message',
+                      onPressed: () =>
+                        context.push('/chat/${widget.userId}'),
+                      icon: const Icon(
+                        Icons.chat_bubble_rounded,
+                        color: NimzoStyle.primary),
+                    )
+                  : OutlinedButton(
+                      onPressed: working || follow?.isLoading == true
+                        || follow?.hasError == true
+                          ? null
+                          : () => toggleFollow(following),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: NimzoStyle.primary,
+                        side: const BorderSide(
+                          color: Color(0xffdfc7f4)),
+                        shape: const StadiumBorder()),
+                      child: Text(
+                        working ? 'Wait…'
+                          : follow?.hasError == true ? 'Retry'
+                          : following ? 'Following' : 'Follow',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800)),
+                    ),
+            );
+          },
+        ),
       ),
     );
   }
