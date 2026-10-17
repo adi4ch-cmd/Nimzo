@@ -54,7 +54,7 @@ class _FriendsState extends ConsumerState<TingleFriendsScreen> {
           padding: const EdgeInsets.fromLTRB(13, 0, 13, 26),
           children: [
             Container(
-              margin: const EdgeInsets.fromLTRB(-13, 0, -13, 0),
+              margin: EdgeInsets.zero,
               padding: const EdgeInsets.fromLTRB(13, 8, 13, 8),
               color: const Color(0xfff3f5ff),
               child: Row(children: [
