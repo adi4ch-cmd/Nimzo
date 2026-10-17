@@ -49,7 +49,7 @@ class TingleMeScreen extends ConsumerWidget {
       (title: 'Coin Trading', icon: Icons.wallet_rounded,
         color: Color(0xffa13ae5), route: '/wallet'),
       (title: 'Help', icon: Icons.support_agent_rounded,
-        color: Color(0xffffae36), route: '/info/Help'),
+        color: Color(0xffffae36), route: '/info/Help%20and%20feedback'),
       (title: 'Referral', icon: Icons.group_add_rounded,
         color: Color(0xfff64e99), route: '/info/Referral'),
       (title: 'About Us', icon: Icons.info_rounded,
