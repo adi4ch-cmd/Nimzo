@@ -21,6 +21,7 @@ import '../features/auth/presentation/verify_screen.dart';
 import '../features/discover/discover_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/profile/tingle_me_screen.dart';
+import '../features/profile/tingle_tasks_screen.dart';
 import '../features/games/game_screen.dart';
 import '../features/games/game_level_screen.dart';
 import '../features/store/store_screen.dart';
@@ -132,6 +133,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
+      GoRoute(path: '/task', builder: (_, __) => const TingleTasksScreen()),
       GoRoute(path: '/game-level', builder: (_, __) => const GameLevelScreen()),
       GoRoute(path: '/store', builder: (_, __) => const RoyalStoreScreen()),
       GoRoute(
