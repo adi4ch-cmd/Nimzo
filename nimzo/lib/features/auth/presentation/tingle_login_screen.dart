@@ -216,18 +216,22 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                         children: [
                           Expanded(
                             child: _SocialButton(
-                              icon: Icons.phone_android_rounded,
-                              text: 'Mobile',
-                              onPressed: () {
-                                if (!_terms) {
-                                  _notice('Please accept the terms first.');
-                                  return;
-                                }
-                                context.push('/phone-login');
-                              },
+                              icon: Icons.facebook,
+                              text: 'Facebook',
+                              onPressed: loading
+                                  ? null
+                                  : () {
+                                      if (!_terms) {
+                                        _notice('Please accept the terms first.');
+                                        return;
+                                      }
+                                      ref
+                                          .read(authControllerProvider.notifier)
+                                          .facebook();
+                                    },
                             ),
                           ),
-                          const SizedBox(width: 15),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: _SocialButton(
                               icon: Icons.g_mobiledata_rounded,
@@ -239,21 +243,13 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                                         _notice('Please accept the terms first.');
                                         return;
                                       }
-                                      ref.read(authControllerProvider.notifier)
+                                      ref
+                                          .read(authControllerProvider.notifier)
                                           .google();
                                     },
                             ),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 24),
-                      _PurpleButton(
-                        text: 'Quick Log In',
-                        leading: Icons.rocket_launch_outlined,
-                        onPressed: () => _notice(
-                          'Quick login is unavailable until persistent '
-                          'account linking has been verified.',
-                        ),
                       ),
                       const SizedBox(height: 26),
                       InkWell(
@@ -371,14 +367,15 @@ class _SocialButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             side: const BorderSide(color: Color(0xffe7e4f0)),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(40),
             ),
           ),
-          icon: Icon(icon, size: 28, color: NimzoStyle.primary),
+          icon: Icon(icon, size: 24, color: NimzoStyle.primary),
           label: Text(text,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
         ),
       );
 }
