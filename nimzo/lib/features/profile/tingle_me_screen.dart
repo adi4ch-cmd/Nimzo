@@ -84,6 +84,12 @@ class TingleMeScreen extends ConsumerWidget {
                       color: Color(0xff24243e)),
                   ),
                   IconButton(
+                    tooltip: 'Friends',
+                    onPressed: () => _go(context, '/friends'),
+                    icon: const Icon(Icons.people_alt_outlined,
+                      size: 25, color: Color(0xff29213d)),
+                  ),
+                  IconButton(
                     tooltip: 'Settings',
                     onPressed: () => _go(context, '/settings'),
                     icon: const Icon(Icons.hexagon_outlined, size: 27,
