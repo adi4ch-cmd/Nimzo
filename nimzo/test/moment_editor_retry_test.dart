@@ -123,11 +123,11 @@ void main() {
     // caption field on a phone-sized viewport. A photo control below the
     // fold is not a missing action; reach it by scrolling like a user.
     await tester.scrollUntilVisible(
-      find.text('Choose photo'),
+      find.byKey(const ValueKey('moment-photo-picker')),
       190,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.tap(find.text('Choose photo'));
+    await tester.tap(find.byKey(const ValueKey('moment-photo-picker')));
     await tester.pumpAndSettle();
     expect(find.text('Take a photo'), findsOneWidget);
     expect(find.text('Choose from gallery'), findsOneWidget);
@@ -142,16 +142,16 @@ void main() {
       190,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(find.text('Replace photo'), findsOneWidget);
+    expect(find.byTooltip('Replace photo'), findsOneWidget);
     await tester.tap(find.text('Remove photo'));
     await tester.pumpAndSettle();
     // Removing the photo changes the scroll extent: scroll back to the
     // picker before verifying the restored Choose photo action.
     await tester.scrollUntilVisible(
-      find.text('Choose photo'), -140,
+      find.byKey(const ValueKey('moment-photo-picker')), -140,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(find.text('Choose photo'), findsOneWidget);
+    expect(find.byTooltip('Choose photo'), findsOneWidget);
     expect(find.text('Remove photo'), findsNothing);
   });
 
