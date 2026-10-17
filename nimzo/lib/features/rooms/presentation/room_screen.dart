@@ -44,6 +44,7 @@ class _State extends ConsumerState<RoomScreen> {
   Timer? _voiceDropTimer;
   bool joining = true, joined = false, mic = false, leaving = false;
   bool _allowPop = false;
+  bool _exitPromptVisible = false;
   bool micBusy = false;
   bool chatBusy = false;
   String? failure;
@@ -140,8 +141,11 @@ class _State extends ConsumerState<RoomScreen> {
   /// Explicit header exit follows the reference confirmation design.
   /// A cancellation does not drop the Vivox connection or room membership.
   Future<void> _confirmRoomExit() async {
-    if (!mounted || leaving || _allowPop) return;
-    final confirmed = await showDialog<bool>(
+    if (!mounted || leaving || _allowPop || _exitPromptVisible) return;
+    _exitPromptVisible = true;
+    bool? confirmed;
+    try {
+      confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
       builder: (dialog) => AlertDialog(
@@ -172,6 +176,9 @@ class _State extends ConsumerState<RoomScreen> {
         ],
       ),
     );
+    } finally {
+      _exitPromptVisible = false;
+    }
     if (confirmed == true && mounted) await _exitRoom();
   }
 
