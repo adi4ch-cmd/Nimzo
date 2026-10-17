@@ -24,6 +24,22 @@ jobs:
           cache: true
       - name: Fetch packages
         run: flutter pub get
+      - name: Verify checked-in reference media
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          sample = [
+            'assets/reference/chest/0.jpg',
+            'assets/reference/game/0.jpg',
+            'assets/reference/fruit/0.jpg',
+            'assets/room_rocket/posters/rocket_stage_1.png',
+            'assets/gifts/free/rose.png',
+            'assets/nimzo_custom_gifts/kiss.svg',
+          ]
+          for item in sample:
+              path = Path(item)
+              print(f"ASSET_CHECK {item}: exists={path.is_file()} bytes={path.stat().st_size if path.is_file() else 0}")
+          PY
       - name: Static analysis
         run: flutter analyze --no-fatal-infos
       - name: Clone constraints
