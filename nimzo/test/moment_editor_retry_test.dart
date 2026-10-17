@@ -85,14 +85,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'New post');
-    // On a phone the reference topics appear before the publish action.
-    // Reach the genuine action by scrolling rather than assuming all list
-    // children are built and visible before interaction.
-    await tester.scrollUntilVisible(
-      find.text('Publish moment'), 140,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.tap(find.text('Publish moment'));
+    // The user can publish through the visible reference AppBar action
+    // even when the keyboard is open and the long draft scrolls below.
+    expect(find.byKey(const ValueKey('moment-top-post')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('moment-top-post')));
     await tester.pump();
     await tester.pumpWidget(const SizedBox());
     repo.pending.complete();
