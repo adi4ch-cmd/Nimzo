@@ -225,6 +225,74 @@ class _State extends ConsumerState<RoomScreen> {
     }
   }
 
+  /// Matches the reference empty-seat action sheet without inventing
+  /// moderation RPCs. Taking a seat keeps using the verified current RPC.
+  Future<void> _showOpenSeatActions(int seatNo) async {
+    if (!mounted || !joined) return;
+    final chosen = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.white,
+      barrierColor: const Color(0xaa080411),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(34)),
+      ),
+      builder: (sheet) => SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 13),
+            ListTile(
+              key: const ValueKey('room-seat-here'),
+              minTileHeight: 58,
+              title: const Center(child: Text('Seat Here',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+              onTap: () => Navigator.of(sheet).pop(true),
+            ),
+            const Divider(height: 1, color: Color(0xfff2f2f2)),
+            const ListTile(
+              key: ValueKey('room-seat-give'),
+              enabled: false,
+              minTileHeight: 58,
+              title: Center(child: Text('Give the Mic')),
+            ),
+            const Divider(height: 1, color: Color(0xfff2f2f2)),
+            const ListTile(
+              key: ValueKey('room-seat-lock'),
+              enabled: false,
+              minTileHeight: 58,
+              title: Center(child: Text('Lock the Mic')),
+            ),
+            const Divider(height: 1, color: Color(0xfff2f2f2)),
+            const ListTile(
+              key: ValueKey('room-seat-mute'),
+              enabled: false,
+              minTileHeight: 58,
+              title: Center(child: Text('Mute the Mic')),
+            ),
+            const SizedBox(height: 8),
+            const Divider(thickness: 7, height: 7,
+              color: Color(0xfff8f8fa)),
+            TextButton(
+              key: const ValueKey('room-seat-cancel'),
+              style: TextButton.styleFrom(
+                minimumSize: const Size.fromHeight(61),
+                foregroundColor: Colors.red,
+              ),
+              onPressed: () => Navigator.of(sheet).pop(false),
+              child: const Text('Cancel',
+                style: TextStyle(fontSize: 17,
+                  fontWeight: FontWeight.w800)),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (chosen == true && mounted && joined) {
+      await ref.read(roomRepositoryProvider).takeSeat(widget.roomId, seatNo);
+    }
+  }
+
   Widget _artButton(String group, VoidCallback onTap) => InkWell(
         onTap: onTap,
         child: Container(
@@ -512,14 +580,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                   ? null
                                                   : () => action(() async {
                                                         if (s.userId == null) {
-                                                          await ref
-                                                              .read(
-                                                                roomRepositoryProvider,
-                                                              )
-                                                              .takeSeat(
-                                                                widget.roomId,
-                                                                n,
-                                                              );
+                                                          await _showOpenSeatActions(n);
                                                         } else {
                                                           await showDialog<
                                                               void>(
