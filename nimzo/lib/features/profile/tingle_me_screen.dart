@@ -167,7 +167,7 @@ class TingleMeScreen extends ConsumerWidget {
                             if (i == 0) _go(context, '/cp');
                             if (i == 1) _go(context, '/levels');
                             if (i == 2) _go(context, '/info/Daily%20Rewards');
-                            if (i == 3) _go(context, '/info/Task');
+                            if (i == 3) _go(context, '/task');
                           },
                           child: Column(
                             children: [
