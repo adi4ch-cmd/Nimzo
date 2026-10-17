@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - feature/tingle-ui-rebuild-20261017
+  pull_request:
+    branches:
+      - feature/nimzo-ui-reset-20261017
   workflow_dispatch:
 
 permissions:
