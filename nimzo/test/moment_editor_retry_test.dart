@@ -196,6 +196,11 @@ void main() {
       child: const MaterialApp(home: CreateMomentScreen()),
     ));
     await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextButton>(
+        find.byKey(const ValueKey('moment-top-post'))).onPressed,
+      isNull, reason: 'An empty reference Post action is disabled',
+    );
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey('moment-topic-#Bookworm')), 140,
       scrollable: find.byType(Scrollable).first,
@@ -205,6 +210,11 @@ void main() {
     expect(
       tester.widget<TextField>(find.byType(TextField)).controller!.text,
       contains('#Bookworm'),
+    );
+    expect(
+      tester.widget<TextButton>(
+        find.byKey(const ValueKey('moment-top-post'))).onPressed,
+      isNotNull, reason: 'Typing a topic enables the real Post action',
     );
     await tester.ensureVisible(
       find.byKey(const ValueKey('moment-mention-entry')));
