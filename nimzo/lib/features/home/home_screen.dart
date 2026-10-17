@@ -39,6 +39,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String countryName = 'All';
   bool opening = false;
 
+  RoomCountrySelection? get selectedCountry =>
+      country == null ? null : (code: country!, name: countryName);
+
   void selectTab(int i) {
     if (i == 2) {
       context.push('/pk');
@@ -90,7 +93,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         (m) => m['followed'] ?? const <Room>[],
       );
     } else {
-      data = ref.watch(popularRoomsProvider(country));
+      data = ref.watch(popularRoomsProvider(selectedCountry));
     }
     if (country != null && tab != 0) {
       data = data.whenData(
@@ -104,7 +107,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: const Color(0xfff5f4ff),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(popularRoomsProvider(country));
+          ref.invalidate(popularRoomsProvider(selectedCountry));
           ref.invalidate(newRoomsProvider);
           ref.invalidate(myRoomsProvider);
           if (tab == 1) {
@@ -112,7 +115,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           } else if (tab == 3) {
             await ref.read(myRoomsProvider.future);
           } else {
-            await ref.read(popularRoomsProvider(country).future);
+            await ref.read(popularRoomsProvider(selectedCountry).future);
           }
         },
         child: CustomScrollView(
@@ -206,7 +209,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     const Text('Rooms could not be loaded.'),
                     TextButton(onPressed: () {
-                      ref.invalidate(popularRoomsProvider(country));
+                      ref.invalidate(popularRoomsProvider(selectedCountry));
                       ref.invalidate(myRoomsProvider);
                       ref.invalidate(newRoomsProvider);
                     }, child: const Text('Retry')),
