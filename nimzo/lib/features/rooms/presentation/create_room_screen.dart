@@ -84,7 +84,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           if (rules.isNotEmpty) changes['rules'] = rules;
           if (imageBytes != null) {
             final format = profileImageFormat(imageBytes!);
-            final path = '$' + "{uid}/$" + "{id}/room_$" + "{DateTime.now().millisecondsSinceEpoch}.$" + "{format.$1}";
+            final path = '${uid}/${id}/room_${DateTime.now().millisecondsSinceEpoch}.${format.$1}';
             await db.storage.from('room-images').uploadBinary(
               path, imageBytes!,
               fileOptions: FileOptions(
