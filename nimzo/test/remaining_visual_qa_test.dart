@@ -650,7 +650,17 @@ void main() {
           expect(find.byKey(const ValueKey('room-real-stats')), findsOneWidget);
         }
         if (entry.key == 'levels') {
-          expect(find.text('Tier colors'), findsOneWidget);
+          // The new reference layout shows an actual six-band ladder,
+          // not the retired 'Tier colors' header.
+          for (final label in const [
+            'Brown', 'Green', 'Blue', 'Pink', 'Red', 'Gold',
+          ]) {
+            expect(find.text(label), findsWidgets,
+              reason: 'The $label level band must remain visible');
+          }
+          for (var tab = 0; tab < 3; tab++) {
+            expect(find.byKey(ValueKey('level-tab-$tab')), findsOneWidget);
+          }
         }
       } else {
         await expectLater(
