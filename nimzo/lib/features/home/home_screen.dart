@@ -8,6 +8,13 @@ import '../../core/theme/app_theme.dart';
 import '../rooms/domain/room.dart';
 import '../rooms/presentation/room_controller.dart';
 
+/// Maintained for existing NIMZO room tests and 'my room' dependents.
+final ownedRoomPreviewProvider = FutureProvider<Room?>((ref) async {
+  final repo = ref.watch(roomRepositoryProvider);
+  final id = await repo.ownedRoomId();
+  return id == null ? null : repo.get(id);
+});
+
 /// Explore/New/Follow live-room screen derived from the supplied Tingle layout.
 /// Every card is backed by a real NIMZO room; no stock rooms or fake counts.
 class HomeScreen extends ConsumerStatefulWidget {
