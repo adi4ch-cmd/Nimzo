@@ -28,7 +28,6 @@ const roomToolNames = [
   'Calculator',
   'Vote',
   'Music',
-  'Video',
   'Clean',
 ];
 
@@ -56,7 +55,7 @@ Future<void> showPartyTools(BuildContext context, {String? roomId}) async {
                 onTap: () => Navigator.pop(context, i),
                 child: Column(
                   children: [
-                    ReferenceArtwork('tool', i, size: 48),
+                    ReferenceArtwork('tool', roomToolNames[i] == 'Clean' ? 12 : i, size: 48),
                     const SizedBox(height: 4),
                     Text(
                       roomToolNames[i],
@@ -184,8 +183,6 @@ class _ToolFormState extends State<RoomToolForm> {
           Text(
             tool == 'Vote'
                 ? 'Start a vote'
-                : tool == 'Video'
-                    ? 'Watch together'
                     : tool == 'Calculator'
                         ? 'Gift calculator'
                         : tool == 'Prize'
@@ -227,10 +224,6 @@ class _ToolFormState extends State<RoomToolForm> {
               decoration: InputDecoration(
                 hintText: 'Prize, for example 100K coins',
               ),
-            ),
-          if (tool == 'Video')
-            const TextField(
-              decoration: InputDecoration(hintText: 'Paste a video link'),
             ),
           if (tool == 'Vote')
             for (final label in [
@@ -294,7 +287,6 @@ class _ToolFormState extends State<RoomToolForm> {
                           'Broadcast': 'Send to room',
                           'Gathering': 'Announce',
                           'Prize': 'Draw a winner',
-                          'Video': 'Play for the room',
                           'Vote': 'Start vote',
                           'Wheel': 'Spin',
                           'Calculator': 'Clear',
