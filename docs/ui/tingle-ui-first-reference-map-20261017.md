@@ -81,3 +81,56 @@ visual state, transition and modal, not treated as an automatic source-code expo
   that the current reference matches.
 
 This is a UI work inventory, **not a finished-build certificate**.
+
+
+## UI-only continuation — latest checkpoint
+
+Backend and game logic are **explicitly out of scope**, including coin or
+diamond grants, membership activation, paid store purchases, microphone
+moderation RPCs and game settlement. No migrations were made in this batch.
+
+This source-only pass implemented these visible layouts while preserving the
+existing real actions wherever already supported:
+
+- Store `7ee2422`: My Store header, category tiles, responsive verified
+  recommendations and compact visual sizes.
+- VIP/SVIP `f99e1cd`: horizontally scrollable tiers 1–5, purple/green/pink
+  palettes, locally drawn ornate jewel banner, and six privilege cards.
+  Existing entitlement backend is read-only and shown as a verified/error
+  state; previews do **not** purchase or grant VIP.
+- CP Space `0a2a30b`: ornate pink-purple heart hero, unlabeled-inventory-free
+  day/hour/minute/second placeholders, couple avatar presentation, and Bind CP
+  button that scrolls/focuses the existing partner search.
+- Store category preview `8aff7d8` + `e141f37`: 3-column selectable original
+  artwork design gallery; selectable preview only, no fictitious prices,
+  owned states or checkout. `aa3fa84` preserves featured catalog on back.
+- Create Audio Room `7406620`: original layered mountain backdrop behind
+  existing safe camera/gallery, room-name/type and Go Live inputs.
+- Room Exit `8d133a6`: white rounded dialog, red exit emblem, pastel Keep
+  and Exit buttons, retaining voice-safe cancel behavior. Regression test
+  `fa0d8da`.
+- Room Music `6d51c83` + `635a75d`: reference bottom-sheet player on top
+  of the dimmed room with real local audio picker, seek, play/pause, skip and
+  volume controls. It **does not** broadcast music through Vivox.
+- Main Profile `cfd46c6`: quick navigation card/menu first, real account
+  identity and VIP/SVIP shortcuts kept below rather than crowding first fold.
+- Widget test `0f8818c`: category gallery tap and 320/390dp layout smoke
+  checks. VIP tests now scroll into below-the-fold privilege section
+  (`f416493`).
+
+Latest completed source-only CI before this checkpoint (SHA
+`cfd46c6`, run `39066511254`): Flutter static analysis, asset bundle,
+constraints, focused Friends/PK/OTP tests passed; 317 full-suite cases passed.
+Three legacy **golden snapshot suites** still fail (Treasure overlay, previous
+Home/game boards, remaining Catalog). They have deliberately not been updated
+to claim unreviewed pixel parity. A current on-device screenshot comparison
+is still needed, and proprietary 3D Tingle artwork has not been copied.
+No APK/AAB build or release was triggered.
+
+## Release gate still open
+
+UI routing and visible core surfaces are substantially implemented, but
+**pixel-perfect** recreation of every screenshot/icon/animation, native
+device QA, unapproved golden diffs, and all deep modals are not yet certified.
+Do not mark the full A–Z UI complete until verified. The user explicitly
+requested backend and games to remain deferred, not removed.
