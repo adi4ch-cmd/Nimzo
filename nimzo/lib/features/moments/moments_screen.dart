@@ -427,6 +427,45 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
     super.dispose();
   }
 
+  Future<void> _saveMoment() async {
+    if (!mounted || !ready || busy ||
+        (text.text.trim().isEmpty && image == null)) return;
+
+    // Capture providers and the container before the await. A successful
+    // network save must still refresh feeds if the editor gets dismissed.
+    final repository = ref.read(momentRepositoryProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
+    final id = widget.id;
+    final body = text.text.trim();
+    final photo = image;
+    String? authorId = ref.read(currentUserIdProvider);
+
+    setState(() => busy = true);
+    try {
+      if (id == null) {
+        await repository.create(text: body, imagePath: photo);
+      } else {
+        authorId ??= (await repository.get(id)).authorId;
+        await repository.update(id, text: body, imagePath: photo);
+        container.invalidate(momentDetailProvider(id));
+      }
+      container.invalidate(momentsFeedProvider);
+      if (authorId != null) {
+        container.invalidate(profileMomentsProvider(authorId));
+        container.invalidate(profileStatsProvider(authorId));
+      }
+      if (mounted) Navigator.of(context).maybePop();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Moment could not be saved.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: const Color(0xfff5f2ff),
@@ -437,6 +476,17 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
           title: Text(widget.id == null ? 'Post Moments' : 'Edit Moment',
             style: const TextStyle(
               fontSize: 20, fontWeight: FontWeight.w900)),
+          actions: [
+            TextButton(
+              key: const ValueKey('moment-top-post'),
+              onPressed: busy || !ready ? null : _saveMoment,
+              child: Text(widget.id == null ? 'Post' : 'Save',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: busy || !ready
+                    ? const Color(0xffaaa5bc) : NimzoStyle.primary)),
+            ),
+          ],
         ),
         body: loadFailed
             ? Center(
@@ -634,56 +684,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                           textStyle: const TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 18)),
-                        onPressed: busy
-                            ? null
-                            : () async {
-                                if (text.text.trim().isEmpty && image == null)
-                                  return;
-                                setState(() => busy = true);
-                                try {
-                                  final r = ref.read(momentRepositoryProvider);
-                                  final container = ProviderScope.containerOf(
-                                    context,
-                                    listen: false,
-                                  );
-                                  final id = widget.id;
-                                  final body = text.text.trim();
-                                  final photo = image;
-                                  final currentUserId =
-                                      ref.read(currentUserIdProvider);
-                                  String? authorId = currentUserId;
-                                  if (id == null) {
-                                    await r.create(
-                                        text: body, imagePath: photo);
-                                  } else {
-                                    authorId ??= (await r.get(id)).authorId;
-                                    await r.update(id,
-                                        text: body, imagePath: photo);
-                                    container
-                                        .invalidate(momentDetailProvider(id));
-                                  }
-                                  container.invalidate(momentsFeedProvider);
-                                  if (authorId != null) {
-                                    container.invalidate(
-                                      profileMomentsProvider(authorId),
-                                    );
-                                    container.invalidate(
-                                      profileStatsProvider(authorId),
-                                    );
-                                  }
-                                  if (context.mounted) Navigator.pop(context);
-                                } catch (_) {
-                                  if (context.mounted)
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content:
-                                            Text('Moment could not be saved.'),
-                                      ),
-                                    );
-                                } finally {
-                                  if (mounted) setState(() => busy = false);
-                                }
-                              },
+                        onPressed: busy ? null : _saveMoment,
                         child: Text(widget.id == null ? 'Publish moment' : 'Save changes'),
                       ),
                     ],
