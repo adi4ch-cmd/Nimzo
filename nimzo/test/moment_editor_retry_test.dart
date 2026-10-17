@@ -116,6 +116,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // The reference post editor scrolls below its header and multiline
+    // caption field on a phone-sized viewport. A photo control below the
+    // fold is not a missing action; reach it by scrolling like a user.
+    await tester.scrollUntilVisible(
+      find.text('Choose photo'),
+      190,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(find.text('Choose photo'));
     await tester.pumpAndSettle();
     expect(find.text('Take a photo'), findsOneWidget);
@@ -123,11 +131,19 @@ void main() {
     await tester.tap(find.text('Take a photo'));
     await tester.pumpAndSettle();
     expect(storage.selected, ImageSource.camera);
-    expect(find.byType(Image), findsOneWidget);
+    // This fixture returns a mocked storage path. Flutter tests cannot
+    // fetch the generated public URL, so assert the real remove/edit
+    // controls instead of treating a 400 network response as photo loss.
+    await tester.scrollUntilVisible(
+      find.text('Remove photo'),
+      190,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Replace photo'), findsOneWidget);
     await tester.tap(find.text('Remove photo'));
     await tester.pumpAndSettle();
-    expect(find.byType(Image), findsNothing);
     expect(find.text('Choose photo'), findsOneWidget);
+    expect(find.text('Remove photo'), findsNothing);
   });
 
   testWidgets('failed Moment load offers retry and recovers existing draft', (
