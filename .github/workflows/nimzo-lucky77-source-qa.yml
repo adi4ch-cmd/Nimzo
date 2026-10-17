@@ -1,0 +1,38 @@
+name: NIMZO Lucky 77 Source QA (No APK)
+
+on:
+  push:
+    branches:
+      - feature/lucky77-html5-room-20261018
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: nimzo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Install Flutter packages
+        run: flutter pub get
+      - name: Analyze Dart code
+        run: flutter analyze --no-fatal-infos
+      - name: Check Lucky 77, room host, and game contracts
+        run: |
+          flutter test --reporter expanded \
+            test/lucky77_html_contract_test.dart \
+            test/game_catalog_test.dart \
+            test/game_layout_test.dart \
+            test/room_game_host_test.dart \
+            test/grady_lion_practice_test.dart
+      # Intentionally no APK/AAB build, upload, or release.

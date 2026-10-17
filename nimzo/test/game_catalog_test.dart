@@ -6,7 +6,7 @@ void main() {
     'approved seven games are represented without fake playable engines',
     () {
       const approved = [
-        'Fruit Party Jackpot',
+        'Lucky 77',
         'Grady Lion',
         'Bigetar',
         'Slot',
@@ -30,6 +30,8 @@ void main() {
         .map((g) => g.slug)
         .toSet();
     expect(enabled, {'fruit_party', 'fruit_wheel'});
+    expect(NimzoRoomGames.approved.first.slug, 'lucky_77');
+    expect(NimzoRoomGames.canPlay('lucky_77'), isFalse);
     expect(NimzoRoomGames.canPlay('unknown'), isFalse);
     expect(
       NimzoRoomGames.all.map((g) => g.slug).toSet(),
