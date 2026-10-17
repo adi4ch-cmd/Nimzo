@@ -94,7 +94,7 @@ class _PkState extends ConsumerState<PkBattlesScreen> {
   }
 
   Future<void> challenge(Room from, Room to) async {
-    if (busy) return;
+    if (!mounted || busy) return;
     setState(()=>busy=true);
     try {
       await ref.read(sessionSupabaseProvider).client.rpc(
@@ -111,7 +111,7 @@ class _PkState extends ConsumerState<PkBattlesScreen> {
   }
 
   Future<void> respond(Map<String,dynamic> row,bool accept) async {
-    if(busy)return;
+    if(!mounted||busy)return;
     setState(()=>busy=true);
     try {
       await ref.read(sessionSupabaseProvider).client.rpc(
@@ -131,7 +131,13 @@ class _PkState extends ConsumerState<PkBattlesScreen> {
   }
 
   Future<void> chooseOpponent(Room own) async {
-    final publicRooms = await ref.read(popularRoomsProvider(null).future);
+    List<Room> publicRooms;
+    try {
+      publicRooms = await ref.read(popularRoomsProvider(null).future);
+    } catch (_) {
+      notify('Could not load public rooms. Refresh and retry.');
+      return;
+    }
     if (!mounted) return;
     final available = publicRooms.where((r)=>r.id != own.id &&
       r.status == 'open' && !r.isPrivate).toList();
@@ -171,7 +177,7 @@ class _PkState extends ConsumerState<PkBattlesScreen> {
         ),
       ),
     );
-    if(chosen!=null)await challenge(own,chosen);
+    if (mounted && chosen != null) await challenge(own, chosen);
   }
 
   @override
