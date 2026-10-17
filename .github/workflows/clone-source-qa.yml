@@ -48,6 +48,8 @@ jobs:
         run: flutter test test/clone_constraints_test.dart
       - name: 390px Friends reference interaction test
         run: flutter test test/tingle_friends_screen_test.dart
+      - name: Live PK score parsing checks
+        run: flutter test test/pk_battles_test.dart --reporter expanded
       - name: Full Flutter regression suite
         run: flutter test --reporter expanded
       - name: Render current golden candidates for visual review (not approval)
