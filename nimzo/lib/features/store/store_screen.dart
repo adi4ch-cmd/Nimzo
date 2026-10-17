@@ -19,6 +19,7 @@ class RoyalStoreScreen extends ConsumerStatefulWidget {
 
 class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
   late bool bag;
+  String category = 'Medals';
   @override
   void initState() {
     super.initState();
@@ -117,7 +118,22 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
   Widget build(BuildContext context) {
     final id = ref.watch(currentUserIdProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('NIMZO Royal Store')),
+      backgroundColor: const Color(0xfff6f5ff),
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: const Text('Store',
+          style: TextStyle(fontWeight: FontWeight.w900,
+            color: Color(0xff231638))),
+        actions: [
+          IconButton(
+            tooltip: 'Open Backpack',
+            onPressed: () => setState(() => bag = true),
+            icon: const Icon(Icons.inventory_2_outlined,
+              color: NimzoStyle.primary),
+          ),
+        ],
+      ),
       body: id == null
           ? const Center(child: Text('Sign in to use the Store.'))
           : RefreshIndicator(
@@ -149,7 +165,7 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                           children: [
                             const Expanded(
                               child: Text(
-                                'Royal Collection',
+                                'NIMZO Collection',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 21,
@@ -208,8 +224,61 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                     selected: {bag},
                     onSelectionChanged: (v) => setState(() => bag = v.first),
                   ),
-                  const SizedBox(height: 18),
-                  if (!bag)
+                  const SizedBox(height: 16),
+                  if (!bag) ...[
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(children: [
+                        for (final name in const [
+                          'Medals', 'Frames', 'Entry', 'Bubbles', 'Rides',
+                        ]) Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            label: Text(name),
+                            selected: category == name,
+                            onSelected: (_) =>
+                              setState(() => category = name),
+                            selectedColor: const Color(0xffeadbff),
+                            backgroundColor: Colors.white,
+                            labelStyle: TextStyle(
+                              color: category == name
+                                ? NimzoStyle.primary
+                                : const Color(0xff786e91),
+                              fontWeight: FontWeight.w700),
+                            side: BorderSide(
+                              color: category == name
+                                ? NimzoStyle.primary
+                                : NimzoStyle.line),
+                            showCheckmark: false,
+                          ),
+                        ),
+                      ]),
+                    ),
+                    const SizedBox(height: 15),
+                  ],
+                  if (!bag && category != 'Medals')
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(23),
+                      ),
+                      child: Column(children: [
+                        const Icon(Icons.inventory_2_outlined,
+                          size: 46, color: Color(0xffb0a0d4)),
+                        const SizedBox(height: 15),
+                        Text('No active $category catalog',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800, fontSize: 17)),
+                        const SizedBox(height: 9),
+                        const Text(
+                          'Only verified store items with real coin prices '
+                          'and purchase settlement can be shown here.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: NimzoStyle.muted)),
+                      ]),
+                    )
+                  else if (!bag)
                     ref.watch(royalCatalogProvider).when(
                           loading: () =>
                               const Center(child: CircularProgressIndicator()),
@@ -320,8 +389,8 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          gradient: NimzoStyle.softGradient,
-          borderRadius: BorderRadius.circular(18),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(color: NimzoStyle.line),
           boxShadow: const [
             BoxShadow(
