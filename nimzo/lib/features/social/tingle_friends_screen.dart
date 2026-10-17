@@ -59,27 +59,32 @@ class _FriendsState extends ConsumerState<TingleFriendsScreen> {
               color: const Color(0xfff3f5ff),
               child: Row(children: [
                 for (var i = 0; i < 3; i++)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: InkWell(
-                      key: ValueKey('friends-tab-$i'),
-                      onTap: () => setState(() => tab = i),
-                      borderRadius: BorderRadius.circular(32),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 160),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: tab == i ? NimzoStyle.primary
-                            : Colors.transparent,
-                          borderRadius: BorderRadius.circular(32)),
-                        child: Text(
-                          const ['Friends', 'Follow', 'Followers'][i],
-                          style: TextStyle(
-                            fontSize: 13, fontWeight: tab == i
-                              ? FontWeight.w800 : FontWeight.w500,
-                            color: tab == i ? Colors.white
-                              : const Color(0xff998eae)),
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: InkWell(
+                        key: ValueKey('friends-tab-$i'),
+                        onTap: () => setState(() => tab = i),
+                        borderRadius: BorderRadius.circular(32),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 160),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 8),
+                          decoration: BoxDecoration(
+                            color: tab == i ? NimzoStyle.primary
+                              : Colors.transparent,
+                            borderRadius: BorderRadius.circular(32)),
+                          child: Text(
+                            const ['Friends', 'Follow', 'Followers'][i],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12, fontWeight: tab == i
+                                ? FontWeight.w800 : FontWeight.w500,
+                              color: tab == i ? Colors.white
+                                : const Color(0xff998eae)),
+                          ),
                         ),
                       ),
                     ),
