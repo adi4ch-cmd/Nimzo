@@ -193,11 +193,13 @@ class _State extends ConsumerState<ProfileSetupScreen> {
       color: _muted, fontSize: 15, fontWeight: FontWeight.w500)),
   );
 
-  Widget _field(Widget child) => Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
+  // Give interactive ListTile/ExpansionTile children their own Material
+  // ancestor so ink, focus, and pressed states aren't hidden by a Container.
+  Widget _field(Widget child) => Material(
+    color: Colors.white,
+    shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(17),
-      border: Border.all(color: const Color(0xffeeebf6)),
+      side: const BorderSide(color: Color(0xffeeebf6)),
     ),
     clipBehavior: Clip.antiAlias,
     child: child,
