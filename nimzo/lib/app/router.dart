@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'auth_redirect.dart';
 import '../features/social/social_screens.dart';
+import '../features/social/tingle_friends_screen.dart';
 import '../features/discover/ranking_screen.dart';
 import '../features/profile/levels_screen.dart';
 import '../features/profile/profile_repository.dart';
@@ -133,6 +134,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+      GoRoute(path: '/friends', builder: (_, __) => const TingleFriendsScreen()),
       GoRoute(path: '/settings/blocked', builder: (_, __) => const TingleBlockedUsersScreen()),
       GoRoute(
           path: '/svip', builder: (_, __) => const TingleMembershipScreen(svip: true)),
