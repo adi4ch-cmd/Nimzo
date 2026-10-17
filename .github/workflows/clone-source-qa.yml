@@ -50,6 +50,22 @@ jobs:
         run: flutter test test/tingle_friends_screen_test.dart
       - name: Full Flutter regression suite
         run: flutter test --reporter expanded
+      - name: Render current golden candidates for visual review (not approval)
+        if: always()
+        continue-on-error: true
+        run: |
+          flutter test --update-goldens \
+            test/master_visual_preview_test.dart \
+            test/reference_preview_test.dart \
+            test/remaining_visual_qa_test.dart
+      - name: Upload proposed screenshots for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-golden-candidates-unapproved
+          path: nimzo/test/goldens/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Preserve golden screenshot comparisons
         if: always()
         uses: actions/upload-artifact@v4
