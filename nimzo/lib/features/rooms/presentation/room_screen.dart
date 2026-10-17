@@ -344,7 +344,7 @@ class _State extends ConsumerState<RoomScreen> {
                               ),
                               Text(
                                 'ID:${room.valueOrNull?.roomNo ?? '—'} · ${ref.watch(onlineCountProvider(widget.roomId)).valueOrNull?.toString() ?? '—'} online',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
                                   color: RoomTheme.byId(
                                     room.valueOrNull?.theme ?? 'nimzo_white',
