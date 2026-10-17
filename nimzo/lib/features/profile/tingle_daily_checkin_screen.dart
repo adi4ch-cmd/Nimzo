@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/supabase_provider.dart';
-import '../../core/theme/app_theme.dart';
 import '../wallet/wallet_screen.dart';
 
 class DailyAttendance {
