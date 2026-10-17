@@ -69,12 +69,12 @@ class TingleMeScreen extends ConsumerWidget {
         child: SafeArea(
           bottom: false,
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(24, 17, 24, 22),
+            padding: const EdgeInsets.fromLTRB(15, 12, 15, 22),
             children: [
               Row(
                 children: [
                   const Expanded(child: Text('My Profile',
-                    style: TextStyle(fontSize: 28,
+                    style: TextStyle(fontSize: 21,
                       fontWeight: FontWeight.w900, color: Colors.black))),
                   IconButton(
                     tooltip: 'My QR / profile',
@@ -154,13 +154,13 @@ class TingleMeScreen extends ConsumerWidget {
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(29),
+                  borderRadius: BorderRadius.circular(9),
                   boxShadow: const [
                     BoxShadow(color: Color(0x0d4f3b96),
                       blurRadius: 10, offset: Offset(0, 2)),
                   ],
                 ),
-                padding: const EdgeInsets.fromLTRB(13, 8, 13, 19),
+                padding: const EdgeInsets.fromLTRB(9, 7, 9, 10),
                 child: Column(children: [
                   Row(
                     children: [
@@ -176,12 +176,12 @@ class TingleMeScreen extends ConsumerWidget {
                             maxLines: 1, overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Color(0xff6f658a),
-                              fontSize: 12, fontWeight: FontWeight.w700,
+                              fontSize: 10, fontWeight: FontWeight.w700,
                             )),
                         )),
                     ],
                   ),
-                  const SizedBox(height: 13),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
                       for (final (i, item) in tiles.indexed)
@@ -195,7 +195,7 @@ class TingleMeScreen extends ConsumerWidget {
                           child: Column(
                             children: [
                               Container(
-                                width: 76, height: 76,
+                                width: 45, height: 45,
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [item.first, item.last],
@@ -204,16 +204,16 @@ class TingleMeScreen extends ConsumerWidget {
                                   ),
                                   border: Border.all(
                                     color: Colors.white, width: 3),
-                                  borderRadius: BorderRadius.circular(23),
+                                  borderRadius: BorderRadius.circular(12),
                                   boxShadow: const [
                                     BoxShadow(color: Color(0x226a47aa),
                                       blurRadius: 8, offset: Offset(0, 5)),
                                   ],
                                 ),
                                 child: Icon(item.icon,
-                                  color: Colors.white, size: 41),
+                                  color: Colors.white, size: 26),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 5),
                               Text(item.label,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -252,22 +252,22 @@ class TingleMeScreen extends ConsumerWidget {
                   ),
                 ),
               ]),
-              const SizedBox(height: 22),
+              const SizedBox(height: 13),
               Material(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(15),
                 clipBehavior: Clip.antiAlias,
                 child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 21, vertical: 9),
+                  horizontal: 12, vertical: 5),
                 child: Column(
                   children: [
                     for (final (i, item) in menu.indexed) ...[
                       ListTile(
-                        minTileHeight: 83,
+                        minTileHeight: 56,
                         contentPadding: EdgeInsets.zero,
                         leading: Container(
-                          width: 59, height: 59,
+                          width: 37, height: 37,
                           decoration: BoxDecoration(
                             color: item.color.withValues(alpha: .12),
                             borderRadius: BorderRadius.circular(16),
@@ -275,14 +275,14 @@ class TingleMeScreen extends ConsumerWidget {
                               color: item.color.withValues(alpha: .15)),
                           ),
                           alignment: Alignment.center,
-                          child: Icon(item.icon, color: item.color, size: 32),
+                          child: Icon(item.icon, color: item.color, size: 23),
                         ),
                         title: Text(item.title,
                           style: const TextStyle(
                             color: Color(0xff6f608c),
-                            fontSize: 18, fontWeight: FontWeight.w700)),
+                            fontSize: 14, fontWeight: FontWeight.w700)),
                         trailing: const Icon(Icons.chevron_right_rounded,
-                          color: Color(0xff796c96), size: 29),
+                          color: Color(0xff796c96), size: 20),
                         onTap: () => _go(context, item.route),
                       ),
                       if (i < menu.length - 1)
