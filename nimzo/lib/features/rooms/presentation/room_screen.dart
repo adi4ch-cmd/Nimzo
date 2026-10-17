@@ -495,13 +495,31 @@ class _State extends ConsumerState<RoomScreen> {
                                                 children: [
                                                   if (s.userId == null)
                                                     DashedCircle(
-                                                      child: ReferenceIcon(
-                                                        s.locked
-                                                            ? 'lock'
-                                                            : 'mic',
-                                                        size: 22,
-                                                        color:
-                                                            NimzoStyle.primary,
+                                                      child: Container(
+                                                        width: 46,
+                                                        height: 46,
+                                                        alignment:
+                                                            Alignment.center,
+                                                        decoration:
+                                                            const BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          gradient:
+                                                              LinearGradient(
+                                                            colors: [
+                                                              Color(0xffac96ea),
+                                                              Color(0xff8265d2),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        child: Icon(
+                                                          s.locked
+                                                              ? Icons.lock_outline_rounded
+                                                              : Icons.mic_none_rounded,
+                                                          size: 23,
+                                                          color:
+                                                              Colors.white,
+                                                        ),
                                                       ),
                                                     )
                                                   else
