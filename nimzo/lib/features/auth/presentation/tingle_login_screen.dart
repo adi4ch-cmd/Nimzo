@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -227,7 +228,6 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                         children: [
                           Expanded(
                             child: _SocialButton(
-                              icon: Icons.facebook,
                               text: 'Facebook',
                               onPressed: loading
                                   ? null
@@ -246,7 +246,6 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: _SocialButton(
-                              icon: Icons.g_mobiledata_rounded,
                               text: 'Google',
                               onPressed: loading
                                   ? null
@@ -405,10 +404,9 @@ class _PurpleButton extends StatelessWidget {
 }
 
 class _SocialButton extends StatelessWidget {
-  final IconData icon;
   final String text;
   final VoidCallback? onPressed;
-  const _SocialButton({required this.icon, required this.text, this.onPressed});
+  const _SocialButton({required this.text, this.onPressed});
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -424,7 +422,10 @@ class _SocialButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(40),
             ),
           ),
-          icon: Icon(icon, size: 24, color: NimzoStyle.primary),
+          icon: SvgPicture.asset(
+              'assets/reference/icons/${text.toLowerCase()}.svg',
+              width: 24,
+              height: 24),
           label: Text(text,
               style:
                   const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),

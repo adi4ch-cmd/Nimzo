@@ -8,7 +8,7 @@ FFmpeg produced 1,543 quarter-second samples and 541 scene-change candidates
 (`scene > 0.08`). These are reference samples, **not** a certification that an
 automated detector finds every tap or that four samples per second capture every
 animation frame. The original video remains the source for frame-accurate replay.
-Contact sheets spanning 00:00–06:24 were manually inspected. No proprietary
+Contact sheets spanning 00:00–06:20 and the final 06:23–06:25 frames were manually inspected. No proprietary
 Tingle graphics have been added to the app or committed as production assets.
 
 ## Reproduce
@@ -81,7 +81,7 @@ positions, skeletons and modal transitions are retained in the extraction.
 | 05:50–06:06 | Home/hub/Party, scroll | Same gradients/lists | Main screens and Party directory corrected; populated member/avatar and banner parity remains open |
 | 06:06–06:14 | Second populated voice room, entrance effect | Dark custom theme; framed avatars; room background animation | Existing themes/effects unchanged; licensed asset parity remains open |
 | 06:14–06:23 | Public room profile overlay, expand | Large photo; white stats/profile panel; follow and hello actions | Light cover treatment; supported real actions retained |
-| 06:23–06:25.627 | Dismiss/return and recording end | Final transient room/phone transition | Preserved in quarter-second and scene extraction |
+| 06:23–06:25.627 | Dismiss/return and recording end | Profile dismissal, ongoing room chat and animated seat effects | Preserved in quarter-second and scene extraction |
 
 ## Constraints and remaining acceptance work
 
