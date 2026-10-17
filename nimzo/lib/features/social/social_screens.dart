@@ -121,12 +121,26 @@ class CoupleRequestsScreen extends ConsumerStatefulWidget {
 
 class _CPState extends ConsumerState<CoupleRequestsScreen> {
   final query = TextEditingController();
+  final _searchFocus = FocusNode();
+  final _searchAnchor = GlobalKey();
   List<Profile> candidates = [];
+
+  Future<void> _openBindSearch() async {
+    if (busy) return;
+    final target = _searchAnchor.currentContext;
+    if (target != null) {
+      await Scrollable.ensureVisible(target,
+        duration: const Duration(milliseconds: 260),
+        alignment: .12);
+    }
+    if (mounted) _searchFocus.requestFocus();
+  }
   bool busy = false;
 
   @override
   void dispose() {
     query.dispose();
+    _searchFocus.dispose();
     super.dispose();
   }
 
@@ -222,17 +236,18 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
           padding: const EdgeInsets.fromLTRB(17, 17, 17, 35),
           children: [
             Container(
-              height: 252,
+              height: 505,
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xffae54f0), Color(0xffec77c2),
-                    Color(0xffffb3c8),
+                    Color(0xff290439), Color(0xff8713a3),
+                    Color(0xff310642),
                   ]),
-                borderRadius: BorderRadius.circular(27),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: const Color(0xffe9a2ce), width: 2),
               ),
               child: Stack(
                 children: [
@@ -250,44 +265,101 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
                       backgroundColor:
                         Colors.white.withValues(alpha: .09)),
                   ),
-                  const Positioned(
-                    top: 25, left: 0, right: 0,
-                    child: Text('SWEET CONNECTION',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xffffecf9),
-                        letterSpacing: 2,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800)),
-                  ),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const _CPAvatar(icon: Icons.person_outline_rounded),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 13),
-                          child: Icon(Icons.favorite_rounded,
-                            color: Colors.white, size: 49)),
-                        const _CPAvatar(icon: Icons.favorite_border),
-                      ],
-                    ),
-                  ),
                   Positioned(
-                    left: 15, right: 15, bottom: 24,
-                    child: Text(
-                      couple?.when(
-                        data: (p) => p == null
-                          ? 'Find your special NIMZO partner'
+                    top: 14, left: 14, right: 14,
+                    child: Column(children: [
+                      const Icon(Icons.favorite_rounded,
+                        color: Color(0xffff84d6), size: 102),
+                      const Text('CP SPACE',
+                        style: TextStyle(color: Color(0xffffcae7),
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2.5, fontSize: 24)),
+                      const SizedBox(height: 16),
+                      Row(children: [
+                        for (final label in const [
+                          'Days', 'Hours', 'Minutes', 'Seconds',
+                        ])
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 3),
+                              child: Container(
+                                height: 66,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: const Color(0x88340851),
+                                  border: Border.all(
+                                    color: const Color(0xffe380e7),
+                                    width: 1.5),
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text('—',
+                                      style: TextStyle(color: Colors.white,
+                                        fontSize: 21,
+                                        fontWeight: FontWeight.w900)),
+                                    Text(label, style: const TextStyle(
+                                      color: Color(0xffd7a9e3),
+                                      fontSize: 11)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                      ]),
+                      const SizedBox(height: 27),
+                      Container(
+                        height: 133,
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        decoration: BoxDecoration(
+                          color: const Color(0x663d034e),
+                          border: Border.all(
+                            color: const Color(0xfff9b8e6),
+                            width: 2.5),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            const _CPAvatar(icon: Icons.person_rounded),
+                            const Icon(Icons.favorite_rounded,
+                              color: Color(0xffff9cd6), size: 38),
+                            _CPAvatar(
+                              icon: couple?.valueOrNull == null
+                                ? Icons.question_mark_rounded
+                                : Icons.person_rounded),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: 218, height: 52,
+                        child: FilledButton(
+                          key: const ValueKey('cp-bind-visual-action'),
+                          onPressed: busy ? null : _openBindSearch,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xffff488d),
+                            foregroundColor: Colors.white,
+                            shape: const StadiumBorder(),
+                          ),
+                          child: const Text('Bind CP',
+                            style: TextStyle(fontSize: 21,
+                              fontWeight: FontWeight.w900)),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(couple?.when(
+                        data: (value) => value == null
+                          ? 'Choose your NIMZO partner'
                           : 'Your CP connection is active',
                         loading: () => 'Loading CP…',
                         error: (_, __) => 'CP status unavailable',
                       ) ?? 'Choose your CP',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 17, fontWeight: FontWeight.w800),
-                    ),
+                        style: const TextStyle(
+                          color: Color(0xffffd9f4),
+                          fontSize: 12, fontWeight: FontWeight.w600)),
+                    ]),
                   ),
                 ],
               ),
@@ -298,6 +370,7 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
               fontSize: 19, fontWeight: FontWeight.w900)),
             const SizedBox(height: 12),
             Container(
+              key: _searchAnchor,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(23),
@@ -307,6 +380,7 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
               child: Row(children: [
                 Expanded(child: TextField(
                   controller: query,
+                  focusNode: _searchFocus,
                   enabled: !busy,
                   textInputAction: TextInputAction.search,
                   decoration: const InputDecoration(
