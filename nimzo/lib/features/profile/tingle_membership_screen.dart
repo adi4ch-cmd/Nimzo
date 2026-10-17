@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/supabase_provider.dart';
-import '../../core/theme/app_theme.dart';
 
 /// Membership layouts modelled on the supplied three-color Tingle references.
 /// Data is read-only; retired purchase/grant RPCs must not be simulated.
@@ -75,7 +74,7 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
   @override
   Widget build(BuildContext context) {
     final current = ref.watch(membershipSnapshotProvider(widget.svip));
-    final colors = themes[(selected - 1).clamp(0, 2)];
+    final colors = themes[selected == 1 ? 0 : selected == 2 ? 1 : 2];
     final name = widget.svip ? 'SVIP' : 'VIP';
     return Scaffold(
       backgroundColor: const Color(0xff100e19),
@@ -196,7 +195,7 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
                     ?.toInt() == selected).firstOrNull;
                 final threshold = currentTier == null ? 'Unavailable'
                   : widget.svip
-                    ? 'Threshold: $${((currentTier['usd_cents'] as num).toInt() / 100).toStringAsFixed(0)}'
+                    ? 'Threshold: USD ${((currentTier['usd_cents'] as num).toInt() / 100).toStringAsFixed(0)}'
                     : 'Listed price: ${currentTier['coin_price']} coins';
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
