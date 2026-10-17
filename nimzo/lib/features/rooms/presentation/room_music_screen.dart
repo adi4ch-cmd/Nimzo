@@ -167,7 +167,7 @@ class _RoomMusicScreenState extends State<RoomMusicScreen> {
                 ),
                 const SizedBox(height: 5),
                 SizedBox(
-                  height: (tracks.length * 48.0).clamp(48.0, 144.0),
+                  height: (tracks.length * 48.0).clamp(48.0, 144.0).toDouble(),
                   child: ListView.builder(
                     key: const ValueKey('music-compact-track-list'),
                     padding: EdgeInsets.zero,
