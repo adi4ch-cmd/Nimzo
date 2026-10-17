@@ -649,7 +649,7 @@ class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
                     fontSize: 11, fontWeight: FontWeight.w700)),
               ]),
             ),
-          )),
+          ),
           const SizedBox(height: 25),
         ],
       ),
