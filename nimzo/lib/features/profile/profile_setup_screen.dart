@@ -20,6 +20,7 @@ class ProfileSetupScreen extends ConsumerStatefulWidget {
 
 class _State extends ConsumerState<ProfileSetupScreen> {
   final name = TextEditingController(),
+      username = TextEditingController(),
       bio = TextEditingController(),
       language = TextEditingController();
   final form = GlobalKey<FormState>();
@@ -40,6 +41,7 @@ class _State extends ConsumerState<ProfileSetupScreen> {
       final p = await ref.read(profileProvider(id).future);
       if (!mounted) return;
       name.text = p.displayName ?? '';
+      username.text = p.username ?? '';
       bio.text = p.bio ?? '';
       language.text = p.language ?? '';
       setState(() {
@@ -59,6 +61,7 @@ class _State extends ConsumerState<ProfileSetupScreen> {
   @override
   void dispose() {
     name.dispose();
+    username.dispose();
     bio.dispose();
     language.dispose();
     super.dispose();
@@ -143,6 +146,7 @@ class _State extends ConsumerState<ProfileSetupScreen> {
     try {
       await ref.read(profileRepositoryProvider).update(
             displayName: name.text,
+            username: username.text.trim().isEmpty ? null : username.text.trim(),
             bio: bio.text,
             countryCode: countryCode,
             countryName: countryName,
@@ -169,196 +173,304 @@ class _State extends ConsumerState<ProfileSetupScreen> {
     }
   }
 
-  static const _pageColor = NimzoStyle.surface;
 
-  Widget _section(Widget child) => Padding(
-        padding: const EdgeInsets.only(bottom: 18),
-        child: Material(
+  static const _purple = Color(0xffa145f4);
+  static const _muted = Color(0xff9485b6);
+
+  InputDecoration _input(String hint, {String? prefix}) => InputDecoration(
+    hintText: hint,
+    hintStyle: const TextStyle(color: Color(0xffaba4c6), fontSize: 17),
+    prefixText: prefix,
+    prefixStyle: const TextStyle(color: Colors.black,
+      fontSize: 17, fontWeight: FontWeight.w700),
+    border: InputBorder.none,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 23),
+    counterText: '',
+  );
+
+  Widget _label(String label) => Padding(
+    padding: const EdgeInsets.only(bottom: 9, top: 20),
+    child: Text(label, style: const TextStyle(
+      color: _muted, fontSize: 15, fontWeight: FontWeight.w500)),
+  );
+
+  Widget _field(Widget child) => Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(17),
+      border: Border.all(color: const Color(0xffeeebf6)),
+    ),
+    clipBehavior: Clip.antiAlias,
+    child: child,
+  );
+
+  Future<void> _selectBirthday() async {
+    final today = DateTime.now();
+    final selected = await showDatePicker(
+      context: context,
+      firstDate: DateTime(1900),
+      lastDate: today,
+      initialDate: dob ?? DateTime(today.year - 18, today.month, today.day),
+    );
+    if (selected != null) setState(() => dob = selected);
+  }
+
+  int? get age {
+    if (dob == null) return null;
+    final today = DateTime.now();
+    var years = today.year - dob!.year;
+    if (today.month < dob!.month ||
+        (today.month == dob!.month && today.day < dob!.day)) {
+      years--;
+    }
+    return years;
+  }
+
+  String get flag {
+    if (countryCode == null || countryCode!.length != 2) return '🌐';
+    return String.fromCharCodes(countryCode!.toUpperCase()
+        .codeUnits.map((code) => code + 127397));
+  }
+
+  Widget _genderTile(String value, IconData icon, Color shade) => Expanded(
+    child: InkWell(
+      onTap: busy ? null : () => setState(() => gender = value),
+      child: Container(
+        height: 74,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(23),
-          clipBehavior: Clip.antiAlias,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-            child: child,
-          ),
+          borderRadius: BorderRadius.circular(19),
+          border: Border.all(color: const Color(0xffebe8f4)),
         ),
-      );
-
-  Widget _line() => const Divider(height: 1, color: NimzoStyle.line);
-
-  InputDecoration _fieldDecoration(String label) => InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-          color: NimzoStyle.ink, fontWeight: FontWeight.w700,
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: shade.withValues(alpha: .15),
+              radius: 20,
+              child: Icon(icon, color: shade),
+            ),
+            const SizedBox(width: 9),
+            Expanded(child: Text(value, style: const TextStyle(
+              fontSize: 16, color: Colors.black,
+              fontWeight: FontWeight.w700))),
+            Icon(
+              gender == value
+                ? Icons.radio_button_checked
+                : Icons.radio_button_off,
+              color: _purple, size: 22,
+            ),
+          ],
         ),
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        contentPadding: const EdgeInsets.symmetric(vertical: 13),
-        counterText: '',
-      );
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     final id = ref.watch(currentUserIdProvider);
     final storedAvatar = avatar ?? existingAvatar;
-    final avatarUrl = storedAvatar == null
-        ? null
-        : ref.read(supabaseProvider).storage.from('avatars')
-            .getPublicUrl(storedAvatar);
+    final avatarUrl = storedAvatar == null ? null
+      : ref.watch(supabaseProvider).storage
+          .from('avatars').getPublicUrl(storedAvatar);
     return Scaffold(
-      backgroundColor: _pageColor,
+      backgroundColor: const Color(0xfff0eeff),
       appBar: AppBar(
-        title: Text(widget.edit ? 'Modify Profile' : 'Set up your profile',
-          style: const TextStyle(
-            fontSize: 20, fontWeight: FontWeight.w800,
-          )),
+        title: const Text('Profile Details', style: TextStyle(
+          fontWeight: FontWeight.w800, color: Colors.black)),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: NimzoStyle.ink,
+        backgroundColor: const Color(0xffcdccff),
+        foregroundColor: Colors.black,
+        elevation: 0,
       ),
-      body: failure != null
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xffd0ceff), Color(0xffeae9ff),
+              Color(0xfff7f6ff)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: failure != null
           ? DataFailure(message: failure!, onRetry: load)
           : !loaded
-              ? const Center(child: CircularProgressIndicator())
-              : Form(
-                  key: form,
-                  child: ListView(
-                    key: const ValueKey('modify-profile-clean-list'),
-                    padding: const EdgeInsets.fromLTRB(16, 22, 16, 36),
-                    children: [
-                      _section(Column(
-                        children: [
-                          ListTile(
-                            key: const ValueKey('modify-avatar'),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 2),
-                            title: const Text('Avatar',
-                              style: TextStyle(fontSize: 17,
-                                fontWeight: FontWeight.w800)),
-                            trailing: Row(mainAxisSize: MainAxisSize.min,
-                              children: [
-                                CircleAvatar(
-                                  radius: 38,
-                                  backgroundColor: const Color(0xffede4ff),
-                                  backgroundImage: avatarUrl == null
-                                      ? null : NetworkImage(avatarUrl),
-                                  child: avatarUrl == null
-                                      ? const Icon(Icons.person,
-                                        color: NimzoStyle.primary, size: 32)
-                                      : null,
-                                ),
-                                const SizedBox(width: 10),
-                                const Icon(Icons.chevron_right,
-                                  color: NimzoStyle.muted),
-                              ],
-                            ),
-                            onTap: busy ? null : () => photo(false),
+            ? const Center(child: CircularProgressIndicator())
+            : Form(
+                key: form,
+                child: ListView(
+                  key: const ValueKey('modify-profile-clean-list'),
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 30),
+                  children: [
+                    Center(
+                      child: InkWell(
+                        key: const ValueKey('modify-avatar'),
+                        onTap: busy ? null : () => photo(false),
+                        borderRadius: BorderRadius.circular(100),
+                        child: Stack(children: [
+                          CircleAvatar(
+                            radius: 78,
+                            backgroundColor: Colors.white,
+                            backgroundImage: avatarUrl == null
+                              ? null : NetworkImage(avatarUrl),
+                            child: avatarUrl == null
+                              ? const Icon(Icons.person, size: 70,
+                                  color: _purple) : null,
                           ),
-                          _line(),
-                          ListTile(
-                            title: const Text('Cover photo',
-                              style: TextStyle(fontWeight: FontWeight.w700)),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: busy ? null : () => photo(true),
-                            subtitle: cover == null
-                                ? null : const Text('New cover selected'),
-                          ),
-                        ],
-                      )),
-                      _section(Column(
-                        children: [
-                          TextFormField(
-                            key: const ValueKey('modify-nickname'),
-                            controller: name,
-                            maxLength: 30,
-                            decoration: _fieldDecoration('Nickname'),
-                            validator: (s) => (s?.trim().length ?? 0) >= 2
-                                ? null : 'Name is too short',
-                          ),
-                          _line(),
-                          DropdownButtonFormField<String>(
-                            key: const ValueKey('modify-gender'),
-                            initialValue:
-                                ['Male', 'Female', 'Other'].contains(gender)
-                                    ? gender : null,
-                            decoration: _fieldDecoration('Gender'),
-                            items: [
-                              for (final g in ['Male', 'Female', 'Other'])
-                                DropdownMenuItem(value: g, child: Text(g)),
-                            ],
-                            onChanged: (v) => setState(() => gender = v),
-                          ),
-                          _line(),
-                          ListTile(
-                            key: const ValueKey('modify-birthday'),
-                            contentPadding: EdgeInsets.zero,
-                            title: const Text('Birthday',
-                              style: TextStyle(fontWeight: FontWeight.w700)),
-                            trailing: Text(
-                              dob?.toIso8601String().split('T').first
-                                  ?? 'Choose date',
-                              style: const TextStyle(color: NimzoStyle.muted),
-                            ),
-                            onTap: () async {
-                              final date = await showDatePicker(
-                                context: context,
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime.now(),
-                                initialDate: dob ?? DateTime(2000),
-                              );
-                              if (date != null) setState(() => dob = date);
-                            },
-                          ),
-                          _line(),
-                          ListTile(
-                            key: const ValueKey('modify-country'),
-                            contentPadding: EdgeInsets.zero,
-                            title: const Text('Country',
-                              style: TextStyle(fontWeight: FontWeight.w700)),
-                            trailing: SizedBox(width: 125, child: Text(
-                              countryName ?? 'Choose country',
-                              textAlign: TextAlign.end,
-                              maxLines: 1, overflow: TextOverflow.ellipsis)),
-                            onTap: () => showCountryPicker(
-                              context: context,
-                              onSelect: (c) => setState(() {
-                                countryCode = c.countryCode;
-                                countryName = c.name;
-                              }),
-                            ),
-                          ),
-                          _line(),
-                          TextField(
-                            controller: language,
-                            decoration: _fieldDecoration('Language'),
-                          ),
-                          _line(),
-                          TextFormField(
-                            key: const ValueKey('modify-signature'),
-                            controller: bio,
-                            maxLength: 300,
-                            maxLines: 2,
-                            decoration:
-                                _fieldDecoration('Personalized Signature'),
-                          ),
-                        ],
-                      )),
-                      const SizedBox(height: 8),
-                      FilledButton(
-                        key: const ValueKey('modify-profile-save'),
-                        onPressed: busy || id == null ? null : save,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: NimzoStyle.primary,
-                          minimumSize: const Size.fromHeight(52),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16)),
-                        ),
-                        child: Text(busy ? 'Saving…' : 'Save'),
+                          Positioned(right: 1, bottom: 4, child: Container(
+                            height: 48, width: 48,
+                            decoration: BoxDecoration(
+                              color: _purple, shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white, width: 3)),
+                            child: const Icon(Icons.camera_alt_rounded,
+                              color: Colors.white, size: 25),
+                          )),
+                        ]),
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 18),
+                    _label('Enter your name'),
+                    _field(TextFormField(
+                      key: const ValueKey('modify-nickname'),
+                      controller: name,
+                      maxLength: 30,
+                      enabled: !busy,
+                      decoration: _input('Enter your name'),
+                      validator: (v) => (v?.trim().length ?? 0) >= 2
+                        ? null : 'Please enter a valid name',
+                    )),
+                    _label('Enter user name'),
+                    _field(TextFormField(
+                      key: const ValueKey('profile-username'),
+                      controller: username,
+                      maxLength: 32,
+                      enabled: !busy,
+                      decoration: _input('Enter your username', prefix: '@'),
+                      validator: (v) {
+                        final value = (v ?? '').trim().replaceFirst('@', '');
+                        if (value.isEmpty) return null;
+                        return RegExp(r'^[a-zA-Z0-9_.]{2,32}$').hasMatch(value)
+                          ? null : '2-32 letters, numbers, _ or .';
+                      },
+                    )),
+                    _label('Enter age'),
+                    _field(ListTile(
+                      key: const ValueKey('modify-birthday'),
+                      minTileHeight: 76,
+                      title: Text(age == null
+                        ? 'Choose birth date' : age.toString(),
+                        style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w600,
+                          color: age == null ? _muted : Colors.black)),
+                      subtitle: dob == null ? null
+                        : Text(dob!.toIso8601String().split('T').first,
+                          style: const TextStyle(
+                            fontSize: 11, color: _muted)),
+                      trailing: const Icon(Icons.calendar_today_outlined,
+                        color: _muted),
+                      onTap: busy ? null : _selectBirthday,
+                    )),
+                    _label('Referral Code'),
+                    _field(Row(children: [
+                      Expanded(child: TextField(
+                        enabled: false,
+                        decoration: _input('Referral codes unavailable'),
+                      )),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: FilledButton(
+                          onPressed: null,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: _purple,
+                            minimumSize: const Size(90, 47),
+                          ),
+                          child: const Text('Apply'),
+                        ),
+                      ),
+                    ])),
+                    _label('Country'),
+                    _field(ListTile(
+                      key: const ValueKey('modify-country'),
+                      minTileHeight: 75,
+                      leading: Text(flag,
+                        style: const TextStyle(fontSize: 27)),
+                      title: Text(countryName ?? 'Select country',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 17)),
+                      trailing: const Icon(Icons.expand_more,
+                        color: _muted),
+                      onTap: busy ? null : () => showCountryPicker(
+                        context: context,
+                        showPhoneCode: false,
+                        onSelect: (selected) => setState(() {
+                          countryCode = selected.countryCode;
+                          countryName = selected.name;
+                        }),
+                      ),
+                    )),
+                    _label('Select gender'),
+                    Row(children: [
+                      _genderTile('Male', Icons.face_rounded,
+                        const Color(0xffef8c35)),
+                      const SizedBox(width: 13),
+                      _genderTile('Female', Icons.face_3_rounded,
+                        const Color(0xfff14d9c)),
+                    ]),
+                    if (gender == 'Other')
+                      TextButton(
+                        onPressed: busy ? null
+                          : () => setState(() => gender = null),
+                        child: const Text('Other selected · Change selection'),
+                      ),
+                    const SizedBox(height: 18),
+                    _field(ExpansionTile(
+                      title: const Text('More profile details',
+                        style: TextStyle(fontWeight: FontWeight.w700)),
+                      childrenPadding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 9),
+                      children: [
+                        ListTile(
+                          title: const Text('Cover photo'),
+                          subtitle: Text(cover == null
+                            ? 'Choose from camera or gallery'
+                            : 'New cover selected'),
+                          trailing: const Icon(Icons.photo_library_outlined),
+                          onTap: busy ? null : () => photo(true),
+                        ),
+                        TextField(
+                          controller: language,
+                          enabled: !busy,
+                          decoration: const InputDecoration(
+                            labelText: 'Language'),
+                        ),
+                        TextFormField(
+                          key: const ValueKey('modify-signature'),
+                          controller: bio,
+                          enabled: !busy,
+                          maxLength: 300, maxLines: 2,
+                          decoration: const InputDecoration(
+                            labelText: 'About / Bio'),
+                        ),
+                      ],
+                    )),
+                    const SizedBox(height: 25),
+                    FilledButton(
+                      key: const ValueKey('modify-profile-save'),
+                      onPressed: busy || id == null ? null : save,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: _purple,
+                        minimumSize: const Size.fromHeight(76),
+                        shape: const StadiumBorder(),
+                      ),
+                      child: Text(busy ? 'Saving…' : 'Save Changes',
+                        style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w800)),
+                    ),
+                  ],
                 ),
+              ),
+      ),
     );
   }
 }
