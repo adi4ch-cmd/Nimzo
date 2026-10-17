@@ -222,6 +222,30 @@ class TingleMeScreen extends ConsumerWidget {
                   ),
                 ]),
               ),
+              const SizedBox(height: 16),
+              Row(children: [
+                Expanded(
+                  child: _MembershipShortcut(
+                    title: 'VIP',
+                    subtitle: 'Member collection',
+                    icon: Icons.workspace_premium_rounded,
+                    start: const Color(0xff1d133e),
+                    end: const Color(0xff8c44bc),
+                    onTap: () => _go(context, '/vip'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _MembershipShortcut(
+                    title: 'SVIP',
+                    subtitle: 'Luxury tiers',
+                    icon: Icons.diamond_rounded,
+                    start: const Color(0xff46143c),
+                    end: const Color(0xffcf3b86),
+                    onTap: () => _go(context, '/svip'),
+                  ),
+                ),
+              ]),
               const SizedBox(height: 22),
               Container(
                 decoration: BoxDecoration(
@@ -268,4 +292,44 @@ class TingleMeScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _MembershipShortcut extends StatelessWidget {
+  final String title, subtitle;
+  final IconData icon;
+  final Color start, end;
+  final VoidCallback onTap;
+  const _MembershipShortcut({
+    required this.title, required this.subtitle, required this.icon,
+    required this.start, required this.end, required this.onTap,
+  });
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(22),
+    child: Container(
+      height: 93,
+      padding: const EdgeInsets.symmetric(horizontal: 13),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [start, end]),
+        borderRadius: BorderRadius.circular(22)),
+      child: Row(children: [
+        Icon(icon, color: const Color(0xffffd69a), size: 30),
+        const SizedBox(width: 9),
+        Expanded(child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(
+              color: Colors.white, fontSize: 18,
+              fontWeight: FontWeight.w900)),
+            Text(subtitle,
+              maxLines: 1, overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: Colors.white70,
+                fontSize: 11)),
+          ],
+        )),
+      ]),
+    ),
+  );
 }
