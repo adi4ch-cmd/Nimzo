@@ -25,7 +25,7 @@ class TingleMeScreen extends ConsumerWidget {
       (label: 'Ranking', route: '/ranking'),
       (label: 'My Store', route: '/store'),
       (label: 'Backpack', route: '/store?bag=1'),
-      (label: 'Family', route: '/social/following/' + (id ?? '')),
+      (label: 'Family', route: '/info/Family'),
     ];
     const tiles = <({String label, IconData icon, Color first, Color last})>[
       (label: 'CP Space', icon: Icons.public_rounded,
@@ -118,10 +118,27 @@ class TingleMeScreen extends ConsumerWidget {
                             Text('ID: ' + (p?.nimzoId.toString() ?? '…'),
                               style: const TextStyle(
                                 color: Color(0xff6e638a), fontSize: 12)),
+                            const SizedBox(height: 4),
+                            if (p != null) Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xffeee6fc),
+                                borderRadius: BorderRadius.circular(9)),
+                              child: Text('Lv. ' + p.wealthLevel.toString(),
+                                style: const TextStyle(
+                                  color: NimzoStyle.primary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700)),
+                            ),
                           ],
                         )),
-                        const Icon(Icons.chevron_right,
-                          color: Color(0xff8579a7)),
+                        IconButton(
+                          tooltip: 'Edit profile',
+                          onPressed: () => _go(context, '/edit-profile'),
+                          icon: const Icon(Icons.edit_outlined,
+                            color: Color(0xff8579a7)),
+                        ),
                       ],
                     ),
                   ),
