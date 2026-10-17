@@ -118,13 +118,14 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
   Widget build(BuildContext context) {
     final id = ref.watch(currentUserIdProvider);
     return Scaffold(
-      backgroundColor: const Color(0xfff6f5ff),
+      backgroundColor: const Color(0xffebeaff),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.white,
-        title: const Text('Store',
+        backgroundColor: const Color(0xffb4b7ff),
+        foregroundColor: Colors.white,
+        title: const Text('My Store',
           style: TextStyle(fontWeight: FontWeight.w900,
-            color: Color(0xff231638))),
+            color: Colors.white)),
         actions: [
           IconButton(
             tooltip: 'Open Backpack',
@@ -143,13 +144,13 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                 await ref.read(royalCatalogProvider.future);
               },
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(13, 14, 13, 24),
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(18),
+                    padding: const EdgeInsets.all(13),
                     decoration: BoxDecoration(
-                      gradient: NimzoStyle.heroGradient,
-                      borderRadius: BorderRadius.circular(20),
+                      gradient: const LinearGradient(colors: [Color(0xff817cde), Color(0xffb5a2ef)]),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: const [
                         BoxShadow(
                           color: Color(0x248b3dff),
@@ -168,7 +169,7 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                                 'NIMZO Collection',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 21,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
@@ -207,7 +208,7 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   SegmentedButton<bool>(
                     segments: const [
                       ButtonSegment(
@@ -224,7 +225,7 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                     selected: {bag},
                     onSelectionChanged: (v) => setState(() => bag = v.first),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   if (!bag) ...[
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -233,13 +234,13 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                         for (final c in const <({
                           String value, String label, IconData icon, Color color
                         })>[
-                          (value: 'Medals', label: 'Medals',
+                          (value: 'Medals', label: 'Featured',
                             icon: Icons.workspace_premium_rounded,
                             color: Color(0xffef9b26)),
                           (value: 'Frames', label: 'Avatar Frame',
                             icon: Icons.face_retouching_natural_rounded,
                             color: Color(0xffaa47e3)),
-                          (value: 'Entry', label: 'Entry',
+                          (value: 'Entry', label: 'Party Theme',
                             icon: Icons.auto_awesome_rounded,
                             color: Color(0xfff1a522)),
                           (value: 'Bubbles', label: 'Chat Bubble',
@@ -258,17 +259,17 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                               child: Column(children: [
                                 AnimatedContainer(
                                   duration: const Duration(milliseconds: 160),
-                                  width: 57, height: 56,
+                                  width: 60, height: 62,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.circular(14),
+                                    borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
                                       color: category == c.value
                                         ? NimzoStyle.primary
                                         : const Color(0xfff1e9fe),
                                       width: category == c.value ? 2 : 1)),
                                   child: Icon(c.icon,
-                                    color: c.color, size: 31),
+                                    color: c.color, size: 32),
                                 ),
                                 const SizedBox(height: 5),
                                 SizedBox(
@@ -289,7 +290,11 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                           ),
                       ]),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
+                    const Text('Hot recommendation',
+                      style: TextStyle(fontSize: 21, fontWeight: FontWeight.w900,
+                        color: Color(0xff18141f))),
+                    const SizedBox(height: 13),
                   ],
                   if (!bag && category != 'Medals')
                     Container(
