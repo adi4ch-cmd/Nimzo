@@ -22,6 +22,13 @@ jobs:
         working-directory: nimzo
     steps:
       - uses: actions/checkout@v4
+      - name: Refuse premature APK builds
+        run: |
+          if [ ! -f CLONE_RELEASE_READY ]; then
+            echo "::error::NIMZO full Tingle-reference clone has not passed its release checklist."
+            echo "::error::Keep 10 microphones, finish reference screens and full regression/device QA first."
+            exit 1
+          fi
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -84,6 +91,8 @@ jobs:
       - name: Run Flutter tests
         continue-on-error: true # legacy asset/golden/reset tests currently fail; keep APK available for device QA
         run: flutter test
+      - name: Verify full Flutter test suite
+        run: flutter test --reporter expanded
       - name: Build test APK
         run: flutter build apk --debug
       - name: Upload APK for device testing
