@@ -59,7 +59,7 @@ class SettingsScreen extends ConsumerWidget {
             fontWeight: FontWeight.w800)),
       ),
       body: ListView(children: [
-        const SizedBox(height: 22),
+        const SizedBox(height: 12),
         Material(color: Colors.white, child: Column(children: [
           _SettingRow(
             title: 'Notify Me',
@@ -107,7 +107,7 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => context.push('/info/Terms Of Use'),
           ),
         ])),
-        const SizedBox(height: 22),
+        const SizedBox(height: 12),
         Material(color: Colors.white, child: Column(children: [
           _SettingRow(
             title: 'Logout',
@@ -143,10 +143,10 @@ class _SettingRow extends StatelessWidget {
     Material(
       color: Colors.white,
       child: ListTile(
-      minTileHeight: 67,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+      minTileHeight: 49,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 17),
       title: Text(title,
-        style: TextStyle(fontSize: 16, color: titleColor,
+        style: TextStyle(fontSize: 14, color: titleColor,
           fontWeight: FontWeight.w500)),
       trailing: trailing ?? const Icon(Icons.chevron_right,
         color: Color(0xffd0cddb)),
@@ -154,7 +154,7 @@ class _SettingRow extends StatelessWidget {
     ),
     ),
     const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: 17),
       child: Divider(height: 1, color: Color(0xffeeeeee)),
     ),
   ]);
