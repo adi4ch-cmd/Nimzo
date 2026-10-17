@@ -234,27 +234,43 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                         for (final c in const <({
                           String value, String label, IconData icon, Color color
                         })>[
+                          (value: 'Frames', label: 'Avatar Frame',
+                            icon: Icons.filter_frames_rounded,
+                            color: Color(0xffa546e7)),
+                          (value: 'Entry', label: 'Party Theme',
+                            icon: Icons.palette_rounded,
+                            color: Color(0xffab32e2)),
+                          (value: 'Rides', label: 'Rides',
+                            icon: Icons.directions_car_rounded,
+                            color: Color(0xfff4a20c)),
+                          (value: 'Bubbles', label: 'Chat Bubble',
+                            icon: Icons.chat_bubble_rounded,
+                            color: Color(0xff12adf3)),
+                          (value: 'LiveFrames', label: 'Live Frame',
+                            icon: Icons.crop_square_rounded,
+                            color: Color(0xfff05eaa)),
                           (value: 'Medals', label: 'Featured',
                             icon: Icons.workspace_premium_rounded,
                             color: Color(0xffef9b26)),
-                          (value: 'Frames', label: 'Avatar Frame',
-                            icon: Icons.face_retouching_natural_rounded,
-                            color: Color(0xffaa47e3)),
-                          (value: 'Entry', label: 'Party Theme',
-                            icon: Icons.auto_awesome_rounded,
-                            color: Color(0xfff1a522)),
-                          (value: 'Bubbles', label: 'Chat Bubble',
-                            icon: Icons.chat_bubble_rounded,
-                            color: Color(0xff15a3e9)),
-                          (value: 'Rides', label: 'Rides',
-                            icon: Icons.directions_car_rounded,
-                            color: Color(0xffefa20d)),
                         ])
                           Padding(
                             padding: const EdgeInsets.only(right: 12),
                             child: InkWell(
                               key: ValueKey('store-category-${c.value}'),
-                              onTap: () => setState(() => category = c.value),
+                              onTap: () {
+                                setState(() => category = c.value);
+                                if (c.value != 'Medals') {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => StoreCategoryPreview(
+                                        category: c.label,
+                                        icon: c.icon,
+                                        accent: c.color,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                               borderRadius: BorderRadius.circular(15),
                               child: Column(children: [
                                 AnimatedContainer(
@@ -468,4 +484,175 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
           ],
         ),
       );
+}
+
+/// UI-only collection preview for product categories whose server catalog
+/// is not yet verified. No prices, fake ownership, charges, or checkout.
+/// The supplied screenshot establishes layout, not saleable inventory.
+class StoreCategoryPreview extends StatefulWidget {
+  final String category;
+  final IconData icon;
+  final Color accent;
+  const StoreCategoryPreview({
+    super.key, required this.category, required this.icon,
+    required this.accent,
+  });
+
+  @override
+  State<StoreCategoryPreview> createState() => _StoreCategoryPreviewState();
+}
+
+class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
+  int selected = 0;
+  static const styles = <({String name, IconData icon})>[
+    (name: 'Golden Stars', icon: Icons.stars_rounded),
+    (name: 'Kiss Me', icon: Icons.favorite_outline_rounded),
+    (name: 'Cherry Blossom', icon: Icons.local_florist_rounded),
+    (name: 'Neon', icon: Icons.auto_awesome_rounded),
+    (name: 'Floral', icon: Icons.spa_rounded),
+    (name: 'Hearts', icon: Icons.favorite_rounded),
+    (name: 'Royal', icon: Icons.diamond_rounded),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = <Color>[
+      const Color(0xffffd277), const Color(0xfff577bf),
+      const Color(0xfff49bb6), const Color(0xffb48afa),
+      const Color(0xff91e7c4), const Color(0xff7dc6f7),
+      const Color(0xffeac19b),
+    ];
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(widget.category,
+          style: const TextStyle(color: Colors.white,
+            fontWeight: FontWeight.w800)),
+        centerTitle: true,
+        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xffabb2fa),
+      ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 12),
+          child: Row(children: [
+            Expanded(child: Text(styles[selected].name,
+              maxLines: 1, overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 16,
+                fontWeight: FontWeight.w800))),
+            const SizedBox(width: 12),
+            const Chip(
+              key: ValueKey('store-category-preview-only'),
+              label: Text('Preview only'),
+              avatar: Icon(Icons.visibility_outlined, size: 17),
+            ),
+          ]),
+        ),
+      ),
+      body: ListView(
+        key: const ValueKey('store-category-preview'),
+        children: [
+          Container(
+            height: 270,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffb3b7ff), Color(0xfff8f7ff)],
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Stack(alignment: Alignment.center, children: [
+              Container(
+                width: 167, height: 167,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: colors[selected], width: 7),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors[selected].withValues(alpha: .45),
+                      blurRadius: 17, spreadRadius: 8),
+                  ]),
+              ),
+              CircleAvatar(
+                radius: 64,
+                backgroundColor: const Color(0xffefe9ff),
+                child: Icon(widget.icon,
+                  color: widget.accent, size: 62),
+              ),
+              SizedBox(
+                width: 189, height: 189,
+                child: CircularProgressIndicator(
+                  value: 1,
+                  strokeWidth: 3,
+                  color: colors[selected],
+                  backgroundColor: Colors.transparent,
+                ),
+              ),
+              Positioned(
+                top: 15,
+                child: Icon(styles[selected].icon,
+                  size: 35, color: colors[selected])),
+            ]),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(widget.category, style: const TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w900)),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Original design previews · items are not available '
+              'for purchase until a verified catalog is connected.',
+              style: TextStyle(fontSize: 11, color: Color(0xff8b8298)),
+            ),
+          ),
+          const SizedBox(height: 13),
+          GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: styles.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 14,
+              crossAxisSpacing: 9,
+              childAspectRatio: .80,
+            ),
+            itemBuilder: (context, index) => InkWell(
+              key: ValueKey('store-preview-style-$index'),
+              borderRadius: BorderRadius.circular(17),
+              onTap: () => setState(() => selected = index),
+              child: Column(children: [
+                Expanded(child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color(0xfff4f2ff),
+                    borderRadius: BorderRadius.circular(17),
+                    border: Border.all(
+                      color: selected == index
+                        ? const Color(0xffa343ed)
+                        : Colors.transparent,
+                      width: 2),
+                  ),
+                  child: Center(
+                    child: Icon(styles[index].icon,
+                      size: 48, color: colors[index]),
+                  ),
+                )),
+                const SizedBox(height: 5),
+                Text(styles[index].name, maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.w700)),
+              ]),
+            ),
+          )),
+          const SizedBox(height: 25),
+        ],
+      ),
+    );
+  }
 }
