@@ -22,6 +22,7 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
   static String kind(String slug) {
     if (slug == 'teen_patti') return 'Cards';
     if (slug == 'slot' || slug == 'fruit_party_jackpot') return 'Slots';
+    if (slug == 'lucky_77') return 'Party';
     return 'Party';
   }
 
