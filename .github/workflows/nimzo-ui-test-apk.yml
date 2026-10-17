@@ -1,5 +1,6 @@
 name: NIMZO UI Branch Test APK
 # Explicit owner-requested device test only. NOT a signed production release.
+# Owner-requested UI checkpoint APK on 2026-10-18; debug test build, not a production release.
 on:
   push:
     branches:
