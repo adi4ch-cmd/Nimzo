@@ -1,0 +1,54 @@
+name: Publish NIMZO UI Test Debug APK
+# Explicit testing-only APK; no production signing or updater metadata.
+on:
+  push:
+    branches: [feature/tingle-ui-rebuild-20261017]
+    paths:
+      - .github/workflows/nimzo-ui-debug-release.yml
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish-ui-test-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download verified UI test APK artifact from successful build
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/12113469712/zip" \
+            -o ui-test-apk.zip
+          unzip -q ui-test-apk.zip -d ui-test-apk
+          apk="$(find ui-test-apk -type f -name app-debug.apk -print -quit)"
+          test -n "$apk" && test -s "$apk"
+          cp "$apk" NIMZO-UI-Test.apk
+          sha256sum NIMZO-UI-Test.apk > NIMZO-UI-Test.apk.sha256
+          ls -lh NIMZO-UI-Test.apk
+      - name: Publish prerelease for direct Android download
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag=nimzo-ui-test-a4d49dd8
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Existing test release; updating only APK files"
+            gh release upload "$tag" NIMZO-UI-Test.apk NIMZO-UI-Test.apk.sha256 --clobber
+          else
+            gh release create "$tag" \
+              "NIMZO-UI-Test.apk" \
+              "NIMZO-UI-Test.apk.sha256" \
+              --title "NIMZO UI Test • 2026-10-17" \
+              --notes "DEBUG TEST APK ONLY from feature/tingle-ui-rebuild-20261017 at SHA 92fa1336. This is not a production release, does not include the production signing identity or native Vivox bridge, and must not be used as an in-place upgrade to the signed NIMZO release. UI QA build for Android testers. Existing Supabase data is not reset by this build." \
+              --prerelease --latest=false --target 92fa1336612f33a7e25a11c61187236e449997bf
+          fi
+          gh release view "$tag" --json assets,url
