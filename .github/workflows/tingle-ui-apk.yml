@@ -50,9 +50,9 @@ jobs:
           if manifest.exists():
               src=manifest.read_text()
               if 'android.permission.INTERNET' not in src:
-                  src=src.replace('<application','<uses-permission android:name="android.permission.INTERNET"/>\\n    <application',1)
+                  src=src.replace('<application','<uses-permission android:name="android.permission.INTERNET"/>\n    <application',1)
               if 'android.permission.RECORD_AUDIO' not in src:
-                  src=src.replace('<application','<uses-permission android:name="android.permission.RECORD_AUDIO"/>\\n    <application',1)
+                  src=src.replace('<application','<uses-permission android:name="android.permission.RECORD_AUDIO"/>\n    <application',1)
               if 'login-callback' not in src:
                   callback='''<intent-filter android:autoVerify="false">
                       <action android:name="android.intent.action.VIEW"/>
@@ -60,7 +60,7 @@ jobs:
                       <category android:name="android.intent.category.BROWSABLE"/>
                       <data android:scheme="io.nimzo.app" android:host="login-callback"/>
                     </intent-filter>'''
-                  src=src.replace('</activity>',callback+'\\n        </activity>',1)
+                  src=src.replace('</activity>',callback+'\n        </activity>',1)
               manifest.write_text(src)
           print('Android host restored using io.nimzo.app')
           PY
