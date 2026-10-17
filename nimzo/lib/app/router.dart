@@ -37,6 +37,7 @@ import '../features/profile/profile_setup_screen.dart';
 import '../features/recharge/recharge_screen.dart';
 import '../features/rooms/presentation/room_screen.dart';
 import '../features/wallet/wallet_screen.dart';
+import '../features/wallet/tingle_coins_screen.dart';
 import 'routes.dart';
 import 'shell.dart';
 
@@ -148,7 +149,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/room/:id',
         builder: (_, s) => RoomScreen(roomId: s.pathParameters['id']!),
       ),
-      GoRoute(path: Routes.wallet, builder: (_, __) => const WalletScreen()),
+      GoRoute(path: Routes.wallet, builder: (_, __) => const TingleCoinsScreen()),
+      GoRoute(path: '/wallet/exchange', builder: (_, __) => const WalletScreen()),
       GoRoute(
         path: Routes.discover,
         builder: (_, __) => const DiscoverScreen(),
