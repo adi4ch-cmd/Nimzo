@@ -83,9 +83,12 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => _notice(context,
               'NIMZO is an audio-only application.'),
           ),
+          _SettingRow(
+            title: 'Blocked Users',
+            onTap: () => context.push('/settings/blocked'),
+          ),
           for (final title in const [
-            'Blocked Users', 'Verification Request',
-            'Private Call Charges',
+            'Verification Request', 'Private Call Charges',
           ]) _SettingRow(
             title: title,
             onTap: () => _notice(context,
@@ -97,11 +100,11 @@ class SettingsScreen extends ConsumerWidget {
           ),
           _SettingRow(
             title: 'Privacy Policy',
-            onTap: () => context.push('/info/About'),
+            onTap: () => context.push('/info/Privacy Policy'),
           ),
           _SettingRow(
             title: 'Terms Of Use',
-            onTap: () => context.push('/info/About'),
+            onTap: () => context.push('/info/Terms Of Use'),
           ),
         ])),
         const SizedBox(height: 22),
@@ -117,9 +120,7 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Delete Account',
             titleColor: Colors.red,
             trailing: const SizedBox.shrink(),
-            onTap: () => _notice(context,
-              'Account deletion must be processed by the verified '
-              'account-deletion service; it is not enabled here.'),
+            onTap: () => context.push('/info/Account'),
           ),
         ])),
       ]),
@@ -165,7 +166,7 @@ class InfoScreen extends StatelessWidget {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: title == 'About'
+            child: ['About', 'Privacy Policy', 'Terms Of Use'].contains(title)
                 ? const Column(
                     children: [_InstalledAppAbout(), LegalPoliciesContent()],
                   )
