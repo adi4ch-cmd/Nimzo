@@ -8,6 +8,7 @@ import '../wallet/wallet_screen.dart';
 import '../../core/widgets/master_ui.dart';
 import '../../core/utils/formatters.dart';
 import 'game_catalog.dart';
+import 'grady_lion_practice.dart';
 
 /// Visual boards from nimzo-ui-2.html. Settlement is never simulated locally.
 class GameScreen extends ConsumerStatefulWidget {
@@ -312,6 +313,25 @@ class _GameState extends ConsumerState<GameScreen> {
                   ],
                 ),
               ),
+              if (i == 1)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: FilledButton.icon(
+                    key: const ValueKey('grady-lion-practice-entry'),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const GradyLionPracticeScreen(),
+                      ),
+                    ),
+                    icon: const Icon(Icons.sports_esports_outlined),
+                    label: const Text('Play free practice round'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xffffd58a),
+                      foregroundColor: const Color(0xff3b0764),
+                      minimumSize: const Size.fromHeight(45),
+                    ),
+                  ),
+                ),
               if (!spin)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(4, 0, 4, 10),
