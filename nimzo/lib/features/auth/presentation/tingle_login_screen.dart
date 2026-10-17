@@ -313,9 +313,8 @@ class _FieldLabel extends StatelessWidget {
 
 class _PurpleButton extends StatelessWidget {
   final String text;
-  final IconData? leading;
   final VoidCallback? onPressed;
-  const _PurpleButton({required this.text, required this.onPressed, this.leading});
+  const _PurpleButton({required this.text, required this.onPressed});
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -338,10 +337,6 @@ class _PurpleButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (leading != null) ...[
-                  Icon(leading, size: 27),
-                  const SizedBox(width: 12),
-                ],
                 Text(
                   text,
                   style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w700),
