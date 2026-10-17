@@ -22,6 +22,7 @@ dependencies:
   just_audio: ^0.9.42
   audio_session: ^0.1.21
   video_player: ^2.9.2
+  webview_flutter: ^4.10.0
   flutter_svga: ^0.0.13
   flutter_vap_player: 2.1.1
 dev_dependencies:
@@ -34,6 +35,7 @@ flutter:
   assets:
     - assets/gifts/
     - assets/gifts/free/
+    - assets/games/
     - assets/reference/game/
     - assets/reference/fruit/
     - assets/reference/grady/
