@@ -22,6 +22,7 @@ class ProfileRepository {
 
   Future<void> update({
     String? displayName,
+    String? username,
     String? bio,
     String? avatarPath,
     String? coverPath,
@@ -34,6 +35,7 @@ class ProfileRepository {
     try {
       final m = <String, dynamic>{
         if (displayName != null) 'display_name': displayName.trim(),
+        if (username != null) 'username': username.trim().replaceFirst(RegExp(r'^@'), ''),
         if (bio != null) 'bio': bio,
         if (avatarPath != null) 'avatar_path': avatarPath,
         if (coverPath != null) 'cover_path': coverPath,
