@@ -1,9 +1,9 @@
 name: NIMZO Clone Source QA (No APK)
 
 on:
-  push:
+  pull_request:
     branches:
-      - feature/tingle-ui-rebuild-20261017
+      - feature/nimzo-ui-reset-20261017
   workflow_dispatch:
 
 permissions:
