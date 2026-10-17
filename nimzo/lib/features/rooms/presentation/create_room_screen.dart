@@ -112,10 +112,12 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       if (userId == null) throw StateError('Sign in required');
       final owner = await ref.read(profileProvider(userId).future);
       final code = owner.countryCode?.trim();
-      final name = owner.countryName?.trim();
+      final fallbackCountry = owner.countryName?.trim();
       final roomCountry = code != null && code.isNotEmpty
           ? code
-          : name != null && name.isNotEmpty ? name : null;
+          : fallbackCountry != null && fallbackCountry.isNotEmpty
+              ? fallbackCountry
+              : null;
       final id = await ref.read(roomRepositoryProvider).create(
         name.text.trim(),
         country: roomCountry,
