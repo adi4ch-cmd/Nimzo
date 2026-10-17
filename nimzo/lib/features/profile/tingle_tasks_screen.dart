@@ -14,19 +14,26 @@ final taskProgressProvider =
   final uid = ref.watch(currentUserIdProvider);
   if (uid == null) return {};
   final profile = await ref.watch(profileProvider(uid).future);
-  Future<bool?> hasRows(String table, String column) async {
+  // Daily tasks reset at the start of the user's local calendar day.
+  final now = DateTime.now();
+  final dayStartUtc = DateTime(now.year, now.month, now.day)
+      .toUtc().toIso8601String();
+  Future<bool?> hasRows(String table, String column, {String? since}) async {
     try {
-      final rows = await db.from(table).select(column)
-          .eq(column, uid).limit(1);
+      var query = db.from(table).select(column).eq(column, uid);
+      if (since != null) query = query.gte(since, dayStartUtc);
+      final rows = await query.limit(1);
       return rows.isNotEmpty;
     } catch (_) {
       return null;
     }
   }
-  final gifts = await hasRows('gift_events', 'sender_id');
+  final gifts = await hasRows('gift_events', 'sender_id',
+    since: 'created_at');
   final recharge = await hasRows('purchases', 'user_id');
   final played = await hasRows('game_bets', 'user_id');
-  final store = await hasRows('profile_owned_collectibles', 'user_id');
+  final store = await hasRows('profile_owned_collectibles', 'user_id',
+    since: 'granted_at');
 
   Future<int?> countDistinctRooms() async {
     try {
@@ -73,7 +80,7 @@ class TingleTasksScreen extends ConsumerWidget {
     const daily = <_TaskSpec>[
       _TaskSpec('gift', 'Send a gift in the room',
         Icons.card_giftcard_rounded, Color(0xffe83fa1), '/home'),
-      _TaskSpec('friends', 'Add 2 friends',
+      _TaskSpec('friends', 'Have 2 friends',
         Icons.group_add_rounded, Color(0xff38a8ec), '/discover'),
       _TaskSpec('mic', 'Speak on mic for 2 minutes',
         Icons.mic_rounded, Color(0xffa548f3), '/home'),
