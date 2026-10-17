@@ -15,6 +15,7 @@ import '../../../core/widgets/reference_widgets.dart';
 import '../../gifts/gift_sheet.dart';
 import '../../gifts/yo2_gift_ui.dart';
 import '../../games/games_catalog_screen.dart';
+import '../../home/pk_battles_screen.dart';
 import '../../games/room_game_host.dart';
 import '../../voice/voice_controller.dart';
 import '../../voice/vivox_voice_service.dart';
@@ -350,6 +351,17 @@ class _State extends ConsumerState<RoomScreen> {
                   toolbarHeight: 64,
                   titleSpacing: 0,
                   actions: [
+                    IconButton(
+                      key: const ValueKey('room-live-pk'),
+                      tooltip: 'Room PK Battle',
+                      onPressed: joined ? () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const PkBattlesScreen(),
+                        ),
+                      ) : null,
+                      icon: const Icon(Icons.bolt_rounded,
+                        size: 25, color: Color(0xffa84bdc)),
+                    ),
                     IconButton(
                       key: const ValueKey('room-confirm-exit'),
                       tooltip: 'Leave audio room',
