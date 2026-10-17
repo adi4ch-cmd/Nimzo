@@ -32,6 +32,7 @@ import '../features/games/games_catalog_screen.dart';
 import '../features/rooms/presentation/create_room_screen.dart';
 import '../features/rooms/presentation/room_settings_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/home/pk_battles_screen.dart';
 import '../features/messages/messages_screen.dart';
 import '../features/moments/moments_screen.dart';
 import '../features/notifications/notifications_screen.dart';
@@ -136,6 +137,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
       GoRoute(path: '/friends', builder: (_, __) => const TingleFriendsScreen()),
+      GoRoute(path: '/pk', builder: (_, __) => const PkBattlesScreen()),
       GoRoute(path: '/settings/blocked', builder: (_, __) => const TingleBlockedUsersScreen()),
       GoRoute(
           path: '/svip', builder: (_, __) => const TingleMembershipScreen(svip: true)),
