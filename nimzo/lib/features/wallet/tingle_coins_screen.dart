@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/reference_widgets.dart';
+import '../../core/widgets/master_ui.dart';
 import 'wallet_screen.dart';
 
 /// The same live wallet used by gifts and games, formatted to the reference
