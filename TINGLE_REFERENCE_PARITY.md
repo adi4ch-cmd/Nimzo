@@ -231,3 +231,13 @@ Status: **NOT FINISHED. NO APK BUILDS AUTHORIZED.**
   media, server-catalog frames/entries/bubbles, phone SMS delivery QA,
   in-room Vivox PK and ten-mic device testing, and direct reference
   screenshot parity review.
+
+## 2026-10-17 responsive Home correction (NO APK)
+- Home Explore/New/PK/Follow tabs now use a horizontally scrollable tab
+  strip on narrow Android screens. Search and Rankings remain fixed and
+  accessible rather than being pushed offscreen.
+- Country chip flexes inside its row; filter remains accessible.
+- Added `home_narrow_layout_test.dart` at **320 dp** and 1.35× text
+  scaling, using empty real-data providers without inventing rooms.
+- This does **not** approve the three outstanding visual golden differences.
+- No APK/AAB or release build was requested. Ten microphone seats unchanged.
