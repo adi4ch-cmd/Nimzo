@@ -31,11 +31,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void selectTab(int i) {
     if (i == 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(
-          'PK Battle filtering needs a verified live battle feed.',
-        )),
-      );
+      context.push('/pk');
       return;
     }
     setState(() => tab = i);
