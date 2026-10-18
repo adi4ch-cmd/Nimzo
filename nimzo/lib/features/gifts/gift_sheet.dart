@@ -8,7 +8,6 @@ import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
-import 'new_gift_previews.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
 import 'gift_svga_overlay.dart';
@@ -109,31 +108,6 @@ class _State extends ConsumerState<GiftSheet> {
     setState(() => busy = true);
     try {
       final r = ref.read(giftRepositoryProvider), g = gift;
-      String? approvedDragonVideo;
-      if (premiumDragonGiftIds.contains(g.id)) {
-        // Never debit one or five million coins for a gift whose promised
-        // premium animation has not actually been approved and published.
-        try {
-          approvedDragonVideo = await r
-              .playablePremiumDragonVideo(g.id)
-              .timeout(const Duration(seconds: 6));
-        } catch (_) {
-          // A lookup failure is not proof that a playable video exists.
-        }
-        if (approvedDragonVideo == null) {
-          if (mounted) {
-            setState(() => key = null);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Dragon video is not installed yet. No coins were deducted.',
-                ),
-              ),
-            );
-          }
-          return;
-        }
-      }
       if (widget.momentId != null) {
         await ref.read(momentRepositoryProvider).sendGift(
               momentId: widget.momentId!,
@@ -166,7 +140,6 @@ class _State extends ConsumerState<GiftSheet> {
       container.invalidate(profileStatsProvider(receiverId));
       if (widget.roomId != null)
         container.invalidate(roomProvider(widget.roomId!));
-      container.invalidate(profileGiftsProvider(receiverId));
       if (me != null) {
         container.invalidate(profileProvider(me));
         container.invalidate(profileStatsProvider(me));
@@ -202,7 +175,7 @@ class _State extends ConsumerState<GiftSheet> {
           quantity: requestQuantity,
           unitPrice: g.price,
           assetPath: g.assetPath,
-          videoUrl: approvedDragonVideo,
+          videoUrl: null,
           recipientName:
               ref.read(profileProvider(receiverId)).valueOrNull?.displayName ??
                   ref.read(profileProvider(receiverId)).valueOrNull?.username,
@@ -260,7 +233,7 @@ class _State extends ConsumerState<GiftSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('NIMZO Gifts',
+                          const Text('NIMZO Cars',
                             style: TextStyle(
                               fontWeight: FontWeight.w800, fontSize: 16)),
                           Text(
@@ -280,7 +253,6 @@ class _State extends ConsumerState<GiftSheet> {
                 ),
               ),
             ),
-            const NewGiftPreviewCollection(),
             // Room members can gift themselves even when not seated on
             // a microphone. The seat roster must not hide "Myself".
             if (widget.roomId != null &&
@@ -335,7 +307,7 @@ class _State extends ConsumerState<GiftSheet> {
                             child: Padding(
                               padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
                               child: Text(
-                                'GIFT COLLECTION',
+                                'CAR COLLECTION',
                                 style: TextStyle(
                                   letterSpacing: 2,
                                   fontSize: 13,
@@ -357,9 +329,6 @@ class _State extends ConsumerState<GiftSheet> {
                                   for (final category in [
                                     'All',
                                     'Cars',
-                                    ...nimzoGiftCategories(
-                                      gifts.map((gift) => gift.category),
-                                    ).skip(1),
                                   ])
                                     Padding(
                                       padding: const EdgeInsets.only(

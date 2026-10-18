@@ -8,7 +8,6 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../gifts/gift_sheet.dart';
-import '../gifts/yo2_gift_ui.dart';
 import '../social/social_repositories.dart';
 import '../social/friend_button.dart';
 import 'profile_repository.dart';
@@ -18,8 +17,6 @@ import 'profile_level_pills.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
-import '../store/store_badge.dart';
-import '../gifts/gift_artwork.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -85,14 +82,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Yo2GiftPanelArt(
-                      'ic_user_dialog_gift.webp',
-                      width: 18,
-                      height: 18,
-                      fallback: Icon(Icons.card_giftcard, size: 16),
-                    ),
+                    Icon(Icons.directions_car_rounded, size: 16),
                     SizedBox(width: 4),
-                    Text('Gift'),
+                    Text('Car'),
                   ],
                 ),
               ),
@@ -234,7 +226,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     fontWeight: FontWeight.w700,
                                   )),
                         ),
-                        EquippedRoyalMedal(userId: id, compact: true),
                         if (p.dateOfBirth != null)
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -424,7 +415,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           Expanded(
                             child: Text(
                               {
-                                'medal': 'Medal Wall',
                                 'frame': 'Frame',
                                 'car': 'Car',
                               }[kind.name]!,
@@ -492,39 +482,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ),
                       ),
                     ],
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Text(
-                            'Gifts (Top 15)',
-                            style: TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                        TextButton(
-                          key: const ValueKey('all-received-gifts'),
-                          onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => _AllGifts(id: id),
-                            ),
-                          ),
-                          child: const Text('View All'),
-                        ),
-                      ],
-                    ),
                     Wrap(
                       spacing: 12,
                       children: [
-                        for (var i = 0; i < 3; i++)
+                        for (var i = 0; i < 2; i++)
                           TextButton(
                             onPressed: () => setState(() => section = i),
-                            child: Text(
-                              ['Gifts', 'Achievements', 'Moments'][i],
-                            ),
+                            child: Text(['Achievements', 'Moments'][i]),
                           ),
                       ],
                     ),
-                    if (section == 0) GiftList(id: id, limit: 15),
-                    if (section == 1)
+                    if (section == 0)
                       AsyncContent(
                         value: ref.watch(profileAchievementsProvider(id)),
                         onRetry: () =>
@@ -538,7 +506,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 ],
                               ),
                       ),
-                    if (section == 2)
+                    if (section == 1)
                       AsyncContent(
                         value: ref.watch(profileMomentsProvider(id)),
                         onRetry: () =>
@@ -565,70 +533,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
     );
   }
-}
-
-class GiftList extends ConsumerWidget {
-  final String id;
-  final int? limit;
-  const GiftList({super.key, required this.id, this.limit});
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => ref
-      .watch(profileGiftsProvider(id))
-      .when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => DataFailure(
-          message: 'Gifts could not be loaded.',
-          onRetry: () => ref.invalidate(profileGiftsProvider(id)),
-        ),
-        data: (g) => g.isEmpty
-            ? const EmptyContent('No gifts received yet')
-            : SizedBox(
-                height: 96 * MediaQuery.textScalerOf(context).scale(1),
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    for (final item in g.take(limit ?? g.length))
-                      SizedBox(
-                        width: 64,
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              width: 46,
-                              height: 44,
-                              child: GiftArtwork(
-                                name: item['name'].toString(),
-                                assetPath: item['asset_path']?.toString(),
-                              ),
-                            ),
-                            Text(
-                              item['name'].toString(),
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 11, height: 1.2),
-                            ),
-                            Text(
-                              '× ${item['quantity']}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 11, height: 1.2),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-      );
-}
-
-class _AllGifts extends StatelessWidget {
-  final String id;
-  const _AllGifts({required this.id});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('All received gifts')),
-        body: SingleChildScrollView(child: GiftList(id: id)),
-      );
 }
 
 class ProfileProgressBadge extends StatelessWidget {

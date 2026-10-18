@@ -5,7 +5,6 @@ import 'gift_artwork.dart';
 import 'nimzo_gift_control_art.dart';
 import 'gift_svga_overlay.dart';
 import 'gift_video_overlay.dart';
-import 'nimzo_custom_gift_effect.dart';
 import '../../core/utils/formatters.dart';
 
 /// NIMZO's own non-video celebration, shown only for server-settled gifts.
@@ -335,15 +334,7 @@ void showSettledPersonalGiftCelebration(
             quantity: quantity,
             onFinished: dismiss,
           )
-        : hasOriginalNimzoGiftEffect(giftName)
-          ? NimzoCustomGiftEffect(
-              name: giftName,
-              sender: 'You',
-              recipient: recipient,
-              quantity: quantity,
-              onFinished: dismiss,
-            )
-          : NimzoGiftCelebration(
+        : NimzoGiftCelebration(
       giftName: giftName,
       sender: 'You',
       recipient: recipient,

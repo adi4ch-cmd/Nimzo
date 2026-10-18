@@ -9,7 +9,6 @@ import '../../profile/levels_screen.dart';
 import '../../profile/profile_level_pills.dart';
 import '../../profile/profile_repository.dart';
 import '../../social/social_repositories.dart';
-import '../../store/store_badge.dart';
 import '../../voice/voice_controller.dart';
 import 'room_controller.dart';
 
@@ -268,12 +267,6 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                         ),
                                       ),
                                       const SizedBox(width: 5),
-                                      Flexible(
-                                        child: EquippedRoyalMedal(
-                                          userId: widget.userId,
-                                          compact: true,
-                                        ),
-                                      ),
                                     ],
                                   ),
                                   const SizedBox(height: 7),
@@ -373,9 +366,9 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                             ],
                             Expanded(
                               child: _MiniAction(
-                                icon: Icons.card_giftcard,
+                                icon: Icons.directions_car_rounded,
                                 color: const Color(0xffdfd94a),
-                                label: 'Send Gifts',
+                                label: 'Send Car',
                                 onTap: busy || me == null ? null : gift,
                               ),
                             ),
