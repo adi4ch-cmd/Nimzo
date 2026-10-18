@@ -28,7 +28,6 @@ import 'room_overlays.dart';
 import '../rocket/room_rocket_widgets.dart';
 import '../diamond/room_diamond_repository.dart';
 import '../../../core/widgets/master_ui.dart';
-import '../../../core/utils/formatters.dart';
 
 class RoomScreen extends ConsumerStatefulWidget {
   final String roomId;
