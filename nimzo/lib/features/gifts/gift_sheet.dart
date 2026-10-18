@@ -108,31 +108,6 @@ class _State extends ConsumerState<GiftSheet> {
     setState(() => busy = true);
     try {
       final r = ref.read(giftRepositoryProvider), g = gift;
-      String? approvedDragonVideo;
-      if (premiumDragonGiftIds.contains(g.id)) {
-        // Never debit one or five million coins for a gift whose promised
-        // premium animation has not actually been approved and published.
-        try {
-          approvedDragonVideo = await r
-              .playablePremiumDragonVideo(g.id)
-              .timeout(const Duration(seconds: 6));
-        } catch (_) {
-          // A lookup failure is not proof that a playable video exists.
-        }
-        if (approvedDragonVideo == null) {
-          if (mounted) {
-            setState(() => key = null);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Dragon video is not installed yet. No coins were deducted.',
-                ),
-              ),
-            );
-          }
-          return;
-        }
-      }
       if (widget.momentId != null) {
         await ref.read(momentRepositoryProvider).sendGift(
               momentId: widget.momentId!,
@@ -200,7 +175,7 @@ class _State extends ConsumerState<GiftSheet> {
           quantity: requestQuantity,
           unitPrice: g.price,
           assetPath: g.assetPath,
-          videoUrl: approvedDragonVideo,
+          videoUrl: null,
           recipientName:
               ref.read(profileProvider(receiverId)).valueOrNull?.displayName ??
                   ref.read(profileProvider(receiverId)).valueOrNull?.username,
