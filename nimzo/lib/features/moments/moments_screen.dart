@@ -403,7 +403,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
   List<String> extraImages = [];
   bool busy = false, ready = false;
   bool loadFailed = false;
-  bool get canPost => image != null || text.text.trim().isNotEmpty;
+  bool get canPost => image != null || extraImages.isNotEmpty || text.text.trim().isNotEmpty;
 
   void _draftChanged() {
     if (mounted) setState(() {});
@@ -636,12 +636,14 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                           child: TextButton(
                             onPressed: busy
                                 ? null
-                                : () => setState(() => image = null),
+                                : () => setState(() {
+                                    image = extraImages.isNotEmpty
+                                        ? extraImages.removeAt(0) : null;
+                                  }),
                             child: const Text('Remove photo'),
                           ),
                         ),
-                      if (image != null || extraImages.isNotEmpty)
-                        Padding(
+                      Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 6),
                           child: Row(
                             children: [
