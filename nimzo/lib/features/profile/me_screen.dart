@@ -248,18 +248,6 @@ class MeScreen extends ConsumerWidget {
                         ('About', 'info', '/info/About'),
                       ],
                     ),
-                    const ReferenceCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '1M+ Gift Live Ranking',
-                            style: TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                          EmptyContent('Ranking service is not available yet.'),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
