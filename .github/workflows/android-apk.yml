@@ -31,14 +31,8 @@ jobs:
         run: flutter create --platforms=android --project-name nimzo .
 
       - name: Configure Firebase Cloud Messaging (Android)
-        env:
-          NIMZO_GOOGLE_SERVICES_JSON: ${{ secrets.NIMZO_GOOGLE_SERVICES_JSON }}
-        run: |
-          if [ -n "$NIMZO_GOOGLE_SERVICES_JSON" ]; then
-            python3 nimzo/tool/configure_fcm_android.py --root nimzo
-          else
-            echo '::warning::NIMZO_GOOGLE_SERVICES_JSON is not set. Android APK will be built WITHOUT push notifications.'
-          fi
+        working-directory: nimzo
+        run: python3 tool/configure_fcm_android.py --root . --config-file tool/firebase_android_client.json
 
       - name: Remove generated sample test
         working-directory: nimzo
