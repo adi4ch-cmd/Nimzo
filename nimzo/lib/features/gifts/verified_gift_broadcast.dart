@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'gift_repository.dart';
 import 'gift_video_overlay.dart';
 import 'gift_svga_overlay.dart';
-import 'nimzo_custom_gift_effect.dart';
 import 'gift_celebration_overlay.dart';
 import 'nimzo_gift_control_art.dart';
 
@@ -255,18 +254,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         key: ValueKey(event['id']),
         source: originalSvga,
         giftName: giftName,
-        sender: sender,
-        recipient: recipient,
-        quantity: quantity,
-        onFinished: () {
-          if (mounted && identical(_active, event)) _next();
-        },
-      );
-    }
-    if (!_loading && hasOriginalNimzoGiftEffect(giftName)) {
-      return NimzoCustomGiftEffect(
-        key: ValueKey(event['id']),
-        name: giftName,
         sender: sender,
         recipient: recipient,
         quantity: quantity,
