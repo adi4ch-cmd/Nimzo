@@ -11,6 +11,11 @@ on:
       - nimzo/test/family_backend_contract_test.dart
       - supabase/migrations/20261018080000_family_founder_membership.sql
       - supabase/migrations/20261018080500_family_directory_rls.sql
+      - supabase/migrations/20261018035405_family_and_moment_media.sql
+      - supabase/migrations/20261018081000_family_join_grant.sql
+      - supabase/migrations/20261018081500_family_owner_edit_grant.sql
+      - supabase/migrations/20261018082000_moment_media_count_guard.sql
+      - docs/backend/2026-10-18-backend-continuation.md
       - nimzo/lib/features/moments/moment_repository.dart
       - nimzo/lib/features/moments/moments_screen.dart
       - nimzo/lib/core/services/storage_service.dart
