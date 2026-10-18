@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'gift_repository.dart';
@@ -44,24 +43,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     _mediaWait = null;
   }
 
-  // Only use originals that are actually bundled in the installed APK.
-  // Never claim that an absent file has been integrated.
-  Future<String?> _bundledDragonMedia(String giftId) async {
-    const originals = <String, String>{
-      'e1e65664-37f8-4cfd-9640-3bb035723b98': 'assets/gifts/dragon_1m.mp4',
-      'c3f41e6e-68d5-4e56-9253-33421ec18fc3':
-          'assets/gifts/golden_dragon_5m.mp4',
-    };
-    final path = originals[giftId];
-    if (path == null) return null;
-    try {
-      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-      return manifest.listAssets().contains(path) ? path : null;
-    } catch (_) {
-      return null;
-    }
-  }
-
   Future<String?> _lookupMedia(String giftId) {
     _cancelMediaLookup();
     final wait = Completer<String?>();
@@ -81,8 +62,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         // Offline clients can still play a verified bundled original.
       }
       if (wait.isCompleted) return;
-      final local = remote == null ? await _bundledDragonMedia(giftId) : null;
-      if (!wait.isCompleted) wait.complete(remote ?? local);
+      if (!wait.isCompleted) wait.complete(remote);
     }
 
     // Start immediately: do not defer the server media lookup into a later
@@ -150,7 +130,9 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       _primed = true;
       return;
     }
-    final fresh = rows.where((r) => _seen.add('${r['id']}')).toList()
+    final fresh = rows.where((r) =>
+          r['gift_id']?.toString() == '35e4c570-cb02-4466-ae86-d670b3fb05ab' &&
+          _seen.add('${r['id']}')).toList()
       ..sort((a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'));
     // The server stream retains 100 events. Bound deduplication memory too.
     if (_seen.length > 200) {
@@ -252,11 +234,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         }
       }
     }
-    final giftName = switch ('${event['gift_id']}') {
-      'e1e65664-37f8-4cfd-9640-3bb035723b98' => 'Dragon',
-      'c3f41e6e-68d5-4e56-9253-33421ec18fc3' => 'Golden Dragon',
-      _ => catalogName,
-    };
+    final giftName = catalogName;
     if (_video != null) {
       return GiftVideoOverlay(
         key: ValueKey(event['id']),
