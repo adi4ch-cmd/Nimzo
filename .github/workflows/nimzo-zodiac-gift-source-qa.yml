@@ -30,6 +30,7 @@ jobs:
       - name: Verify zodiac IDs, icons, prices and approved gift event routing
         run: |
           flutter test test/zodiac_gift_100k_contract_test.dart
+          flutter test test/zodiac_gift_paid_media_safety_test.dart
           flutter test test/hall_of_fame_gift_contract_test.dart
           flutter test test/verified_gift_broadcast_test.dart
       - name: No APK build, no live release
