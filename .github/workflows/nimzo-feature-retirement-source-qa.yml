@@ -27,12 +27,23 @@ jobs:
         run: flutter pub get
       - name: Flutter analysis (no APK)
         run: flutter analyze --no-fatal-infos
-      - name: Feature retirement and games safety regression
+      - name: Feature retirement, Sports Car, games, profile and Store regressions
         run: |
           flutter test --reporter expanded \
             test/feature_retirement_contract_test.dart \
+            test/car_only_gift_contract_test.dart \
             test/game_catalog_test.dart \
-            test/game_repository_validation_test.dart
+            test/game_repository_validation_test.dart \
+            test/profile_content_test.dart \
+            test/verified_gift_broadcast_test.dart \
+            test/gift_room_recipient_test.dart \
+            test/gift_retry_test.dart \
+            test/gift_rejection_test.dart \
+            test/profile_gift_refresh_test.dart \
+            test/store_category_preview_ui_test.dart \
+            test/room_game_host_test.dart \
+            test/gift_celebration_overlay_test.dart \
+            test/yo2_gift_ui_test.dart
       - name: Check forbidden profile/menu copy in live application screens
         run: |
           set -euo pipefail
