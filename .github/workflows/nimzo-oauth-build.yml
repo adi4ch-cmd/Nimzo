@@ -3,8 +3,7 @@ name: Nimzo Android OAuth build check
 # Latest full APK build trigger.
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -15,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: feature/profile-reference-redesign
 
       - uses: actions/setup-java@v4
         with:
@@ -23,6 +24,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.47.6'
           channel: stable
 
       - name: Generate Android platform if missing

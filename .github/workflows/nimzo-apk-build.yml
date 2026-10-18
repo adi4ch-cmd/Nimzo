@@ -1,7 +1,5 @@
 name: Nimzo APK Build
 on:
-  push:
-    branches: ["main"]
   workflow_dispatch:
 jobs:
   build:
@@ -11,13 +9,15 @@ jobs:
         working-directory: nimzo
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: feature/profile-reference-redesign
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.29.3"
+          flutter-version: "3.47.6"
           channel: stable
           cache: true
       - run: flutter create --platforms=android --org io.nimzo .
