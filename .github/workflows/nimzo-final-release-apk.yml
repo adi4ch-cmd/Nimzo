@@ -35,7 +35,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          flutter create . --org io.nimzo --project-name nimzo --platforms android
+          flutter create . --no-pub --org io.nimzo --project-name nimzo --platforms android
+          # Flutter create rewrites pubspec.lock even in an existing project.
+          # Restore the reviewed dependency graph before any resolution/build.
+          git restore --source=HEAD -- pubspec.lock
+          git diff --exit-code -- pubspec.yaml
           python3 ../tools/configure_android_gradle.py android
           python3 - <<'PY'
           from pathlib import Path
@@ -258,7 +262,7 @@ jobs:
           }
           GRADLE
       - name: Install Flutter packages
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
       - name: Analyzer
         run: flutter analyze --no-fatal-infos
       - name: Backend regression checks

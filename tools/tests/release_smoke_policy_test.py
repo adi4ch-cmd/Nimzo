@@ -11,5 +11,13 @@ class ReleaseSmokePolicy(unittest.TestCase):
         self.assertNotIn('continue-on-error: true', text[launch:upload])
         self.assertNotIn('if: always()', text[launch:upload])
 
+    def test_generated_host_preserves_reviewed_dependencies(self):
+        text = pathlib.Path('.github/workflows/nimzo-final-release-apk.yml').read_text()
+        create = text.index('flutter create . --no-pub')
+        restore = text.index('git restore --source=HEAD -- pubspec.lock')
+        resolve = text.index('flutter pub get --enforce-lockfile')
+        self.assertLess(create, restore)
+        self.assertLess(restore, resolve)
+
 if __name__ == '__main__':
     unittest.main()
