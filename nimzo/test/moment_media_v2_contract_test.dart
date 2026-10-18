@@ -54,6 +54,18 @@ void main() {
     );
   });
 
+  test('multi-photo create rejects more than nine images', () async {
+    final db = await signedClient((request) {
+      throw StateError('Oversized request must not reach server');
+    });
+    await expectLater(
+      MomentRepository(db).createMany(
+        imagePaths: List.generate(10, (i) => 'me/photo_$i.jpg'),
+      ),
+      throwsA(isA<FormatException>()),
+    );
+  });
+
   test('multi-photo create rejects photos owned by another account', () async {
     final db = await signedClient((request) {
       throw StateError('Must reject paths before network request');
