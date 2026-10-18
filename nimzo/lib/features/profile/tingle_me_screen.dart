@@ -87,12 +87,6 @@ class TingleMeScreen extends ConsumerWidget {
     ];
     const menu = <({String title, IconData icon, Color color, String route})>[
       (
-        title: 'Coin Trading',
-        icon: Icons.wallet_rounded,
-        color: Color(0xffa13ae5),
-        route: '/wallet'
-      ),
-      (
         title: 'Help',
         icon: Icons.support_agent_rounded,
         color: Color(0xffffae36),
