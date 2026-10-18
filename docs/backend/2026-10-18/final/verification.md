@@ -67,7 +67,7 @@ Database tests use a disposable metadata clone and synthetic fixtures. Their loc
 
 ## APK evidence
 
-The branch-only Actions workflow compiles release mode using a development signing certificate, verifies io.nimzo.app/version/Firebase resources/native libraries/no detected privileged client credential, then requires emulator installation and startup before uploading the verified artifact. It does not publish a production release or replace the permanent updater certificate. Final run/artifact evidence is recorded after completion.
+The branch-only Actions workflow compiles release mode using a development signing certificate, verifies io.nimzo.app/version/Firebase resources/native libraries/no detected privileged client credential, then requires emulator installation and startup before uploading the verified artifact. It does not publish a production release or replace the permanent updater certificate. Final run/artifact evidence is recorded below.
 
 Supabase advisory references (existing categories): [RLS without a policy](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy), [authenticated SECURITY DEFINER entrypoints](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable), [leaked-password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). Deny-by-default tables and guarded RPCs need context; the categories alone are not proof of exploitable access.
 
@@ -75,10 +75,29 @@ Post-deployment negative auth checks: requests without Authorization and with th
 
 Live Auth settings returned200: **email, google and facebook enabled; phone and all other providers disabled**. This verifies provider configuration, not a completed interactive provider login on a physical device.
 
-CI source QA [39135966001](https://github.com/adi4ch-cmd/Nimzo/actions/runs/39135966001) reproduced exactly380 passing tests and the same3 deferred screenshot failures. Initial release run [39135986690](https://github.com/adi4ch-cmd/Nimzo/actions/runs/39135986690) passed static package/native checks but was rejected after manual launch-log/screenshot review: the process survived while a SharedPreferences NoSuchMethodError stranded startup. Its APK is not approved for delivery. Root cause: Flutter create unconditionally rewrites pubspec.lock, silently resolving an unreviewed newer Android plugin graph. The workflow now generates without pub resolution, restores the committed lockfile and uses pub get --enforce-lockfile. Launch verification now rejects unhandled Dart startup exceptions even when the process remains alive. A corrected APK is being rebuilt.
+CI source QA [39135966001](https://github.com/adi4ch-cmd/Nimzo/actions/runs/39135966001) reproduced exactly380 passing tests and the same3 deferred screenshot failures. Initial release run [39135986690](https://github.com/adi4ch-cmd/Nimzo/actions/runs/39135986690) passed static package/native checks but was rejected after manual launch-log/screenshot review: the process survived while a SharedPreferences NoSuchMethodError stranded startup. Its APK is not approved for delivery. Root cause: Flutter create unconditionally rewrites pubspec.lock, silently resolving an unreviewed newer Android plugin graph. The workflow now generates without pub resolution, restores the committed lockfile and uses pub get --enforce-lockfile. Launch verification now rejects unhandled Dart startup exceptions even when the process remains alive. The corrected APK was rebuilt successfully; final delivery evidence appears below.
 
 ## Managed transport ACL follow-up
 
 Additional migration20261018145157_lock_push_transport_tables was recorded by the migration API, but **its intended REVOKE did not take effect**: net.http_request_queue and net._http_response retain PUBLIC grants owned by managed supabase_admin. The available role cannot revoke the owner's grants. Live postcondition checks caught this; no ownership escalation or security bypass was attempted. The local transport-ACL fixture passes when run as the table owner, which does not prove the managed owner operation succeeded.
 
 The mobile REST route was independently denied with HTTP406/PGRST106 (net is not an exposed schema). Dispatch carries only the public gateway JWT and short-lived one-time scoped signatures, not the HMAC secret, Admin private key or service-role key. The signed post-change probe still returnedHTTP200/OAuthok. Existing Vault grants remain restrictive. **Owner/Supabase support action to tighten managed transport-table ACLs is pending**; all-security-complete is not claimed.
+
+
+## Final APK delivery — verified
+
+- Build run: https://github.com/adi4ch-cmd/Nimzo/actions/runs/39137118453 — SUCCESS.
+- Artifact: https://github.com/adi4ch-cmd/Nimzo/actions/runs/39137118453/artifacts/12139823479 — exists, not expired at verification.
+- Test delivery run: https://github.com/adi4ch-cmd/Nimzo/actions/runs/39138249039 — SUCCESS.
+- Direct APK: https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-backend-test-1.0.25-125/app-release.apk
+- Release metadata independently verified: draft=false, prerelease=true; no production update manifest published.
+- APK source SHA: `71e77ed91f6f2698cde7356f44469dc2ddb4ecf5`.
+- Final backend/delivery code commit: `d7c68dd82bebece1f559ecf4f3a4f3ce5fb907ce`; later report-only commit does not change the APK.
+- Android package: `io.nimzo.app`, version1.0.25+125; release compilation, development signing.
+- Size:171348895bytes (about171.3MB).
+- SHA256: `795bbb846d0d72840b0b18d5e67bc7419c3c79f749d94b09bf7458fe6f759a7f` — matches downloaded APK, build checksum and GitHub release asset digest.
+- Public download was requested without credentials: HTTP206 and APK ZIP header504b0304 confirmed.
+- Android35 emulator installed/started, remained alive20seconds, no unhandled Dart startup exception. Manual screenshot review shows the actual NIMZO onboarding screen rather than a stranded splash. Firebase initialization succeeded in the NIMZO process; an unrelated system IMS process's Firebase warning is not an app failure.
+- Final local disposable full-schema/RLS/storage/concurrent economy suite passed after the transport fixture was added. Owner-level ACL hardening remains explicitly failed/pending on the managed project, as described above.
+
+If Android reports a signing-certificate conflict, uninstall the previous test build before installing. Server-side account data remains, but uninstall removes local session/drafts. No production release was published and no branch was merged.
