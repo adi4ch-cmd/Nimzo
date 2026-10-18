@@ -1,3 +1,5 @@
+> Historical checkpoint. The newer [issue 15 implementation and verification report](../issue-15-review/verification.md) supersedes its remaining-work/APK status.
+
 # UI continuation verification — 2026-10-17
 
 This is a committed UI checkpoint, **not** a complete Tingle reconstruction,

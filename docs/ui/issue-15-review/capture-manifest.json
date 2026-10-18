@@ -1,0 +1,3262 @@
+[
+  {
+    "name": "checkin-unavailable-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "fa55e64c5b57868385133c22020f853b7ccb49b8e267e1efb10d949cb0c030c3",
+    "review_copy": "screens/checkin-unavailable-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "checkin-unavailable-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "4d360efa88e50a5650f7130252ff54c7d15caf4d69e2f8257615eba59bbf11c2",
+    "review_copy": "screens/checkin-unavailable-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "checkin-unavailable-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "02af4bce5f0a0650e562e6e26ec7c18856883e7fc0f4a2cf37854d5dfadd4f94",
+    "review_copy": "screens/checkin-unavailable-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "composer-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "92155514035ade1e0bc439f624da9482ac41213c357a9bef2e706ff4879928e3",
+    "review_copy": "screens/composer-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "composer-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "8e9455c3338bed380e9432630f986990a00529a97cb93e5fb8dee3617349482b",
+    "review_copy": "screens/composer-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "composer-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "751357ff3a5ab73ad991830911c635dd40bc07a634c7b1720b0e842d09a1f896",
+    "review_copy": "screens/composer-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "composer-topic-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "e1ee5c75b99a089b1ef817ddbd03664f36c61b5366db3b66a6e0258b71885a8d",
+    "review_copy": "screens/composer-topic-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "composer-topic-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "f63eb053396e4f0a76de1ff255c88e11b5ec33eee6a821bd136216390a3736e6",
+    "review_copy": "screens/composer-topic-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "composer-topic-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "d3d0ce273a84b5fc1ef9af77c0ba3c006590a6447bfc9185c73d4553c1830dde",
+    "review_copy": "screens/composer-topic-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "398df9633c624551ab725d43bae21fcb625e3138fdbaad5aac27f83e0023e5e6",
+    "review_copy": "screens/cp-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "8583470cdaa6b8a46ec48aa418ff9707e1282c1bd862dfa4e0c01331525dfcd5",
+    "review_copy": "screens/cp-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "c2c7d254f896def461fe451ab4719ce1fe30dbdb945a63838b221bc25ff15fc7",
+    "review_copy": "screens/cp-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-bubble-dialog-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "8932db086986e26a0778356953fb61de73cb27ad06e9054267ce7ab757abdbea",
+    "review_copy": "screens/cp-bubble-dialog-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-bubble-dialog-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "7bb224cba719eaeab43f84888e187347735c46a548124707636054bf3cf7c993",
+    "review_copy": "screens/cp-bubble-dialog-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-bubble-dialog-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "0283170dcdea398c364ebeb2b95aef0a04893e71196b6f511a0068bb4da781dd",
+    "review_copy": "screens/cp-bubble-dialog-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-entrance-dialog-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "1de34c674efdb1612c7326dc65dc3bcb1825ea3a121e3cad0f448ed28ed182fa",
+    "review_copy": "screens/cp-entrance-dialog-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-entrance-dialog-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "d25ed5f72b2c782a6968abc6f222fbe3636955e9be1736216437a94d4d83a8be",
+    "review_copy": "screens/cp-entrance-dialog-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-entrance-dialog-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "2147a88d40e2a1bf3e174f5d8eb93dd3c4f2a3a56ee07a2d0273fb9cd5ee8ec1",
+    "review_copy": "screens/cp-entrance-dialog-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-frame-dialog-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "494316e5cf5029bafefba7032d9acdad26ba83a136b65983d2aaf7c655508b19",
+    "review_copy": "screens/cp-frame-dialog-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-frame-dialog-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "1364ebad423a118b59316e05b6339b0341ad2a1709c519d165dccf551e836145",
+    "review_copy": "screens/cp-frame-dialog-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-frame-dialog-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "3a837294ef0463bbbe23a47de1ad6922b1de94ada6c7b10e0b1ed4a62aa7a33d",
+    "review_copy": "screens/cp-frame-dialog-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-gallery-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "0ec86b849cc893dae575d9016ce919e81c3f0c302002ca9f3590ba2c76b485e3",
+    "review_copy": "screens/cp-gallery-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-gallery-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "312b2d3d86bea903076c423961887b26a10f3ee5cae9fd59c2792635f60b0edf",
+    "review_copy": "screens/cp-gallery-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-gallery-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "9db7718f876146ca27e9966540ac13ede67257e3a940e22a1ae22310f4388618",
+    "review_copy": "screens/cp-gallery-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-theme-dialog-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "31b509685e0c696c2563a30eb341584fde60ff1bf75f50ba5626776d90b4838c",
+    "review_copy": "screens/cp-theme-dialog-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-theme-dialog-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "a7000ee1ff07e491d7f7c71d7240df4274ffae5283f79c6a8c21d268d396e591",
+    "review_copy": "screens/cp-theme-dialog-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "cp-theme-dialog-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "26a8928349ee7dafdab6267ff56316d8155d4fc8b82ac4f39d06aec7fd2aae12",
+    "review_copy": "screens/cp-theme-dialog-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "create-room-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "bbdf943dc85d6ae4a575771600bfd7ab24dea4aa31c888f6773604abf0acef58",
+    "review_copy": "screens/create-room-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "create-room-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "50b1d74a9b1621285a088df122871c88d917d4504f0a7899ef395b4dac21e5fb",
+    "review_copy": "screens/create-room-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "create-room-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "6705b26ae4483fbb780aaea13649278a94ffb31f64c1b3e3c810d210a28c9890",
+    "review_copy": "screens/create-room-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "family-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "32e5d5502326ef79e00ca803a667b0dd7352cfd4c130251cbe8500d61228b4da",
+    "review_copy": "screens/family-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "family-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "954715898ea054a77d77af4a5b4a291bec39d3fc0a2393c19b4222580450dcc7",
+    "review_copy": "screens/family-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "family-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "08d5aa934e6367c99243cc0c31da77e36580d5537a3fa8dc82a15e70ff676896",
+    "review_copy": "screens/family-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "friends-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "aa1ed20415dc8d69f6618f74dca6032dc05e7c107b6eaa56c0171d096b2aa1a3",
+    "review_copy": "screens/friends-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "friends-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "43c20eaa78712299f0f378b3e311c686e479b5725d2282db6b7a7d7138e0ecda",
+    "review_copy": "screens/friends-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "friends-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "ce03c96ebd4ad49d9f9eb1a06c6cf3a36bd0816a02c954551def7200df8c8246",
+    "review_copy": "screens/friends-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "home-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "40ad56ed4ef3a3d1f48b4cd88c2924db1026e11eb0408dc82711d72ad089d7c0",
+    "review_copy": "screens/home-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "home-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "1c3ee6a5b6f0581438593ac7078154f096353926a747c425ff671259b263cdd8",
+    "review_copy": "screens/home-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "home-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "1eeef45403ba5ba5b95f024cdb9a8515c24635f985b4e4c39330a5dddc7fe12d",
+    "review_copy": "screens/home-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "home-country-filter-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "fb987b1a10f76fd6595c459756aa72d33caa0725d7d2fb6b90364ad354f13df6",
+    "review_copy": "screens/home-country-filter-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "home-country-filter-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "25c73edc2a44c9c5705e58e7bfaabae649d6354388fd37fda36f662e5bbec2c6",
+    "review_copy": "screens/home-country-filter-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "home-country-filter-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "4bfdef1b89a8d49cdc4c1ed84eb685ecd87c3f45f06ff6ad88a4f80e9220e67f",
+    "review_copy": "screens/home-country-filter-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "levels-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "c0720f7ba6c572f237e18ab689bbd8d3b168da732597e874443f060dcbd8b67a",
+    "review_copy": "screens/levels-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "levels-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "07e654c2f43ac0b86e29284ccbe03c28299948076d9165ac9100e9b86556a570",
+    "review_copy": "screens/levels-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "levels-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "bfd3eababcaa34259b12546145d8bb44ca85aa0643921f01e3a7a87e2745ecd9",
+    "review_copy": "screens/levels-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "login-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "b0a5496be82db782316644b66ecf02a8196da3c657dce688875980493390c5d5",
+    "review_copy": "screens/login-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "login-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "e0cf805c97afda7aab0ed92fd2c32f7040234fa1a3dc957dbb0ba66fdb5431b6",
+    "review_copy": "screens/login-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "login-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "0f8eef54c0415512dc121fc5dcc7d27a0b64b1006d948c68dcc254007b7dc7b9",
+    "review_copy": "screens/login-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "640d88e60394b62b70e22787f19787049a5a60f7c904ec1701ec74d825b74c38",
+    "review_copy": "screens/membership-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "d7baec9594d226861377b56d65e2e48767a8a4dc1411cb053b69f95e579aea94",
+    "review_copy": "screens/membership-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "ad1cb963397b427c154c59a9732bac6ef7ccdab72f23355da36e9143a2082ea4",
+    "review_copy": "screens/membership-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-dialog-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "d2bfba8da58b3ef4292a908509a8fc62f25606b05de6517996883c51a7861265",
+    "review_copy": "screens/membership-dialog-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-dialog-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "0dd5ae629392271601d781d91a3c3667947431db263dfac99a756f987d55ad38",
+    "review_copy": "screens/membership-dialog-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-dialog-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "005b5ad31d1f5a3ccc11024beef0815b2e25cb7a5e1351f5ae1b3232e77d2f62",
+    "review_copy": "screens/membership-dialog-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-10-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "339185f48a6cdea9ce6fcb1274c79b284af7a251c99df9a8a729d13162b1a68a",
+    "review_copy": "screens/membership-perk-10-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-10-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "9072bd0514ecfba54f4bbb9c1ba1ae8e8c17d8575306942bc11a90e6537eaf15",
+    "review_copy": "screens/membership-perk-10-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-10-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "ec8fca64b17a83be559beda862d60b836012887ffcd3443073b50189e5c4d455",
+    "review_copy": "screens/membership-perk-10-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-11-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "8a006fe9d360bc04c761f27690450937d5fa05986e6cfd54dceebc550d55c6c0",
+    "review_copy": "screens/membership-perk-11-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-11-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "a9eca6b930a45a054f3df2c98e870660d049323b318c00390cdf16012984a919",
+    "review_copy": "screens/membership-perk-11-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-11-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "4300b2b0e7edef843207c91f5351e998aa5675c286392d6dc6951212cdefbd33",
+    "review_copy": "screens/membership-perk-11-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-12-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "3f7718217c9bdc66dfee044bdf8aeb011be6c284f5eab17842f055fa52b4dfd5",
+    "review_copy": "screens/membership-perk-12-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-12-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "85c78aa97de9c9fe86f9ab98776ea334ed7de28dd1b90eeba65e4b33079be42c",
+    "review_copy": "screens/membership-perk-12-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-12-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "6c275972dd16126ab757263cc2911e84bf71daab998116044bdddeed3bf00a4e",
+    "review_copy": "screens/membership-perk-12-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-13-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "984f44cae06f01865e1f1cbbaf8788868bab297eb8892484da3a30c408682420",
+    "review_copy": "screens/membership-perk-13-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-13-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "41ef30224bccad039bb30ba3fce06ea3584b73766b5f146e0cb3a2427eb7d5e8",
+    "review_copy": "screens/membership-perk-13-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-13-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "64e99adf808f392a45d9a7e62c0241e70b2da1f5cd0db48950ea175e80980d66",
+    "review_copy": "screens/membership-perk-13-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-14-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "0c53a5000b6d475801747e2a60adf98b248acfff5cfaa261eaa08f1bf94c39bd",
+    "review_copy": "screens/membership-perk-14-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-14-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "7040f11db91513c51789c67f2d52aa370609eaf1d0fdc388d8ed374c723682f2",
+    "review_copy": "screens/membership-perk-14-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-14-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "9b51a73e5d9adb7ec1c896e1ad8c166339f9ee0186f0f137e7fb1bc8d7023a53",
+    "review_copy": "screens/membership-perk-14-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-15-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "f923e99d0a7a4e8f366b5728b74c4d9ffd3e26a1bc629ed01b3fcbfc7f4d8415",
+    "review_copy": "screens/membership-perk-15-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-15-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "b11f534d09ab429abe96a2f7a9c34d0a58a302861769dfe69bc900df9c5ab0fb",
+    "review_copy": "screens/membership-perk-15-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-15-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "4fe9b12fabfc5d04a21d40c9c671f29d7ad0e78fdbe0231c18c72b3044127560",
+    "review_copy": "screens/membership-perk-15-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-16-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "32ec5e3cc43071a9fee0223ca70e74b6f7a0f99c58b60c915cdfc606ae2efb79",
+    "review_copy": "screens/membership-perk-16-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-16-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "e72ddc614dffe24a1acf6a0691d93bd5b3950873cf81566c80ea758f91dd957e",
+    "review_copy": "screens/membership-perk-16-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-16-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "2770c017c4e642d03641c36585b1e1cd8e1b12d624a1f1a2a6893b8ffb4d2199",
+    "review_copy": "screens/membership-perk-16-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-17-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "57e7f9b2db5af6c981126b76c942146c009de5b9476426df4dbcb86773e19904",
+    "review_copy": "screens/membership-perk-17-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-17-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "3975a4f68ce3399aebf6e9fc5286994c2c679e4b72d6122d069724e2ecf4402b",
+    "review_copy": "screens/membership-perk-17-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-17-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "9fcfdbffbe7b0439c778b0f8a7254baaa84977267210a4861d51c4501f13701b",
+    "review_copy": "screens/membership-perk-17-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-18-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "82f5c517f4f63eb06a64072b5201a44ae4cfe2fffe78a82fd40bf01c7e7c9f36",
+    "review_copy": "screens/membership-perk-18-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-18-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "3b57836d2e807f1247f0c0dbbecc7d004fe0e9a67d4b09ef6d1a36eb04f01db9",
+    "review_copy": "screens/membership-perk-18-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-18-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "d059f52d90c23e005c67d318c4b4d37e9b8a7b0fb9227f334a73851b928c586f",
+    "review_copy": "screens/membership-perk-18-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-19-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "d09d3784df791a942043edcb0e8a69714d454a8ca73cfdeb0c13e00092c615f0",
+    "review_copy": "screens/membership-perk-19-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-19-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "9b284a0b9a7c0778c177ec32111b825f6beefa671d32174f53f3656dc4e47c0d",
+    "review_copy": "screens/membership-perk-19-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-19-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "3b8e99097f7e64ab50733b477136c5374d97a26eeee238c886d3bf2246115992",
+    "review_copy": "screens/membership-perk-19-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-2-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "7a40929efcfca46e7e643ca2b2d8cb6e4668f56c64f4a25a7ab520029a2dcdff",
+    "review_copy": "screens/membership-perk-2-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-2-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "650b5d6b695cf923d04b1d9e15e539217c3fabb6921dba97830a6dc477899b83",
+    "review_copy": "screens/membership-perk-2-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-2-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "ed2f238a9e105d8a4c61b6b67aea2318b44a6443a730ad284a4b70e7e1a0922d",
+    "review_copy": "screens/membership-perk-2-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-3-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "974f81cab975f4e4a2d230cee9b961c52415f6af957417074d0094c362c1e2a4",
+    "review_copy": "screens/membership-perk-3-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-3-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "5242fa930dd0d28f8f8c20bcf9a17adf0644f405afa2c2058752dcd77c12b60d",
+    "review_copy": "screens/membership-perk-3-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-3-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "792671731fd6ce4fe9ddb4e8de80d02609db78a6a9974fa7168b71583780c265",
+    "review_copy": "screens/membership-perk-3-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-4-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "fca44414f24a7137dfb83254474620eaf434799a34b66db9c0de6f4b7e501d21",
+    "review_copy": "screens/membership-perk-4-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-4-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "472bdb0714d468a340d920233b43140f97a01bba7ebeec6c2f8b83f1cb0e9a62",
+    "review_copy": "screens/membership-perk-4-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-4-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "4b301bdc6a17836033848c0bd5c851f269ca7f97bba6cb5cdb57002f88cace0d",
+    "review_copy": "screens/membership-perk-4-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-5-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "9baea3cba79108b56a656c888cf24a539c683fc7a82d2b1e0ebe444d6da65af0",
+    "review_copy": "screens/membership-perk-5-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-5-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "11c01e68ab5e74417ec52b92a7e7e535d3b6767268735491dfbacc26f94d9dec",
+    "review_copy": "screens/membership-perk-5-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-5-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "1471ade64f398a2843ff38e5ef647daccb9417bfb6692824d42bfd3cd723e04f",
+    "review_copy": "screens/membership-perk-5-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-6-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "ff801eb07341cf4d034c2c28ceb122e73f435e42544facac2f9005a7ac42e4fd",
+    "review_copy": "screens/membership-perk-6-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-6-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "05dac9c728615f70399393b67d88970b3fd833523d4227f92d50076336b65327",
+    "review_copy": "screens/membership-perk-6-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-6-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "4889e9c9941c02204042180385df5a54ac855c72f57a1d2cb4db42aab9d5c70b",
+    "review_copy": "screens/membership-perk-6-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-7-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "9c553bc3997f27ac07f1f81801787c93864802a3e73e444b57fd58a8ea0f54c4",
+    "review_copy": "screens/membership-perk-7-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-7-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "f3e64b5f929db1d9d7d02bdcee85e13cf6fc908ffbd8d0709a9643ab3efb7f81",
+    "review_copy": "screens/membership-perk-7-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-7-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "744be974e59cc0d0b12c79efd0e3d6ecef279ebcade82d507e4eabdfd9d33ccc",
+    "review_copy": "screens/membership-perk-7-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-8-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "096fba3253e7a3144de292d73734f2651019c7f27916d256f136a49a4ff928f6",
+    "review_copy": "screens/membership-perk-8-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-8-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "5840a0b2c1bc9fcb30ed03690f69232fab6f4afdd7b245584c048c660c663837",
+    "review_copy": "screens/membership-perk-8-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-8-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "7d45bada285955875d055a086dfb40f55109b57744e1cfc4e871ce855782be2a",
+    "review_copy": "screens/membership-perk-8-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-9-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "9195a948139b27d6b1bf857b53db486e2db895c262a84ac4d29f651987a5e6db",
+    "review_copy": "screens/membership-perk-9-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-9-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "2074d35c5b3a8c49a18e30223b27b6ba93b6275832841d3810ff9d5a23c9111b",
+    "review_copy": "screens/membership-perk-9-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-perk-9-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "46edb70bb3ad48baa2c5b18d75c59e9e6b76c344379baf1b0d46789dd340019f",
+    "review_copy": "screens/membership-perk-9-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-1-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "640d88e60394b62b70e22787f19787049a5a60f7c904ec1701ec74d825b74c38",
+    "review_copy": "screens/membership-tier-1-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-1-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "d7baec9594d226861377b56d65e2e48767a8a4dc1411cb053b69f95e579aea94",
+    "review_copy": "screens/membership-tier-1-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-1-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "ad1cb963397b427c154c59a9732bac6ef7ccdab72f23355da36e9143a2082ea4",
+    "review_copy": "screens/membership-tier-1-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-2-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "f375734e9f7ea4a35ca974ac750f1395fd696bab3cd5a48de5e3152ac18b61cb",
+    "review_copy": "screens/membership-tier-2-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-2-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "90179b7f66da9579af9d6d7995bd3d06a59081effcb0398358ee50b387840cef",
+    "review_copy": "screens/membership-tier-2-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-2-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "455e10fc6bda2ea4685cb613b82099c35b96d30653cbbf36ce469213a381e70f",
+    "review_copy": "screens/membership-tier-2-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-3-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "f804dc0808a229c1bdb76a94653e1b7a8ffb4f8ed0c1ae85f1c02932970fbb89",
+    "review_copy": "screens/membership-tier-3-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-3-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "c81e6db70d28980a96efc334725f489cf16a8ea6b56e7a375241aa3d0c03212f",
+    "review_copy": "screens/membership-tier-3-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-3-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "6d4b8a62878e0ea3577185e7f531fde766e92916c419a95bba986bc4eefa2525",
+    "review_copy": "screens/membership-tier-3-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-4-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "d3a5de214da572434f62e01bfc2bb3751b5a7457a2a98e15f3bd0160af24f08a",
+    "review_copy": "screens/membership-tier-4-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-4-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "e111f852d61fb736d6aa524f3f7654d33b81659a3d7081578a9744dfce0613ce",
+    "review_copy": "screens/membership-tier-4-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-4-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "e004601a937fe1934c48e990c61582923da50c8d8202ea9bb0b095062b0f2925",
+    "review_copy": "screens/membership-tier-4-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-5-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "d3b8047569857ebbc5b7b5de9dd5f18b004094ff8f669141332d08428154c19d",
+    "review_copy": "screens/membership-tier-5-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-5-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "94fd77d03b5a3d87fa899505232fbbcb21211187edbdda408b98d55b4ec1ca00",
+    "review_copy": "screens/membership-tier-5-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-5-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "1e3c19c3a6d67a087c566bf8e0333796c0d645ae0f89ec0f01f858d934f32b5d",
+    "review_copy": "screens/membership-tier-5-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-6-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "56ba5c93babcdb5d7c6beb7c4070aa2dc0a439575a3e4c7d18846a590d6704cf",
+    "review_copy": "screens/membership-tier-6-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-6-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "f684501ef2b0ca244920b7845275c90e32862d2010fe60b2623a550ec9c2f861",
+    "review_copy": "screens/membership-tier-6-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "membership-tier-6-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "43052318d922888971f6c8ed62162641afb5a10a0ff56551bd506110064b2899",
+    "review_copy": "screens/membership-tier-6-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "messages-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "2310cb39d862e1f09285d90d2ed0936f812276ba9366e05ab25ee4b95676915d",
+    "review_copy": "screens/messages-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "messages-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "05861a183778800a0a954b03649f645389caa42a81a051d9f4794d7bc3cf6944",
+    "review_copy": "screens/messages-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "messages-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "fea2e0726f69ddcdad1b466787e1f175c5cb31dd96f5a474602f31eb6a64760c",
+    "review_copy": "screens/messages-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "mini-profile-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "6cec910aaceddefc2e7e212aa37b8644beff668469f4c787b6e92a94549fd48b",
+    "review_copy": "screens/mini-profile-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "mini-profile-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "acaad20babeb711e7943286687a502e2e06129f6c871dcd52db1c82b2bd3e886",
+    "review_copy": "screens/mini-profile-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "mini-profile-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "c383deaa3949c3c17b50acafba9ab77d14987aaa655d58f1436f0946845fda70",
+    "review_copy": "screens/mini-profile-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "moments-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "c66354be9d7677636cbd140230b5d047c746c488b311b6559856b9220436d237",
+    "review_copy": "screens/moments-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "moments-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "c99e03fce73e29be999b7af10eb365f36cb86da4119eb73b828b00aece97d7e8",
+    "review_copy": "screens/moments-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "moments-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "f00c2eb99aefe972b997951110dfe55bb99f994d031a41114e012112b645b243",
+    "review_copy": "screens/moments-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "navigation-320.png",
+    "pixels": [
+      960,
+      2160
+    ],
+    "sha256": "55578a6e4cf7f6a2b477f4a56e40af286182925b28661baedf342f8338c5daf9",
+    "review_copy": "screens/navigation-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "navigation-360.png",
+    "pixels": [
+      1080,
+      2160
+    ],
+    "sha256": "dec9a7ee3a8ec26a24595d1ed41cf9bd12998d239e4c080fd360570633515542",
+    "review_copy": "screens/navigation-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "navigation-390.png",
+    "pixels": [
+      1170,
+      2160
+    ],
+    "sha256": "9cd69dd56b8ea792fe8060c2c297d95ff8aaa14b5f95f2c10873b58091e1abae",
+    "review_copy": "screens/navigation-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "party-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "2ccbae7de4ce9355e9e26b5c097d709967bbb2b79ec93d1b315ba8e849a81736",
+    "review_copy": "screens/party-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "party-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "d6614bcdc29efde1869d0ce3831a3dbf2fe9c6ba768c9646e748ccb0adf6ef27",
+    "review_copy": "screens/party-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "party-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "eb1361d91f1c04064c8612c4eba3b1f015a3b56eee08ad01b981ff971c34cddf",
+    "review_copy": "screens/party-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "party-follow-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "e483edfa1e0f1468bc5eea8744425f8767b4fbbf7a56aa9a319318789333d8a3",
+    "review_copy": "screens/party-follow-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "party-follow-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "cb084e6249c4904e997be481953b9bf3ce24bee8d36ec6857162f1e31920f491",
+    "review_copy": "screens/party-follow-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "party-follow-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "a2b6847020576a479a6886b7c1d961bf57d15300192752f61282f6874fe04114",
+    "review_copy": "screens/party-follow-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "profile-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "202a7504a05ab7de357660b8d7eb16acf42d8da3f3ffa4616f3d82ea4ef773cf",
+    "review_copy": "screens/profile-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "profile-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "ff0a15e5d7e3bedd772449518480dddd1a374febe9a30e84d4dbb01bcb7cb54a",
+    "review_copy": "screens/profile-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "profile-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "f1f87eb6a019649974101544c78a0adad16ac04f535470cc886328ea23464f44",
+    "review_copy": "screens/profile-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "profile-details-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "5a746324ab9a55fbf47301b8c968fe2c46a7e70c83556a33c2cadb32ebbd3973",
+    "review_copy": "screens/profile-details-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "profile-details-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "0d62ff66885545a62da1eb58ce70f27456588afe7644c451489bc52327bc80f5",
+    "review_copy": "screens/profile-details-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "profile-details-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "ce64e96a1f8714f53018a26ce633fbb5d61c6daf8e98d2aa7d268dbaca7329fc",
+    "review_copy": "screens/profile-details-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "public-profile-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "0e3577e4aadca3231898fbdf71edd2d65210838a505463fc3ae99a67c196267d",
+    "review_copy": "screens/public-profile-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "public-profile-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "371a6efb657259f63bd7d1052f64463f008736de9ba7a6a03bd0f329d1f57be5",
+    "review_copy": "screens/public-profile-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "public-profile-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "87590123aa9938373daafded6141354182c70c864eb81771b8980f8e0bc0e0c9",
+    "review_copy": "screens/public-profile-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "ranking-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "d4e4d7fedaf31dfaef4f3cac180703f1307e13d569bdca2edcb9d4e0238e8446",
+    "review_copy": "screens/ranking-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "ranking-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "9024f5880616ca2f4a7fd33b483e67617d76d06c924fff70e2c30af56181356b",
+    "review_copy": "screens/ranking-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "ranking-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "1fe275222aaddb11a6a662ad3627742014d1b0cd813e547134e1af1118803f76",
+    "review_copy": "screens/ranking-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "ranking-tabs-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "d4e4d7fedaf31dfaef4f3cac180703f1307e13d569bdca2edcb9d4e0238e8446",
+    "review_copy": "screens/ranking-tabs-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "ranking-tabs-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "9024f5880616ca2f4a7fd33b483e67617d76d06c924fff70e2c30af56181356b",
+    "review_copy": "screens/ranking-tabs-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "ranking-tabs-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "1fe275222aaddb11a6a662ad3627742014d1b0cd813e547134e1af1118803f76",
+    "review_copy": "screens/ranking-tabs-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "4bb2ddef5afb8e7500ed89453bb357e01cc6d6db269b2cecb64bd17dc1a3b931",
+    "review_copy": "screens/room-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "17d22c2e3ae379d047c0682154bc1e34af4835aee12bf9640e1ecb94515f0311",
+    "review_copy": "screens/room-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "9f6315596f4e73c656929a749c9a185b935329a19ff242f53c0e1e020f0bef5d",
+    "review_copy": "screens/room-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-exit-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "948b97fba0d32dfb98aaa168a0688d615565e1c2479061d2fae98fb24b8e7429",
+    "review_copy": "screens/room-exit-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-exit-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "18cc04782ad9c37ea1df43e76f0e71124b2606a87756a835e3c3d6d992fb95f6",
+    "review_copy": "screens/room-exit-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-exit-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "18c5408f943a1eb8b8735a23fad9a5048b3c1182067c07e73626711509b70486",
+    "review_copy": "screens/room-exit-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-gifts-empty-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "98f51a4712356f27d67d3569d68469483ab05014148b531b661696d43acc1ad7",
+    "review_copy": "screens/room-gifts-empty-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-gifts-empty-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "fa532bd3c2c0b48ec7b7eac2f709e45644b48d9a104d5affe797b14813104c55",
+    "review_copy": "screens/room-gifts-empty-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-gifts-empty-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "464a52947a454cbcaef4b4b57a0923130bd957f9f1a6c0e5b8ab8e02b75db6fe",
+    "review_copy": "screens/room-gifts-empty-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-music-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "3d4ac9c590e3a1574c5c6799a741a57078ecc4474cbac4266e8ec7b3c7c6f03d",
+    "review_copy": "screens/room-music-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-music-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "c822f74749d160cfd21661e06d8423b4da9fe8446e03f5ae7f1d11e9459adadb",
+    "review_copy": "screens/room-music-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-music-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "3e6c41f81f2bf50892c9d62607cb515558157c6f611f9194e2c6a300c128e674",
+    "review_copy": "screens/room-music-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-reactions-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "1d481dbcfcc4f71d3cf2791236ab40313e5d7949794a68c1c0f3b201baac43a9",
+    "review_copy": "screens/room-reactions-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-reactions-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "60fd125c2dc0c7972e94bbca8bbc3670bf0ba6443f288a44a1bc837c96246f03",
+    "review_copy": "screens/room-reactions-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-reactions-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "017a30dfd525b47c4e1bd908a20e45a892632e059e0c9979f298bffa9b2448f7",
+    "review_copy": "screens/room-reactions-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-seat-sheet-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "88b23263a5b65505b26491da1c84307a350fa070dec7cff96c95586adc972503",
+    "review_copy": "screens/room-seat-sheet-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-seat-sheet-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "6b3cb545a40a7caa45ce89edcedc2a0b6693c3bcd5c1d72c46d60facd5fccb9a",
+    "review_copy": "screens/room-seat-sheet-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-seat-sheet-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "1a353c78f12c23ac343d87d7449fd6af090e66acb4e642549c2584cbf7315de2",
+    "review_copy": "screens/room-seat-sheet-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-tools-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "312ffd2cc6e5e704ac76d7dc7f1b2bdc0e0290dc35de8a5b2a39f561e566f7f7",
+    "review_copy": "screens/room-tools-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-tools-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "11b9ba5580e6309e0120aa75fb2055773cd3c078a4209cc43af0475cfeffb5bf",
+    "review_copy": "screens/room-tools-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "room-tools-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "e15b5f438f415d5dce392759badc95ebcb93f8d6291d5cd1f21a5e5fa434cbc6",
+    "review_copy": "screens/room-tools-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-catalog-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "f623307e78f02fefb188884ca8f64449473a3d30707db6f20a047d6880fe67c1",
+    "review_copy": "screens/secondary-catalog-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-comments-320.png",
+    "pixels": [
+      960,
+      2078
+    ],
+    "sha256": "3d43d06d23e602b09457d240febd3adaed8f3b3b4943e7098c9514ee7ace20b3",
+    "review_copy": "screens/secondary-comments-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-comments-360.png",
+    "pixels": [
+      1080,
+      2338
+    ],
+    "sha256": "c545995f1d0cf7c57b36d30d18547292ef1a1b5cc1e9b2555536311fe4227246",
+    "review_copy": "screens/secondary-comments-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-comments-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "8a9f4e255a24e6a64fc008712394fe01ebb0ea935a78171e0376ac3e069afc23",
+    "review_copy": "screens/secondary-comments-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-conversation-320.png",
+    "pixels": [
+      960,
+      2078
+    ],
+    "sha256": "05c7a9540ac9955e5fda97d0969855ed7063b75ec1e97bc2d3f3edf548c1e347",
+    "review_copy": "screens/secondary-conversation-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-conversation-360.png",
+    "pixels": [
+      1080,
+      2338
+    ],
+    "sha256": "49191a5c2b7bd619acb7626983251bfc6cd1757561ea67afa78b1f0eca3a9843",
+    "review_copy": "screens/secondary-conversation-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-conversation-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "e5e813b3ac7729fff6b00c5493cc48d346b28b06404226ba408b386bcec99c8b",
+    "review_copy": "screens/secondary-conversation-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-gifts-320.png",
+    "pixels": [
+      960,
+      2078
+    ],
+    "sha256": "6adc707201e266fc4f238f3a6253cbec0ad75455911242396fa746b0f8920f7a",
+    "review_copy": "screens/secondary-gifts-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-gifts-360.png",
+    "pixels": [
+      1080,
+      2338
+    ],
+    "sha256": "c0511daf7e6dc415ae8b46210b5bb137c9751d22ee5810fccbef9c46ac129141",
+    "review_copy": "screens/secondary-gifts-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-gifts-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "ea228ea1da07ac879101c62b918df1e59117ff0a0d1282d15985f0629c425642",
+    "review_copy": "screens/secondary-gifts-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-home-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "68493074f5e9ea8f25bb7a5ef2b124ed2ef4411301755dd79ba7f492676d08e6",
+    "review_copy": "screens/secondary-home-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-notifications-320.png",
+    "pixels": [
+      960,
+      2078
+    ],
+    "sha256": "ab732b88a492aa5075524de79edd66558ddb2bb36f50fc33d40238ff99e1cfd3",
+    "review_copy": "screens/secondary-notifications-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-notifications-360.png",
+    "pixels": [
+      1080,
+      2338
+    ],
+    "sha256": "dde4d17ca95020cbe7ac9cf88fecf3a198682811056465e02097749976dd4b44",
+    "review_copy": "screens/secondary-notifications-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-notifications-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "aaac845e95975116fe335ac2ca8847694a7051be127570c51c45666b3756aebd",
+    "review_copy": "screens/secondary-notifications-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-public_profile-320.png",
+    "pixels": [
+      960,
+      2078
+    ],
+    "sha256": "aa8f56219d730f8d1073b0d88454e405d555a9867f3c7a20ad90d269e439d971",
+    "review_copy": "screens/secondary-public_profile-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-public_profile-360.png",
+    "pixels": [
+      1080,
+      2338
+    ],
+    "sha256": "2165f9d7a8adcdf3c0b8f24b44318d7878b8e886303fcf703f2c2fa247c8f19f",
+    "review_copy": "screens/secondary-public_profile-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-public_profile-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "9f7c6baf2fd7096a441c36e0d2b5a7c13131b88769b5d0b5d9dee7d99a530893",
+    "review_copy": "screens/secondary-public_profile-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-recharge-320.png",
+    "pixels": [
+      960,
+      2078
+    ],
+    "sha256": "c776a2032db55f7d216da8fc89c25f4de7d85af5b3e0430a5c8ba931eb180bbd",
+    "review_copy": "screens/secondary-recharge-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-recharge-360.png",
+    "pixels": [
+      1080,
+      2338
+    ],
+    "sha256": "6874c2c8f6e0fb3d96cb93178777c7e07d4b3d200eb40bbf7e293e1e2577b92b",
+    "review_copy": "screens/secondary-recharge-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-recharge-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "20bb2798328f898cb91f5c8a8bf499ae58c0ce37398b2e7204d0fa72155af02c",
+    "review_copy": "screens/secondary-recharge-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-room_profile-320.png",
+    "pixels": [
+      960,
+      2078
+    ],
+    "sha256": "2bf50383359da98aa9b119d0275c42a65da91a145f432182791ccb1947804ad7",
+    "review_copy": "screens/secondary-room_profile-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-room_profile-360.png",
+    "pixels": [
+      1080,
+      2338
+    ],
+    "sha256": "8420f8de9eaff3b97c1d723991cb6daa5970c8f208f7e4ccabebefcfabbd4244",
+    "review_copy": "screens/secondary-room_profile-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-room_profile-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "a4695013b615697bef6e844fe9490b9f48fec2f482b4892e3edefaa2f8162bc5",
+    "review_copy": "screens/secondary-room_profile-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-room_settings-320.png",
+    "pixels": [
+      960,
+      2078
+    ],
+    "sha256": "39d75b549b8861108601aebd623de52078febeb9e82b1b1376fbe63fb9baba34",
+    "review_copy": "screens/secondary-room_settings-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-room_settings-360.png",
+    "pixels": [
+      1080,
+      2338
+    ],
+    "sha256": "399ea1af38c73b88cc7220f8d7479dccab05282f991a2fc3467e607942d7e715",
+    "review_copy": "screens/secondary-room_settings-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-room_settings-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "5a6d55fbba98be0f8d0d2c732f6d4a1daf1fdcb397faed49b3a4e8b87986792b",
+    "review_copy": "screens/secondary-room_settings-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-settings-320.png",
+    "pixels": [
+      960,
+      2078
+    ],
+    "sha256": "d418d05a4ce76861f85ad989c20d7ed880af5333beb37ff28a55041bca273a4b",
+    "review_copy": "screens/secondary-settings-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-settings-360.png",
+    "pixels": [
+      1080,
+      2338
+    ],
+    "sha256": "1f4d740778f44299844b17aaee6bd43e143f2e8d84dd31adeb7c2604d4ff0c93",
+    "review_copy": "screens/secondary-settings-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-settings-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "325795d3719f6fbb37812ee695de3460e87533be9d7ecb0dd92d1b10d2cc111d",
+    "review_copy": "screens/secondary-settings-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-wallet-320.png",
+    "pixels": [
+      960,
+      2078
+    ],
+    "sha256": "f0226ce535334bbd91f90e794739fe20c0765c3b5f11d5ab2f6a1de9ace8793f",
+    "review_copy": "screens/secondary-wallet-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-wallet-360.png",
+    "pixels": [
+      1080,
+      2338
+    ],
+    "sha256": "ce8e925163a153ba25f4f5631f704f3e7a90ecc414d3f7f5bfe38875e394e26b",
+    "review_copy": "screens/secondary-wallet-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "secondary-wallet-390.png",
+    "pixels": [
+      1170,
+      2532
+    ],
+    "sha256": "4b9d34879e3a40f61d8f39745d908ab445cc81858534a50ba3bafc6a23d55372",
+    "review_copy": "screens/secondary-wallet-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "752b819355e9e565ddf27d1bf2c543eb8648c009477af853d77448fc355a8def",
+    "review_copy": "screens/store-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "6c3fe3f6a66075d36d1e0dc966a6b9d96f52e1cf040abbb314afe192a29ff400",
+    "review_copy": "screens/store-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "ee6b1dc2a3c713759c8aec889eba3b6d2d9120eb90ddf825bb85dee08d41e3a7",
+    "review_copy": "screens/store-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Chat Bubble-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "25dc7bebcd4e4a794cd8d5965968628f982123177c9085b90d8f4218805f4df2",
+    "review_copy": "screens/store-Chat Bubble-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Chat Bubble-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "f9c76febb74860a941a4b21789d6f340d55ea834fa6c3df1f30fad6de7e69ed1",
+    "review_copy": "screens/store-Chat Bubble-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Chat Bubble-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "4e57c7531c90910cee1d68fc4d858cdfdc74d9303fa58895de3f2f3a56508f71",
+    "review_copy": "screens/store-Chat Bubble-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Chat Bubble-selected-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "45f96c4e37517b5dd324ee236968deb3baba440be2c35f98dd218fa385bee42d",
+    "review_copy": "screens/store-Chat Bubble-selected-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Chat Bubble-selected-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "550e795bfb01741dc9a7a6585468861540acc7b2a741fef5c951a22f6ab40fdb",
+    "review_copy": "screens/store-Chat Bubble-selected-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Chat Bubble-selected-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "a4ffcb45f7b916adf3dda1a39272fcffcee19ffa8b8ade5785aa35ffca7ca7bb",
+    "review_copy": "screens/store-Chat Bubble-selected-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Live Frame-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "3ca33180a83d8c1f9bb727bfbfb497fea165e7b6b028636dec628a272fac11be",
+    "review_copy": "screens/store-Live Frame-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Live Frame-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "830b41b5eabdb52770b3b282d734edfcc6f7890d2fde22434a0dc5fc9c8004ae",
+    "review_copy": "screens/store-Live Frame-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Live Frame-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "4ab1f477df23a049a39bfc6f30896b70e0e567c062a6f000d6fe16e1b3599472",
+    "review_copy": "screens/store-Live Frame-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Live Frame-selected-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "c411b372b7d6b65b4e892611084540958b9b6c786a8ef677535a7dea0bd2d1f4",
+    "review_copy": "screens/store-Live Frame-selected-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Live Frame-selected-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "a3e008b0d4d8657ac1db99d289cf1c25da53c7e1a3b68b94593320a7947d4d3e",
+    "review_copy": "screens/store-Live Frame-selected-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Live Frame-selected-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "6907a080586ed06f27a1ab24a2d8bc54b7b9a885727a93037910a28851a8a0a6",
+    "review_copy": "screens/store-Live Frame-selected-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Party Theme-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "56f3ea10db6f7d2976493d82fa9cbcd51b53886f84b88b50bcb1aa0a11c53966",
+    "review_copy": "screens/store-Party Theme-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Party Theme-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "9488a2b56dedafac609a41cab4783000501bac62d5b38eb8d8b3b6bdc4d8b55b",
+    "review_copy": "screens/store-Party Theme-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Party Theme-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "b32dd08eda7e7bf6f5ed3bda99317816c6b1e732bc72120158611f5b22404705",
+    "review_copy": "screens/store-Party Theme-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Party Theme-selected-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "99f574382a448392fc8e67a12d94dee47e576f84be50ebf1b89356798abfc7d2",
+    "review_copy": "screens/store-Party Theme-selected-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Party Theme-selected-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "9c623d0479b0848b8a649068f2b4c1862ec32880ba73195fa9c7e5e6fcbb3b1c",
+    "review_copy": "screens/store-Party Theme-selected-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Party Theme-selected-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "b1ff7085c5bb2402e766a373a7bfe01dca2bd1bcd361086ea06c1e661f4dc3f6",
+    "review_copy": "screens/store-Party Theme-selected-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Rides-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "3cacfa69f3b2a33dd00307cefba286049c813f690d90983eb49f3b0ee23d4778",
+    "review_copy": "screens/store-Rides-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Rides-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "e65dc1e0b77473aef2aa651a28806bc079fa28bb5e0971341e5ee99c515f4c17",
+    "review_copy": "screens/store-Rides-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Rides-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "1f1d8c02ea8c0f6fc1c7fcf9b32ca3c5364f3a12aa9575180e4bb49a6bbb9bb7",
+    "review_copy": "screens/store-Rides-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Rides-selected-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "8f98c93090fd6806c9a37631df99ac0568c42e963b266bb77b6b5e3b9f72b63a",
+    "review_copy": "screens/store-Rides-selected-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Rides-selected-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "2e710d3d0052cb637b6bfddc4d498674482e8f3d9fe14eeda58efc5e1e1d67ad",
+    "review_copy": "screens/store-Rides-selected-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-Rides-selected-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "326ea01cd85d4608360a645db50f02633fc2203cf15971a8849e84b51a20d0a0",
+    "review_copy": "screens/store-Rides-selected-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-preview-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "ac77f04913f77193b54b0c15c419a89d9fbdf01b220edb9fa6445bc64eeeb2df",
+    "review_copy": "screens/store-preview-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-preview-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "f1fdce1fe8e9c65d864451d76fc6e962d9e241040000ad86ad4173fe2ceb4872",
+    "review_copy": "screens/store-preview-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-preview-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "71a3147cbe856ee2a4f96ea8b0360230e533cf92ee9e377e4832c7e8952faa10",
+    "review_copy": "screens/store-preview-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-preview-selected-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "ec55c893ca6dac5d12fba2be8e970963fa549ad8adada6d4b88f99f305ab8455",
+    "review_copy": "screens/store-preview-selected-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-preview-selected-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "b0efc3e245361a068889442e882c386c2faea5f942731c70fe19a576ee6fb2bf",
+    "review_copy": "screens/store-preview-selected-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "store-preview-selected-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "0cf9ee226150075915147f95e2cc016fb375bff946c139c0da73befe11e8eb68",
+    "review_copy": "screens/store-preview-selected-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "tasks-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "82408ea0b674521136fa251a29a214839d737df32762e42428041bee559e8b65",
+    "review_copy": "screens/tasks-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "tasks-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "60dc70b8e732785dbae5af7247ac2501406af612a450bcab568a1be1dcf5caba",
+    "review_copy": "screens/tasks-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "tasks-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "fbec772fb6dc3def897ed93993f46d2a558f05601147516f489269b1ddbd4b9d",
+    "review_copy": "screens/tasks-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "9965f2651771ff67f9e4090e036c6436fddc21ff9a7a4b10a39fb769938b40d3",
+    "review_copy": "screens/vip-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "8efd70f22f2b2ebd547acb50a6b0213e9bdc42673dae8252179ebde04a4620f3",
+    "review_copy": "screens/vip-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "29d6513c0ea41443100235d17cea3e47b4e1ee75efe91abbb48a0b4c6f0aec1e",
+    "review_copy": "screens/vip-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-dialog-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "2ca940cbdf0de013ae67ac1c963d5a38498ed722a255a0bec90a44798694979c",
+    "review_copy": "screens/vip-dialog-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-dialog-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "314ca10dc4ebf961776b7e437b975f1ed1ca805ebf3d00c3a9d82061cde7485f",
+    "review_copy": "screens/vip-dialog-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-dialog-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "9b0d9066725ea767117a65f0a61126d2f7337db6f4e2da50c5b14e2fd886bea0",
+    "review_copy": "screens/vip-dialog-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-10-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "0e202705987c671504f848886817e038b24586ba65dd59ca039f7cd7be7e2149",
+    "review_copy": "screens/vip-perk-10-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-10-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "ad4637bfed8cffe1a700f53992640841822e9090f24749a9038bd2f22269eac6",
+    "review_copy": "screens/vip-perk-10-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-10-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "de75bb92f48c2991fc14c5ba471a7f333c9fca1dcc1af307a32f0afea5eafe6d",
+    "review_copy": "screens/vip-perk-10-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-11-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "aaf61f0d75176806cb0b692a0e7e9e5b1a80943d5adfd66a51d6a20f3b579724",
+    "review_copy": "screens/vip-perk-11-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-11-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "b516d862622ffccd40b124e3431014e2202a470a883a00dfd6f248ae03a6c518",
+    "review_copy": "screens/vip-perk-11-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-11-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "f15a10d94af3a67da6674daf075089e50355ee6a824e0a8ec79b9e5961aee98c",
+    "review_copy": "screens/vip-perk-11-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-12-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "768081fd12d2b617a069dfaee72220db73880b7988aef77ac963fc0e94e5e25d",
+    "review_copy": "screens/vip-perk-12-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-12-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "475dcd1eb5b44aa5c08e03bea9b09f67fa78f8b57fce2185fb01c6a646bc8b07",
+    "review_copy": "screens/vip-perk-12-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-12-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "3557f72a70b7ed7ff4c68838c44b83af7bc693f6d89bf8bc6e14f4faa5f36bb3",
+    "review_copy": "screens/vip-perk-12-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-13-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "ee2a3c2cf8666a25449fa447824936a986b785728c6dd60e7ccc830846559df8",
+    "review_copy": "screens/vip-perk-13-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-13-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "c705acc909326e7d91f840d41c07cabf9cc45454933ae16a840e08725153d82e",
+    "review_copy": "screens/vip-perk-13-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-13-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "c86970bf6a069a0d967b1c02aba2b3f6fe4c2a832cac8e86897af8573ef1916d",
+    "review_copy": "screens/vip-perk-13-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-14-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "e1803f050f32cb2353c8a46e01a334eeac467753d2f9899d28ccea8eb8e15468",
+    "review_copy": "screens/vip-perk-14-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-14-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "f74fed50f817cc8983d3650934154ec4f1869f50bfb63617eb0e39e8be7d6bb8",
+    "review_copy": "screens/vip-perk-14-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-14-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "76d592e2ffc89e30b37ac627df0aff5326f295997fccd8670f20c97988fde241",
+    "review_copy": "screens/vip-perk-14-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-15-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "fe974c9cd1edf89b3d44abe7598197fdf48696d9609f484336864b404478dec9",
+    "review_copy": "screens/vip-perk-15-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-15-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "cb3b81437834a2e2f6d578002e23896c7f590b78ae77b5e0810e26bd12476ba5",
+    "review_copy": "screens/vip-perk-15-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-15-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "c2ccc6dafccd44785128dfde208af189b2e7ad213a65ff33691d7478207029d4",
+    "review_copy": "screens/vip-perk-15-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-16-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "2f274208c7ce9c5db5ce9432307454c5dd11f6322dd2ff63d5a7d9d2d245b91b",
+    "review_copy": "screens/vip-perk-16-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-16-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "cbd033e4a87b0bc11f1f4815355e66b0353c419755d5636fd95a96e90b9ffc02",
+    "review_copy": "screens/vip-perk-16-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-16-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "bb6b141145c4936217bfce534d93821c732d37a48c6bfca0d67ca299e9781849",
+    "review_copy": "screens/vip-perk-16-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-17-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "6c933ee7e14db0d41e43a4e8e58dea765b5fe928f7aa847854da92e4e51af364",
+    "review_copy": "screens/vip-perk-17-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-17-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "b081f65649e66f917367c6135d0744eb848ae5221280c6ec0cb284ef50d56b36",
+    "review_copy": "screens/vip-perk-17-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-17-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "8f2867f7514241d011b984a42dce8de8ce59b2b011fbd6b09abfa5b489e58a39",
+    "review_copy": "screens/vip-perk-17-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-18-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "1a2333682a39526bd5aa28270b875c795b6845fbb909c764812203d57b1c4299",
+    "review_copy": "screens/vip-perk-18-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-18-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "c134bdb07be0962ccc0fcbc1bfb19ead777ad6e8d9709cde9d09e384148dc6cb",
+    "review_copy": "screens/vip-perk-18-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-18-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "5dd32872026f4e8b72eabfd8f86cab074d6bf8716a42d5383d7f053facc74066",
+    "review_copy": "screens/vip-perk-18-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-19-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "f8cca070c9d89fbaaa975028ce0ff54523e9318649c9f9cd861f44407803349c",
+    "review_copy": "screens/vip-perk-19-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-19-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "278f00346602cdcda6ef9a2860a7f96d6c4401667d3d375cd8120d766e0f9307",
+    "review_copy": "screens/vip-perk-19-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-19-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "b45769dbcc12c0840ed7663fbf4602af06fa35678b0def9671a6d9d9106a3aa6",
+    "review_copy": "screens/vip-perk-19-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-2-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "5883c75f90abd553de10baa512660191597f2b2cdad7743fac30fb148e91a650",
+    "review_copy": "screens/vip-perk-2-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-2-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "bb442b33f43fce88207a44d123f43b2a023a55794a5fdd3cd8619d60527e77f8",
+    "review_copy": "screens/vip-perk-2-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-2-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "e2d02ebafa51c313916fb94ac1fa600d2d20199fab894d09f38312acf35c9507",
+    "review_copy": "screens/vip-perk-2-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-3-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "25ec1342160c2e4e048277bdf7d9aae93332265155be9476ea22fbd22004ba2a",
+    "review_copy": "screens/vip-perk-3-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-3-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "b29b57a2f3de723d23eb3e0050ccdee2bc35f0febba0f742ef5de27892202616",
+    "review_copy": "screens/vip-perk-3-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-3-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "ed55708e4c339d7557a9160ebc50fbae91275bab0e66bac778d2c2f58de4ff3a",
+    "review_copy": "screens/vip-perk-3-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-4-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "db243d048b437ac37ebda3af32b992a9afbf7652cb3b52669a5e595b76483206",
+    "review_copy": "screens/vip-perk-4-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-4-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "da5d264f128fe61f41ff7bd9aa2b13be20630d62ef244b21b344d8b6d134995c",
+    "review_copy": "screens/vip-perk-4-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-4-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "57297213c566853ea261ef39844b71c95c06d80b653a9405882663be598620d3",
+    "review_copy": "screens/vip-perk-4-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-5-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "52ef9414104c530c85f6beb70914396d8d1ea3901017548dfd34d0b2eea0b963",
+    "review_copy": "screens/vip-perk-5-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-5-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "e10eb0738d44af2cd9557c1598d25751032e467105dd5edcfb5c24300feb125e",
+    "review_copy": "screens/vip-perk-5-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-5-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "a97ce81c6ac75664dcd59357d87b7913c1e4f3b59907ac4034ecd02480760fd1",
+    "review_copy": "screens/vip-perk-5-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-6-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "29db7f3758c0bc86d9a802b33625dd908e4f419bb2843e458e29005dec608699",
+    "review_copy": "screens/vip-perk-6-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-6-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "1839542d7a428379e503b596416b4e6fa249e12075b1e2b74f5e5d120da6c5de",
+    "review_copy": "screens/vip-perk-6-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-6-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "5c2ae1448a417d554059f60d43b9cba21d49c0429e56a0f13ed712f09a5ce2db",
+    "review_copy": "screens/vip-perk-6-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-7-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "66a0ebaa82aade5f449eeb894c0bb648aa31a618dad2bd712b66793a995f2923",
+    "review_copy": "screens/vip-perk-7-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-7-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "c974817ce3c2bc28b8cf2cce977df92337e76aa74ea0515f4505e01963def9bb",
+    "review_copy": "screens/vip-perk-7-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-7-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "8652cc38bf6aad2e6c38f6f3e72ac90f0ad01d9518d1b8e467841ec65cb9ce5a",
+    "review_copy": "screens/vip-perk-7-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-8-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "70a109eaf5aa35912eef639aa7bc649ef14daee668623e0393b7609d33a679bf",
+    "review_copy": "screens/vip-perk-8-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-8-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "5a4bd9f10b11925e74057642b5af7b73809235ed2dc5d77e603bde3fd4571dbe",
+    "review_copy": "screens/vip-perk-8-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-8-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "e108cddf2bb8c046d23aa7386ebbaf6bdca8820ddb27bfe0d28e864aecfecaba",
+    "review_copy": "screens/vip-perk-8-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-9-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "5a70c749938233e04dacaaeb9061a473e004b994efaeb8dd2c4d324c4d8b8d2c",
+    "review_copy": "screens/vip-perk-9-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-9-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "f38ae47a6ac7784bcd9b0b61e903d03014da91feb5ac7525908e82683fb05816",
+    "review_copy": "screens/vip-perk-9-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-perk-9-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "65878e9a74fd6c913f9c383bef1d828d8d5b4ab732834614679978f240726706",
+    "review_copy": "screens/vip-perk-9-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-1-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "9965f2651771ff67f9e4090e036c6436fddc21ff9a7a4b10a39fb769938b40d3",
+    "review_copy": "screens/vip-tier-1-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-1-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "8efd70f22f2b2ebd547acb50a6b0213e9bdc42673dae8252179ebde04a4620f3",
+    "review_copy": "screens/vip-tier-1-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-1-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "29d6513c0ea41443100235d17cea3e47b4e1ee75efe91abbb48a0b4c6f0aec1e",
+    "review_copy": "screens/vip-tier-1-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-2-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "ce36fe340182283c483898ce3ebe9567f266080c98d18ccf2c0c78424d09f75b",
+    "review_copy": "screens/vip-tier-2-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-2-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "9cf8abe6f8943df6d077750a2340e89a8dc6c03fe9686398ceeec6d0a7d0a911",
+    "review_copy": "screens/vip-tier-2-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-2-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "ceee40ecd7b52329ae527a37bcb49dea2de29c54f285e96e10cb99d1bf32dc6e",
+    "review_copy": "screens/vip-tier-2-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-3-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "66c17f97c504b31a83bc022448b993cd9e5ca9db4268706ccf22fed4c4f1ef77",
+    "review_copy": "screens/vip-tier-3-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-3-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "8426cf40fa11509a41bac3763b2d77a03a2db9722c790f855fdc9fb4fe75936a",
+    "review_copy": "screens/vip-tier-3-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-3-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "96f0abcbfba0e674582cbb2f185721e55c58596adf9185d019a1d5fc2be53b91",
+    "review_copy": "screens/vip-tier-3-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-4-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "3d27ed44c03cc4486d564033fc3ab93fafff12183712bb4dfb6b94d6b728acb2",
+    "review_copy": "screens/vip-tier-4-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-4-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "d5bbfb7c92331baa1fe7c4caa06e6be340905d6c7a67ad71161032f3271f5ca7",
+    "review_copy": "screens/vip-tier-4-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-4-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "a05fbc46825ec9214cee645f8fbbb78183f1308943a475339dcbd940c4f0c12b",
+    "review_copy": "screens/vip-tier-4-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-5-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "76893be4efb68b072300eb0f955a73605d43bb8b3d65854e8c5ca6ec9b7df35f",
+    "review_copy": "screens/vip-tier-5-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-5-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "002d81f5eb5224a027f8fe0a58da055c487fe659956fe98d30eec5580c20bd9a",
+    "review_copy": "screens/vip-tier-5-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-5-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "b51cd398ba85ea2f6f6b1ee73baf747a7cb9632dffcd071ee681c529361457f9",
+    "review_copy": "screens/vip-tier-5-390.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-6-320.png",
+    "pixels": [
+      960,
+      2134
+    ],
+    "sha256": "ed90ccc89c26f64103d627f00ec0ed5aed2dbe4f71f8e5ad991f5790ca8d11cb",
+    "review_copy": "screens/vip-tier-6-320.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-6-360.png",
+    "pixels": [
+      1080,
+      2400
+    ],
+    "sha256": "23327d71a1c1fa99c32500cf36825875b050246f07c1258f70af162a067e7e8c",
+    "review_copy": "screens/vip-tier-6-360.webp",
+    "kind": "headless test fixture"
+  },
+  {
+    "name": "vip-tier-6-390.png",
+    "pixels": [
+      1170,
+      2600
+    ],
+    "sha256": "ba9ca1d5e85978630d3d46a0400211aba68b67fdae2bb85c436418b831568ed9",
+    "review_copy": "screens/vip-tier-6-390.webp",
+    "kind": "headless test fixture"
+  }
+]

@@ -1,0 +1,5 @@
+00:00 +0: loading /workspace/Nimzo/nimzo/test/premium_accessible_layout_test.dart
+00:00 +0: premium previews fit large text at 320.0
+00:01 +1: premium previews fit large text at 390.0
+00:01 +2: premium previews fit large text at 480.0
+00:01 +3: All tests passed!

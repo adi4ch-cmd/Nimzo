@@ -1,0 +1,8 @@
+00:00 +0: loading /workspace/Nimzo/nimzo/test/issue15_room_walkthrough_test.dart
+00:00 +0: /workspace/Nimzo/nimzo/test/issue15_room_walkthrough_test.dart: audio room sheets and ten seats fit 320.0dp
+00:05 +1: /workspace/Nimzo/nimzo/test/issue15_room_walkthrough_test.dart: audio room sheets and ten seats fit 360.0dp
+00:08 +2: /workspace/Nimzo/nimzo/test/issue15_room_walkthrough_test.dart: audio room sheets and ten seats fit 390.0dp
+00:11 +3: loading /workspace/Nimzo/nimzo/test/room_reconnect_test.dart
+00:13 +3: /workspace/Nimzo/nimzo/test/room_reconnect_test.dart: room exposes voice reconnect without joining membership twice
+00:18 +4: /workspace/Nimzo/nimzo/test/room_reconnect_test.dart: cancelled room exit keeps ten-seat voice session alive
+00:19 +5: All tests passed!

@@ -1,3 +1,5 @@
+> Continuation: [issue 15 UI work, comparisons and test evidence](../issue-15-review/verification.md). The historical gaps below are retained as the starting checkpoint; see the newer report for implemented original art and current limitations.
+
 # Full walkthrough evidence and UI continuation
 
 Source: owner-supplied `screen-20261018-001658.mp4`, Drive ID
