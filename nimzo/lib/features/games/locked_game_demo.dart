@@ -84,7 +84,7 @@ class _LockedGameDemoState extends State<LockedGameDemo> {
         shrinkWrap:true,
         physics:const NeverScrollableScrollPhysics(),
         gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount:lion?4:3,childAspectRatio:lion?.70:.78,crossAxisSpacing:6,mainAxisSpacing:6),
+          crossAxisCount:lion?4:3,childAspectRatio:lion ? 0.70 : 0.78,crossAxisSpacing:6,mainAxisSpacing:6),
         itemCount:mult.length,
         itemBuilder:(context,index){
           final selected=bets.containsKey(index);
