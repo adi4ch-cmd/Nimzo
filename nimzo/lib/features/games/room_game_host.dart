@@ -52,7 +52,7 @@ class RoomGameHostState extends State<RoomGameHost> {
               Positioned.fill(
                 top: _expanded
                     ? 0
-                    : constraints.maxHeight * (game.slug == 'lucky_77' ? .305 : .35),
+                    : constraints.maxHeight * (game.slug == 'grady_lion' ? .25 : game.slug == 'lucky_77' ? .305 : .35),
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(24),
