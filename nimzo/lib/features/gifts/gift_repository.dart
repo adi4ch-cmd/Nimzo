@@ -1,3 +1,4 @@
+import 'private_animal_gifts.dart';
 import '../../core/providers/supabase_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,6 +64,9 @@ class GiftRepository {
 
   /// Only admin-approved HTTPS video media may be played.
   Future<String?> approvedAnimationUrl(String giftId) async {
+    if (privateAnimalVapGiftIds.contains(giftId)) {
+      return privateMediaUrl(giftId, kind: 'animation');
+    }
     final rows = await _db
         .from('gift_animation_media')
         .select('video_url')
@@ -77,6 +81,20 @@ class GiftRepository {
         : null;
   }
 
+  Future<String?> privateMediaUrl(String giftId, {required String kind}) async {
+    if (!privateAnimalVapGiftIds.contains(giftId)) return null;
+    final response = await _db.functions.invoke(
+      'gift-media',
+      body: {'gift_id': giftId, 'kind': kind},
+    );
+    final data = response.data;
+    final url = data is Map ? data['url'] as String? : null;
+    final uri = Uri.tryParse(url ?? '');
+    return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
+        ? url
+        : null;
+  }
+
   final SupabaseClient _db;
   GiftRepository(this._db);
 
@@ -85,12 +103,18 @@ class GiftRepository {
   Future<Map<String, String>> participantNamesForVerifiedEvent(
     Map<String, dynamic> event,
   ) async {
-    final ids = <String>{
-      if (event['sender_id'] is String) event['sender_id'] as String,
-      if (event['receiver_id'] is String) event['receiver_id'] as String,
-    }.where((id) =>
-        RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-            .hasMatch(id)).toList();
+    final ids =
+        <String>{
+              if (event['sender_id'] is String) event['sender_id'] as String,
+              if (event['receiver_id'] is String)
+                event['receiver_id'] as String,
+            }
+            .where(
+              (id) => RegExp(
+                r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+              ).hasMatch(id),
+            )
+            .toList();
     if (ids.isEmpty) return const {};
     try {
       final rows = await _db
@@ -108,10 +132,10 @@ class GiftRepository {
         final name = display != null && display.isNotEmpty
             ? display
             : username != null && username.isNotEmpty
-                ? username
-                : number is num
-                    ? 'ID ${number.toString()}'
-                    : '';
+            ? username
+            : number is num
+            ? 'ID ${number.toString()}'
+            : '';
         if (name.isNotEmpty) names[id] = name;
       }
       return names;
@@ -226,16 +250,25 @@ final giftRepositoryProvider = Provider(
 final giftCatalogProvider = FutureProvider(
   (ref) => ref.watch(giftRepositoryProvider).catalog(),
 );
-final roomGiftEventProvider =
-    StreamProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
-  (ref, roomId) =>
-      ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
-);
+final roomGiftEventProvider = StreamProvider.autoDispose
+    .family<List<Map<String, dynamic>>, String>(
+      (ref, roomId) =>
+          ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
+    );
 
 final verifiedGiftAnimationProvider = StreamProvider.autoDispose
     .family<List<Map<String, dynamic>>, ({String roomId, String countryCode})>(
-  (ref, args) => ref.watch(giftRepositoryProvider).watchVerifiedAnimations(
-        roomId: args.roomId,
-        countryCode: args.countryCode,
-      ),
-);
+      (ref, args) => ref
+          .watch(giftRepositoryProvider)
+          .watchVerifiedAnimations(
+            roomId: args.roomId,
+            countryCode: args.countryCode,
+          ),
+    );
+
+final privateGiftThumbnailProvider = FutureProvider.autoDispose
+    .family<String?, String>(
+      (ref, giftId) => ref
+          .watch(giftRepositoryProvider)
+          .privateMediaUrl(giftId, kind: 'thumbnail'),
+    );

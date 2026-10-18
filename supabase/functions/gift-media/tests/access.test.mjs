@@ -1,0 +1,23 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+let handler;let calls=[];let mode='event';
+globalThis.Deno={env:{get:(name)=>name==='SUPABASE_URL'?'https://project.supabase.co':'server-key'},serve:(fn)=>handler=fn};
+await import('../index.ts');
+globalThis.fetch=async(url,init={})=>{
+ calls.push({url:String(url),init});
+ const send=(body,status=200)=>new Response(JSON.stringify(body),{status});
+ if(String(url).includes('/auth/v1/user'))return mode==='bad'?send({},401):send({id:'11111111-1111-4111-8111-111111111111'});
+ if(String(url).includes('/profiles?'))return send([{id:'user'}]);
+ if(String(url).includes('/gift_animation_events?'))return send(mode==='unpaid'?[]:[{id:'paid-event'}]);
+ if(String(url).includes('/ledger?'))return send([]);
+ if(String(url).includes('/object/sign/'))return send({signedURL:'/object/sign/nimzo-private-gifts/media?token=short-lived'});
+ throw Error('Unexpected request');
+};
+const req=(body={},headers={})=>new Request('https://gateway',{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(body)});
+const id='629b0f33-55b5-5084-8488-865869e9ab39';
+test('unauthenticated access never signs or reads media',async()=>{calls=[];const r=await handler(req());assert.equal(r.status,401);assert.equal(calls.length,0);});
+test('disabled bootstrap rejects upload tokens without any storage access',async()=>{calls=[];const r=await handler(req({}, {'x-nimzo-upload-token':'not-valid'}));assert.equal(r.status,401);assert.equal(calls.length,0);});
+test('invalid user JWT is rejected before catalog or storage access',async()=>{mode='bad';calls=[];const r=await handler(req({gift_id:id,kind:'animation'},{Authorization:'Bearer invalid'}));assert.equal(r.status,401);assert.equal(calls.length,1);});
+test('unpaid animation request cannot obtain a signed URL',async()=>{mode='unpaid';calls=[];const r=await handler(req({gift_id:id,kind:'animation'},{Authorization:'Bearer user-session'}));assert.equal(r.status,403);assert.equal(calls.some(c=>c.url.includes('/object/sign/')),false);});
+test('verified room viewer receives only a 60-second signed URL',async()=>{mode='event';calls=[];const r=await handler(req({gift_id:id,kind:'animation'},{Authorization:'Bearer user-session'}));assert.equal(r.status,200);const body=await r.json();assert.equal(body.expires_in,60);assert.match(body.url,/^https:\/\/project.supabase.co\/storage\/v1\/object\/sign\//);const event=calls.find(c=>c.url.includes('/gift_animation_events?'));assert.equal(event.init.headers.Authorization,'Bearer user-session');assert.equal(JSON.parse(calls.at(-1).init.body).expiresIn,60);});
+test('unknown gift IDs and arbitrary object paths are rejected',async()=>{mode='event';calls=[];const r=await handler(req({gift_id:'../../secret',kind:'animation'},{Authorization:'Bearer user-session'}));assert.equal(r.status,400);assert.equal(calls.some(c=>c.url.includes('/object/sign/')),false);});

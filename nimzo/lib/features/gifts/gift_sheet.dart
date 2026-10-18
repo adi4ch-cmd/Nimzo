@@ -8,6 +8,7 @@ import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
+import 'private_animal_gifts.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
 import 'gift_svga_overlay.dart';
@@ -31,23 +32,21 @@ Future<void> showRoomGiftSheet(
   BuildContext context,
   String roomId,
   String receiverId,
-) =>
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => GiftSheet(receiverId: receiverId, roomId: roomId),
-    );
+) => showModalBottomSheet<void>(
+  context: context,
+  isScrollControlled: true,
+  builder: (_) => GiftSheet(receiverId: receiverId, roomId: roomId),
+);
 
 Future<void> showMomentGiftSheet(
   BuildContext context,
   String momentId,
   String receiverId,
-) =>
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => GiftSheet(receiverId: receiverId, momentId: momentId),
-    );
+) => showModalBottomSheet<void>(
+  context: context,
+  isScrollControlled: true,
+  builder: (_) => GiftSheet(receiverId: receiverId, momentId: momentId),
+);
 
 class GiftSheet extends ConsumerStatefulWidget {
   final String receiverId;
@@ -109,7 +108,9 @@ class _State extends ConsumerState<GiftSheet> {
     try {
       final r = ref.read(giftRepositoryProvider), g = gift;
       if (widget.momentId != null) {
-        await ref.read(momentRepositoryProvider).sendGift(
+        await ref
+            .read(momentRepositoryProvider)
+            .sendGift(
               momentId: widget.momentId!,
               receiverId: receiverId,
               giftId: g.id,
@@ -169,16 +170,23 @@ class _State extends ConsumerState<GiftSheet> {
       // starts only after the server confirms debit and gifting. Room gifts
       // are animated for all listeners by VerifiedGiftBroadcast instead.
       if (mounted && widget.roomId == null) {
+        String? personalVideo;
+        if (privateAnimalVapGiftIds.contains(g.id)) {
+          try {
+            personalVideo = await r.approvedAnimationUrl(g.id);
+          } catch (_) {}
+        }
+        if (!mounted) return;
         showSettledPersonalGiftCelebration(
           context,
           giftName: g.name,
           quantity: requestQuantity,
           unitPrice: g.price,
           assetPath: g.assetPath,
-          videoUrl: null,
+          videoUrl: personalVideo,
           recipientName:
               ref.read(profileProvider(receiverId)).valueOrNull?.displayName ??
-                  ref.read(profileProvider(receiverId)).valueOrNull?.username,
+              ref.read(profileProvider(receiverId)).valueOrNull?.username,
         );
       }
       if (mounted) Navigator.pop(context);
@@ -233,18 +241,26 @@ class _State extends ConsumerState<GiftSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('NIMZO Gifts',
+                          const Text(
+                            'NIMZO Gifts',
                             style: TextStyle(
-                              fontWeight: FontWeight.w800, fontSize: 16)),
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16,
+                            ),
+                          ),
                           Text(
                             wallet.valueOrNull == null
-                              ? 'Wallet balance unavailable'
-                              : '${compactNumber(wallet.valueOrNull!.coins)} coins  ·  ${compactNumber(wallet.valueOrNull!.diamonds)} diamonds',
-                            key: const ValueKey('gift-tray-coin-diamond-balances'),
+                                ? 'Wallet balance unavailable'
+                                : '${compactNumber(wallet.valueOrNull!.coins)} coins  ·  ${compactNumber(wallet.valueOrNull!.diamonds)} diamonds',
+                            key: const ValueKey(
+                              'gift-tray-coin-diamond-balances',
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 12,
-                              color: Color(0xffd2c4aa)),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Color(0xffd2c4aa),
+                            ),
                           ),
                         ],
                       ),
@@ -332,29 +348,25 @@ class _State extends ConsumerState<GiftSheet> {
                                     'Premium',
                                   ])
                                     Padding(
-                                      padding: const EdgeInsets.only(
-                                        right: 8,
-                                      ),
+                                      padding: const EdgeInsets.only(right: 8),
                                       child: ChoiceChip(
                                         label: Text(category),
                                         selected:
                                             activeGiftCategory == category,
-                                        onSelected: busy ||
-                                                confirming ||
-                                                key != null
+                                        onSelected:
+                                            busy || confirming || key != null
                                             ? null
                                             : (_) => setState(() {
-                                                  activeGiftCategory = category;
-                                                  if (selected != null &&
-                                                      !giftMatchesCategory(
-                                                        selected!.category,
-                                                        category,
-                                                        giftName:
-                                                            selected!.name,
-                                                      )) {
-                                                    selected = null;
-                                                  }
-                                                }),
+                                                activeGiftCategory = category;
+                                                if (selected != null &&
+                                                    !giftMatchesCategory(
+                                                      selected!.category,
+                                                      category,
+                                                      giftName: selected!.name,
+                                                    )) {
+                                                  selected = null;
+                                                }
+                                              }),
                                       ),
                                     ),
                                 ],
@@ -362,21 +374,21 @@ class _State extends ConsumerState<GiftSheet> {
                             ),
                           ),
                           SliverPadding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             sliver: SliverGrid(
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount:
-                                    MediaQuery.sizeOf(context).width < 390
+                                    crossAxisCount:
+                                        MediaQuery.sizeOf(context).width < 390
                                         ? 2
                                         : 3,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                childAspectRatio: .76 /
-                                    MediaQuery.textScalerOf(context).scale(1),
-                              ),
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                    childAspectRatio:
+                                        .76 /
+                                        MediaQuery.textScalerOf(context)
+                                            .scale(1),
+                                  ),
                               delegate: SliverChildBuilderDelegate(
                                 (context, index) {
                                   final gift = gifts
@@ -390,7 +402,8 @@ class _State extends ConsumerState<GiftSheet> {
                                       .elementAt(index);
                                   return _giftCard(
                                     gift,
-                                    legendary: gift.price == 35000000 ||
+                                    legendary:
+                                        gift.price == 35000000 ||
                                         gift.price == 50000000,
                                   );
                                 },
@@ -428,8 +441,11 @@ class _State extends ConsumerState<GiftSheet> {
                 padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
                 child: Row(
                   children: [
-                    const Icon(Icons.verified_outlined,
-                        color: Color(0xff0f8d59), size: 18),
+                    const Icon(
+                      Icons.verified_outlined,
+                      color: Color(0xff0f8d59),
+                      size: 18,
+                    ),
                     const SizedBox(width: 7),
                     Expanded(
                       child: Text(
@@ -446,8 +462,10 @@ class _State extends ConsumerState<GiftSheet> {
                     if (key != null)
                       const Text(
                         'Retry same request',
-                        style:
-                            TextStyle(fontSize: 11, color: Color(0xff6b7280)),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Color(0xff6b7280),
+                        ),
                       ),
                   ],
                 ),
@@ -470,8 +488,9 @@ class _State extends ConsumerState<GiftSheet> {
                   ),
                   const Spacer(),
                   GradientButton(
-                    onPressed:
-                        busy || confirming || selected == null ? null : send,
+                    onPressed: busy || confirming || selected == null
+                        ? null
+                        : send,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -486,8 +505,8 @@ class _State extends ConsumerState<GiftSheet> {
                           busy
                               ? 'Sending…'
                               : key == null
-                                  ? 'Send'
-                                  : 'Retry',
+                              ? 'Send'
+                              : 'Retry',
                         ),
                       ],
                     ),
@@ -506,12 +525,14 @@ class _State extends ConsumerState<GiftSheet> {
   /// All other icons are illustrations, never pretend video stills.
   Widget _giftCard(Gift gift, {bool legendary = false}) {
     final highlighted = selected?.id == gift.id;
-    final realAnimation = freeGiftAnimationForName(gift.name) != null;
+    final realAnimation =
+        freeGiftAnimationForName(gift.name) != null ||
+        privateAnimalVapGiftIds.contains(gift.id);
     final accent = gift.category.toLowerCase() == 'dragon'
         ? NimzoStyle.orange
         : gift.price >= 1000000
-            ? const Color(0xffd5b3ff)
-            : const Color(0xffffaad7);
+        ? const Color(0xffd5b3ff)
+        : const Color(0xffffaad7);
     return Semantics(
       label:
           '${gift.name}, ${gift.price} coins${realAnimation ? ', original animated gift' : ''}',
@@ -541,8 +562,8 @@ class _State extends ConsumerState<GiftSheet> {
               color: highlighted
                   ? NimzoStyle.pink
                   : legendary
-                      ? NimzoStyle.orange
-                      : const Color(0xff6c5299),
+                  ? NimzoStyle.orange
+                  : const Color(0xff6c5299),
               width: highlighted ? 1.5 : 1,
             ),
           ),
@@ -576,12 +597,17 @@ class _State extends ConsumerState<GiftSheet> {
                           ),
                           child: const Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 2),
-                            child: Text('SVGA',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.w800)),
+                              horizontal: 5,
+                              vertical: 2,
+                            ),
+                            child: Text(
+                              'SVGA',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -589,8 +615,11 @@ class _State extends ConsumerState<GiftSheet> {
                       const Positioned(
                         bottom: 3,
                         right: 3,
-                        child: Icon(Icons.check_circle,
-                            color: NimzoStyle.pink, size: 19),
+                        child: Icon(
+                          Icons.check_circle,
+                          color: NimzoStyle.pink,
+                          size: 19,
+                        ),
                       ),
                   ],
                 ),
@@ -611,8 +640,11 @@ class _State extends ConsumerState<GiftSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const NimzoGiftControlArt('icon_gift_modal.webp',
-                      width: 13, height: 13),
+                  const NimzoGiftControlArt(
+                    'icon_gift_modal.webp',
+                    width: 13,
+                    height: 13,
+                  ),
                   const SizedBox(width: 3),
                   Flexible(
                     child: Text(
@@ -620,9 +652,10 @@ class _State extends ConsumerState<GiftSheet> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          fontSize: 11,
-                          color: accent,
-                          fontWeight: FontWeight.w800),
+                        fontSize: 11,
+                        color: accent,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ],

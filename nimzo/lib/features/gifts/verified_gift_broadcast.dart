@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'gift_repository.dart';
 import 'hall_of_fame_gift.dart';
 import 'zodiac_gifts.dart';
+import 'private_animal_gifts.dart';
 import 'hall_of_fame_vap_overlay.dart';
 import 'gift_video_overlay.dart';
 import 'gift_svga_overlay.dart';
@@ -58,8 +59,9 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     Future<void> resolve() async {
       String? remote;
       try {
-        remote =
-            await ref.read(giftRepositoryProvider).approvedAnimationUrl(giftId);
+        remote = await ref
+            .read(giftRepositoryProvider)
+            .approvedAnimationUrl(giftId);
       } catch (_) {
         // Offline clients can still play a verified bundled original.
       }
@@ -132,12 +134,23 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       _primed = true;
       return;
     }
-    final fresh = rows.where((r) =>
-          (r['gift_id']?.toString() == '35e4c570-cb02-4466-ae86-d670b3fb05ab' ||
-              r['gift_id']?.toString() == hallOfFameGiftId ||
-              zodiacVapGiftIds.contains(r['gift_id']?.toString())) &&
-          _seen.add('${r['id']}')).toList()
-      ..sort((a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'));
+    final fresh =
+        rows
+            .where(
+              (r) =>
+                  (r['gift_id']?.toString() ==
+                          '35e4c570-cb02-4466-ae86-d670b3fb05ab' ||
+                      r['gift_id']?.toString() == hallOfFameGiftId ||
+                      zodiacVapGiftIds.contains(r['gift_id']?.toString()) ||
+                      privateAnimalVapGiftIds.contains(
+                        r['gift_id']?.toString(),
+                      )) &&
+                  _seen.add('${r['id']}'),
+            )
+            .toList()
+          ..sort(
+            (a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'),
+          );
     // The server stream retains 100 events. Bound deduplication memory too.
     if (_seen.length > 200) {
       _seen.retainAll(rows.map((r) => '${r['id']}'));
@@ -176,7 +189,10 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       final namesFuture = ref
           .read(giftRepositoryProvider)
           .participantNamesForVerifiedEvent(event)
-          .timeout(const Duration(seconds: 2), onTimeout: () => <String, String>{});
+          .timeout(
+            const Duration(seconds: 2),
+            onTimeout: () => <String, String>{},
+          );
       final giftId = '${event['gift_id']}';
       // Media is enabled only after its URL is approved in Supabase.
       // Do not reference unbundled assets: that breaks playback on devices.
@@ -221,7 +237,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final event = _active;
     if (event == null) return const SizedBox.shrink();
     final sender = _participants[event['sender_id']?.toString()] ?? 'A member';
-    final recipient = _participants[event['receiver_id']?.toString()] ?? 'a member';
+    final recipient =
+        _participants[event['receiver_id']?.toString()] ?? 'a member';
     final price = (event['unit_price'] as num?)?.toInt() ?? 0;
     final quantity = (event['quantity'] as num?)?.toInt() ?? 1;
     // Verified server event contains the gift UUID, not an arbitrary
@@ -241,7 +258,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final giftName = catalogName;
     if (_video != null &&
         ('${event['gift_id']}' == hallOfFameGiftId ||
-            zodiacVapGiftIds.contains('${event['gift_id']}'))) {
+            zodiacVapGiftIds.contains('${event['gift_id']}') ||
+            privateAnimalVapGiftIds.contains('${event['gift_id']}'))) {
       return HallOfFameVapOverlay(
         key: ValueKey(event['id']),
         source: _video!,
@@ -257,8 +275,11 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     // For VAP-only gifts, do not fabricate a static celebration if the
     // approved transparent animation is offline or not approved.
     final eventGiftId = '${event['gift_id']}';
-    if (!_loading && _video == null &&
-        (eventGiftId == hallOfFameGiftId || zodiacVapGiftIds.contains(eventGiftId))) {
+    if (!_loading &&
+        _video == null &&
+        (eventGiftId == hallOfFameGiftId ||
+            zodiacVapGiftIds.contains(eventGiftId) ||
+            privateAnimalVapGiftIds.contains(eventGiftId))) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && identical(_active, event)) _next();
       });
@@ -310,8 +331,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final colors = price >= 10000000
         ? [const Color(0xff710c19), const Color(0xffd6a347)]
         : price >= 5000000
-            ? [const Color(0xff4e277e), const Color(0xffd6a347)]
-            : [const Color(0xff8c6016), const Color(0xffe6bc58)];
+        ? [const Color(0xff4e277e), const Color(0xffd6a347)]
+        : [const Color(0xff8c6016), const Color(0xffe6bc58)];
     return IgnorePointer(
       ignoring: true,
       child: Align(
