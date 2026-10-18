@@ -40,6 +40,14 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .footer{background:#130d27;display:flex;align-items:center;justify-content:space-between;padding:12px 15px;color:#bcb5d5;font-size:12px}
 @media (min-width:480px){.shell{min-height:870px}.room{flex-basis:185px;min-height:185px}}
 @media (max-height:780px){.room{min-height:135px;flex-basis:135px}.mics{margin:8px 0 4px}.mic span{height:31px;width:31px;font-size:19px}.game{padding-top:8px}.jackpot-frame{padding:6px}.slot-box{margin-top:7px}.control-card{padding:8px}.line-note{margin:4px}}
+/* Embedded in the existing Flutter voice room. Remove ONLY fake room chrome. */
+html.nimzo-embedded,html.nimzo-embedded body{height:100%;min-height:0;overflow:hidden}
+html.nimzo-embedded .shell{height:100dvh;min-height:0;max-width:none;width:100%;box-shadow:none}
+html.nimzo-embedded .room,html.nimzo-embedded .footer{display:none!important}
+html.nimzo-embedded .game{height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border-radius:17px 17px 0 0;padding:9px 10px 14px}
+html.nimzo-embedded .slot-box{margin-top:8px;padding-top:5px}
+html.nimzo-embedded .reels .cell{aspect-ratio:1/.83}
+html.nimzo-embedded .jackpot-frame{padding:6px 9px}
 </style>
 </head>
 <body>
@@ -78,6 +86,8 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 <script>
 (function(){
 'use strict';
+const nimzoEmbedded=!!(window.NimzoGameBridge&&typeof window.NimzoGameBridge.postMessage==='function');
+if(nimzoEmbedded)document.documentElement.classList.add('nimzo-embedded');
 const el=id=>document.getElementById(id);
 const money=n=>Math.round(n).toLocaleString('en-US');
 const bets=[500,5000,50000,500000,1000000];
