@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'hall_of_fame_gift.dart';
 
 /// The retired gift galleries are intentionally unreachable. Keep these
 /// helpers as safe compatibility shims for callers in older screens.
@@ -20,6 +22,12 @@ class GiftArtwork extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (name.trim().toLowerCase() == hallOfFameGiftName.toLowerCase()) {
+      return SvgPicture.asset(hallOfFameIconAsset,
+        fit: BoxFit.contain,
+        placeholderBuilder: (_) => const Icon(Icons.workspace_premium, color: Color(0xffdfb968)),
+      );
+    }
     final path = freeGiftArtwork(name);
     // A stale gift event or outdated local catalog must never revive removed
     // gift images or display their custom/remote assets.
