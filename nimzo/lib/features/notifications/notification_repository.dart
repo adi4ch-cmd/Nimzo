@@ -52,9 +52,17 @@ final notificationsProvider =
 String? notificationDestination(Map<String, dynamic> notification) {
   final event = notification['event_type']?.toString();
   if (event == 'cp_request' || event == 'cp_accepted') return '/cp';
+  if (event == 'account_status') return '/profile';
+  if (event == 'admin_announcement') return '/notifications';
+  final room = notification['room_id']?.toString();
+  if (event == 'followed_room_activity' && room != null && room.isNotEmpty) {
+    return '/room/${Uri.encodeComponent(room)}';
+  }
   final actor = notification['actor_id']?.toString();
   if (actor == null || actor.isEmpty) return null;
-  if (const {'follow', 'friend_request', 'friend_accepted'}.contains(event)) {
+  if (event == 'personal_message') return '/chat/${Uri.encodeComponent(actor)}';
+  if (const {'follow', 'friend_request', 'friend_accepted', 'gift_received'}
+      .contains(event)) {
     return '/profile/${Uri.encodeComponent(actor)}';
   }
   return null;

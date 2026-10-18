@@ -1,0 +1,32 @@
+begin;
+set local role authenticated;
+select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000102',true);
+select public.send_message('00000000-0000-4000-8000-000000000103','Private synthetic message');
+reset role;
+do $$begin if not exists(select 1 from public.notifications where user_id='00000000-0000-4000-8000-000000000103' and event_type='personal_message' and actor_id='00000000-0000-4000-8000-000000000102') then raise exception 'Message notification has no chat identity';end if;end$$;
+update public.profiles set status='suspended' where id='00000000-0000-4000-8000-000000000102';
+set local role authenticated;
+do $$begin
+ begin perform public.send_message('00000000-0000-4000-8000-000000000103','Should fail');raise exception 'Suspended sender accepted' using errcode='XX000';exception when insufficient_privilege then null;end;
+end$$;
+reset role;
+update public.profiles set status='active' where id='00000000-0000-4000-8000-000000000102';
+insert into public.admins(user_id) values('00000000-0000-4000-8000-000000000101');
+set local role authenticated;
+do $$begin
+ begin perform public.send_admin_announcement('Title','Body','admin-fixture');raise exception 'Non-admin announcement accepted';exception when insufficient_privilege then null;end;
+end$$;
+select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000101',true);
+select public.send_admin_announcement('Title','Body','admin-fixture');
+select public.send_admin_announcement('Title','Body','admin-fixture');
+reset role;
+do $$begin if (select count(*) from public.notifications where event_key='admin:admin-fixture')<>3 then raise exception 'Announcement duplicated';end if;end$$;
+insert into public.room_follows(room_id,user_id) select room_id,'00000000-0000-4000-8000-000000000103' from public.room_members where user_id='00000000-0000-4000-8000-000000000101';
+set local role authenticated;
+select public.leave_room((select room_id from public.room_members where user_id=auth.uid()));
+select public.join_room((select id from public.rooms where owner_id=auth.uid()));
+select public.leave_room((select room_id from public.room_members where user_id=auth.uid()));
+select public.join_room((select id from public.rooms where owner_id=auth.uid()));
+reset role;
+do $$begin if (select count(*) from public.notifications where event_type='followed_room_activity' and user_id='00000000-0000-4000-8000-000000000103')<>1 then raise exception 'Followed room notices missing/duplicated';end if;end$$;
+rollback;

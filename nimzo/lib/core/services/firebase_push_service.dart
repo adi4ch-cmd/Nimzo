@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'local_push_presenter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +19,14 @@ Future<void> firebaseBackgroundMessage(RemoteMessage message) async {
 }
 
 class FirebasePushGateway implements PushGateway {
-  FirebasePushGateway(this.messaging);
+  FirebasePushGateway(this.messaging, this.presenter) {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      FirebaseMessaging.onMessage.listen((message) {
+        unawaited(presenter.show(message.data).catchError((Object _) {}));
+      });
+    }
+  }
+  final LocalPushPresenter presenter;
   final FirebaseMessaging messaging;
   @override
   Future<bool> requestPermission() async {
@@ -30,21 +40,43 @@ class FirebasePushGateway implements PushGateway {
   @override
   Stream<String> get tokenRefresh => messaging.onTokenRefresh;
   @override
-  Stream<Map<String, dynamic>> get opened =>
-      FirebaseMessaging.onMessageOpenedApp.map((message) => message.data);
+  Stream<Map<String, dynamic>> get opened => Stream.multi((events) {
+        final remote = FirebaseMessaging.onMessageOpenedApp.listen(
+            (message) => events.add(message.data),
+            onError: events.addError);
+        final local =
+            presenter.opened.listen(events.add, onError: events.addError);
+        events.onCancel = () async {
+          await remote.cancel();
+          await local.cancel();
+        };
+      });
   @override
   Future<Map<String, dynamic>?> initialMessage() async =>
-      (await messaging.getInitialMessage())?.data;
+      (await messaging.getInitialMessage())?.data ??
+      await presenter.initialMessage();
 }
 
 /// No configuration means push stays unavailable; authentication still works.
 Future<PushGateway?> initializeFirebasePush() async {
-  if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return null;
+  if (kIsWeb ||
+      (defaultTargetPlatform != TargetPlatform.android &&
+          defaultTargetPlatform != TargetPlatform.iOS)) return null;
   try {
     await Firebase.initializeApp();
     FirebaseMessaging.onBackgroundMessage(firebaseBackgroundMessage);
     await FirebaseMessaging.instance.setAutoInitEnabled(true);
-    return FirebasePushGateway(FirebaseMessaging.instance);
+    final presenter = LocalPushPresenter(FlutterLocalNotificationsPlugin(),
+        () => Supabase.instance.client.auth.currentUser?.id);
+    try {
+      await presenter.initialize();
+    } catch (_) {/* Native FCM remains usable. */}
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+              alert: true, badge: true, sound: true);
+    }
+    return FirebasePushGateway(FirebaseMessaging.instance, presenter);
   } catch (_) {
     return null;
   }

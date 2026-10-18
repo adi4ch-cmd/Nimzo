@@ -22,6 +22,8 @@ def schema_sql(snapshot):
              "create schema auth; create schema extensions; create schema nimzo_private;",
              "create extension pgcrypto with schema extensions;",
              "create table auth.users(id uuid primary key, email text);",
+             "create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id),not_after timestamptz);",
+             "create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims',true),'')::jsonb,'{}'::jsonb) $$;",
              "create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;",
              "create function auth.role() returns text language sql stable as $$ select current_setting('role',true) $$;",
              "grant usage on schema public,auth,nimzo_private,extensions to anon,authenticated,service_role;",
@@ -39,14 +41,14 @@ def schema_sql(snapshot):
             if col['not_null']:
                 declaration += ' not null'
             columns.append(declaration)
-        parts.append('create table public.' + ident(table['name']) + '(' + ','.join(columns) + ');')
+        parts.append('create table ' + ident(table.get('schema', 'public')) + '.' + ident(table['name']) + '(' + ','.join(columns) + ');')
     foreign_keys = []
     for table in snapshot['tables']:
         for constraint in table['constraints'] or []:
-            statement = 'alter table public.' + ident(table['name']) + ' add constraint ' + ident(constraint['name']) + ' ' + constraint['definition'] + ';'
+            statement = 'alter table ' + ident(table.get('schema', 'public')) + '.' + ident(table['name']) + ' add constraint ' + ident(constraint['name']) + ' ' + constraint['definition'] + ';'
             (foreign_keys if constraint['definition'].startswith('FOREIGN KEY') else parts).append(statement)
         if table['rls']:
-            parts.append('alter table public.' + ident(table['name']) + ' enable row level security;')
+            parts.append('alter table ' + ident(table.get('schema', 'public')) + '.' + ident(table['name']) + ' enable row level security;')
     parts.extend(foreign_keys)
     parts.extend(index + ';' for index in snapshot['indexes'] or [])
     parts.extend(fn['definition'].rstrip().rstrip(';') + ';' for fn in snapshot['functions'])
@@ -55,7 +57,7 @@ def schema_sql(snapshot):
         parts.append('create view public.' + ident(view['name']) + options + ' as ' + view['definition'])
     parts.extend(trigger + ';' for trigger in snapshot['triggers'] or [])
     for policy in snapshot['policies']:
-        statement = 'create policy ' + ident(policy['name']) + ' on public.' + ident(policy['table'])
+        statement = 'create policy ' + ident(policy['name']) + ' on ' + ident(policy.get('schema', 'public')) + '.' + ident(policy['table'])
         statement += ' for ' + policy['cmd'] + ' to ' + ','.join(ident(role) for role in policy['roles'])
         if policy['qual']:
             statement += ' using (' + policy['qual'] + ')'
@@ -63,9 +65,9 @@ def schema_sql(snapshot):
             statement += ' with check (' + policy['check'] + ')'
         parts.append(statement + ';')
     for grant in snapshot.get('table_grants', []):
-        parts.append('grant ' + grant['privilege'] + ' on public.' + ident(grant['table']) + ' to ' + ident(grant['role']) + ';')
+        parts.append('grant ' + grant['privilege'] + ' on ' + ident(grant.get('schema', 'public')) + '.' + ident(grant['table']) + ' to ' + ident(grant['role']) + ';')
     for grant in snapshot['column_grants']:
-        parts.append('grant ' + grant['privilege'] + '(' + ident(grant['column']) + ') on public.' + ident(grant['table']) + ' to ' + ident(grant['role']) + ';')
+        parts.append('grant ' + grant['privilege'] + '(' + ident(grant['column']) + ') on ' + ident(grant.get('schema', 'public')) + '.' + ident(grant['table']) + ' to ' + ident(grant['role']) + ';')
     for fn in snapshot['functions']:
         signature = ident(fn['schema']) + '.' + ident(fn['name']) + '(' + fn['identity'] + ')'
         parts.append('revoke all on function ' + signature + ' from public,anon,authenticated,service_role;')

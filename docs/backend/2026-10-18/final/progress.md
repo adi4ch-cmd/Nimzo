@@ -1,0 +1,17 @@
+# SDD ledger — plan: docs/superpowers/plans/2026-10-18-backend-fcm-apk.md
+
+- Base: ef43c06, latest remote branch fast-forwarded; PR21 Android config preserved.
+- Verified: Firebase nimzo-1f296/io.nimzo.app; private FCM tables exist; Vault credential present; reader denies anon/authenticated; deployed sender v2 ACTIVE/JWT enabled; devices0/jobs0/dispatcher absent.
+- Captured schema metadata:59 public tables/116 functions/82 policies/18 triggers plus10 private tables and storage policies. No private key retrieved or printed.
+- Ruling: User explicitly requested native autonomous execution; continue without a plan-approval pause. Existing feature branch is the authorized isolated workspace.
+- Ruling: Never export the global service-role credential for scheduling. Propose dedicated one-time HMAC-signed scheduler requests, retaining gateway JWT verification and service-only authorization RPC, subject to security review. No earlier rejected operation is repeated.
+- Baseline: profiles3/messages3/moments3/ledger421; wallet fingerprint26852a8b5c642128a2e84fb36e2f96f7. All public tables and10 private tables have RLS.
+- Task1 test finding: old clone tool omitted private queue tables; cloning public metadata alone failed on notification enqueue. Extend clone metadata replay to include private schemas/auth sessions instead of altering production behavior.
+- Task2 demonstrated red: scheduler request rejected by worker; current source/deployment drift also breaks old sender tests. Reconciled v2 source and updated Vault fixture before new behavior.
+- Independent final security review: no critical defect; fixed important APK smoke gating finding by making install/launch fatal and uploading verified artifact afterwards. Added release policy regression check.
+- Deployed migrations 20261018142449/20261018142454/20261018142455 and push-notifications v3, JWT verification retained. Vault Admin credential preserved; scoped HMAC scheduler uses public gateway JWT, never global service-role export.
+- Live forced signed dispatch: HTTP200, processed0/sent0, OAuth ok, FCM validate-only INVALID_ARGUMENT for intentionally invalid synthetic token. This proves OAuth/API reachability, NOT real phone delivery. Cron nimzo-fcm-delivery scheduled every minute; idle queue avoids HTTP calls.
+- Local verification: Flutter380 pass/3 previously deferred screenshot failures, analyzer0 errors/warnings (37 existing infos); Node24/24, Android Python tools and full disposable Postgres schema/RLS/concurrency suite pass. Synthetic tests never inserted into production.
+- Historical production discrepancy: one wallet exceeds recorded coin ledger by49,906,000. No evidence authorizes a financial adjustment; preserved balance and flagged for source-record review.
+- Physical Android device/token unavailable (live devices0/jobs0); real notification, Google/Facebook provider login, real Vivox network reconnect and iOS/APNs remain device/provider checks. iOS Firebase plist/APNs and native Vivox SDK unavailable. Three named gift demos have no source media on this branch; staged pricing manifest only, inactive pending full collection/transparent asset validation.
+- Existing rates preserved:1USD=500000coins; eligible gifts45%diamonds; diamond exchange1:1. No user deletion, balance reset, UI redesign or game odds changes.

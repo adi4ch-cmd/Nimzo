@@ -45,7 +45,7 @@ try:
     run((root / 'supabase/migrations/20261018082335_account_presence.sql').read_text())
     run((root / 'supabase/tests/account_presence.sql').read_text())
     run((root / 'supabase/tests/disabled_rewards.sql').read_text())
-    run('create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id),not_after timestamptz)')
+    run('create table if not exists auth.sessions(id uuid primary key,user_id uuid references auth.users(id),not_after timestamptz)')
     run((root / 'supabase/migrations/20261018084224_firebase_push_delivery.sql').read_text())
     run((root / 'supabase/tests/firebase_push_delivery.sql').read_text())
     query = """set role authenticated;
