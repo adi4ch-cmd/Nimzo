@@ -1,0 +1,48 @@
+name: NIMZO Feature Retirement Source QA (NO APK)
+
+on:
+  push:
+    branches:
+      - feature/remove-gifts-medals-agency-history-20261018
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  source-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: nimzo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Resolve packages
+        run: flutter pub get
+      - name: Flutter analysis (no APK)
+        run: flutter analyze --no-fatal-infos
+      - name: Feature retirement and games safety regression
+        run: |
+          flutter test --reporter expanded \
+            test/feature_retirement_contract_test.dart \
+            test/game_catalog_test.dart \
+            test/game_repository_validation_test.dart
+      - name: Check forbidden profile/menu copy in live application screens
+        run: |
+          set -euo pipefail
+          if grep -nE 'Host Request|Demo Agency|Demo Host|Demo BD|qr_code_2_rounded' lib/features/profile/tingle_me_screen.dart; then
+            echo 'Retired Me-screen menu entries remain' >&2
+            exit 1
+          fi
+          if grep -n 'Coin History' lib/features/wallet/tingle_coins_screen.dart; then
+            echo 'Coin history not removed' >&2
+            exit 1
+          fi
+          test -f ../supabase/migrations/20261018213000_retire_noncar_gifts_medals_history_access.sql
+          echo 'Source-only retirement QA complete. APK build intentionally disabled.'
