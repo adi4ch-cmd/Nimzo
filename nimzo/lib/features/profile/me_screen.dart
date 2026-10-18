@@ -222,7 +222,6 @@ class MeScreen extends ConsumerWidget {
                         ('Task', 'task', '/info/Task'),
                         ('Store', 'store', '/store'),
                         ('Ranking', 'cup', '/ranking'),
-                        ('Honor Wall', 'moments', '/info/Honor%20Wall'),
                       ],
                     ),
                     Row(
