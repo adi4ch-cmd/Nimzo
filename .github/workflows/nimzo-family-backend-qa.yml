@@ -1,0 +1,40 @@
+name: NIMZO Family Backend Verification (no APK)
+
+on:
+  push:
+    branches:
+      - feature/backend-family-completion-20261018
+    paths:
+      - .github/workflows/nimzo-family-backend-qa.yml
+      - nimzo/lib/features/social/family_repository.dart
+      - nimzo/lib/features/social/family_screen.dart
+      - nimzo/test/family_backend_contract_test.dart
+      - supabase/migrations/20261018080000_family_founder_membership.sql
+      - supabase/migrations/20261018080500_family_directory_rls.sql
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  backend-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: nimzo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Flutter packages
+        run: flutter pub get
+      - name: Flutter static analysis
+        run: flutter analyze --no-fatal-infos
+      - name: Family model, RLS and wallet isolation contract tests
+        run: flutter test --reporter expanded test/family_backend_contract_test.dart
+      - name: No APK release
+        run: echo "Source checks only; no Flutter APK build or production release."
