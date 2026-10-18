@@ -165,7 +165,6 @@ class _State extends ConsumerState<GiftSheet> {
       container.invalidate(profileStatsProvider(receiverId));
       if (widget.roomId != null)
         container.invalidate(roomProvider(widget.roomId!));
-      container.invalidate(profileGiftsProvider(receiverId));
       if (me != null) {
         container.invalidate(profileProvider(me));
         container.invalidate(profileStatsProvider(me));
