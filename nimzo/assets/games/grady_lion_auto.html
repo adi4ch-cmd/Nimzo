@@ -136,6 +136,7 @@ const BOARD_ART_CENTERS=[[23,21],[47,12],[71,20],[14,45],[79,44],[22,71],[46,84]
 const boardImage=getComputedStyle($('board')).backgroundImage;
 document.documentElement.style.setProperty('--grady-board-image',boardImage);
 function boardSymbol(i){
+ const option=OPTIONS[i];
  const center=BOARD_ART_CENTERS[i];
  const fraction=.17;
  const px=Math.max(0,Math.min(100,(center[0]/100-fraction/2)/(1-fraction)*100));
