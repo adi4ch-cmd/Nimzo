@@ -52,7 +52,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
     <header class="game-head"><h1>🎰 JACKPOT</h1><span class="note">FREE PRACTICE · NO REAL COINS</span><button class="action" id="rules-btn" aria-label="Rules">?</button></header>
     <section class="jackpot-frame" aria-label="Demo progressive jackpot pool">
       <div class="jackpot-label">👑 PROGRESSIVE JACKPOT 👑</div><div class="jackpot-value" id="pool-value">12,800,000</div>
-      <div class="jackpot-sub">Local demo pool · +0.5% of each practice wager</div>
+      <div class="jackpot-sub">Local-only example · 1% demo contribution · resets to seed after jackpot</div>
     </section>
     <section class="slot-box">
       <div class="reel-wrap">
@@ -92,7 +92,10 @@ const symbols=[
 {id:'orange',glyph:'🍊',pay:[0,0,4,9,28]},
 {id:'cherry',glyph:'🍒',pay:[0,0,3,7,19]},
 {id:'melon',glyph:'🍉',pay:[0,0,3,6,18]}];
-let lines=9, perLine=500, spins=0, jackpotPool=12800000, contributed=0, lastWin=0, busy=false, auto=false, previewLine=null, highlighted=[],autoHandle=null;
+// The 1% contribution is an illustrative configuration, not an industry-wide rule.
+// This offline practice mode does NOT publish real jackpot odds or enable payouts.
+const JACKPOT_CONFIG=Object.freeze({contributionRate:0.01,seedAmount:12800000});
+let lines=9, perLine=500, spins=0, jackpotPool=JACKPOT_CONFIG.seedAmount, contributed=0, lastWin=0, busy=false, auto=false, previewLine=null, highlighted=[],autoHandle=null;
 let reels=Array.from({length:5},()=>Array.from({length:3},()=>randomIndex()));
 let rngCounter=0;
 function randomIndex(){
@@ -154,7 +157,8 @@ function renderControls(){
 function setMessage(t){el('message').textContent=t}
 function spinResult(forcedJackpot){
  const stop=Array.from({length:5},()=>Array.from({length:3},()=>randomIndex()));
- if(forcedJackpot){stop[0][1]=0;stop[1][1]=0;stop[2][1]=0;stop[3][1]=0;stop[4][1]=0;}
+ // The first payline is always enabled, even with 1 selected line.
+ if(forcedJackpot){for(let c=0;c<5;c++)stop[c][patterns[0][c]]=0;}
  return stop;
 }
 function evaluate(grid){
@@ -172,7 +176,7 @@ async function spin(forcedJackpot=false){
  if(autoHandle){clearTimeout(autoHandle);autoHandle=null;}
  highlighted=[];previewLine=null;showPath(null);
  let wager=totalBet();spins++;
- const contribution=Math.round(wager*0.005);jackpotPool+=contribution;contributed+=contribution;
+ const contribution=Math.round(wager*JACKPOT_CONFIG.contributionRate);jackpotPool+=contribution;contributed+=contribution;
  renderControls();el('spin-btn').textContent='SPINNING…';
  el('reels').classList.add('spin-veil');
  const target=spinResult(forcedJackpot);
@@ -183,19 +187,21 @@ async function spin(forcedJackpot=false){
    clearInterval(timer);reels=target;
    el('reels').classList.remove('spin-veil');
    const score=evaluate(target);highlighted=score.winning;
-   const jackpotEligible=lines>=2&&[0,1,2].every(c=>target[c][1]===0)&&forcedJackpot;
-   // This is a deliberately illustrative share, not a production jackpot policy.
+   // The display demonstration awards the whole visible pool upon the five-7
+   // event on the first active payline, then resets to the published seed.
+   // Real jackpot eligibility, RNG odds, contribution rates and award math
+   // require a verified server-authoritative game contract.
+   const jackpotEligible=patterns[0].every((row,c)=>target[c][row]===0);
    let jackpotAward=0;
    if(jackpotEligible){
-    const fraction=Math.min(.50,.08+(wager/(9*1000000))*.42);
-    jackpotAward=Math.floor(jackpotPool*fraction);
-    jackpotPool-=jackpotAward;
+    jackpotAward=jackpotPool;
+    jackpotPool=JACKPOT_CONFIG.seedAmount;
    }
    lastWin=score.award+jackpotAward;
    renderReels();if(highlighted.length)showPath(highlighted[0]);
    el('result').hidden=false;
    el('result-head').textContent=jackpotAward?'👑 DEMO JACKPOT!':score.award?'🎉 LINE WIN!':'ROUND COMPLETE';
-   el('result-detail').textContent=(jackpotAward?'Pool share '+money(jackpotAward)+' + ':'')+'Payline return '+money(score.award)+' · Total '+money(lastWin)+' practice coins. This is NOT a live pool.';
+   el('result-detail').textContent=(jackpotAward?'Full jackpot '+money(jackpotAward)+' + ':'')+'Payline return '+money(score.award)+' · Total '+money(lastWin)+' practice coins. This is NOT a live pool.';
    setMessage('Spin '+spins+' · '+highlighted.length+' winning line(s) · '+money(lastWin)+' practice coins returned.');
    busy=false;el('spin-btn').textContent='▶ SPIN';renderControls();
    if(auto&&!forcedJackpot)autoHandle=setTimeout(()=>spin(false),1150);
@@ -205,9 +211,9 @@ async function spin(forcedJackpot=false){
 el('minus-line').onclick=()=>{if(lines>1&&!busy){lines--;previewLine=null;showPath(null);renderControls();}};
 el('plus-line').onclick=()=>{if(lines<9&&!busy){lines++;previewLine=null;showPath(null);renderControls();}};
 el('spin-btn').onclick=()=>spin(false);
-el('test-btn').onclick=()=>{if(busy)return;if(lines<2){setMessage('Select at least 2 lines for the jackpot demonstration.');return;}spin(true);};
+el('test-btn').onclick=()=>{if(busy)return;spin(true);};
 el('auto-btn').onclick=()=>{auto=!auto;if(!auto&&autoHandle){clearTimeout(autoHandle);autoHandle=null;}renderControls();setMessage(auto?'Autospin will continue after your next spin.':'Autospin OFF.');};
-el('rules-btn').onclick=()=>{alert('JACKPOT PRACTICE\\n\\n9 selectable paylines (1-9).\\nTotal wager = active lines × bet per line.\\nIllustrative progressive pool adds 0.5% per demo spin.\\nPayline wins are scored left-to-right for 3, 4 or 5 matching symbols. Only enabled lines count.\\nDEMO JP previews a proportional jackpot award; no real wallet, shared pool or approved payout odds are present.');};
+el('rules-btn').onclick=()=>{alert('JACKPOT PRACTICE\\n\\n9 selectable paylines (1-9).\\nTotal wager = active lines × bet per line.\\nSample-only contribution: 1% of each wager; not a default for real machines.\\nPayline wins are scored left-to-right for 3, 4 or 5 matching symbols. Only enabled lines count.\\nDEMO JP forces five 7s on active line 1, awards the visible local demonstration pool, then resets to the seed. Real odds, eligibility and payout policies are unapproved; no real wallet or shared pool is connected.');};
 window.JACKPOT_PRACTICE={getState:()=>({lines,perLine,totalBet:totalBet(),spins,jackpotPool,contributed,lastWin,busy,auto,reels:reels.map(x=>[...x])}),spin,patterns};
 renderReels();renderControls();
 })();
