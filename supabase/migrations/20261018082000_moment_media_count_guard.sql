@@ -28,6 +28,6 @@ begin
  end if;
  new.image_path=new.image_paths[1];
  return new;
-end $function$
+end $function$;
 
 revoke all on function public.nimzo_moment_media_guard() from public,anon,authenticated;
