@@ -25,11 +25,15 @@ No coin adjustment or purchase was initiated. No Android APK was built.
   (`user_id=auth.uid()`, valid non-owned Family).
 - Owner name/description UPDATE column grants now match the existing
   owner-only RLS policy. Updating `owner_id` remains unavailable.
+- Family Join lacked the table-level INSERT grant despite an existing
+  restrictive RLS INSERT policy. The permission bug was fixed and verified.
 - Existing Family display/create/join/leave/edit operations use real
   Supabase rows instead of invented placeholder users.
 - Moments feed uses the existing `moments_feed_v2` RPC. Legacy
   single-image posts still work; author-owned multi-image posts are
   supported in repositories, gallery picker, editor and feed.
+- Moment image count is now constrained to **9 by PostgreSQL** (not just
+  by Flutter); existing stored Moments were preserved.
 - Previously deployed `family_and_moment_media` migration is now
   represented in version control, not redundantly applied to production.
 - Supabase view privilege check: no anonymous SELECT, authenticated
