@@ -8,7 +8,6 @@ import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
-import 'new_gift_previews.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
 import 'gift_svga_overlay.dart';
@@ -260,7 +259,7 @@ class _State extends ConsumerState<GiftSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('NIMZO Gifts',
+                          const Text('NIMZO Cars',
                             style: TextStyle(
                               fontWeight: FontWeight.w800, fontSize: 16)),
                           Text(
@@ -280,7 +279,6 @@ class _State extends ConsumerState<GiftSheet> {
                 ),
               ),
             ),
-            const NewGiftPreviewCollection(),
             // Room members can gift themselves even when not seated on
             // a microphone. The seat roster must not hide "Myself".
             if (widget.roomId != null &&
@@ -335,7 +333,7 @@ class _State extends ConsumerState<GiftSheet> {
                             child: Padding(
                               padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
                               child: Text(
-                                'GIFT COLLECTION',
+                                'CAR COLLECTION',
                                 style: TextStyle(
                                   letterSpacing: 2,
                                   fontSize: 13,
@@ -357,9 +355,6 @@ class _State extends ConsumerState<GiftSheet> {
                                   for (final category in [
                                     'All',
                                     'Cars',
-                                    ...nimzoGiftCategories(
-                                      gifts.map((gift) => gift.category),
-                                    ).skip(1),
                                   ])
                                     Padding(
                                       padding: const EdgeInsets.only(
