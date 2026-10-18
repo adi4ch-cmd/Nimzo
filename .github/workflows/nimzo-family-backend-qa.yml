@@ -11,6 +11,10 @@ on:
       - nimzo/test/family_backend_contract_test.dart
       - supabase/migrations/20261018080000_family_founder_membership.sql
       - supabase/migrations/20261018080500_family_directory_rls.sql
+      - nimzo/lib/features/moments/moment_repository.dart
+      - nimzo/lib/features/moments/moments_screen.dart
+      - nimzo/lib/core/services/storage_service.dart
+      - nimzo/test/moment_media_v2_contract_test.dart
   workflow_dispatch: {}
 
 permissions:
@@ -36,5 +40,11 @@ jobs:
         run: flutter analyze --no-fatal-infos
       - name: Family model, RLS and wallet isolation contract tests
         run: flutter test --reporter expanded test/family_backend_contract_test.dart
+      - name: Moments multi-image and legacy editor tests
+        run: |
+          flutter test --reporter expanded \
+            test/moment_media_v2_contract_test.dart \
+            test/moment_update_contract_test.dart \
+            test/moment_editor_retry_test.dart
       - name: No APK release
         run: echo "Source checks only; no Flutter APK build or production release."
