@@ -2,6 +2,7 @@ import '../../core/widgets/master_ui.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/tingle_surface.dart';
@@ -137,8 +138,10 @@ class _MomentsState extends ConsumerState<MomentsScreen> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(23)),
                         child: Column(children: [
-                          const Icon(Icons.auto_awesome_outlined,
-                              size: 56, color: Color(0xffb09cda)),
+                          const NimzoIdentityArt(
+                              kind: NimzoArt.mascot,
+                              size: 88,
+                              color: Color(0xffb09cda)),
                           const SizedBox(height: 12),
                           Text(
                               selected == 0
@@ -698,19 +701,6 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      FilledButton(
-                        style: FilledButton.styleFrom(
-                            backgroundColor: NimzoStyle.primary,
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size.fromHeight(67),
-                            shape: const StadiumBorder(),
-                            textStyle: const TextStyle(
-                                fontWeight: FontWeight.w900, fontSize: 18)),
-                        onPressed: busy || !canPost ? null : _saveMoment,
-                        child: Text(widget.id == null
-                            ? 'Publish moment'
-                            : 'Save changes'),
-                      ),
                     ],
                   ),
       );

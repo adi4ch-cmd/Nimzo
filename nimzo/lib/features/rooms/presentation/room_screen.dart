@@ -6,6 +6,7 @@ import '../../gifts/verified_gift_broadcast.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../../../core/widgets/art/nimzo_navigation_art.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
@@ -447,6 +448,7 @@ class _State extends ConsumerState<RoomScreen> {
     final me = ref.watch(currentUserIdProvider),
         speaking = ref.watch(speakingProvider).valueOrNull ?? <String>{};
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
+    final palette = RoomTheme.byId(room.valueOrNull?.theme ?? 'nimzo_white');
     ref.listen(voiceConnectedProvider, (previous, next) {
       if (next.valueOrNull == true) {
         // The SDK may restore media automatically after a short network drop.
@@ -573,7 +575,8 @@ class _State extends ConsumerState<RoomScreen> {
                                 room.valueOrNull?.name ?? 'Voice Room',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
+                                  color: palette.text,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -786,31 +789,11 @@ class _State extends ConsumerState<RoomScreen> {
                                                                   size: 30,
                                                                   color: Color(
                                                                       0xffd8b9e8))
-                                                              : Stack(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  children: const [
-                                                                    Icon(
-                                                                        Icons
-                                                                            .weekend_rounded,
-                                                                        size:
-                                                                            43,
-                                                                        color: Color(
-                                                                            0xffd8b9e8)),
-                                                                    Positioned(
-                                                                        top: 5,
-                                                                        right:
-                                                                            7,
-                                                                        child: Icon(
-                                                                            Icons
-                                                                                .add_rounded,
-                                                                            size:
-                                                                                12,
-                                                                            color:
-                                                                                Color(0xff513064))),
-                                                                  ],
-                                                                ),
+                                                              : const NimzoNavigationArt(
+                                                                  index: 5,
+                                                                  size: 43,
+                                                                  color: Color(
+                                                                      0xffd8b9e8)),
                                                         )
                                                       else
                                                         Stack(
@@ -1110,6 +1093,9 @@ class _State extends ConsumerState<RoomScreen> {
                         child: IconButtonTheme(
                           data: IconButtonThemeData(
                             style: IconButton.styleFrom(
+                              foregroundColor: palette.text,
+                              disabledForegroundColor:
+                                  palette.text.withValues(alpha: .35),
                               padding: EdgeInsets.zero,
                               minimumSize: const Size(30, 34),
                               maximumSize: const Size(30, 34),

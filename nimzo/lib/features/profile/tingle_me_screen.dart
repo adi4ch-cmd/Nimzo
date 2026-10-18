@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -322,7 +323,6 @@ class TingleMeScreen extends ConsumerWidget {
               _MembershipShortcut(
                   title: 'SVIP',
                   subtitle: 'Explore membership privileges',
-                  icon: Icons.diamond_rounded,
                   start: const Color(0xff270949),
                   end: const Color(0xff9525d2),
                   onTap: () => _go(context, '/svip')),
@@ -367,8 +367,15 @@ class TingleMeScreen extends ConsumerWidget {
                                           blurRadius: 8,
                                           offset: Offset(0, 5))
                                     ]),
-                                child: Icon(item.icon,
-                                    color: Colors.white, size: 26)),
+                                child: NimzoIdentityArt(
+                                    kind: switch (item.label) {
+                                      'Ranking' => NimzoArt.crest,
+                                      'My Store' => NimzoArt.gift,
+                                      'Backpack' => NimzoArt.card,
+                                      _ => NimzoArt.family,
+                                    },
+                                    color: Colors.white,
+                                    size: 38)),
                             const SizedBox(height: 5),
                             Text(item.label,
                                 maxLines: 1,
@@ -415,8 +422,15 @@ class TingleMeScreen extends ConsumerWidget {
                                         offset: Offset(0, 5)),
                                   ],
                                 ),
-                                child: Icon(item.icon,
-                                    color: Colors.white, size: 26),
+                                child: NimzoIdentityArt(
+                                    kind: [
+                                      NimzoArt.heart,
+                                      NimzoArt.shield,
+                                      NimzoArt.gift,
+                                      NimzoArt.card
+                                    ][i],
+                                    color: Colors.white,
+                                    size: 38),
                               ),
                               const SizedBox(height: 5),
                               Text(item.label,
@@ -487,13 +501,11 @@ class TingleMeScreen extends ConsumerWidget {
 
 class _MembershipShortcut extends StatelessWidget {
   final String title, subtitle;
-  final IconData icon;
   final Color start, end;
   final VoidCallback onTap;
   const _MembershipShortcut({
     required this.title,
     required this.subtitle,
-    required this.icon,
     required this.start,
     required this.end,
     required this.onTap,
@@ -509,8 +521,6 @@ class _MembershipShortcut extends StatelessWidget {
               gradient: LinearGradient(colors: [start, end]),
               borderRadius: BorderRadius.circular(10)),
           child: Row(children: [
-            Icon(icon, color: const Color(0xffffd69a), size: 30),
-            const SizedBox(width: 9),
             Expanded(
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -528,6 +538,8 @@ class _MembershipShortcut extends StatelessWidget {
                         const TextStyle(color: Colors.white70, fontSize: 11)),
               ],
             )),
+            const NimzoIdentityArt(
+                kind: NimzoArt.crest, color: Color(0xffe4bdff), size: 72),
           ]),
         ),
       );

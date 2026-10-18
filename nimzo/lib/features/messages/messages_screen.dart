@@ -1,6 +1,7 @@
 import '../../core/widgets/master_ui.dart';
 
 import 'package:flutter/material.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -165,8 +166,10 @@ class _InboxState extends ConsumerState<MessagesScreen> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(22)),
                         child: Column(children: [
-                          const Icon(Icons.chat_bubble_outline_rounded,
-                              color: Color(0xffb2a3d7), size: 52),
+                          const NimzoIdentityArt(
+                              kind: NimzoArt.mascot,
+                              color: Color(0xffb2a3d7),
+                              size: 88),
                           const SizedBox(height: 13),
                           Text(
                               term.isNotEmpty

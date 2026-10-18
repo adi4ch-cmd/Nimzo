@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/theme/app_theme.dart';
+import '../core/widgets/art/nimzo_navigation_art.dart';
 
 /// Five-section bottom navigation following the Tingle screenshot layout.
 /// Branches retain the existing NIMZO routing contracts so linked data and
@@ -10,13 +11,6 @@ class MainShell extends StatelessWidget {
   final StatefulNavigationShell shell;
   const MainShell({super.key, required this.shell});
 
-  static const _icons = <IconData>[
-    Icons.live_tv_rounded,
-    Icons.celebration_outlined,
-    Icons.explore_rounded,
-    Icons.chat_bubble_rounded,
-    Icons.person_rounded,
-  ];
   static const _labels = <String>[
     'Live',
     'Party',
@@ -40,7 +34,7 @@ class MainShell extends StatelessWidget {
             height: 56,
             child: Row(
               children: [
-                for (var i = 0; i < _icons.length; i++)
+                for (var i = 0; i < _labels.length; i++)
                   Expanded(
                     child: Semantics(
                       button: true,
@@ -62,8 +56,8 @@ class MainShell extends StatelessWidget {
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(18),
                             ),
-                            child: Icon(
-                              _icons[i],
+                            child: NimzoNavigationArt(
+                              index: i,
                               size: 24,
                               color: shell.currentIndex == i
                                   ? NimzoStyle.primary

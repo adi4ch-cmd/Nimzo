@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
@@ -138,8 +139,14 @@ class _FriendsState extends ConsumerState<TingleFriendsScreen> {
                     child: const Text('Unable to load people. Retry')),
                 data: (people) => people.isEmpty
                     ? const Padding(
-                        padding: EdgeInsets.all(70),
-                        child: Center(child: Text('No people here yet')))
+                        padding:
+                            EdgeInsets.symmetric(vertical: 45, horizontal: 24),
+                        child: Center(
+                            child: Column(children: [
+                          NimzoIdentityArt(kind: NimzoArt.mascot, size: 100),
+                          SizedBox(height: 12),
+                          Text('No people here yet'),
+                        ])))
                     : Column(children: [
                         for (final person in people)
                           if (query.isEmpty ||

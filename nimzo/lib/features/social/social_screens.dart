@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -302,8 +303,10 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
                     left: 14,
                     right: 14,
                     child: Column(children: [
-                      const Icon(Icons.favorite_rounded,
-                          color: Color(0xffff84d6), size: 102),
+                      const NimzoIdentityArt(
+                          kind: NimzoArt.heart,
+                          color: Color(0xffff84d6),
+                          size: 102),
                       const Text('CP SPACE',
                           style: TextStyle(
                               color: Color(0xffffcae7),
@@ -409,6 +412,8 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
                 ],
               ),
             ),
+            const SizedBox(height: 24),
+            const CpRewardGallery(),
             const SizedBox(height: 24),
             const Text('Find your CP',
                 style: TextStyle(
@@ -584,5 +589,98 @@ class _CPUserCard extends StatelessWidget {
               style: const TextStyle(color: Color(0xff9786a7))),
           trailing: action,
         ),
+      );
+}
+
+/// Decorative previews only: no reward claims, balances or CP level invented.
+class CpRewardGallery extends StatelessWidget {
+  const CpRewardGallery({super.key});
+  static const rewards = [
+    (NimzoArt.theme, 'Party Theme'),
+    (NimzoArt.frame, 'Couple Frame'),
+    (NimzoArt.bubble, 'Chat Bubble'),
+    (NimzoArt.entrance, 'Entrance'),
+  ];
+  @override
+  Widget build(BuildContext context) => Container(
+        decoration: BoxDecoration(
+            gradient: const LinearGradient(
+                colors: [Color(0xff4a125b), Color(0xff230c35)]),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xffd6a26b))),
+        padding: const EdgeInsets.all(14),
+        child: Column(children: [
+          const Text('CP Collection',
+              style: TextStyle(
+                  color: Color(0xffffdba2),
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16)),
+          const SizedBox(height: 4),
+          const Text('Original art previews · rewards unavailable',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white70, fontSize: 11)),
+          const SizedBox(height: 12),
+          GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              childAspectRatio: 1.05,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              children: [
+                for (final reward in rewards)
+                  Semantics(
+                      button: true,
+                      label: 'Preview ${reward.$2}',
+                      child: InkWell(
+                        key: ValueKey('cp-preview-${reward.$1.name}'),
+                        onTap: () => showDialog<void>(
+                            context: context,
+                            builder: (dialog) => AlertDialog(
+                                  title: Text(reward.$2),
+                                  content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        NimzoIdentityArt(
+                                            kind: reward.$1,
+                                            size: 170,
+                                            color: const Color(0xffe79edb)),
+                                        const Text(
+                                            'Design preview only. CP rewards are not available to claim.',
+                                            textAlign: TextAlign.center),
+                                      ]),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () => Navigator.pop(dialog),
+                                        child: const Text('Close'))
+                                  ],
+                                )),
+                        child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xff371245),
+                                borderRadius: BorderRadius.circular(10),
+                                border:
+                                    Border.all(color: const Color(0xff915c9c))),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                      child: NimzoIdentityArt(
+                                          kind: reward.$1,
+                                          size: 88,
+                                          color: const Color(0xffe79edb))),
+                                  Text(reward.$2,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 11)),
+                                  const SizedBox(height: 5),
+                                  const Text('Preview',
+                                      style: TextStyle(
+                                          color: Color(0xffffdba2),
+                                          fontSize: 10)),
+                                  const SizedBox(height: 6),
+                                ])),
+                      )),
+              ]),
+        ]),
       );
 }

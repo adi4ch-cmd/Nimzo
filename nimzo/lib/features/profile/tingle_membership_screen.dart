@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/supabase_provider.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 
 /// Membership layouts modelled on the supplied three-color Tingle references.
 /// Data is read-only; retired purchase/grant RPCs must not be simulated.
@@ -75,80 +76,79 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
     [Color(0xff031c1c), Color(0xff006c60), Color(0xffb0fff1)],
   ];
 
-  static const perks = <({IconData icon, String label})>[
-    (icon: Icons.workspace_premium_outlined, label: 'SVIP Title'),
-    (icon: Icons.auto_awesome_outlined, label: 'Exclusive Avatar Frame'),
-    (icon: Icons.credit_card_rounded, label: 'Distinguished Card'),
-    (icon: Icons.chat_bubble_outline_rounded, label: 'Chat Bubble'),
-    (icon: Icons.directions_car_outlined, label: 'Awesome Entrance Show'),
-    (icon: Icons.card_giftcard_outlined, label: 'Special Gift Tassel'),
-    (icon: Icons.filter_frames_rounded, label: 'Live Frame'),
-    (icon: Icons.crop_landscape_rounded, label: 'Party Frame'),
+  static const perks = <({NimzoArt art, String label})>[
+    (art: NimzoArt.crest, label: 'SVIP Title'),
+    (art: NimzoArt.frame, label: 'Exclusive Avatar Frame'),
+    (art: NimzoArt.card, label: 'Distinguished Card'),
+    (art: NimzoArt.bubble, label: 'Chat Bubble'),
+    (art: NimzoArt.entrance, label: 'Awesome Entrance Show'),
+    (art: NimzoArt.gift, label: 'Special Gift Tassel'),
+    (art: NimzoArt.live, label: 'Live Frame'),
+    (art: NimzoArt.party, label: 'Party Frame'),
   ];
 
-  static const exclusive =
-      <({IconData icon, String label, String description})>[
+  static const exclusive = <({NimzoArt art, String label, String description})>[
     (
-      icon: Icons.lock_person_outlined,
+      art: NimzoArt.privacy,
       label: 'Room Privacy Display',
       description: 'Preview the private room identity display.'
     ),
     (
-      icon: Icons.redeem_rounded,
+      art: NimzoArt.reward,
       label: 'Privileged Gifts',
       description:
           'Explore the exclusive gift presentation for this membership tier.'
     ),
     (
-      icon: Icons.emoji_emotions_outlined,
+      art: NimzoArt.mascot,
       label: 'Microphone Emoji',
       description: 'Preview animated expressions around a microphone seat.'
     ),
     (
-      icon: Icons.local_offer_outlined,
+      art: NimzoArt.discount,
       label: '20% Discount',
       description:
           'View the membership discount privilege. Eligibility depends on your membership.'
     ),
     (
-      icon: Icons.person_outline,
+      art: NimzoArt.contact,
       label: 'Reduce Contact Fee',
       description:
           'View the contact privilege included in eligible memberships.'
     ),
     (
-      icon: Icons.visibility_off_outlined,
+      art: NimzoArt.invisible,
       label: 'Mysterious Invisibility',
       description: 'Preview the discreet entrance presentation.'
     ),
     (
-      icon: Icons.directions_car_rounded,
+      art: NimzoArt.vehicle,
       label: 'Rare Vehicle',
       description: 'Preview a special entrance effect for a voice room.'
     ),
     (
-      icon: Icons.gif_box_outlined,
+      art: NimzoArt.portrait,
       label: 'GIF DP',
       description: 'An animated profile picture adds motion to your identity.'
     ),
     (
-      icon: Icons.palette_outlined,
+      art: NimzoArt.theme,
       label: 'Party Theme',
       description: 'Preview a themed backdrop for an audio party.'
     ),
     (
-      icon: Icons.shield_outlined,
+      art: NimzoArt.shield,
       label: 'Anti-Blocking',
       description: 'View the room access privilege for eligible memberships.'
     ),
     (
-      icon: Icons.do_not_disturb_on_outlined,
+      art: NimzoArt.defense,
       label: 'Kicking Defense',
       description:
           'View the room moderation privilege for eligible memberships.'
     ),
     (
-      icon: Icons.edit_outlined,
+      art: NimzoArt.nickname,
       label: 'Nickname',
       description: 'Preview a highlighted nickname in your membership color.'
     ),
@@ -161,10 +161,12 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
             _PrivilegePreview(initial: initial, color: colors[2], items: [
               for (final perk in perks)
                 (
-                  icon: perk.icon,
-                  label: perk.label,
+                  art: perk.art,
+                  label: widget.svip
+                      ? perk.label
+                      : perk.label.replaceFirst('SVIP', 'VIP'),
                   description:
-                      'Preview the ${perk.label.toLowerCase()} design. This preview does not activate membership.'
+                      'Preview the ${(widget.svip ? perk.label : perk.label.replaceFirst('SVIP', 'VIP')).toLowerCase()} design. This preview does not activate membership.'
                 ),
               ...exclusive,
             ]));
@@ -175,6 +177,8 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
     final current = ref.watch(membershipSnapshotProvider(widget.svip));
     final colors = themes[(selected - 1) % themes.length];
     final name = widget.svip ? 'SVIP' : 'VIP';
+    final layoutScale =
+        (MediaQuery.textScalerOf(context).scale(12) / 12).clamp(1.0, 2.5);
     return Scaffold(
       backgroundColor: const Color(0xff100e19),
       appBar: AppBar(
@@ -184,7 +188,10 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
         foregroundColor: Colors.white,
         title: Text(name,
             style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1)),
         actions: [
           IconButton(
             tooltip: 'Refresh membership',
@@ -239,8 +246,11 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
             ),
             const SizedBox(height: 8),
             SizedBox(
-              height: 310,
-              child: Container(
+              height: 310 + 70 * (layoutScale - 1),
+              child: AnimatedContainer(
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : const Duration(milliseconds: 240),
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -278,35 +288,11 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
                       child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.military_tech_rounded,
-                          color: const Color(0xffffdf91), size: 49),
-                      const SizedBox(height: 13),
-                      Container(
-                          width: 144,
-                          height: 144,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: const Color(0xffffd78c), width: 4),
-                              gradient: LinearGradient(
-                                  colors: [colors[2], colors[1], colors[0]]),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: colors[2].withValues(alpha: .48),
-                                    blurRadius: 22,
-                                    spreadRadius: 4)
-                              ]),
-                          alignment: Alignment.center,
-                          child: Container(
-                              height: 120,
-                              width: 120,
-                              decoration: BoxDecoration(
-                                  color: colors[0],
-                                  shape: BoxShape.circle,
-                                  border:
-                                      Border.all(color: colors[2], width: 3)),
-                              child: Icon(Icons.diamond_rounded,
-                                  color: colors[2], size: 70))),
+                      NimzoIdentityArt(
+                          kind: NimzoArt.crest,
+                          color: colors[2],
+                          variant: selected,
+                          size: 205),
                       const SizedBox(height: 12),
                       Text('$name $selected',
                           style: TextStyle(
@@ -380,9 +366,9 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: perks.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  childAspectRatio: .90,
+                  childAspectRatio: .90 / layoutScale,
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8),
               itemBuilder: (context, index) {
@@ -410,10 +396,16 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
                                       colors: [colors[1], colors[0]]),
                                   border: Border.all(
                                       color: colors[2].withValues(alpha: .6))),
-                              child:
-                                  Icon(perk.icon, size: 30, color: colors[2])),
+                              child: NimzoIdentityArt(
+                                  kind: perk.art,
+                                  size: 40,
+                                  color: colors[2],
+                                  variant: selected)),
                           const SizedBox(height: 8),
-                          Text(perk.label,
+                          Text(
+                              widget.svip
+                                  ? perk.label
+                                  : perk.label.replaceFirst('SVIP', 'VIP'),
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                   color: Colors.white70, fontSize: 10)),
@@ -434,9 +426,9 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: exclusive.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  childAspectRatio: 1.05,
+                  childAspectRatio: 1.05 / layoutScale,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8),
               itemBuilder: (context, index) => InkWell(
@@ -445,8 +437,11 @@ class _MembershipState extends ConsumerState<TingleMembershipScreen> {
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(exclusive[index].icon,
-                            color: const Color(0xffe4dc20), size: 28),
+                        NimzoIdentityArt(
+                            kind: exclusive[index].art,
+                            color: const Color(0xffedcf83),
+                            size: 38,
+                            variant: selected),
                         const SizedBox(height: 10),
                         Text(exclusive[index].label,
                             textAlign: TextAlign.center,
@@ -471,7 +466,7 @@ class _PrivilegePreview extends StatefulWidget {
       {required this.initial, required this.color, required this.items});
   final int initial;
   final Color color;
-  final List<({IconData icon, String label, String description})> items;
+  final List<({NimzoArt art, String label, String description})> items;
 
   @override
   State<_PrivilegePreview> createState() => _PrivilegePreviewState();
@@ -495,7 +490,8 @@ class _PrivilegePreviewState extends State<_PrivilegePreview> {
         child: ConstrainedBox(
             constraints: BoxConstraints(
                 maxWidth: 360,
-                maxHeight: MediaQuery.sizeOf(context).height * .62),
+                maxHeight: (MediaQuery.sizeOf(context).height * .62)
+                    .clamp(0.0, 380.0)),
             child: Column(children: [
               Align(
                   alignment: Alignment.centerRight,
@@ -525,8 +521,11 @@ class _PrivilegePreviewState extends State<_PrivilegePreview> {
                                         widget.color.withValues(alpha: .6),
                                         const Color(0xff180b2a)
                                       ])),
-                                  child: Icon(item.icon,
-                                      color: widget.color, size: 64)),
+                                  child: Center(
+                                      child: NimzoIdentityArt(
+                                          kind: item.art,
+                                          color: widget.color,
+                                          size: 104))),
                               const SizedBox(height: 14),
                               Text(item.label,
                                   textAlign: TextAlign.center,

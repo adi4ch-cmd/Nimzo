@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 
 /// UI-only unavailable state; never invents family records or membership.
 class FamilyScreen extends StatelessWidget {
@@ -38,8 +39,8 @@ class FamilyScreen extends StatelessWidget {
                   const SizedBox(width: 48),
                 ]),
                 const SizedBox(height: 36),
-                const Icon(Icons.groups_rounded,
-                    size: 96, color: Color(0xffc9a2e2)),
+                const NimzoIdentityArt(
+                    kind: NimzoArt.family, size: 130, color: Color(0xffc9a2e2)),
                 const SizedBox(height: 20),
                 const Text('All Family',
                     style: TextStyle(
@@ -62,8 +63,10 @@ class FamilyScreen extends StatelessWidget {
                                 child: const Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.diversity_3_outlined,
-                                          size: 44, color: Color(0xffe8c6ff)),
+                                      NimzoIdentityArt(
+                                          kind: NimzoArt.mascot,
+                                          size: 90,
+                                          color: Color(0xffe8c6ff)),
                                       SizedBox(height: 14),
                                       Text(
                                           'Family directory is not available yet.',
@@ -97,7 +100,56 @@ class _FamilyBackdrop extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.stroke;
+    final paint = Paint()..style = PaintingStyle.fill;
+    // Original palace silhouettes and draped curtains frame the empty state.
+    for (final mirrored in [false, true]) {
+      canvas.save();
+      if (mirrored) {
+        canvas.translate(size.width, 0);
+        canvas.scale(-1, 1);
+      }
+      final curtain = Path()
+        ..moveTo(0, 0)
+        ..lineTo(size.width * .37, 0)
+        ..cubicTo(size.width * .30, size.height * .12, size.width * .13,
+            size.height * .10, size.width * .08, size.height * .37)
+        ..lineTo(0, size.height * .52)
+        ..close();
+      paint.shader = const LinearGradient(colors: [
+        Color(0xff170526),
+        Color(0xff762c8c),
+        Color(0xff2a073a)
+      ]).createShader(Rect.fromLTWH(0, 0, size.width * .37, size.height * .52));
+      canvas.drawPath(curtain, paint);
+      paint.shader = null;
+      paint
+        ..color = const Color(0xffb88c54)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+      canvas.drawPath(curtain, paint);
+      for (var i = 0; i < 3; i++) {
+        final x = 8.0 + i * 12;
+        final h = size.height * (.56 + i * .05);
+        final tower = Path()
+          ..moveTo(x, size.height)
+          ..lineTo(x, h)
+          ..lineTo(x + 5, h - 17)
+          ..lineTo(x + 10, h)
+          ..lineTo(x + 10, size.height)
+          ..close();
+        paint
+          ..color = const Color(0xff2c0a40)
+          ..style = PaintingStyle.fill;
+        canvas.drawPath(tower, paint);
+        paint
+          ..color = const Color(0x668b599e)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = .8;
+        canvas.drawPath(tower, paint);
+      }
+      canvas.restore();
+    }
+    paint.style = PaintingStyle.stroke;
     for (var i = 0; i < 6; i++) {
       paint
         ..strokeWidth = 1.5

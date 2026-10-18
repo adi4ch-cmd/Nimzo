@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/core/theme/app_theme.dart';
+import 'package:nimzo/core/widgets/art/nimzo_identity_art.dart';
 import 'package:nimzo/features/auth/presentation/tingle_login_screen.dart';
 import 'package:nimzo/features/home/home_screen.dart';
 import 'package:nimzo/features/home/party_screen.dart';
@@ -21,11 +22,21 @@ import 'package:nimzo/features/profile/profile_setup_screen.dart';
 import 'package:nimzo/features/profile/tingle_me_screen.dart';
 import 'package:nimzo/features/profile/tingle_membership_screen.dart';
 import 'package:nimzo/features/rooms/presentation/create_room_screen.dart';
+import 'package:nimzo/features/rooms/presentation/room_user_sheet.dart';
 import 'package:nimzo/features/rooms/presentation/room_controller.dart';
 import 'package:nimzo/features/social/tingle_friends_screen.dart';
 import 'package:nimzo/features/social/family_screen.dart';
 import 'package:nimzo/features/store/store_screen.dart';
 import 'package:nimzo/features/wallet/wallet_screen.dart';
+import 'package:nimzo/features/social/social_screens.dart';
+import 'package:nimzo/features/profile/levels_screen.dart';
+import 'package:nimzo/features/profile/profile_screen.dart';
+import 'package:nimzo/features/profile/profile_collections.dart';
+import 'package:nimzo/features/profile/tingle_tasks_screen.dart';
+import 'package:nimzo/features/profile/tingle_daily_checkin_screen.dart';
+import 'package:nimzo/features/discover/ranking_screen.dart';
+import 'package:nimzo/features/discover/leaderboard_repository.dart';
+import 'package:nimzo/features/store/store_repository.dart';
 
 const account = Profile(
     id: 'review',
@@ -50,6 +61,24 @@ Future<void> capture(WidgetTester tester, String name, GlobalKey key) async {
   });
 }
 
+Future<void> loadReviewFonts() async {
+  await (FontLoader('packages/lucide_flutter/LucideIcons')
+        ..addFont(rootBundle.load('packages/lucide_flutter/assets/lucide.ttf')))
+      .load();
+  for (final font in [
+    ('Roboto', 'test/fonts/Roboto-Regular.ttf'),
+    (
+      'MaterialIcons',
+      '../flutter/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf'
+    ),
+  ]) {
+    final data = font.$1 == 'MaterialIcons'
+        ? await rootBundle.load('fonts/MaterialIcons-Regular.otf')
+        : ByteData.sublistView(File(font.$2).readAsBytesSync());
+    await (FontLoader(font.$1)..addFont(Future.value(data))).load();
+  }
+}
+
 void main() {
   for (final width in [320.0, 360.0, 390.0]) {
     testWidgets('walkthrough surfaces and privilege navigation fit ${width}dp',
@@ -58,18 +87,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      for (final font in [
-        ('Roboto', 'test/fonts/Roboto-Regular.ttf'),
-        (
-          'MaterialIcons',
-          '../flutter/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf'
-        ),
-      ]) {
-        final data = font.$1 == 'MaterialIcons'
-            ? await rootBundle.load('fonts/MaterialIcons-Regular.otf')
-            : ByteData.sublistView(File(font.$2).readAsBytesSync());
-        await (FontLoader(font.$1)..addFont(Future.value(data))).load();
-      }
+      await loadReviewFonts();
       final db = (await tester.runAsync(() async => SupabaseClient(
           'https://example.invalid', 'test-key',
           authOptions: const AuthClientOptions(autoRefreshToken: false))))!;
@@ -81,17 +99,47 @@ void main() {
         'moments': const MomentsScreen(),
         'messages': const MessagesScreen(),
         'profile': const TingleMeScreen(),
+        'public-profile': const ProfileScreen(),
+        'mini-profile': const Scaffold(
+            body: RoomUserSheet(
+                roomId: 'review-room',
+                userId: 'review',
+                seatNo: 1,
+                muted: false)),
         'profile-details': const ProfileSetupScreen(edit: true),
         'create-room': const CreateRoomScreen(),
         'friends': const TingleFriendsScreen(),
         'family': const FamilyScreen(),
         'membership': const TingleMembershipScreen(svip: true),
+        'cp': const CoupleRequestsScreen(),
+        'cp-gallery': const Scaffold(
+            body: SingleChildScrollView(child: CpRewardGallery())),
+        'store': const RoyalStoreScreen(),
+        'composer': const CreateMomentScreen(),
+        'ranking': const RankingScreen(),
+        'levels': const LevelsScreen(),
+        'tasks': const TingleTasksScreen(),
+        'checkin-unavailable': const TingleDailyCheckinScreen(),
+        'vip': const TingleMembershipScreen(svip: false),
+        for (final category in [
+          'Party Theme',
+          'Rides',
+          'Chat Bubble',
+          'Live Frame'
+        ])
+          'store-$category': StoreCategoryPreview(
+              category: category,
+              icon: Icons.visibility_outlined,
+              accent: NimzoStyle.primary),
         'store-preview': const StoreCategoryPreview(
             category: 'Avatar Frame',
             icon: Icons.filter_frames_rounded,
             accent: NimzoStyle.primary),
       };
+      const requested = String.fromEnvironment('NIMZO_UI_SURFACES');
       for (final entry in screens.entries) {
+        if (requested.isNotEmpty && !requested.split(',').contains(entry.key))
+          continue;
         // ignore: avoid_print
         print('Rendering ${entry.key} at $width');
         final boundary = GlobalKey();
@@ -106,6 +154,33 @@ void main() {
               walletProvider.overrideWith(
                   (_) async => throw StateError('No balance fixture')),
               popularRoomsProvider(null).overrideWith((_) async => []),
+              myRoomsProvider.overrideWith((_) async => {}),
+              roomProvider('review-room').overrideWith(
+                  (_) async => throw StateError('No room identity fixture')),
+              roomModerationProvider('review-room')
+                  .overrideWith((_) async => false),
+              coupleRequestsProvider.overrideWith((_) async => []),
+              profileCoupleProvider('review').overrideWith((_) async => null),
+              profileTagsProvider('review').overrideWith((_) async => []),
+              profileModelsProvider('review').overrideWith((_) async => []),
+              profileMomentsProvider('review').overrideWith((_) async => []),
+              profileGiftsProvider('review').overrideWith((_) async => []),
+              profileAchievementsProvider('review')
+                  .overrideWith((_) async => []),
+              for (final kind in ProfileCollection.values)
+                profileCollectionProvider(('review', kind))
+                    .overrideWith((_) async => []),
+              taskProgressProvider.overrideWith((_) async => {}),
+              dailyAttendanceProvider.overrideWith(
+                  (_) async => throw StateError('No attendance fixture')),
+              royalCatalogProvider.overrideWith((_) async => []),
+              royalBagProvider('review').overrideWith((_) async => []),
+              for (final kind in ['wealth', 'charm'])
+                for (final period in ['weekly', 'monthly'])
+                  leaderboardProvider((kind, period))
+                      .overrideWith((_) async => []),
+              membershipSnapshotProvider(false).overrideWith((_) async =>
+                  const MembershipSnapshot(level: 0, expiry: null, tiers: [])),
               momentsFeedProvider.overrideWith((_) async => []),
               followedMomentsAuthorsProvider.overrideWith((_) async => {}),
               conversationsProvider.overrideWith((_) async => []),
@@ -118,13 +193,37 @@ void main() {
                 key: boundary,
                 child: MaterialApp(
                     debugShowCheckedModeBanner: false,
-                    theme: AppTheme.light(),
+                    theme: AppTheme.light().copyWith(
+                        textTheme: AppTheme.light()
+                            .textTheme
+                            .apply(fontFamily: 'Roboto')),
                     home: entry.value))));
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: '${entry.key} $width');
         await capture(tester, '${entry.key}-${width.toInt()}', boundary);
         // ignore: avoid_print
         print('Captured ${entry.key} at $width');
+        if (entry.key == 'home') {
+          await tester.tap(find.byTooltip('Filter by country'));
+          await tester.pumpAndSettle();
+          await tester.enterText(
+              find.byKey(const ValueKey('room-country-search')), 'Saudi');
+          await tester.pumpAndSettle();
+          await capture(
+              tester, 'home-country-filter-${width.toInt()}', boundary);
+          await tester.tap(find.byTooltip('Close country filter'));
+          await tester.pumpAndSettle();
+          for (final index in [1, 3, 0]) {
+            await tester.tap(find.byKey(ValueKey('explore-tab-$index')));
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull);
+          }
+        }
+        if (entry.key == 'party') {
+          await tester.tap(find.text('Follow').first);
+          await tester.pumpAndSettle();
+          await capture(tester, 'party-follow-${width.toInt()}', boundary);
+        }
         if (entry.key == 'profile') {
           await tester.scrollUntilVisible(find.text('VIP'), 160,
               scrollable: find.byType(Scrollable).first);
@@ -153,7 +252,16 @@ void main() {
           await tester.pumpAndSettle();
           expect(find.byType(TingleLoginScreen), findsOneWidget);
         }
-        if (entry.key == 'membership') {
+        if (entry.key == 'membership' || entry.key == 'vip') {
+          for (var tier = 1; tier <= 6; tier++) {
+            await tester.scrollUntilVisible(
+                find.byKey(ValueKey('membership-tier-$tier')), 100,
+                scrollable: find.byType(Scrollable).at(1));
+            await tester.tap(find.byKey(ValueKey('membership-tier-$tier')));
+            await tester.pumpAndSettle();
+            await capture(
+                tester, '${entry.key}-tier-$tier-${width.toInt()}', boundary);
+          }
           await tester.scrollUntilVisible(
               find.byKey(const ValueKey('membership-tier-6')), 160,
               scrollable: find.byType(Scrollable).at(1));
@@ -165,10 +273,25 @@ void main() {
           await tester.tap(find.byKey(const ValueKey('membership-perk-0')));
           await tester.pumpAndSettle();
           expect(find.byType(Dialog), findsOneWidget);
-          await capture(tester, 'membership-dialog-${width.toInt()}', boundary);
+          final artSize = tester.getSize(find
+              .descendant(
+                  of: find.byType(Dialog),
+                  matching: find.byType(NimzoIdentityArt))
+              .first);
+          expect(artSize.width, artSize.height,
+              reason: 'Privilege art keeps its aspect ratio');
+          await capture(
+              tester, '${entry.key}-dialog-${width.toInt()}', boundary);
           await tester.tap(find.byTooltip('Next privilege'));
           await tester.pumpAndSettle();
           expect(find.text('Exclusive Avatar Frame'), findsWidgets);
+          for (var perk = 2; perk < 20; perk++) {
+            await tester.tap(find.byTooltip('Next privilege'));
+            await tester.pumpAndSettle();
+            expect(find.text('${perk + 1} / 20'), findsOneWidget);
+            await capture(
+                tester, '${entry.key}-perk-$perk-${width.toInt()}', boundary);
+          }
           await tester.tap(find.byTooltip('Close privilege preview'));
           await tester.pumpAndSettle();
           expect(find.byType(Dialog), findsNothing);
@@ -185,6 +308,58 @@ void main() {
           await tester.pumpAndSettle();
           expect(find.text('No conversations yet'), findsOneWidget);
           expect(find.byKey(const ValueKey('inbox-search')), findsNothing);
+        }
+        if (entry.key.startsWith('store-')) {
+          for (var style = 1; style < 7; style++) {
+            final tile = find.byKey(ValueKey('store-preview-style-$style'));
+            await tester.scrollUntilVisible(tile, 120,
+                scrollable: find.byType(Scrollable).first);
+            await tester.tap(tile);
+            await tester.pumpAndSettle();
+            expect(find.byKey(const ValueKey('store-category-preview-only')),
+                findsOneWidget);
+          }
+          await tester.drag(find.byType(ListView).first, const Offset(0, 1000));
+          await tester.pumpAndSettle();
+          await capture(
+              tester, '${entry.key}-selected-${width.toInt()}', boundary);
+        }
+        if (entry.key == 'cp-gallery') {
+          for (final kind in ['theme', 'frame', 'bubble', 'entrance']) {
+            final tile = find.byKey(ValueKey('cp-preview-$kind'));
+            await tester.ensureVisible(tile);
+            await tester.tap(tile);
+            await tester.pumpAndSettle();
+            expect(
+                find.text(
+                    'Design preview only. CP rewards are not available to claim.'),
+                findsOneWidget);
+            await capture(tester, 'cp-$kind-dialog-${width.toInt()}', boundary);
+            await tester.tap(find.text('Close'));
+            await tester.pumpAndSettle();
+          }
+        }
+        if (entry.key == 'composer') {
+          await tester
+              .tap(find.byKey(const ValueKey('moment-topic-#Photography')));
+          await tester.pumpAndSettle();
+          await capture(tester, 'composer-topic-${width.toInt()}', boundary);
+        }
+        if (entry.key == 'ranking') {
+          for (final label in [
+            'Monthly',
+            'Daily',
+            'Charm',
+            'Active',
+            'Gift',
+            'Wealth',
+            'Weekly'
+          ]) {
+            await tester.tap(find.text(label).first);
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull);
+          }
+          await capture(tester, 'ranking-tabs-${width.toInt()}', boundary);
         }
         if (entry.key == 'friends') {
           await tester.tap(find.byTooltip('Search friends'));

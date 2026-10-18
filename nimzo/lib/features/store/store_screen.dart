@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 import '../../core/utils/formatters.dart';
 import '../profile/profile_collections.dart';
 import 'store_badge.dart';
@@ -254,7 +255,17 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                                               ? NimzoStyle.primary
                                               : const Color(0xfff1e9fe),
                                           width: category == c.value ? 2 : 1)),
-                                  child: Icon(c.icon, color: c.color, size: 25),
+                                  child: NimzoIdentityArt(
+                                      kind: switch (c.value) {
+                                        'Frames' => NimzoArt.frame,
+                                        'Entry' => NimzoArt.theme,
+                                        'Rides' => NimzoArt.entrance,
+                                        'Bubbles' => NimzoArt.bubble,
+                                        'LiveFrames' => NimzoArt.live,
+                                        _ => NimzoArt.crest,
+                                      },
+                                      color: c.color,
+                                      size: 40),
                                 ),
                                 const SizedBox(height: 5),
                                 SizedBox(
@@ -278,6 +289,8 @@ class _RoyalStoreScreenState extends ConsumerState<RoyalStoreScreen> {
                       ]),
                     ),
                     const SizedBox(height: 14),
+                    const StoreDesignGallery(),
+                    const SizedBox(height: 18),
                     const Text('Hot recommendation',
                         style: TextStyle(
                             fontSize: 15,
@@ -477,7 +490,32 @@ class StoreCategoryPreview extends StatefulWidget {
   State<StoreCategoryPreview> createState() => _StoreCategoryPreviewState();
 }
 
-class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
+class _StoreCategoryPreviewState extends State<StoreCategoryPreview>
+    with SingleTickerProviderStateMixin {
+  late final motion = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 1600), value: 1);
+  NimzoArt get kind => switch (widget.category) {
+        'Avatar Frame' => NimzoArt.frame,
+        'Party Theme' => NimzoArt.theme,
+        'Rides' => NimzoArt.entrance,
+        'Chat Bubble' => NimzoArt.bubble,
+        'Live Frame' => NimzoArt.live,
+        _ => NimzoArt.crest,
+      };
+  void replay() {
+    if (MediaQuery.disableAnimationsOf(context)) {
+      motion.value = 1;
+    } else {
+      motion.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    motion.dispose();
+    super.dispose();
+  }
+
   int selected = 0;
   static const styles = <({String name, IconData icon})>[
     (name: 'Golden Stars', icon: Icons.stars_rounded),
@@ -544,38 +582,37 @@ class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
             ),
             alignment: Alignment.center,
             child: Stack(alignment: Alignment.center, children: [
-              Container(
-                width: 167,
-                height: 167,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: colors[selected], width: 7),
-                    boxShadow: [
-                      BoxShadow(
-                          color: colors[selected].withValues(alpha: .45),
-                          blurRadius: 17,
-                          spreadRadius: 8),
-                    ]),
-              ),
-              CircleAvatar(
-                radius: 64,
-                backgroundColor: const Color(0xffefe9ff),
-                child: Icon(widget.icon, color: widget.accent, size: 62),
-              ),
-              SizedBox(
-                width: 189,
-                height: 189,
-                child: CircularProgressIndicator(
-                  value: 1,
-                  strokeWidth: 3,
-                  color: colors[selected],
-                  backgroundColor: Colors.transparent,
-                ),
-              ),
-              Positioned(
-                  top: 15,
-                  child: Icon(styles[selected].icon,
-                      size: 35, color: colors[selected])),
+              AnimatedBuilder(
+                  animation: motion,
+                  builder: (context, _) => AnimatedSwitcher(
+                      duration: MediaQuery.disableAnimationsOf(context)
+                          ? Duration.zero
+                          : const Duration(milliseconds: 180),
+                      child: NimzoIdentityArt(
+                          key: ValueKey('$kind-$selected'),
+                          kind: kind,
+                          color: colors[selected],
+                          variant: selected,
+                          size: 222,
+                          progress: motion.value))),
+              if (kind == NimzoArt.entrance)
+                Positioned(
+                    bottom: 6,
+                    child: TextButton.icon(
+                      onPressed: replay,
+                      icon: const Icon(Icons.replay_rounded, size: 18),
+                      label: const Text('Replay entrance preview'),
+                      style: TextButton.styleFrom(
+                          foregroundColor: const Color(0xff70439a)),
+                    )),
+              if (kind == NimzoArt.entrance)
+                Positioned(
+                    right: 8,
+                    top: 8,
+                    child: IconButton(
+                        tooltip: 'Replay entrance preview',
+                        onPressed: replay,
+                        icon: const Icon(Icons.play_circle_outline_rounded))),
             ]),
           ),
           Padding(
@@ -607,7 +644,10 @@ class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
             itemBuilder: (context, index) => InkWell(
               key: ValueKey('store-preview-style-$index'),
               borderRadius: BorderRadius.circular(17),
-              onTap: () => setState(() => selected = index),
+              onTap: () {
+                setState(() => selected = index);
+                replay();
+              },
               child: Column(children: [
                 Expanded(
                     child: Container(
@@ -622,8 +662,11 @@ class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
                         width: 2),
                   ),
                   child: Center(
-                    child: Icon(styles[index].icon,
-                        size: 48, color: colors[index]),
+                    child: NimzoIdentityArt(
+                        kind: kind,
+                        size: 80,
+                        color: colors[index],
+                        variant: index),
                   ),
                 )),
                 const SizedBox(height: 5),
@@ -640,4 +683,96 @@ class _StoreCategoryPreviewState extends State<StoreCategoryPreview> {
       ),
     );
   }
+}
+
+class StoreDesignGallery extends StatelessWidget {
+  const StoreDesignGallery({super.key});
+  static const designs = [
+    (
+      NimzoArt.frame,
+      'Avatar Frame',
+      Color(0xffc195f2),
+      Icons.filter_frames_rounded
+    ),
+    (NimzoArt.theme, 'Party Theme', Color(0xff91e1cf), Icons.palette_rounded),
+    (
+      NimzoArt.entrance,
+      'Rides',
+      Color(0xffffca7e),
+      Icons.directions_car_rounded
+    ),
+    (
+      NimzoArt.bubble,
+      'Chat Bubble',
+      Color(0xff91c9fc),
+      Icons.chat_bubble_rounded
+    ),
+    (NimzoArt.live, 'Live Frame', Color(0xfff7a3d2), Icons.crop_square_rounded),
+  ];
+  @override
+  Widget build(BuildContext context) =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('NIMZO Design Collection',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+        const SizedBox(height: 4),
+        const Text('Original art · previews only',
+            style: TextStyle(fontSize: 11, color: Color(0xff80738d))),
+        const SizedBox(height: 10),
+        GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            childAspectRatio: .94,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            children: [
+              for (final design in designs)
+                Semantics(
+                    button: true,
+                    label: 'Preview ${design.$2}',
+                    child: InkWell(
+                      key: ValueKey('store-design-${design.$1.name}'),
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                              builder: (_) => StoreCategoryPreview(
+                                  category: design.$2,
+                                  icon: design.$4,
+                                  accent: design.$3))),
+                      child: Container(
+                          decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xff20152f),
+                                    Color(0xff40234f)
+                                  ]),
+                              borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.all(8),
+                          child: Column(children: [
+                            Expanded(
+                                child: Center(
+                                    child: NimzoIdentityArt(
+                                        kind: design.$1,
+                                        color: design.$3,
+                                        size: 110))),
+                            Text(design.$2,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 11)),
+                            const SizedBox(height: 5),
+                            Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 18, vertical: 3),
+                                decoration: BoxDecoration(
+                                    color: const Color(0xff9c40ec),
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: const Text('Preview',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 10))),
+                          ])),
+                    ))
+            ]),
+      ]);
 }
