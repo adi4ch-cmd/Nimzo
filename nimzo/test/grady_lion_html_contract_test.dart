@@ -27,7 +27,7 @@ void main() {
     expect(html, contains(r"getComputedStyle($('board')).backgroundImage"));
     expect(html, contains(r"$('winnerIcon').innerHTML=boardSymbol(i)"));
     expect(html, contains('BOARD_ART_CENTERS'));
-    expect(html, contains('background-size:588.24% 588.24%'));
+    expect(html, contains('background-size:666.67% 666.67%'));
     expect(html, isNot(contains('<div class="lionface">🦁</div>')));
     // Reference video: #2 at left, #1 in center, #3 at right.
     expect(html, contains('This Round Ranking'));
