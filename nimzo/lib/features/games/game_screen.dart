@@ -8,6 +8,7 @@ import '../wallet/wallet_screen.dart';
 import '../../core/widgets/master_ui.dart';
 import '../../core/utils/formatters.dart';
 import 'game_catalog.dart';
+import 'locked_game_demo.dart';
 
 /// Visual boards from nimzo-ui-2.html. Settlement is never simulated locally.
 class GameScreen extends ConsumerStatefulWidget {
@@ -123,6 +124,16 @@ class _GameState extends ConsumerState<GameScreen> {
   ];
   @override
   Widget build(BuildContext context) {
+    if (widget.slug == 'grady_lion' || widget.slug == 'lucky_wheel_77') {
+      return LockedGameDemo(
+        slug: widget.slug!,
+        roomControls: widget.roomControls,
+        onClose: widget.onClose,
+        onMinimize: widget.onMinimize,
+        onExpand: widget.onExpand,
+        expanded: widget.expanded,
+      );
+    }
     final game = NimzoRoomGames.approved
             .where((g) => g.slug == widget.slug)
             .firstOrNull ??
