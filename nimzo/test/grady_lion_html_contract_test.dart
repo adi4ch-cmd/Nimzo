@@ -10,7 +10,8 @@ void main() {
     final html = await rootBundle.loadString('assets/games/grady_lion_auto.html');
     expect(html, contains('GRADY LION'));
     expect(html, contains('const CHIPS=[5000,10000,50000,300000,1000000]'));
-    expect(html, contains('const BET_SECONDS=12, RESULT_MS=2700'));
+    expect(html, contains('const BET_SECONDS=20, RESULT_MS=2700'));
+    expect(html, isNot(contains('const BET_SECONDS=12')));
     expect(html, contains('if(bets[i]===0&&selected()>=6)'));
     expect(html, contains('bets[i]+=chip;refresh()'));
     expect(html, contains("roundTimer=setInterval(tick,1000)"));
