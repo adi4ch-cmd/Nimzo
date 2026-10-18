@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'gift_repository.dart';
+import 'hall_of_fame_gift.dart';
+import 'hall_of_fame_vap_overlay.dart';
 import 'gift_video_overlay.dart';
 import 'gift_svga_overlay.dart';
 import 'gift_celebration_overlay.dart';
@@ -130,7 +132,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       return;
     }
     final fresh = rows.where((r) =>
-          r['gift_id']?.toString() == '35e4c570-cb02-4466-ae86-d670b3fb05ab' &&
+          (r['gift_id']?.toString() == '35e4c570-cb02-4466-ae86-d670b3fb05ab' ||
+              r['gift_id']?.toString() == hallOfFameGiftId) &&
           _seen.add('${r['id']}')).toList()
       ..sort((a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'));
     // The server stream retains 100 events. Bound deduplication memory too.
@@ -234,6 +237,18 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       }
     }
     final giftName = catalogName;
+    if (_video != null && '${event['gift_id']}' == hallOfFameGiftId) {
+      return HallOfFameVapOverlay(
+        key: ValueKey(event['id']),
+        source: _video!,
+        sender: sender,
+        recipient: recipient,
+        quantity: quantity,
+        onFinished: () {
+          if (mounted && identical(_active, event)) _next();
+        },
+      );
+    }
     if (_video != null) {
       return GiftVideoOverlay(
         key: ValueKey(event['id']),
