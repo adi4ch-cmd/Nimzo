@@ -3,6 +3,9 @@ name: NIMZO Final Backend Release APK Artifact
 # Owner-authorized release MODE artifact; development signing, no production publication.
 on:
   workflow_dispatch: {}
+  push:
+    branches: [feature/tingle-ui-rebuild-20261017]
+    paths: [.github/workflows/nimzo-final-release-apk.yml]
 
 permissions:
   contents: read
