@@ -5,7 +5,7 @@ on:
   workflow_dispatch: {}
   push:
     branches: [feature/approved-games-webview-20261018]
-    paths: [.github/workflows/nimzo-approved-games-test-apk.yml]
+    # Run on all commits to this review branch; never publish production builds.
 
 permissions:
   contents: write
