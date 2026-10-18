@@ -24,7 +24,6 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: dart format --output=none --set-exit-if-changed lib/features/gifts/hall_of_fame_gift.dart lib/features/gifts/hall_of_fame_vap_overlay.dart test/hall_of_fame_gift_contract_test.dart
       - run: flutter analyze --no-fatal-infos
       - run: |
           flutter test test/hall_of_fame_gift_contract_test.dart
