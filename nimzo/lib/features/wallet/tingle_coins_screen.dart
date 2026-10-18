@@ -2,26 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/master_ui.dart';
 import 'wallet_screen.dart';
 
-/// The same live wallet used by gifts and games, formatted to the reference
-/// screenshot. Rows come from the user's own RLS-filtered ledger only.
-final tingleCoinHistoryProvider = FutureProvider.autoDispose<
-    List<Map<String, dynamic>>>((ref) async {
-  final db = ref.watch(sessionSupabaseProvider).client;
-  final id = ref.watch(currentUserIdProvider);
-  if (id == null) return [];
-  final rows = await db.from('ledger')
-      .select('id,kind,coin_delta,created_at')
-      .eq('user_id', id)
-      .order('created_at', ascending: false)
-      .limit(40);
-  return rows.map((row) => Map<String, dynamic>.from(row)).toList();
-});
-
+/// Balance, recharge, and diamond exchange only. Transaction audit is internal.
 class TingleCoinsScreen extends ConsumerStatefulWidget {
   const TingleCoinsScreen({super.key});
   @override
@@ -29,12 +14,10 @@ class TingleCoinsScreen extends ConsumerStatefulWidget {
 }
 
 class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
-  String filter = 'All';
 
   @override
   Widget build(BuildContext context) {
     final value = ref.watch(walletProvider);
-    final history = ref.watch(tingleCoinHistoryProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -46,9 +29,7 @@ class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(walletProvider);
-          ref.invalidate(tingleCoinHistoryProvider);
           await ref.read(walletProvider.future);
-          await ref.read(tingleCoinHistoryProvider.future);
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -142,84 +123,7 @@ class _TingleCoinsState extends ConsumerState<TingleCoinsScreen> {
                     'Use Top Up for supported purchases.'))),
               ),
             ),
-            const SizedBox(height: 16),
-            Row(children: [
-              const Expanded(child: Text('Coin History',
-                style: TextStyle(fontSize: 16, color: Colors.black,
-                  fontWeight: FontWeight.w800))),
-              DropdownButton<String>(
-                value: filter,
-                items: const ['All', 'Received', 'Spent'].map(
-                  (t) => DropdownMenuItem(value: t, child: Text(t)),
-                ).toList(),
-                onChanged: (v) => setState(() => filter = v ?? 'All'),
-              ),
-            ]),
-            const SizedBox(height: 12),
-            history.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.all(20),
-                child: Center(child: CircularProgressIndicator())),
-              error: (_, __) => ListTile(
-                title: const Text('Coin history unavailable'),
-                trailing: TextButton(
-                  onPressed: () => ref.invalidate(tingleCoinHistoryProvider),
-                  child: const Text('Retry')),
-              ),
-              data: (items) {
-                final filtered = items.where((row) {
-                  final delta = (row['coin_delta'] as num?)?.toInt() ?? 0;
-                  return filter == 'All' ||
-                    (filter == 'Received' && delta > 0) ||
-                    (filter == 'Spent' && delta < 0);
-                }).toList();
-                if (filtered.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.all(30),
-                    child: Center(child: Text('No coin history yet.')));
-                }
-                return Column(children: [
-                  for (final row in filtered)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 9),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: const Color(0xffefedf5)),
-                        borderRadius: BorderRadius.circular(23),
-                      ),
-                      child: ListTile(
-                        minTileHeight: 62,
-                        leading: Container(
-                          width: 43, height: 43,
-                          decoration: BoxDecoration(
-                            color: const Color(0xfffffaf1),
-                            borderRadius: BorderRadius.circular(16)),
-                          child: const Icon(Icons.stars_rounded,
-                            size: 28, color: Color(0xffffb11d))),
-                        title: Text(
-                          (row['kind'] ?? 'Transaction').toString()
-                            .replaceAll('_', ' '),
-                          style: const TextStyle(fontWeight: FontWeight.w800)),
-                        subtitle: Text(
-                          (row['created_at'] ?? '').toString()
-                            .replaceAll('T', ' ').split('.').first,
-                          style: const TextStyle(
-                            fontSize: 12, color: Color(0xff8982a7))),
-                        trailing: Text(
-                          ((row['coin_delta'] as num?)?.toInt() ?? 0) >= 0
-                            ? '+${row['coin_delta'] ?? 0}'
-                            : '${row['coin_delta'] ?? 0}',
-                          style: TextStyle(
-                            color: ((row['coin_delta'] as num?)?.toInt() ?? 0)
-                              >= 0 ? const Color(0xff20bd49) : Colors.red,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 14)),
-                      ),
-                    ),
-                ]);
-              },
-            ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 18),
             OutlinedButton.icon(
               onPressed: () => context.push('/wallet/exchange'),
               icon: const Icon(Icons.diamond_rounded),
