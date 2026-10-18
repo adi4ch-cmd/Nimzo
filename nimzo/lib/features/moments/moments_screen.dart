@@ -227,7 +227,22 @@ class _MomentCardState extends ConsumerState<MomentCard> {
               onTap: () => context.push('/profile/${moment.authorId}'),
             ),
             if (moment.text != null) Text(moment.text!),
-            if (moment.imagePath != null)
+            if (moment.imagePaths.length > 1)
+              SizedBox(
+                height: 305,
+                child: PageView.builder(
+                  key: ValueKey('moment-gallery-${moment.id}'),
+                  itemCount: moment.imagePaths.length,
+                  itemBuilder: (context, index) => Image.network(
+                    ref.watch(supabaseProvider).storage.from('moments')
+                        .getPublicUrl(moment.imagePaths[index]),
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) =>
+                        const EmptyContent('Image unavailable'),
+                  ),
+                ),
+              )
+            else if (moment.imagePath != null)
               Image.network(
                 ref
                     .watch(supabaseProvider)
@@ -385,9 +400,10 @@ class CreateMomentScreen extends ConsumerStatefulWidget {
 class _CreateState extends ConsumerState<CreateMomentScreen> {
   final text = TextEditingController();
   String? image;
+  List<String> extraImages = [];
   bool busy = false, ready = false;
   bool loadFailed = false;
-  bool get canPost => image != null || text.text.trim().isNotEmpty;
+  bool get canPost => image != null || extraImages.isNotEmpty || text.text.trim().isNotEmpty;
 
   void _draftChanged() {
     if (mounted) setState(() {});
@@ -413,6 +429,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
         if (!mounted) return;
         text.text = m.text ?? '';
         image = m.imagePath;
+        extraImages = m.imagePaths.skip(1).toList();
       }
       if (mounted) setState(() => ready = true);
     } catch (_) {
@@ -431,7 +448,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
     if (!mounted ||
         !ready ||
         busy ||
-        (text.text.trim().isEmpty && image == null)) return;
+        (text.text.trim().isEmpty && image == null && extraImages.isEmpty)) return;
 
     // Capture providers and the container before the await. A successful
     // network save must still refresh feeds if the editor gets dismissed.
@@ -440,15 +457,24 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
     final id = widget.id;
     final body = text.text.trim();
     final photo = image;
+    final photos = <String>[if (photo != null) photo, ...extraImages];
     String? authorId = ref.read(currentUserIdProvider);
 
     setState(() => busy = true);
     try {
       if (id == null) {
-        await repository.create(text: body, imagePath: photo);
+        if (photos.length > 1) {
+          await repository.createMany(text: body, imagePaths: photos);
+        } else {
+          await repository.create(text: body, imagePath: photo);
+        }
       } else {
         authorId ??= (await repository.get(id)).authorId;
-        await repository.update(id, text: body, imagePath: photo);
+        if (photos.length > 1) {
+          await repository.updateMany(id, text: body, imagePaths: photos);
+        } else {
+          await repository.update(id, text: body, imagePath: photo);
+        }
         container.invalidate(momentDetailProvider(id));
       }
       container.invalidate(momentsFeedProvider);
@@ -610,8 +636,92 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                           child: TextButton(
                             onPressed: busy
                                 ? null
-                                : () => setState(() => image = null),
+                                : () => setState(() {
+                                    image = extraImages.isNotEmpty
+                                        ? extraImages.removeAt(0) : null;
+                                  }),
                             child: const Text('Remove photo'),
+                          ),
+                        ),
+                      Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 6),
+                          child: Row(
+                            children: [
+                              TextButton.icon(
+                                key: const ValueKey('moment-add-more-photos'),
+                                onPressed: busy || (image == null
+                                        ? extraImages.length >= 9
+                                        : extraImages.length >= 8)
+                                    ? null
+                                    : () async {
+                                        setState(() => busy = true);
+                                        try {
+                                          final paths = await ref
+                                              .read(storageServiceProvider)
+                                              .pickAndUploadMomentPhotos(
+                                                maxPhotos: image == null
+                                                    ? 9 - extraImages.length
+                                                    : 8 - extraImages.length,
+                                              );
+                                          if (mounted && paths.isNotEmpty) {
+                                            setState(() {
+                                              if (image == null) {
+                                                image = paths.first;
+                                                extraImages.addAll(paths.skip(1));
+                                              } else {
+                                                extraImages.addAll(paths);
+                                              }
+                                            });
+                                          }
+                                        } catch (_) {
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                                  content: Text('Photos could not be uploaded.'),
+                                                ));
+                                          }
+                                        } finally {
+                                          if (mounted) setState(() => busy = false);
+                                        }
+                                      },
+                                icon: const Icon(Icons.collections_outlined),
+                                label: Text('Add photos (${(image == null ? 0 : 1) + extraImages.length}/9)'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (extraImages.isNotEmpty)
+                        SizedBox(
+                          height: 82,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: extraImages.length,
+                            separatorBuilder: (_, __) => const SizedBox(width: 8),
+                            itemBuilder: (context, index) => Stack(
+                              children: [
+                                Image.network(
+                                  ref.watch(supabaseProvider).storage
+                                      .from('moments')
+                                      .getPublicUrl(extraImages[index]),
+                                  width: 76,
+                                  height: 76,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) =>
+                                      const Icon(Icons.photo_rounded),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: IconButton(
+                                    tooltip: 'Remove extra photo',
+                                    onPressed: busy ? null : () =>
+                                        setState(() => extraImages.removeAt(index)),
+                                    icon: const Icon(Icons.cancel_rounded,
+                                        color: Color(0xffd54e6d), size: 20),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       TextField(

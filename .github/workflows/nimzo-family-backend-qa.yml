@@ -1,0 +1,55 @@
+name: NIMZO Family Backend Verification (no APK)
+
+on:
+  push:
+    branches:
+      - feature/backend-family-completion-20261018
+    paths:
+      - .github/workflows/nimzo-family-backend-qa.yml
+      - nimzo/lib/features/social/family_repository.dart
+      - nimzo/lib/features/social/family_screen.dart
+      - nimzo/test/family_backend_contract_test.dart
+      - supabase/migrations/20261018080000_family_founder_membership.sql
+      - supabase/migrations/20261018080500_family_directory_rls.sql
+      - supabase/migrations/20261018035405_family_and_moment_media.sql
+      - supabase/migrations/20261018081000_family_join_grant.sql
+      - supabase/migrations/20261018081500_family_owner_edit_grant.sql
+      - supabase/migrations/20261018082000_moment_media_count_guard.sql
+      - docs/backend/2026-10-18-backend-continuation.md
+      - nimzo/lib/features/moments/moment_repository.dart
+      - nimzo/lib/features/moments/moments_screen.dart
+      - nimzo/lib/core/services/storage_service.dart
+      - nimzo/test/moment_media_v2_contract_test.dart
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  backend-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: nimzo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Flutter packages
+        run: flutter pub get
+      - name: Flutter static analysis
+        run: flutter analyze --no-fatal-infos
+      - name: Family model, RLS and wallet isolation contract tests
+        run: flutter test --reporter expanded test/family_backend_contract_test.dart
+      - name: Moments multi-image and legacy editor tests
+        run: |
+          flutter test --reporter expanded \
+            test/moment_media_v2_contract_test.dart \
+            test/moment_update_contract_test.dart \
+            test/moment_editor_retry_test.dart
+      - name: No APK release
+        run: echo "Source checks only; no Flutter APK build or production release."
