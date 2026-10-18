@@ -14,14 +14,14 @@ class RankingScreen extends ConsumerStatefulWidget {
 }
 
 class _State extends ConsumerState<RankingScreen> {
-  int category = 1, period = 1;
+  int category = 0, period = 1;
   @override
   Widget build(BuildContext context) {
     final key = (
-      category == 1 ? 'wealth' : 'charm',
+      category == 0 ? 'wealth' : 'charm',
       period == 1 ? 'weekly' : 'monthly',
     );
-    final supported = (category == 1 || category == 2) && period > 0;
+    final supported = (category == 0 || category == 1) && period > 0;
     return Scaffold(
       backgroundColor: const Color(0xfff6f4ff),
       appBar: AppBar(
@@ -37,7 +37,7 @@ class _State extends ConsumerState<RankingScreen> {
         padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
         children: [
           ReferenceTabs(
-            labels: const ['Gift', 'Wealth', 'Charm', 'Active'],
+            labels: const ['Wealth', 'Charm'],
             selected: category,
             onSelected: (i) => setState(() => category = i),
           ),
