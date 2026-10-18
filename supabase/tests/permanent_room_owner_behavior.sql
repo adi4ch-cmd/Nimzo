@@ -6,7 +6,7 @@ insert into auth.users(id,email) values
  ('00000000-0000-4000-8000-000000000902','room-guard-two@example.invalid');
 insert into public.profiles(id) values
  ('00000000-0000-4000-8000-000000000901'),
- ('00000000-0000-4000-8000-000000000902');
+ ('00000000-0000-4000-8000-000000000902') on conflict(id) do nothing;
 insert into public.rooms(owner_id,name,status) values
  ('00000000-0000-4000-8000-000000000901','Permanent closed room','closed');
 do $$

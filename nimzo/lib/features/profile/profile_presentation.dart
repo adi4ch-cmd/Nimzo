@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/theme/app_theme.dart';
@@ -49,7 +50,8 @@ class CouplePanel extends StatelessWidget {
                       size: 52,
                     ),
                   ),
-                  const Icon(Icons.favorite, color: Colors.white, size: 48),
+                  const NimzoIdentityArt(
+                      kind: NimzoArt.heart, color: Color(0xffffc3e0), size: 56),
                   partner == null
                       ? InkWell(
                           onTap: onAdd,
@@ -120,7 +122,7 @@ class CouplePanel extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  '$days Day',
+                  partner == null ? 'Not linked' : '$days Day',
                   style: const TextStyle(
                     color: Color(0xff78350f),
                     fontWeight: FontWeight.w700,
@@ -136,7 +138,13 @@ class CouplePanel extends StatelessWidget {
 class CollectibleArtwork extends StatelessWidget {
   final Map<String, dynamic> item;
   final double size;
-  const CollectibleArtwork({super.key, required this.item, this.size = 58});
+  final bool iconOnlyFallback;
+  const CollectibleArtwork({
+    super.key,
+    required this.item,
+    this.size = 58,
+    this.iconOnlyFallback = false,
+  });
   @override
   Widget build(BuildContext context) {
     final path = item['image_path']?.toString() ??
@@ -167,11 +175,14 @@ class CollectibleArtwork extends StatelessWidget {
         width: size,
         height: size,
         child: Center(
-          child: Text(
-            item['name']?.toString() ?? 'Artwork unavailable',
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 11, color: NimzoStyle.muted),
-          ),
+          child: iconOnlyFallback
+              ? const Icon(Icons.image_not_supported_outlined,
+                  color: NimzoStyle.muted, size: 33)
+              : Text(
+                  item['name']?.toString() ?? 'Artwork unavailable',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 11, color: NimzoStyle.muted),
+                ),
         ),
       );
 }

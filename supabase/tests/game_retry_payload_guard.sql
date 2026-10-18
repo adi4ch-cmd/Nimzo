@@ -1,0 +1,23 @@
+begin;
+insert into public.game_catalog(slug,name) values('fruit_party','Synthetic fixture game');
+set local role authenticated;
+select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000102',true);
+do $$declare room uuid; first jsonb; replay jsonb;before bigint; after_first bigint;begin
+ select room_id into room from public.room_members where user_id=auth.uid();
+ select coins into before from public.wallets where user_id=auth.uid();
+ first:=public.play_game('fruit_party',100,'spin',null,'game-replay-fixture',room);
+ select coins into after_first from public.wallets where user_id=auth.uid();
+ if after_first<>before-100+(first->>'payout')::bigint then raise exception 'Game wallet/settlement mismatch';end if;
+ replay:=public.play_game('fruit_party',100,'spin',null,'game-replay-fixture',room);
+ if replay->>'duplicate'<>'true' or (select coins from public.wallets where user_id=auth.uid())<>after_first then raise exception 'Replay charged twice';end if;
+ begin perform public.play_game('fruit_party',200,'spin',null,'game-replay-fixture',room);
+ raise exception 'Changed game bet accepted' using errcode='XX000';
+ exception when raise_exception then if sqlerrm<>'idempotency payload mismatch' then raise;end if;end;
+ begin perform public.play_game('fruit_party',100,'other',null,'game-replay-fixture',room);
+ raise exception 'Changed game type accepted' using errcode='XX000';
+ exception when raise_exception then if sqlerrm<>'idempotency payload mismatch' then raise;end if;end;
+ if (select count(*) from public.game_bets where user_id=auth.uid() and client_key='game-replay-fixture')<>1 then raise exception 'Duplicate game settlement';end if;
+ if exists(select 1 from public.game_bets where user_id<>auth.uid()) then raise exception 'Other account bets exposed';end if;
+end$$;
+reset role;
+rollback;

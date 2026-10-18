@@ -45,8 +45,13 @@ class PhotoStorage extends StorageService {
 class SaveRepository extends MomentRepository {
   SaveRepository(super.db);
   final pending = Completer<void>();
+  int creates = 0;
   @override
-  Future<void> create({String? text, String? imagePath}) => pending.future;
+  Future<void> create(
+      {String? text, String? imagePath, List<String>? imagePaths}) {
+    creates++;
+    return pending.future;
+  }
 }
 
 void main() {
@@ -85,8 +90,24 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'New post');
-    await tester.tap(find.text('Publish moment'));
     await tester.pump();
+    expect(
+      tester
+          .widget<TextButton>(find.byKey(const ValueKey('moment-top-post')))
+          .onPressed,
+      isNotNull,
+      reason: 'Typing must visibly enable Post before submitting',
+    );
+    // Close the text IME before tapping the real Post action. This avoids
+    // dismissing the keyboard instead of activating the button on some
+    // Flutter test surface configurations.
+    tester.testTextInput.hide();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('moment-top-post')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('moment-top-post')));
+    await tester.pump();
+    expect(repo.creates, 1,
+        reason: 'Post must initiate the real repository save before dismissal');
     await tester.pumpWidget(const SizedBox());
     repo.pending.complete();
     await tester.pumpAndSettle();
@@ -116,18 +137,41 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Choose photo'));
+    // The reference post editor scrolls below its header and multiline
+    // caption field on a phone-sized viewport. A photo control below the
+    // fold is not a missing action; reach it by scrolling like a user.
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('moment-photo-picker')),
+      190,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.byKey(const ValueKey('moment-photo-picker')));
     await tester.pumpAndSettle();
     expect(find.text('Take a photo'), findsOneWidget);
     expect(find.text('Choose from gallery'), findsOneWidget);
     await tester.tap(find.text('Take a photo'));
     await tester.pumpAndSettle();
     expect(storage.selected, ImageSource.camera);
-    expect(find.byType(Image), findsOneWidget);
+    // This fixture returns a mocked storage path. Flutter tests cannot
+    // fetch the generated public URL, so assert the real remove/edit
+    // controls instead of treating a 400 network response as photo loss.
+    await tester.scrollUntilVisible(
+      find.text('Remove photo'),
+      190,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.byTooltip('Add photo (1/9)'), findsOneWidget);
     await tester.tap(find.text('Remove photo'));
     await tester.pumpAndSettle();
-    expect(find.byType(Image), findsNothing);
-    expect(find.text('Choose photo'), findsOneWidget);
+    // Removing the photo changes the scroll extent: scroll back to the
+    // picker before verifying the restored Choose photo action.
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('moment-photo-picker')),
+      -140,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.byTooltip('Add photo (0/9)'), findsOneWidget);
+    expect(find.text('Remove photo'), findsNothing);
   });
 
   testWidgets('failed Moment load offers retry and recovers existing draft', (
@@ -155,6 +199,56 @@ void main() {
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();
     expect(find.text('Existing post'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+  testWidgets('reference Moment topics and Mention edit the actual draft',
+      (tester) async {
+    final db = (await tester.runAsync(() async => SupabaseClient(
+          'https://example.supabase.co',
+          'test-key',
+          authOptions: const AuthClientOptions(autoRefreshToken: false),
+        )))!;
+    addTearDown(() => tester.runAsync(db.dispose));
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        momentRepositoryProvider.overrideWithValue(SaveRepository(db)),
+      ],
+      child: const MaterialApp(home: CreateMomentScreen()),
+    ));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<TextButton>(find.byKey(const ValueKey('moment-top-post')))
+          .onPressed,
+      isNull,
+      reason: 'An empty reference Post action is disabled',
+    );
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('moment-topic-#Bookworm')),
+      140,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.byKey(const ValueKey('moment-topic-#Bookworm')));
+    await tester.pump();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      contains('#Bookworm'),
+    );
+    expect(
+      tester
+          .widget<TextButton>(find.byKey(const ValueKey('moment-top-post')))
+          .onPressed,
+      isNotNull,
+      reason: 'Typing a topic enables the real Post action',
+    );
+    await tester
+        .ensureVisible(find.byKey(const ValueKey('moment-mention-entry')));
+    await tester.tap(find.byKey(const ValueKey('moment-mention-entry')));
+    await tester.pump();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      endsWith('@'),
+    );
     expect(tester.takeException(), isNull);
   });
 }

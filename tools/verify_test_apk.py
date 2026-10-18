@@ -29,6 +29,8 @@ def verify(apk):
         assert expected in manifest, f'Missing manifest contract: {expected}'
     with zipfile.ZipFile(apk) as archive:
         assert archive.testzip() is None, 'APK ZIP integrity failure'
+        brand = 'assets/brand/nimzo_purple_gold.png'
+        assert archive.read('assets/flutter_assets/' + brand) == (root / 'nimzo' / brand).read_bytes(), 'Approved NIMZO identity missing or altered'
         for name in ('Cinzel-OFL.txt', 'Poppins-OFL.txt'):
             path = 'assets/reference/fonts/' + name
             assert archive.read('assets/flutter_assets/' + path) == (root / 'nimzo' / path).read_bytes(), 'Bundled font license missing or altered'

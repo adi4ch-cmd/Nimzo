@@ -8,7 +8,9 @@ import 'package:nimzo/features/auth/domain/auth_user.dart';
 import 'package:nimzo/features/auth/presentation/auth_controller.dart';
 import 'package:nimzo/features/profile/profile.dart';
 import 'package:nimzo/features/profile/profile_repository.dart';
-import 'package:nimzo/features/profile/retired_membership_screen.dart';
+import 'package:nimzo/features/profile/tingle_membership_screen.dart';
+import 'package:nimzo/features/profile/tingle_me_screen.dart';
+import 'package:nimzo/features/store/store_screen.dart';
 
 void main() {
   test('stale server membership cannot restore retired identity', () {
@@ -23,9 +25,8 @@ void main() {
     expect(p.vipLevel, 0);
     expect(p.svipLevel, 0);
   });
-  for (final svip in [false, true]) {
-    testWidgets(
-        'retired ${svip ? 'SVIP' : 'VIP'} destination is completely empty',
+  for (final path in ['/vip', '/svip', '/store', '/store?bag=1', '/store/']) {
+    testWidgets('$path direct link cannot open a paused premium or Store page',
         (tester) async {
       final db = (await tester.runAsync(() async => SupabaseClient(
             'https://example.supabase.co',
@@ -36,9 +37,13 @@ void main() {
       final container = ProviderContainer(overrides: [
         supabaseProvider.overrideWithValue(db),
         profileProvider('u').overrideWith((_) async => Profile(
-          id: 'u', nimzoId: 100001, displayName: 'Nimzo User',
-          gender: 'female', dateOfBirth: DateTime(2000), countryCode: 'PK',
-        )),
+              id: 'u',
+              nimzoId: 100001,
+              displayName: 'Nimzo User',
+              gender: 'female',
+              dateOfBirth: DateTime(2000),
+              countryCode: 'PK',
+            )),
         authStateProvider.overrideWith((_) => Stream.value(
               const AuthUser(id: 'u', emailVerified: true),
             )),
@@ -46,18 +51,16 @@ void main() {
       addTearDown(container.dispose);
       await container.read(authStateProvider.future);
       final router = container.read(routerProvider);
-      router.go(svip ? '/svip' : '/vip');
+      router.go(path);
       await tester.pumpWidget(UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(routerConfig: router),
       ));
       await tester.pumpAndSettle();
-      expect(find.byType(RetiredMembershipScreen), findsOneWidget);
-      expect(router.routeInformationProvider.value.uri.path,
-          svip ? '/svip' : '/vip');
-      expect(find.byType(Text), findsNothing);
-      expect(find.byType(IconButton), findsNothing);
-      expect(find.byType(FilledButton), findsNothing);
+      expect(find.byType(TingleMembershipScreen), findsNothing);
+      expect(find.byType(RoyalStoreScreen), findsNothing);
+      expect(find.byType(TingleMeScreen), findsOneWidget);
+      expect(router.routeInformationProvider.value.uri.path, '/profile');
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     });

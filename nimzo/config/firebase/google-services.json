@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "809261542510",
+    "project_id": "nimzo-1f296",
+    "storage_bucket": "nimzo-1f296.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809261542510:android:674d6e67a5a2de28d0ca7f",
+        "android_client_info": {
+          "package_name": "io.nimzo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARcpjlRKwFeh1La8ka484SSoCIzxm9IIU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

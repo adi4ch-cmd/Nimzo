@@ -1,0 +1,37 @@
+Purchase verification failed
+Purchase verification failed
+Purchase verification failed
+Purchase verification failed
+Purchase verification failed
+(node:30728) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ configuration requires authentication and reports capabilities without claiming payment success (37.488928ms)
+✔ pending never reaches settlement (2.196539ms)
+✔ wrong account never reaches settlement (1.89289ms)
+✔ unbound never reaches settlement (0.73669ms)
+✔ sandbox never reaches settlement (0.79066ms)
+✔ multi quantity never reaches settlement (0.724141ms)
+✔ confirmed bound Google provider purchase settles authenticated user only (0.825361ms)
+✔ Apple legacy receipt and malformed request cannot settle (0.644584ms)
+(node:30736) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ only completed provider-owned single-unit account-bound purchases permit settlement (1.072937ms)
+✔ sandbox, promotional and multi-quantity receipts never credit live balances (0.218534ms)
+(node:30743) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ rejects missing/invalid session before authorization (56.303986ms)
+✔ requires exact room UUID (2.861396ms)
+✔ denies departed/banned/non-member according to database authority (3.4263ms)
+✔ fails closed when authorization service fails (1.64572ms)
+✔ listeners receive signed room-bound login/join credentials with transmit disabled (12.053157ms)
+✔ authorized seat receives join token and transmit state (5.679608ms)
+✔ production Vivox identity is pinned while private signing key stays server-only (3.197263ms)
+✔ pasted signing secret whitespace is normalized before creating a Vivox token (3.477977ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 419.405466

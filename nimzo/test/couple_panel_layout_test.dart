@@ -34,5 +34,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    expect(find.text('0 Day'), findsNothing);
+    expect(find.text('Not linked'), findsOneWidget);
   });
 }

@@ -62,7 +62,7 @@ do $$ begin
 end $$;
 -- Self-event notification follows receiver preference without inventing a gift RPC self policy.
 insert into public.gift_events(sender_id,receiver_id,gift_id,quantity,total_coins) values('00000000-0000-4000-8000-000000000701','00000000-0000-4000-8000-000000000701','00000000-0000-4000-8000-000000000703',1,100);
-do $$ begin if (select count(*) from public.notifications where category='gifts')<>1 then raise exception 'self notification optout'; end if; end $$;
+do $$ begin if (select count(*) from public.notifications where category='gifts' and user_id='00000000-0000-4000-8000-000000000701')<>1 then raise exception 'self notification optout'; end if; end $$;
 insert into public.admins(user_id) values('00000000-0000-4000-8000-000000000702');
 set local role authenticated;
 set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000702';

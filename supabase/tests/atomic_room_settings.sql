@@ -5,7 +5,7 @@ insert into auth.users(id,email) values
  ('00000000-0000-4000-8000-000000000912','settings-outsider@example.invalid');
 insert into public.profiles(id) values
  ('00000000-0000-4000-8000-000000000911'),
- ('00000000-0000-4000-8000-000000000912');
+ ('00000000-0000-4000-8000-000000000912') on conflict(id) do nothing;
 insert into public.rooms(id,owner_id,name,avatar_path) values
  ('00000000-0000-4000-8000-000000000913','00000000-0000-4000-8000-000000000911','Original room','original.jpg');
 create function pg_temp.reject_test_photo() returns trigger language plpgsql as $$

@@ -1,22 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Intentional blank UI canvas.
+import '../core/theme/app_theme.dart';
+import '../core/providers/ui_language_provider.dart';
+import '../core/providers/supabase_provider.dart';
+import '../features/profile/profile_repository.dart';
+import 'router.dart';
+import '../core/services/presence_service.dart';
+import '../core/services/firebase_push_service.dart';
+
+/// Tingle-reference rebuild entry point.
 ///
-/// The previous NIMZO navigation, login/home/room/profile/game/store layouts,
-/// dialogs and theme are not mounted by this application entry point.
-/// The Supabase initialization in main.dart and all server records remain intact.
-/// Restore/rebuild screens only after a separately approved new design.
-class NimzoApp extends StatelessWidget {
+/// The blank UI reset is intentionally lifted only for the Flutter presentation.
+/// Supabase, auth, ID allocation, coins and existing room data are not migrated
+/// or cleared. GoRouter continues to enforce the existing auth/profile guards.
+class NimzoApp extends ConsumerWidget {
   const NimzoApp({super.key});
 
   @override
-  Widget build(BuildContext context) => const MaterialApp(
-        title: 'NIMZO',
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          key: ValueKey('nimzo-ui-reset-blank'),
-          backgroundColor: Colors.white,
-          body: SizedBox.expand(),
-        ),
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(presenceLifecycleProvider);
+    ref.watch(pushLifecycleProvider);
+    final id = ref.watch(currentUserIdProvider);
+    if (id != null) {
+      ref.listen(profileProvider(id), (_, next) {
+        if (next.hasValue) {
+          final language = next.valueOrNull?.language;
+          ref.read(uiLanguageProvider.notifier).state =
+              language == 'ar' ? 'ar' : 'en';
+        }
+      });
+    }
+
+    final arabic = ref.watch(uiLanguageProvider) == 'ar';
+    return MaterialApp.router(
+      title: 'NIMZO',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light(),
+      routerConfig: ref.watch(routerProvider),
+      builder: (context, child) => LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth.clamp(0.0, 480.0);
+          return ColoredBox(
+            color: Colors.white,
+            child: Center(
+              child: SizedBox(
+                width: width,
+                height: constraints.maxHeight,
+                child: MediaQuery(
+                  data: MediaQuery.of(context)
+                      .copyWith(size: Size(width, constraints.maxHeight)),
+                  child: Directionality(
+                    textDirection:
+                        arabic ? TextDirection.rtl : TextDirection.ltr,
+                    child: child ?? const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }

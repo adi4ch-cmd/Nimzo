@@ -1,0 +1,62 @@
+name: Deliver Verified NIMZO Backend Test APK
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [feature/tingle-ui-rebuild-20261017]
+    paths: [.github/workflows/nimzo-deliver-verified-backend-apk.yml]
+permissions:
+  actions: read
+  contents: write
+jobs:
+  deliver-verified-test-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download exact validated APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nimzo-final-release-apk
+          run-id: 39137118453
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Download successful launch evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: nimzo-release-launch-diagnostics
+          run-id: 39137118453
+          github-token: ${{ github.token }}
+          path: verified-launch
+      - name: Verify immutable source, APK digest and launch result
+        run: |
+          python3 - <<'PY'
+          import hashlib,pathlib,zipfile
+          p=pathlib.Path('verified-apk'); a=p/'app-release.apk'
+          expected='795bbb846d0d72840b0b18d5e67bc7419c3c79f749d94b09bf7458fe6f759a7f'
+          assert hashlib.sha256(a.read_bytes()).hexdigest()==expected
+          assert (p/'app-release.apk.sha256').read_text().split()[0]==expected
+          assert (p/'source-sha.txt').read_text().strip()=='71e77ed91f6f2698cde7356f44469dc2ddb4ecf5'
+          assert a.stat().st_size==171348895
+          with zipfile.ZipFile(a) as z: assert z.testzip() is None
+          assert 'without unhandled startup exceptions' in pathlib.Path('verified-launch/result.txt').read_text()
+          assert 'Unhandled Exception:' not in pathlib.Path('verified-launch/launch-logcat.txt').read_text()
+          print('Verified exact APK source/digest and successful startup evidence')
+          PY
+      - name: Publish owner-requested test prerelease only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > notes.md <<'NOTES'
+          NIMZO backend/Firebase physical-device QA prerelease. NOT a production release or automatic updater release.
+
+          Release-mode development-signed APK: io.nimzo.app, version1.0.25+125.
+          Source:71e77ed91f6f2698cde7356f44469dc2ddb4ecf5
+          Build:https://github.com/adi4ch-cmd/Nimzo/actions/runs/39137118453
+          SHA256:795bbb846d0d72840b0b18d5e67bc7419c3c79f749d94b09bf7458fe6f759a7f
+
+          Package/Firebase/native checks passed; Android35 emulator installed and launched to the real onboarding screen without unhandled startup exceptions. Firebase initialized successfully in the NIMZO process. No real phone delivery, authenticated provider-login or Vivox-call success is claimed.
+
+          Backend migrations and scoped scheduled dispatcher are deployed. Physical FCM delivery, iOS/APNs setup, missing staged gift media, historical49,906,000coin ledger discrepancy and managed pg_net owner-level table ACL hardening remain pending. No balances reset or private Admin key exported. Net schema is denied through mobile REST.
+
+          If Android reports a signing-certificate conflict, uninstall the previous test build before installing. Server account data persists; uninstalling removes local session/drafts. No nimzo-update.json is published, so this does not enter the production updater channel.
+          NOTES
+          gh release create nimzo-backend-test-1.0.25-125 --repo "$GITHUB_REPOSITORY" --target 71e77ed91f6f2698cde7356f44469dc2ddb4ecf5 --title 'NIMZO 1.0.25 Backend & FCM Device Test' --prerelease --latest=false --notes-file notes.md verified-apk/app-release.apk verified-apk/app-release.apk.sha256 verified-apk/source-sha.txt

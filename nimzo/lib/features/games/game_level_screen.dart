@@ -47,6 +47,9 @@ class GameLevelScreen extends ConsumerWidget {
                             width: 116,
                             height: 116,
                             filterQuality: FilterQuality.high,
+                            errorBuilder: (_, __, ___) => const Icon(
+                              Icons.emoji_events_rounded,
+                              size: 100, color: NimzoStyle.primary),
                           ),
                           const SizedBox(height: 10),
                           Text(
@@ -101,6 +104,9 @@ class GameLevelScreen extends ConsumerWidget {
                                 child: Image.asset(
                                   'assets/hilo/game_levels/level_$i.webp',
                                   fit: BoxFit.contain,
+                                  errorBuilder: (_, __, ___) => const Icon(
+                                    Icons.shield_outlined,
+                                    color: NimzoStyle.primary, size: 40),
                                 ),
                               ),
                             ),

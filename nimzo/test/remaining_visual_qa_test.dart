@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'tingle_video_ui_test.dart' show capture;
 
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -151,7 +152,8 @@ void main() {
             rootBundle.load('packages/lucide_flutter/assets/lucide.ttf'),
           ))
         .load();
-    tester.view.physicalSize = const Size(390, 844);
+    const width = int.fromEnvironment('NIMZO_REVIEW_WIDTH', defaultValue: 390);
+    tester.view.physicalSize = Size(width.toDouble(), width * 844 / 390);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -216,8 +218,9 @@ void main() {
     };
     const targetedGolden = String.fromEnvironment('NIMZO_GOLDEN_TARGET');
     for (final entry in previews.entries) {
-      if (targetedGolden.isNotEmpty && entry.key != targetedGolden) continue;
-      final key = ValueKey('qa-${entry.key}');
+      if (targetedGolden.isNotEmpty &&
+          !targetedGolden.split(',').contains(entry.key)) continue;
+      final key = GlobalKey();
       GoRouter? router;
       Widget app;
       if (roots.containsKey(entry.key)) {
@@ -579,6 +582,7 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
       }
+      await capture(tester, 'secondary-${entry.key}-$width', key);
       // The Room Rocket icon deliberately replaces the retired Diamond
       // reference screenshot. All other approved screenshots remain pinned.
       // This case checks the actual six-level launcher without approving an
@@ -650,7 +654,26 @@ void main() {
           expect(find.byKey(const ValueKey('room-real-stats')), findsOneWidget);
         }
         if (entry.key == 'levels') {
-          expect(find.text('Tier colors'), findsOneWidget);
+          // Verify all three real tabs before scrolling the lazy tier list.
+          for (var tab = 0; tab < 3; tab++) {
+            expect(find.byKey(ValueKey('level-tab-$tab')), findsOneWidget);
+          }
+          for (final label in const [
+            'Brown',
+            'Green',
+            'Blue',
+            'Pink',
+            'Red',
+            'Gold',
+          ]) {
+            await tester.scrollUntilVisible(
+              find.text(label),
+              120,
+              scrollable: find.byType(Scrollable).first,
+            );
+            expect(find.text(label), findsWidgets,
+                reason: 'The $label level band must render when scrolled to');
+          }
         }
       } else {
         await expectLater(

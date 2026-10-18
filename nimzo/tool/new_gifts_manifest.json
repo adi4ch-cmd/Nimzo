@@ -1,0 +1,30 @@
+{
+  "purpose": "NIMZO new gifts staged for integration",
+  "currency": "coins",
+  "productionEnabled": false,
+  "mediaIncludedInAPK": false,
+  "gifts": [
+    {
+      "slug": "romantic_blossom",
+      "name": "Romantic Blossom",
+      "price": 500000,
+      "media": "NIMZO_gfit1_Romantic_Blossom_DeepClean_V3.mp4",
+      "state": "approved demo preview - pending asset upload"
+    },
+    {
+      "slug": "ice_queen_magic",
+      "name": "Ice Queen Magic",
+      "price": 500000,
+      "media": "NIMZO_gift2_Ice_Queen_Magic_DeepClean_V3.mp4",
+      "state": "approved demo preview - pending asset upload"
+    },
+    {
+      "slug": "tiger_warrior",
+      "name": "Tiger Warrior",
+      "price": 500000,
+      "media": "NIMZO_gift4_Tiger_Warrior_DeepClean_V3.mp4",
+      "state": "approved demo preview - pending asset upload"
+    }
+  ],
+  "note": "Do not charge 500000 coins until approved media is installed and server catalog ID and settlement are verified."
+}

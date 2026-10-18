@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nimzo/app/app.dart';
+import 'package:nimzo/features/onboarding/onboarding_screen.dart';
 
 void main() {
-  testWidgets('new NIMZO app starts with a completely blank UI', (tester) async {
-    await tester.pumpWidget(const NimzoApp());
-
-    expect(find.byKey(const ValueKey('nimzo-ui-reset-blank')), findsOneWidget);
+  testWidgets('NIMZO reference onboarding replaces the retired blank UI',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: OnboardingScreen()),
+    );
     expect(find.byType(Scaffold), findsOneWidget);
-    expect(find.byType(BottomNavigationBar), findsNothing);
-    expect(find.byType(NavigationBar), findsNothing);
-    expect(find.byType(AppBar), findsNothing);
-    expect(find.byType(TextButton), findsNothing);
-    expect(find.byType(FilledButton), findsNothing);
-    expect(find.byType(Image), findsNothing);
-    expect(find.text('Home'), findsNothing);
-    expect(find.text('Games'), findsNothing);
-    expect(find.text('Profile'), findsNothing);
-    expect(find.text('NIMZO'), findsNothing);
+    expect(find.byKey(const ValueKey('nimzo-ui-reset-blank')), findsNothing);
+    expect(find.text('NIMZO'), findsOneWidget);
+    expect(find.text('Speak. Connect. Celebrate.'), findsOneWidget);
+    expect(find.text('Log In'), findsOneWidget);
+    expect(find.text('Create Account'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

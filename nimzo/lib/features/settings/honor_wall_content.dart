@@ -1,6 +1,6 @@
+import '../../app/feature_availability.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -179,7 +179,7 @@ class _HonorWallContentState extends ConsumerState<HonorWallContent> {
                   action: ids.contains(item.id) ? 'Owned' : 'View in Store',
                   enabled: !ids.contains(item.id),
                   highlighted: ids.contains(item.id),
-                  onTap: () => context.push('/store'),
+                  onTap: () => openAvailableDestination(context, '/store'),
                 ),
             ]);
           },
@@ -202,7 +202,7 @@ class _HonorWallContentState extends ConsumerState<HonorWallContent> {
             const Text('No earned or purchased medals yet.'),
             const SizedBox(height: 10),
             OutlinedButton(
-              onPressed: () => context.push('/store'),
+              onPressed: () => openAvailableDestination(context, '/store'),
               child: const Text('Explore NIMZO Store'),
             ),
           ],
@@ -264,6 +264,7 @@ class _HonorWallContentState extends ConsumerState<HonorWallContent> {
                 child: CollectibleArtwork(
                   item: {'name': name, 'image_path': image},
                   size: 88,
+                  iconOnlyFallback: true,
                 ),
               ),
             ),

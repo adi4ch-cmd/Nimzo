@@ -1,0 +1,15 @@
+(node:41594) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ rejects normal user calls before touching database or Firebase (66.259591ms)
+✔ missing Firebase credentials leaves queued jobs untouched (4.749049ms)
+✔ sends only generic notification and identity; settles successful lease (24.55221ms)
+✔ only an explicit UNREGISTERED FCM token is invalidated (35.38754ms)
+✔ temporary Firebase failure retries instead of dropping the device (7.603518ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 234.210385

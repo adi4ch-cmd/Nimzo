@@ -28,7 +28,6 @@ const roomToolNames = [
   'Calculator',
   'Vote',
   'Music',
-  'Video',
   'Clean',
 ];
 
@@ -56,7 +55,7 @@ Future<void> showPartyTools(BuildContext context, {String? roomId}) async {
                 onTap: () => Navigator.pop(context, i),
                 child: Column(
                   children: [
-                    ReferenceArtwork('tool', i, size: 48),
+                    ReferenceArtwork('tool', roomToolNames[i] == 'Clean' ? 12 : i, size: 48),
                     const SizedBox(height: 4),
                     Text(
                       roomToolNames[i],
@@ -77,8 +76,12 @@ Future<void> showPartyTools(BuildContext context, {String? roomId}) async {
     return;
   }
   if (tool == 10) {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoomMusicScreen()),
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: const Color(0x99080013),
+      isScrollControlled: true,
+      builder: (_) => const RoomMusicScreen(compact: true),
     );
     return;
   }
@@ -180,15 +183,13 @@ class _ToolFormState extends State<RoomToolForm> {
           Text(
             tool == 'Vote'
                 ? 'Start a vote'
-                : tool == 'Video'
-                    ? 'Watch together'
-                    : tool == 'Calculator'
-                        ? 'Gift calculator'
-                        : tool == 'Prize'
-                            ? 'Prize draw'
-                            : tool == 'Wheel'
-                                ? 'Room wheel'
-                                : tool,
+                : tool == 'Calculator'
+                    ? 'Gift calculator'
+                    : tool == 'Prize'
+                        ? 'Prize draw'
+                        : tool == 'Wheel'
+                            ? 'Room wheel'
+                            : tool,
             style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
           ),
           const SizedBox(height: 12),
@@ -223,10 +224,6 @@ class _ToolFormState extends State<RoomToolForm> {
               decoration: InputDecoration(
                 hintText: 'Prize, for example 100K coins',
               ),
-            ),
-          if (tool == 'Video')
-            const TextField(
-              decoration: InputDecoration(hintText: 'Paste a video link'),
             ),
           if (tool == 'Vote')
             for (final label in [
@@ -290,7 +287,6 @@ class _ToolFormState extends State<RoomToolForm> {
                           'Broadcast': 'Send to room',
                           'Gathering': 'Announce',
                           'Prize': 'Draw a winner',
-                          'Video': 'Play for the room',
                           'Vote': 'Start vote',
                           'Wheel': 'Spin',
                           'Calculator': 'Clear',

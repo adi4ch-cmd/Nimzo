@@ -1,3 +1,4 @@
+import '../../app/feature_availability.dart';
 import '../../core/widgets/master_ui.dart';
 
 import 'package:flutter/material.dart';
@@ -299,7 +300,7 @@ class _MenuRow extends StatelessWidget {
             for (final item in items)
               Expanded(
                 child: InkWell(
-                  onTap: () => context.push(item.$3),
+                  onTap: () => openAvailableDestination(context, item.$3),
                   child: Column(
                     children: [
                       Container(

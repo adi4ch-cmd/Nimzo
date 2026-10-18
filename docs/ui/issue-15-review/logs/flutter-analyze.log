@@ -1,0 +1,41 @@
+Analyzing nimzo...
+
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/games/games_catalog_screen.dart:76:15 • prefer_const_constructors
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/home/home_screen.dart:62:41 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/home/home_screen.dart:452:33 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/home/home_screen.dart:520:24 • prefer_interpolation_to_compose_strings
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/home/pk_battles_screen.dart:288:31 • prefer_const_constructors
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/moments/moments_screen.dart:645:39 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/moments/moments_screen.dart:686:45 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/moments/moments_screen.dart:696:39 • prefer_interpolation_to_compose_strings
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:59:13 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:60:22 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:63:24 • prefer_const_constructors
+   info • Use 'const' literals as arguments to constructors of '@immutable' classes. Try adding 'const' before the literal • lib/features/onboarding/onboarding_screen.dart:65:29 • prefer_const_literals_to_create_immutables
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:66:21 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:68:30 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:69:43 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:72:21 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:74:30 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:75:42 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:78:21 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:80:30 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:81:42 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:84:21 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:86:30 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:87:42 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:40:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:46:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:52:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:58:16 • prefer_const_constructors
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:171:46 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:192:45 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:215:34 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:226:45 • prefer_interpolation_to_compose_strings
+   info • Unnecessary braces in a string interpolation. Try removing the braces • lib/features/rooms/presentation/create_room_screen.dart:141:18 • unnecessary_brace_in_string_interps
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/rooms/presentation/create_room_screen.dart:171:31 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/rooms/presentation/create_room_screen.dart:173:27 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/settings/tingle_blocked_users_screen.dart:132:36 • prefer_interpolation_to_compose_strings
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • test/mobile_otp_login_test.dart:24:18 • prefer_const_constructors
+
+37 issues found. (ran in 5.7s)

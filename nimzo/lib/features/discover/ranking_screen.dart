@@ -23,9 +23,18 @@ class _State extends ConsumerState<RankingScreen> {
     );
     final supported = (category == 1 || category == 2) && period > 0;
     return Scaffold(
-      appBar: AppBar(title: const Text('Ranking')),
+      backgroundColor: const Color(0xfff6f4ff),
+      appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: const Color(0xff8944ed),
+          title: const Text('Ranking',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16))),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
         children: [
           ReferenceTabs(
             labels: const ['Gift', 'Wealth', 'Charm', 'Active'],
@@ -41,7 +50,8 @@ class _State extends ConsumerState<RankingScreen> {
           ),
           const SizedBox(height: 12),
           if (!supported)
-            const EmptyContent('This ranking is unavailable.')
+            const EmptyContent(
+                'Only verified Wealth/Charm weekly and monthly rankings are available.')
           else
             AsyncContent(
               value: ref.watch(leaderboardProvider(key)),
@@ -50,13 +60,15 @@ class _State extends ConsumerState<RankingScreen> {
                   ? const EmptyContent('No rankings yet')
                   : Column(
                       children: [
-                        RankingPodium(rows: rows.take(3).toList()),
-                        for (var i = 3; i < rows.length; i++)
+                        for (var i = 0; i < rows.length; i++)
                           Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(color: NimzoStyle.line),
-                              ),
+                            margin: const EdgeInsets.only(bottom: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(19),
+                              border: Border.all(color: NimzoStyle.line),
                             ),
                             child: ListTile(
                               contentPadding: EdgeInsets.zero,

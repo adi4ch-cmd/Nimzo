@@ -1,0 +1,11 @@
+{
+  "status": "staged_only",
+  "activate_only_after_complete_collection": true,
+  "production_media_requirement": "Verified transparent VAP assets; MP4 demos alone are insufficient",
+  "gifts": [
+    {"name": "Romantic Blossom", "coin_price": 500000, "active": false, "source_media": null},
+    {"name": "Ice Queen Magic", "coin_price": 500000, "active": false, "source_media": null},
+    {"name": "Tiger Warrior", "coin_price": 500000, "active": false, "source_media": null}
+  ],
+  "media_note": "No matching demo media files were found on this branch; no media is fabricated or activated."
+}

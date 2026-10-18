@@ -6,8 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 Stream<int> accountTableActivity(
   SupabaseClient db,
   String table,
-  List<String> userColumns,
-) {
+  List<String> userColumns, {
+  bool emitInitial = false,
+}) {
   final user = db.auth.currentUser?.id;
   if (user == null) return const Stream.empty();
   late StreamController<int> events;
@@ -43,7 +44,7 @@ Stream<int> accountTableActivity(
       }
       channel.subscribe((status, _) {
         if (status == RealtimeSubscribeStatus.subscribed) {
-          if (subscribed) changed();
+          if (subscribed || emitInitial) changed();
           subscribed = true;
         }
       });

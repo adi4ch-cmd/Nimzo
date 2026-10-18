@@ -30,6 +30,10 @@ jobs:
         working-directory: nimzo
         run: flutter create --platforms=android --project-name nimzo .
 
+      - name: Configure Firebase Cloud Messaging (Android)
+        working-directory: nimzo
+        run: python3 tool/configure_fcm_android.py --root . --config-file tool/firebase_android_client.json
+
       - name: Remove generated sample test
         working-directory: nimzo
         run: rm -f test/widget_test.dart

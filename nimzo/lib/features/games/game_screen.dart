@@ -8,6 +8,7 @@ import '../wallet/wallet_screen.dart';
 import '../../core/widgets/master_ui.dart';
 import '../../core/utils/formatters.dart';
 import 'game_catalog.dart';
+import 'locked_game_demo.dart';
 
 /// Visual boards from nimzo-ui-2.html. Settlement is never simulated locally.
 class GameScreen extends ConsumerStatefulWidget {
@@ -123,6 +124,16 @@ class _GameState extends ConsumerState<GameScreen> {
   ];
   @override
   Widget build(BuildContext context) {
+    if (widget.slug == 'grady_lion' || widget.slug == 'lucky_wheel_77') {
+      return LockedGameDemo(
+        slug: widget.slug!,
+        roomControls: widget.roomControls,
+        onClose: widget.onClose,
+        onMinimize: widget.onMinimize,
+        onExpand: widget.onExpand,
+        expanded: widget.expanded,
+      );
+    }
     final game = NimzoRoomGames.approved
             .where((g) => g.slug == widget.slug)
             .firstOrNull ??
@@ -281,6 +292,9 @@ class _GameState extends ConsumerState<GameScreen> {
                         'assets/reference/game/${game.artwork}.jpg',
                         width: 48,
                         height: 48,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.image_not_supported_outlined,
+                          color: Color(0xffa596c9), size: 30),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -420,6 +434,9 @@ class _GameState extends ConsumerState<GameScreen> {
                           child: Image.asset(
                             'assets/reference/slot/${n * 5 % 12}.jpg',
                             fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) => const Center(
+                              child: Icon(Icons.image_not_supported_outlined,
+                                color: Color(0xffaf9bbe))),
                           ),
                         ),
                     ],
@@ -490,6 +507,11 @@ class _GameState extends ConsumerState<GameScreen> {
                                 'assets/reference/fruit/$k.jpg',
                                 height: 30,
                                 fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) =>
+                                  const SizedBox(
+                                    height: 30,
+                                    child: Icon(Icons.broken_image_outlined,
+                                      color: Color(0xff9b88c7))),
                               ),
                               Text(
                                 '${multipliers[0][k]}x',
@@ -704,6 +726,12 @@ class _GameState extends ConsumerState<GameScreen> {
                     'assets/reference/${game == 0 ? 'fruit' : game == 1 ? 'grady' : 'game'}/${game == 4 ? 4 : game == 6 ? 6 : index}.jpg',
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) =>
+                      const ColoredBox(
+                        color: Color(0xffefe8fa),
+                        child: Center(
+                          child: Icon(Icons.image_not_supported_outlined,
+                            color: Color(0xffae9cc6), size: 32))),
                   ),
                 ),
               if (game != 0 && game != 1)

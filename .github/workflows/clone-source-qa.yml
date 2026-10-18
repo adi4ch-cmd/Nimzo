@@ -1,0 +1,81 @@
+name: NIMZO Clone Source QA (No APK)
+
+on:
+  pull_request:
+    branches:
+      - feature/nimzo-ui-reset-20261017
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: nimzo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Fetch packages
+        run: flutter pub get
+      - name: Verify checked-in reference media
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          sample = [
+            'assets/reference/chest/0.jpg',
+            'assets/reference/game/0.jpg',
+            'assets/reference/fruit/0.jpg',
+            'assets/room_rocket/posters/rocket_stage_1.png',
+            'assets/gifts/free/rose.png',
+            'assets/nimzo_custom_gifts/kiss.svg',
+          ]
+          for item in sample:
+              path = Path(item)
+              print(f"ASSET_CHECK {item}: exists={path.is_file()} bytes={path.stat().st_size if path.is_file() else 0}")
+          PY
+      - name: Static analysis
+        run: flutter analyze --no-fatal-infos
+      - name: Verify Flutter asset bundle
+        run: flutter test test/asset_bundle_integrity_test.dart --reporter expanded
+      - name: Clone constraints
+        run: flutter test test/clone_constraints_test.dart
+      - name: 390px Friends reference interaction test
+        run: flutter test test/tingle_friends_screen_test.dart
+      - name: Live PK score parsing checks
+        run: flutter test test/pk_battles_test.dart --reporter expanded
+      - name: Mobile OTP validation and routing checks
+        run: flutter test test/mobile_otp_login_test.dart --reporter expanded
+      - name: Full Flutter regression suite
+        run: flutter test --reporter expanded
+      - name: Render current golden candidates for visual review (not approval)
+        if: always()
+        continue-on-error: true
+        run: |
+          flutter test --update-goldens \
+            test/master_visual_preview_test.dart \
+            test/reference_preview_test.dart \
+            test/remaining_visual_qa_test.dart
+      - name: Upload proposed screenshots for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-golden-candidates-unapproved
+          path: nimzo/test/goldens/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Preserve golden screenshot comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-ui-golden-diff
+          path: nimzo/test/failures/
+          if-no-files-found: ignore
+          retention-days: 7
+      # No Android SDK, APK, AAB, or app release steps.

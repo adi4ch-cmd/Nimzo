@@ -43,6 +43,15 @@ class AuthService {
           await db.rpc('leave_room', params: {'p_room': membership['room_id']});
       }
     } finally {
+      // Revoke this session's phone tokens before losing its authenticated JWT.
+      // A push failure must never prevent local logout.
+      if (uid != null) {
+        try {
+          await Supabase.instance.client
+              .rpc('unregister_device')
+              .timeout(const Duration(seconds: 3));
+        } catch (_) {}
+      }
       // GoTrue clears local session/storage before attempting the remote revoke.
       await _auth.signOut(scope: SignOutScope.local);
     }

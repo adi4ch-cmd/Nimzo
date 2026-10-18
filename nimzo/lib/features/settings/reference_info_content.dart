@@ -1,3 +1,4 @@
+import '../../app/feature_availability.dart';
 import 'package:flutter/material.dart';
 
 import 'language_choices.dart';
@@ -98,7 +99,7 @@ class ReferenceInfoContent extends ConsumerWidget {
     if (title == 'Store')
       return Center(
         child: FilledButton(
-          onPressed: () => context.push('/store'),
+          onPressed: () => openAvailableDestination(context, '/store'),
           child: const Text('Open NIMZO Store'),
         ),
       );

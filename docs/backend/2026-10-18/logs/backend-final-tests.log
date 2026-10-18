@@ -1,0 +1,923 @@
+Resolving dependencies...
+Downloading packages...
+  audio_session 0.1.25 (0.2.4 available)
+  code_assets 1.2.1 (2.1.0 available)
+  cross_file 0.3.5+5 (0.4.0 available)
+  dbus 0.7.15 (0.8.0 available)
+  file_picker 11.0.3 (13.1.0 available)
+  flutter_lints 4.0.0 (6.0.0 available)
+  flutter_riverpod 2.6.1 (3.4.3 available)
+  flutter_svga 0.0.13 (0.0.14 available)
+  flutter_vap_player 2.1.1 (2.2.0 available)
+  go_router 14.8.1 (18.1.0 available)
+  google_fonts 6.3.3 (9.0.0 available)
+  gotrue 2.27.2 (2.27.3 available)
+  hooks 2.0.2 (2.2.0 available)
+  image_picker_ios 0.8.13+9 (0.8.13+12 available)
+  in_app_purchase_android 0.5.3 (0.5.4 available)
+  in_app_purchase_storekit 0.4.13 (0.4.14 available)
+  just_audio 0.9.46 (0.10.6 available)
+  lints 4.0.0 (6.1.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  objective_c 9.5.0 (9.6.2 available)
+  package_info_plus 8.3.1 (10.2.2 available)
+  package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+  petitparser 7.0.2 (7.1.0 available)
+  realtime_client 2.13.0 (2.13.2 available)
+  record_use 0.6.0 (1.1.1 available)
+  riverpod 2.6.1 (3.4.3 available)
+  shared_preferences_android 2.4.28 (2.5.0 available)
+  shared_preferences_foundation 2.5.7 (2.6.0 available)
+  supabase 2.16.2 (2.16.5 available)
+  supabase_flutter 2.18.0 (2.18.3 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_graphics_compiler 1.3.0 (1.3.2 available)
+  vector_math 2.4.0 (2.4.3 available)
+  vm_service 15.3.0 (15.4.0 available)
+  win32 5.15.0 (6.4.0 available)
+  xml 7.0.1 (7.1.0 available)
+Got dependencies!
+37 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /workspace/Nimzo/nimzo/test/home_reference_test.dart
+00:00 +0: /workspace/Nimzo/nimzo/test/home_reference_test.dart: empty popular rooms do not render prototype users or counts
+00:00 +1: loading /workspace/Nimzo/nimzo/test/couple_panel_layout_test.dart
+00:01 +1: /workspace/Nimzo/nimzo/test/couple_panel_layout_test.dart: linked CP panel bounds long partner names
+00:02 +2: /workspace/Nimzo/nimzo/test/couple_panel_layout_test.dart: unlinked CP panel stays bounded with two-line Add CP label
+00:02 +3: loading /workspace/Nimzo/nimzo/test/profile_level_scale_test.dart
+00:02 +3: /workspace/Nimzo/nimzo/test/profile_level_scale_test.dart: tier starts match authoritative SQL square-step thresholds
+00:02 +4: /workspace/Nimzo/nimzo/test/profile_level_scale_test.dart: three level palettes all start differently and evolve with tier
+00:02 +5: /workspace/Nimzo/nimzo/test/profile_level_scale_test.dart: partial progress is bounded by current and next verified levels
+00:02 +6: loading /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart
+00:08 +6: /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart: server-visible room chat is readable with staleMembership=false when the phone clock is ahead
+00:09 +7: /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart: server-visible room chat is readable with staleMembership=true when the phone clock is ahead
+00:09 +8: /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart: profile retains authoritative totals without inventing level thresholds
+00:09 +9: /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart: supported wealth/weekly forwards the exact live RPC contract
+00:09 +10: /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart: supported wealth/monthly forwards the exact live RPC contract
+00:09 +11: /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart: supported charm/weekly forwards the exact live RPC contract
+00:09 +12: /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart: supported charm/monthly forwards the exact live RPC contract
+00:09 +13: /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart: supported room/weekly forwards the exact live RPC contract
+00:09 +14: /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart: supported room/monthly forwards the exact live RPC contract
+00:09 +15: /workspace/Nimzo/nimzo/test/backend_targeted_integration_test.dart: unsupported ranking combinations do not silently call another window
+00:09 +16: loading /workspace/Nimzo/nimzo/test/hilo_medals_honor_wall_test.dart
+00:10 +16: /workspace/Nimzo/nimzo/test/hilo_medals_honor_wall_test.dart: Honor Wall requires an account, not fake medal previews
+00:11 +17: /workspace/Nimzo/nimzo/test/hilo_medals_honor_wall_test.dart: real owned and store medals render without phantom awards
+00:11 +18: /workspace/Nimzo/nimzo/test/hilo_medals_honor_wall_test.dart: equip uses existing verified store RPC service
+00:12 +19: loading /workspace/Nimzo/nimzo/test/message_history_ui_test.dart
+00:12 +19: /workspace/Nimzo/nimzo/test/message_history_ui_test.dart: earlier messages load once and overlap is deduplicated
+00:14 +20: loading /workspace/Nimzo/nimzo/test/validators_test.dart
+00:15 +20: /workspace/Nimzo/nimzo/test/validators_test.dart: email
+00:15 +21: /workspace/Nimzo/nimzo/test/validators_test.dart: username
+00:15 +22: loading /workspace/Nimzo/nimzo/test/coming_soon_navigation_test.dart
+00:15 +22: /workspace/Nimzo/nimzo/test/coming_soon_navigation_test.dart: disabled destination /vip cannot be opened by deep link
+00:15 +23: /workspace/Nimzo/nimzo/test/coming_soon_navigation_test.dart: disabled destination /svip cannot be opened by deep link
+00:15 +24: /workspace/Nimzo/nimzo/test/coming_soon_navigation_test.dart: disabled destination /store cannot be opened by deep link
+00:15 +25: /workspace/Nimzo/nimzo/test/coming_soon_navigation_test.dart: disabled destination /store?bag=1 cannot be opened by deep link
+00:15 +26: /workspace/Nimzo/nimzo/test/coming_soon_navigation_test.dart: disabled destination /store/ cannot be opened by deep link
+00:15 +27: /workspace/Nimzo/nimzo/test/coming_soon_navigation_test.dart: profile My Store tap says Coming soon and keeps current page
+00:17 +28: /workspace/Nimzo/nimzo/test/coming_soon_navigation_test.dart: profile Backpack tap says Coming soon and keeps current page
+00:17 +29: /workspace/Nimzo/nimzo/test/coming_soon_navigation_test.dart: profile VIP tap says Coming soon and keeps current page
+00:17 +30: /workspace/Nimzo/nimzo/test/coming_soon_navigation_test.dart: profile SVIP tap says Coming soon and keeps current page
+00:17 +31: loading /workspace/Nimzo/nimzo/test/game_and_economy_test.dart
+00:18 +31: /workspace/Nimzo/nimzo/test/game_and_economy_test.dart: economy: 100000 -> 45000 diamonds + 5000 owner coins
+00:18 +32: /workspace/Nimzo/nimzo/test/game_and_economy_test.dart: game board is 5x5 and score within bounds
+00:18 +33: loading /workspace/Nimzo/nimzo/test/gift_video_overlay_test.dart
+00:18 +33: /workspace/Nimzo/nimzo/test/gift_video_overlay_test.dart: portrait Dragon media is compact and keeps controls nearby
+00:19 +34: /workspace/Nimzo/nimzo/test/gift_video_overlay_test.dart: voice-safe sound is muted and can be enabled
+00:19 +35: /workspace/Nimzo/nimzo/test/gift_video_overlay_test.dart: longer original video is not dismissed at thirty seconds
+00:19 +36: /workspace/Nimzo/nimzo/test/gift_video_overlay_test.dart: decoder failure dismisses once and releases resources
+00:19 +37: /workspace/Nimzo/nimzo/test/gift_video_overlay_test.dart: stalled initialization and insecure URL dismiss safely
+00:19 +38: loading /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart
+00:20 +38: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: moderator kick confirms correct action
+00:21 +39: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: moderator ban confirms correct action
+00:21 +40: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: non-owner server moderator sees separate kick and ban
+00:21 +41: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: moderator cannot remove owner
+00:21 +42: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: room badge 0 opens guest details on narrow phone
+00:22 +43: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: room badge 1 opens guest details on narrow phone
+00:22 +44: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: room badge 2 opens guest details on narrow phone
+00:22 +45: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: seat sheet opens gift sheet with the app provider scope
+00:23 +46: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: in-room Mention returns the real member name
+00:23 +47: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: member sheet shows real identity and supported social actions
+00:23 +48: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: room owner can see server-backed moderation actions
+00:23 +49: /workspace/Nimzo/nimzo/test/room_user_sheet_test.dart: own seat offers leave and self gifting without self social requests
+00:24 +50: loading /workspace/Nimzo/nimzo/test/gift_rejection_test.dart
+00:24 +50: /workspace/Nimzo/nimzo/test/gift_rejection_test.dart: known gift rejection explains recovery and allows changing quantity
+00:26 +51: loading /workspace/Nimzo/nimzo/test/membership_retirement_test.dart
+00:26 +51: /workspace/Nimzo/nimzo/test/membership_retirement_test.dart: stale server membership cannot restore retired identity
+00:26 +52: /workspace/Nimzo/nimzo/test/membership_retirement_test.dart: /vip direct link cannot open a paused premium or Store page
+00:27 +53: /workspace/Nimzo/nimzo/test/membership_retirement_test.dart: /svip direct link cannot open a paused premium or Store page
+00:27 +54: /workspace/Nimzo/nimzo/test/membership_retirement_test.dart: /store direct link cannot open a paused premium or Store page
+00:28 +55: /workspace/Nimzo/nimzo/test/membership_retirement_test.dart: /store?bag=1 direct link cannot open a paused premium or Store page
+00:28 +56: /workspace/Nimzo/nimzo/test/membership_retirement_test.dart: /store/ direct link cannot open a paused premium or Store page
+00:28 +57: loading /workspace/Nimzo/nimzo/test/diamond_blast_test.dart
+00:29 +57: /workspace/Nimzo/nimzo/test/diamond_blast_test.dart: Room Rocket exposes six cumulative gifting targets
+00:29 +58: /workspace/Nimzo/nimzo/test/diamond_blast_test.dart: room blast queue deduplicates events and preserves microphone controls
+00:30 +59: /workspace/Nimzo/nimzo/test/diamond_blast_test.dart: server Diamond Blast model rejects unsupported targets and forged stage payloads
+00:30 +60: /workspace/Nimzo/nimzo/test/diamond_blast_test.dart: subthreshold and post-final settled gifts refresh real progress without a blast
+00:31 +61: /workspace/Nimzo/nimzo/test/diamond_blast_test.dart: room rocket progress renders real verified six-level data
+00:31 +62: /workspace/Nimzo/nimzo/test/diamond_blast_test.dart: a new server cycle clears queued old blasts before status refresh completes
+00:31 +63: loading /workspace/Nimzo/nimzo/test/room_moderation_repository_test.dart
+00:32 +63: /workspace/Nimzo/nimzo/test/room_moderation_repository_test.dart: capability uses room only; separate kick/ban forward exact RPC args
+00:32 +64: /workspace/Nimzo/nimzo/test/room_moderation_repository_test.dart: capability cache recomputes across account changes and signed out is false
+00:32 +65: loading /workspace/Nimzo/nimzo/test/wallet_diamond_exchange_test.dart
+00:33 +65: /workspace/Nimzo/nimzo/test/wallet_diamond_exchange_test.dart: wallet shows server diamonds and provides one-to-one exchange
+00:34 +66: /workspace/Nimzo/nimzo/test/wallet_diamond_exchange_test.dart: exchange disabled on zero diamonds
+00:34 +67: loading /workspace/Nimzo/nimzo/test/mobile_otp_login_test.dart
+00:34 +67: /workspace/Nimzo/nimzo/test/mobile_otp_login_test.dart: SMS phone numbers must use complete E.164 country codes
+00:34 +68: /workspace/Nimzo/nimzo/test/mobile_otp_login_test.dart: Unauthenticated users can open mobile verification without loops
+00:34 +69: /workspace/Nimzo/nimzo/test/mobile_otp_login_test.dart: Verified phone-only accounts are not redirected to email OTP page
+00:34 +70: loading /workspace/Nimzo/nimzo/test/gift_artwork_test.dart
+00:35 +70: /workspace/Nimzo/nimzo/test/gift_artwork_test.dart: compatible live gift names retain reference identity
+00:35 +71: /workspace/Nimzo/nimzo/test/gift_artwork_test.dart: original Dragon catalog posters use their own original video frames
+00:35 +72: /workspace/Nimzo/nimzo/test/gift_artwork_test.dart: complete free gifts have actual locally pinned icon paths
+00:35 +73: /workspace/Nimzo/nimzo/test/gift_artwork_test.dart: all fourteen original NIMZO gift names have unique SVG artwork
+00:35 +74: /workspace/Nimzo/nimzo/test/gift_artwork_test.dart: unmatched gifts do not invent artwork
+00:35 +75: loading /workspace/Nimzo/nimzo/test/custom_gift_bundle_test.dart
+00:36 +75: /workspace/Nimzo/nimzo/test/custom_gift_bundle_test.dart: all fourteen distinct NIMZO artwork assets are packaged
+00:36 +76: /workspace/Nimzo/nimzo/test/custom_gift_bundle_test.dart: Phoenix artwork contains a bird head, beak and layered tail plumes
+00:36 +77: /workspace/Nimzo/nimzo/test/custom_gift_bundle_test.dart: royal Phoenix shows real bird art with moving flame stage
+00:36 +78: /workspace/Nimzo/nimzo/test/custom_gift_bundle_test.dart: all fourteen original SVGs actually decode on Flutter
+00:37 +79: /workspace/Nimzo/nimzo/test/custom_gift_bundle_test.dart: custom gift effect has actual moving artwork and can skip
+00:37 +80: loading /workspace/Nimzo/nimzo/test/bychance_palette_test.dart
+00:37 +80: /workspace/Nimzo/nimzo/test/bychance_palette_test.dart: Tingle-reference lavender palette keeps NIMZO identity consistent
+00:37 +81: /workspace/Nimzo/nimzo/test/bychance_palette_test.dart: Material theme uses readable surfaces and unified accents
+00:37 +82: loading /workspace/Nimzo/nimzo/test/bychance_ui_smoke_test.dart
+00:38 +82: /workspace/Nimzo/nimzo/test/bychance_ui_smoke_test.dart: Tingle-reference Games gallery keeps approved catalog visible
+00:39 +83: /workspace/Nimzo/nimzo/test/bychance_ui_smoke_test.dart: Room theme gallery preserves included free themes
+00:39 +84: loading /workspace/Nimzo/nimzo/test/room_audio_only_tools_ui_test.dart
+00:40 +84: /workspace/Nimzo/nimzo/test/room_audio_only_tools_ui_test.dart: Party Tools expose music and voice features but never video
+00:40 +85: loading /workspace/Nimzo/nimzo/test/auth_redirect_test.dart
+00:40 +85: /workspace/Nimzo/nimzo/test/auth_redirect_test.dart: password recovery takes precedence over a valid signed-in session
+00:40 +86: /workspace/Nimzo/nimzo/test/auth_redirect_test.dart: recovery form stays reachable while recovery is active
+00:40 +87: /workspace/Nimzo/nimzo/test/auth_redirect_test.dart: signed-out users cannot reach private routes
+00:40 +88: /workspace/Nimzo/nimzo/test/auth_redirect_test.dart: verified OAuth user exits login without rebuilding navigation
+00:40 +89: /workspace/Nimzo/nimzo/test/auth_redirect_test.dart: loading auth does not expose a private screen
+00:40 +90: loading /workspace/Nimzo/nimzo/test/profile_content_test.dart
+00:41 +90: /workspace/Nimzo/nimzo/test/profile_content_test.dart: public profile badge 0 opens its category
+00:43 +91: /workspace/Nimzo/nimzo/test/profile_content_test.dart: public profile badge 1 opens its category
+00:43 +92: /workspace/Nimzo/nimzo/test/profile_content_test.dart: public profile badge 2 opens its category
+00:43 +93: /workspace/Nimzo/nimzo/test/profile_content_test.dart: badge distinguishes unavailable total from a real zero
+00:43 +94: /workspace/Nimzo/nimzo/test/profile_content_test.dart: profile avatar overlaps the approved 130px cover
+00:44 +95: /workspace/Nimzo/nimzo/test/profile_content_test.dart: linked owner can still manage outstanding CP invitations
+00:44 +96: /workspace/Nimzo/nimzo/test/profile_content_test.dart: top 15 preview opens all received gifts without a tab context error
+00:44 +97: /workspace/Nimzo/nimzo/test/profile_content_test.dart: profile presents backend received gifts and avoids fabricated badges
+00:44 +98: /workspace/Nimzo/nimzo/test/profile_content_test.dart: profile gift failure remains a retryable error rather than empty data
+00:44 +99: loading /workspace/Nimzo/nimzo/test/yo2_gift_ui_test.dart
+00:45 +99: /workspace/Nimzo/nimzo/test/yo2_gift_ui_test.dart: Gift categories never invent Yo2-only catalog records
+00:45 +100: /workspace/Nimzo/nimzo/test/yo2_gift_ui_test.dart: All preserves the catalog, individual tabs match case-insensitively
+00:45 +101: loading /workspace/Nimzo/nimzo/test/room_game_host_test.dart
+00:46 +101: /workspace/Nimzo/nimzo/test/room_game_host_test.dart: minimize and restore retain room and game state
+00:47 +102: loading /workspace/Nimzo/nimzo/test/support_content_test.dart
+00:47 +102: /workspace/Nimzo/nimzo/test/support_content_test.dart: valid feedback submits and refreshes owner tickets
+00:49 +103: /workspace/Nimzo/nimzo/test/support_content_test.dart: signed-out help explains FAQs without accessing backend
+00:49 +104: /workspace/Nimzo/nimzo/test/support_content_test.dart: signed-out deletion is request-only and disabled
+00:49 +105: /workspace/Nimzo/nimzo/test/support_content_test.dart: all five legal documents remain explicitly draft
+00:49 +106: loading /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart
+00:50 +106: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: microphone cannot transmit before audio connection
+00:50 +107: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: speaking SIP identity maps to profile UUID
+00:50 +108: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: failed shutdown clears speaking state and allows a fresh SDK retry
+00:50 +109: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: server account URI supplies the SDK login account name
+00:50 +110: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: missing server configuration is actionable and does not start native login
+00:50 +111: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: 20122 is an invalid token signature, not a retryable network error
+00:50 +112: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: native login failure preserves its stage and status through cleanup
+00:50 +113: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: native initial-mute failure preserves its stage and status through cleanup
+00:50 +114: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: native channel-join failure preserves its stage and status through cleanup
+00:50 +115: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: platform requestMicPermission failure is sanitized and identifies the method
+00:50 +116: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: platform initialize failure is sanitized and identifies the method
+00:50 +117: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: platform join failure is sanitized and identifies the method
+00:50 +118: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: platform setMic failure is sanitized and identifies the method
+00:50 +119: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: JNI missing callback identifies NoSuchMethodError without raw message
+00:50 +120: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: untrusted platform code and details never enter the diagnostic
+00:50 +121: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: media deadline begins after slow native login and join acceptance
+00:50 +122: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: disconnect during a pending join fails immediately rather than timing out
+00:50 +123: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: failed initialization retains the native status code
+00:50 +124: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: leave and rejoin recreate SDK state instead of reusing timed-out handles
+00:50 +125: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: join waits for media confirmation rather than native request acceptance
+00:50 +126: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: failed initial mute rejects join and leaves native channel
+00:50 +127: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: audio dropping during initial mute cannot report a successful join
+00:50 +128: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: native error clears stale speaking indicators
+00:50 +129: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: native media failure fails join and cleans up
+00:50 +130: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: leaving cancels an in-flight join and prevents microphone transmission
+00:50 +131: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: denied microphone permission leaves native microphone muted
+00:50 +132: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: listener upgrades to a fresh server-authorized join before transmitting
+00:50 +133: /workspace/Nimzo/nimzo/test/voice/vivox_voice_service_test.dart: server-denied transmission disconnects without enabling the microphone
+00:50 +134: loading /workspace/Nimzo/nimzo/test/profile_gift_refresh_test.dart
+00:50 +134: /workspace/Nimzo/nimzo/test/profile_gift_refresh_test.dart: successful profile gift refreshes both cached profiles
+00:52 +135: loading /workspace/Nimzo/nimzo/test/recharge_checkout_test.dart
+00:52 +135: /workspace/Nimzo/nimzo/test/recharge_checkout_test.dart: store pending and canceled events never claim coins were credited
+00:52 +136: /workspace/Nimzo/nimzo/test/recharge_checkout_test.dart: requires server account binding and supported store
+00:52 +137: /workspace/Nimzo/nimzo/test/recharge_checkout_test.dart: failed verification never finishes; retry settles before finishing
+00:52 +138: /workspace/Nimzo/nimzo/test/recharge_checkout_test.dart: settlement requires matching server-confirmed production credit
+00:52 +139: /workspace/Nimzo/nimzo/test/recharge_checkout_test.dart: credit followed by store finish failure safely re-verifies on retry
+00:52 +140: /workspace/Nimzo/nimzo/test/recharge_checkout_test.dart: payment errors hide raw provider and receipt details
+00:52 +141: loading /workspace/Nimzo/nimzo/test/conversation_tile_test.dart
+00:53 +141: /workspace/Nimzo/nimzo/test/conversation_tile_test.dart: conversation uses current profile identity and real message preview
+00:54 +142: loading /workspace/Nimzo/nimzo/test/premium_accessible_layout_test.dart
+00:54 +142: /workspace/Nimzo/nimzo/test/premium_accessible_layout_test.dart: premium previews fit large text at 320.0
+00:56 +143: /workspace/Nimzo/nimzo/test/premium_accessible_layout_test.dart: premium previews fit large text at 390.0
+00:56 +144: /workspace/Nimzo/nimzo/test/premium_accessible_layout_test.dart: premium previews fit large text at 480.0
+00:56 +145: loading /workspace/Nimzo/nimzo/test/login_methods_ui_test.dart
+00:57 +145: /workspace/Nimzo/nimzo/test/login_methods_ui_test.dart: login UI shows only email, Facebook and Google at 320.0dp
+00:58 +146: /workspace/Nimzo/nimzo/test/login_methods_ui_test.dart: login UI shows only email, Facebook and Google at 360.0dp
+00:58 +147: /workspace/Nimzo/nimzo/test/login_methods_ui_test.dart: login UI shows only email, Facebook and Google at 390.0dp
+00:58 +148: loading /workspace/Nimzo/nimzo/test/room_settings_atomic_test.dart
+00:58 +148: /workspace/Nimzo/nimzo/test/room_settings_atomic_test.dart: room settings and photo use one atomic authorized request
+00:58 +149: loading /workspace/Nimzo/nimzo/test/cp_relationship_clock_test.dart
+00:59 +149: /workspace/Nimzo/nimzo/test/cp_relationship_clock_test.dart: CP duration comes from persisted binding timestamp
+00:59 +150: /workspace/Nimzo/nimzo/test/cp_relationship_clock_test.dart: unlinked or invalid relationship has no invented timer
+00:59 +151: /workspace/Nimzo/nimzo/test/cp_relationship_clock_test.dart: future timestamp never creates negative CP time
+00:59 +152: loading /workspace/Nimzo/nimzo/test/room_music_compact_ui_test.dart
+01:00 +152: /workspace/Nimzo/nimzo/test/room_music_compact_ui_test.dart: room music sheet has usable local playback controls at 320.0dp
+01:00 +153: /workspace/Nimzo/nimzo/test/room_music_compact_ui_test.dart: room music sheet has usable local playback controls at 390.0dp
+01:01 +154: loading /workspace/Nimzo/nimzo/test/logout_cleanup_test.dart
+01:01 +154: /workspace/Nimzo/nimzo/test/logout_cleanup_test.dart: native voice leave failure does not prevent session logout
+01:02 +155: loading /workspace/Nimzo/nimzo/test/verified_gift_broadcast_test.dart
+01:03 +155: /workspace/Nimzo/nimzo/test/verified_gift_broadcast_test.dart: stalled approved-media lookup releases the verified queue
+01:04 +156: /workspace/Nimzo/nimzo/test/verified_gift_broadcast_test.dart: backgrounding cancels queued and in-flight effects
+01:04 +157: /workspace/Nimzo/nimzo/test/verified_gift_broadcast_test.dart: settled gift announcement uses quantity and total cost
+01:04 +158: loading /workspace/Nimzo/nimzo/test/profile_model_test.dart
+01:04 +158: /workspace/Nimzo/nimzo/test/profile_model_test.dart: missing earned level records do not create fictional profile badges
+01:04 +159: /workspace/Nimzo/nimzo/test/profile_model_test.dart: expired VIP and SVIP records do not appear as active membership
+01:04 +160: /workspace/Nimzo/nimzo/test/profile_model_test.dart: retired memberships stay inactive even with future expiry
+01:04 +161: loading /workspace/Nimzo/nimzo/test/gift_retry_test.dart
+01:05 +161: /workspace/Nimzo/nimzo/test/gift_retry_test.dart: uncertain gift retries preserve quantity and idempotency key
+01:07 +162: loading /workspace/Nimzo/nimzo/test/home_country_filter_test.dart
+01:07 +162: /workspace/Nimzo/nimzo/test/home_country_filter_test.dart: country filter accepts ISO code and existing full country name
+01:07 +163: loading /workspace/Nimzo/nimzo/test/user_errors_test.dart
+01:07 +163: /workspace/Nimzo/nimzo/test/user_errors_test.dart: permission errors do not disclose table or policy names
+01:07 +164: loading /workspace/Nimzo/nimzo/test/custom_gift_gallery_preview_test.dart
+01:08 +164: /workspace/Nimzo/nimzo/test/custom_gift_gallery_preview_test.dart: all twenty approved gifts show distinct new gallery art
+01:09 +165: loading /workspace/Nimzo/nimzo/test/room_session_test.dart
+01:10 +165: /workspace/Nimzo/nimzo/test/room_session_test.dart: closing during database join removes late membership and never starts voice
+01:10 +166: /workspace/Nimzo/nimzo/test/room_session_test.dart: close is idempotent and clears server membership before voice teardown
+01:10 +167: /workspace/Nimzo/nimzo/test/room_session_test.dart: a failed server leave can retry and removes stuck membership
+01:10 +168: /workspace/Nimzo/nimzo/test/room_session_test.dart: native voice exit failure never prevents database removal
+01:10 +169: /workspace/Nimzo/nimzo/test/room_session_test.dart: server membership leaves before hung voice login completes
+01:10 +170: /workspace/Nimzo/nimzo/test/room_session_test.dart: failed early database join does not issue phantom exit
+01:10 +171: /workspace/Nimzo/nimzo/test/room_session_test.dart: failed room join can retry successfully without a phantom session
+01:10 +172: loading /workspace/Nimzo/nimzo/test/gift_gallery_integrity_test.dart
+01:10 +172: /workspace/Nimzo/nimzo/test/gift_gallery_integrity_test.dart: all twenty active catalog names resolve to their own bundled image
+01:10 +173: /workspace/Nimzo/nimzo/test/gift_gallery_integrity_test.dart: only actually bundled original SVGA gifts are marked animated
+01:10 +174: /workspace/Nimzo/nimzo/test/gift_gallery_integrity_test.dart: live named gift displays its matching real catalog art
+01:11 +175: loading /workspace/Nimzo/nimzo/test/moment_gift_contract_test.dart
+01:11 +175: /workspace/Nimzo/nimzo/test/moment_gift_contract_test.dart: moment gifts forward recipient quantity and stable key to settlement RPC
+01:11 +176: loading /workspace/Nimzo/nimzo/test/moment_update_contract_test.dart
+01:12 +176: /workspace/Nimzo/nimzo/test/moment_update_contract_test.dart: Moment update rejects zero affected rows
+01:12 +177: /workspace/Nimzo/nimzo/test/moment_update_contract_test.dart: Moment update confirms saved row owned by authenticated author
+01:12 +178: loading /workspace/Nimzo/nimzo/test/presence_repository_test.dart
+01:12 +178: /workspace/Nimzo/nimzo/test/presence_repository_test.dart: presence batches more than100 peers without losing indicators
+01:12 +179: /workspace/Nimzo/nimzo/test/presence_repository_test.dart: unknown or blocked presence is never invented as offline
+01:12 +180: loading /workspace/Nimzo/nimzo/test/moment_editor_retry_test.dart
+01:13 +180: /workspace/Nimzo/nimzo/test/moment_editor_retry_test.dart: Moment save refreshes feed even after editor is dismissed
+01:14 +181: /workspace/Nimzo/nimzo/test/moment_editor_retry_test.dart: Moment photo chooser supports camera, preview and removal
+01:15 +182: /workspace/Nimzo/nimzo/test/moment_editor_retry_test.dart: failed Moment load offers retry and recovers existing draft
+01:15 +183: /workspace/Nimzo/nimzo/test/moment_editor_retry_test.dart: reference Moment topics and Mention edit the actual draft
+01:15 +184: loading /workspace/Nimzo/nimzo/test/nimzo_gift_controls_test.dart
+01:16 +184: /workspace/Nimzo/nimzo/test/nimzo_gift_controls_test.dart: licensed gift controls are packaged intact under NIMZO paths
+01:16 +185: /workspace/Nimzo/nimzo/test/nimzo_gift_controls_test.dart: NIMZO gift controls display without imported app branding
+01:16 +186: loading /workspace/Nimzo/nimzo/test/profile_levels_test.dart
+01:17 +186: /workspace/Nimzo/nimzo/test/profile_levels_test.dart: wealth palette boundaries and separate Charm/Active palette
+01:17 +187: /workspace/Nimzo/nimzo/test/profile_levels_test.dart: Me badge 0 opens corresponding details
+01:18 +188: /workspace/Nimzo/nimzo/test/profile_levels_test.dart: Me badge 1 opens corresponding details
+01:18 +189: /workspace/Nimzo/nimzo/test/profile_levels_test.dart: Me badge 2 opens corresponding details
+01:19 +190: loading /workspace/Nimzo/nimzo/test/tingle_video_ui_test.dart
+01:19 +190: /workspace/Nimzo/nimzo/test/tingle_video_ui_test.dart: walkthrough surfaces and privilege navigation fit 320.0dp
+Rendering login at 320.0
+Captured login at 320.0
+Rendering home at 320.0
+Captured home at 320.0
+Rendering party at 320.0
+Captured party at 320.0
+Rendering moments at 320.0
+Captured moments at 320.0
+Rendering messages at 320.0
+Captured messages at 320.0
+Rendering profile at 320.0
+Captured profile at 320.0
+Rendering public-profile at 320.0
+Captured public-profile at 320.0
+Rendering mini-profile at 320.0
+Captured mini-profile at 320.0
+Rendering profile-details at 320.0
+Captured profile-details at 320.0
+Rendering create-room at 320.0
+Captured create-room at 320.0
+Rendering friends at 320.0
+Captured friends at 320.0
+Rendering family at 320.0
+Captured family at 320.0
+Rendering membership at 320.0
+Captured membership at 320.0
+Rendering cp at 320.0
+Captured cp at 320.0
+Rendering cp-gallery at 320.0
+Captured cp-gallery at 320.0
+Rendering store at 320.0
+Captured store at 320.0
+Rendering composer at 320.0
+Captured composer at 320.0
+Rendering ranking at 320.0
+Captured ranking at 320.0
+Rendering levels at 320.0
+Captured levels at 320.0
+Rendering tasks at 320.0
+Captured tasks at 320.0
+Rendering checkin-unavailable at 320.0
+Captured checkin-unavailable at 320.0
+Rendering vip at 320.0
+Captured vip at 320.0
+Rendering store-Party Theme at 320.0
+Captured store-Party Theme at 320.0
+Rendering store-Rides at 320.0
+Captured store-Rides at 320.0
+Rendering store-Chat Bubble at 320.0
+Captured store-Chat Bubble at 320.0
+Rendering store-Live Frame at 320.0
+Captured store-Live Frame at 320.0
+Rendering store-preview at 320.0
+Captured store-preview at 320.0
+01:27 +191: /workspace/Nimzo/nimzo/test/tingle_video_ui_test.dart: walkthrough surfaces and privilege navigation fit 360.0dp
+Rendering login at 360.0
+Captured login at 360.0
+Rendering home at 360.0
+Captured home at 360.0
+Rendering party at 360.0
+Captured party at 360.0
+Rendering moments at 360.0
+Captured moments at 360.0
+Rendering messages at 360.0
+Captured messages at 360.0
+Rendering profile at 360.0
+Captured profile at 360.0
+Rendering public-profile at 360.0
+Captured public-profile at 360.0
+Rendering mini-profile at 360.0
+Captured mini-profile at 360.0
+Rendering profile-details at 360.0
+Captured profile-details at 360.0
+Rendering create-room at 360.0
+Captured create-room at 360.0
+Rendering friends at 360.0
+Captured friends at 360.0
+Rendering family at 360.0
+Captured family at 360.0
+Rendering membership at 360.0
+Captured membership at 360.0
+Rendering cp at 360.0
+Captured cp at 360.0
+Rendering cp-gallery at 360.0
+Captured cp-gallery at 360.0
+Rendering store at 360.0
+Captured store at 360.0
+Rendering composer at 360.0
+Captured composer at 360.0
+Rendering ranking at 360.0
+Captured ranking at 360.0
+Rendering levels at 360.0
+Captured levels at 360.0
+Rendering tasks at 360.0
+Captured tasks at 360.0
+Rendering checkin-unavailable at 360.0
+Captured checkin-unavailable at 360.0
+Rendering vip at 360.0
+Captured vip at 360.0
+Rendering store-Party Theme at 360.0
+Captured store-Party Theme at 360.0
+Rendering store-Rides at 360.0
+Captured store-Rides at 360.0
+Rendering store-Chat Bubble at 360.0
+Captured store-Chat Bubble at 360.0
+Rendering store-Live Frame at 360.0
+Captured store-Live Frame at 360.0
+Rendering store-preview at 360.0
+Captured store-preview at 360.0
+01:31 +192: /workspace/Nimzo/nimzo/test/tingle_video_ui_test.dart: walkthrough surfaces and privilege navigation fit 390.0dp
+Rendering login at 390.0
+Captured login at 390.0
+Rendering home at 390.0
+Captured home at 390.0
+Rendering party at 390.0
+Captured party at 390.0
+Rendering moments at 390.0
+Captured moments at 390.0
+Rendering messages at 390.0
+Captured messages at 390.0
+Rendering profile at 390.0
+Captured profile at 390.0
+Rendering public-profile at 390.0
+Captured public-profile at 390.0
+Rendering mini-profile at 390.0
+Captured mini-profile at 390.0
+Rendering profile-details at 390.0
+Captured profile-details at 390.0
+Rendering create-room at 390.0
+Captured create-room at 390.0
+Rendering friends at 390.0
+Captured friends at 390.0
+Rendering family at 390.0
+Captured family at 390.0
+Rendering membership at 390.0
+Captured membership at 390.0
+Rendering cp at 390.0
+Captured cp at 390.0
+Rendering cp-gallery at 390.0
+Captured cp-gallery at 390.0
+Rendering store at 390.0
+Captured store at 390.0
+Rendering composer at 390.0
+Captured composer at 390.0
+Rendering ranking at 390.0
+Captured ranking at 390.0
+Rendering levels at 390.0
+Captured levels at 390.0
+Rendering tasks at 390.0
+Captured tasks at 390.0
+Rendering checkin-unavailable at 390.0
+Captured checkin-unavailable at 390.0
+Rendering vip at 390.0
+Captured vip at 390.0
+Rendering store-Party Theme at 390.0
+Captured store-Party Theme at 390.0
+Rendering store-Rides at 390.0
+Captured store-Rides at 390.0
+Rendering store-Chat Bubble at 390.0
+Captured store-Chat Bubble at 390.0
+Rendering store-Live Frame at 390.0
+Captured store-Live Frame at 390.0
+Rendering store-preview at 390.0
+Captured store-preview at 390.0
+01:34 +193: loading /workspace/Nimzo/nimzo/test/reference_design_test.dart
+01:35 +193: /workspace/Nimzo/nimzo/test/reference_design_test.dart: theme reflects the approved ByChance-inspired palette
+01:35 +194: /workspace/Nimzo/nimzo/test/reference_design_test.dart: long avatar labels and unavailable image remain bounded
+01:35 +195: /workspace/Nimzo/nimzo/test/reference_design_test.dart: unavailable data offers an actual retry action
+01:35 +196: loading /workspace/Nimzo/nimzo/test/notification_open_test.dart
+01:36 +196: /workspace/Nimzo/nimzo/test/notification_open_test.dart: notification opens the actor once after read confirmation
+01:37 +197: loading /workspace/Nimzo/nimzo/test/notification_interactions_test.dart
+01:37 +197: /workspace/Nimzo/nimzo/test/notification_interactions_test.dart: notification category and read action reload server-backed rows
+01:38 +198: loading /workspace/Nimzo/nimzo/test/message_read_refresh_test.dart
+01:39 +198: /workspace/Nimzo/nimzo/test/message_read_refresh_test.dart: successful server mark-read refreshes conversation unread counts
+01:41 +199: loading /workspace/Nimzo/nimzo/test/room_reconnect_test.dart
+01:41 +199: /workspace/Nimzo/nimzo/test/room_reconnect_test.dart: room exposes voice reconnect without joining membership twice
+01:44 +200: /workspace/Nimzo/nimzo/test/room_reconnect_test.dart: cancelled room exit keeps ten-seat voice session alive
+01:44 +201: loading /workspace/Nimzo/nimzo/test/presence_lifecycle_test.dart
+01:45 +201: /workspace/Nimzo/nimzo/test/presence_lifecycle_test.dart: background state follows a pending heartbeat and disposal stops repeats
+01:45 +202: loading /workspace/Nimzo/nimzo/test/settings_about_test.dart
+01:46 +202: /workspace/Nimzo/nimzo/test/settings_about_test.dart: About reports the installed version and build
+01:47 +203: loading /workspace/Nimzo/nimzo/test/ui_reset_test.dart
+01:47 +203: /workspace/Nimzo/nimzo/test/ui_reset_test.dart: NIMZO reference onboarding replaces the retired blank UI
+01:48 +204: loading /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart
+01:48 +204: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Broadcast reference form scrolls on a small phone with keyboard
+01:49 +205: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Gathering reference form scrolls on a small phone with keyboard
+01:49 +206: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Wheel reference form scrolls on a small phone with keyboard
+01:49 +207: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Mora reference form scrolls on a small phone with keyboard
+01:49 +208: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Prize reference form scrolls on a small phone with keyboard
+01:49 +209: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Calculator reference form scrolls on a small phone with keyboard
+01:49 +210: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Vote reference form scrolls on a small phone with keyboard
+01:49 +211: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Video reference form scrolls on a small phone with keyboard
+01:49 +212: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Clean reference form scrolls on a small phone with keyboard
+01:49 +213: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: treasure selection changes world conditions without spending coins
+01:50 +214: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Task stays bounded with larger text
+01:50 +215: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Store stays bounded with larger text
+01:50 +216: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Honor Wall stays bounded with larger text
+01:50 +217: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Help and feedback stays bounded with larger text
+01:50 +218: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Privacy stays bounded with larger text
+01:50 +219: /workspace/Nimzo/nimzo/test/master_overlay_layout_test.dart: Language stays bounded with larger text
+01:50 +220: loading /workspace/Nimzo/nimzo/test/gift_celebration_overlay_test.dart
+01:51 +220: /workspace/Nimzo/nimzo/test/gift_celebration_overlay_test.dart: settled room gift animates with real price/name/quantity
+01:52 +221: /workspace/Nimzo/nimzo/test/gift_celebration_overlay_test.dart: small gift animations are non-interactive and finish quickly
+01:52 +222: /workspace/Nimzo/nimzo/test/gift_celebration_overlay_test.dart: removing room view stops playback without sending anything
+01:52 +223: loading /workspace/Nimzo/nimzo/test/home_refresh_test.dart
+01:52 +223: /workspace/Nimzo/nimzo/test/home_refresh_test.dart: followed room refresh waits for the visible backend list
+01:53 +224: loading /workspace/Nimzo/nimzo/test/security_contract_test.dart
+01:54 +224: /workspace/Nimzo/nimzo/test/security_contract_test.dart: compactNumber
+01:54 +225: loading /workspace/Nimzo/nimzo/test/equipped_medal_visibility_test.dart
+01:55 +225: /workspace/Nimzo/nimzo/test/equipped_medal_visibility_test.dart: server equipped Royal Crest IV is visible on profile ID and room
+01:55 +226: /workspace/Nimzo/nimzo/test/equipped_medal_visibility_test.dart: users without server equipped medals never show fake badges
+01:55 +227: loading /workspace/Nimzo/nimzo/test/session_identity_test.dart
+01:56 +227: /workspace/Nimzo/nimzo/test/session_identity_test.dart: identity follows session changes rather than retaining the first account
+01:56 +228: loading /workspace/Nimzo/nimzo/test/final_master_ui_test.dart
+01:56 +228: /workspace/Nimzo/nimzo/test/final_master_ui_test.dart: Bigetar renders final multipliers and marque markers
+01:57 +229: loading /workspace/Nimzo/nimzo/test/message_history_test.dart
+01:58 +229: /workspace/Nimzo/nimzo/test/message_history_test.dart: latest page uses chronological order with an ID tie breaker
+01:58 +230: /workspace/Nimzo/nimzo/test/message_history_test.dart: older messages query the exact conversation and stable cursor
+01:58 +231: /workspace/Nimzo/nimzo/test/message_history_test.dart: shifting live window retains its previous boundary message
+01:58 +232: /workspace/Nimzo/nimzo/test/message_history_test.dart: non-overlapping reconnect window resets pagination instead of keeping a gap
+01:58 +233: /workspace/Nimzo/nimzo/test/message_history_test.dart: message merge deduplicates live overlap and retains chronological order
+01:58 +234: loading /workspace/Nimzo/nimzo/test/gift_verified_identity_test.dart
+01:58 +234: /workspace/Nimzo/nimzo/test/gift_verified_identity_test.dart: settled animation resolves genuine sender and receiver through profiles
+01:58 +235: /workspace/Nimzo/nimzo/test/gift_verified_identity_test.dart: invalid identity is never interpolated into a profile query
+01:58 +236: loading /workspace/Nimzo/nimzo/test/account_activity_refresh_test.dart
+01:59 +236: /workspace/Nimzo/nimzo/test/account_activity_refresh_test.dart: conversation activity reloads unread counts and cancels with container
+01:59 +237: /workspace/Nimzo/nimzo/test/account_activity_refresh_test.dart: notification events refresh multiple categories from the same authorized stream
+01:59 +238: loading /workspace/Nimzo/nimzo/test/game_repository_validation_test.dart
+01:59 +238: /workspace/Nimzo/nimzo/test/game_repository_validation_test.dart: invalid coin game requests are rejected before any network call
+02:00 +239: loading /workspace/Nimzo/nimzo/test/master_visual_preview_test.dart
+02:00 +239: /workspace/Nimzo/nimzo/test/master_visual_preview_test.dart: room overlay visual previews
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: null
+  Actual: FlutterError:<Golden "goldens/treasure_final.png": Pixel test failed, 99.51%, 327541px
+diff detected.
+          Failure feedback can be found at /workspace/Nimzo/nimzo/test/failures>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///workspace/Nimzo/nimzo/test/master_visual_preview_test.dart:84:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///workspace/Nimzo/nimzo/test/master_visual_preview_test.dart line 84
+The test description was:
+  room overlay visual previews
+════════════════════════════════════════════════════════════════════════════════════════════════════
+02:01 +239 -1: /workspace/Nimzo/nimzo/test/master_visual_preview_test.dart: room overlay visual previews [E]
+  Test failed. See exception logs above.
+  The test description was: room overlay visual previews
+  
+02:01 +239 -1: loading /workspace/Nimzo/nimzo/test/notification_destination_test.dart
+02:02 +239 -1: /workspace/Nimzo/nimzo/test/notification_destination_test.dart: social notice opens the actual actor or CP flow
+02:02 +240 -1: /workspace/Nimzo/nimzo/test/notification_destination_test.dart: legacy or unsupported notice does not invent a target
+02:02 +241 -1: loading /workspace/Nimzo/nimzo/test/pk_battles_test.dart
+02:02 +241 -1: /workspace/Nimzo/nimzo/test/pk_battles_test.dart: PK score is from committed room gift totals only
+02:02 +242 -1: /workspace/Nimzo/nimzo/test/pk_battles_test.dart: PK starts at even progress when no real gift was sent
+02:02 +243 -1: loading /workspace/Nimzo/nimzo/test/hilo_royal_store_models_test.dart
+02:03 +243 -1: /workspace/Nimzo/nimzo/test/hilo_royal_store_models_test.dart: store catalog parses authoritative server prices
+02:03 +244 -1: /workspace/Nimzo/nimzo/test/hilo_royal_store_models_test.dart: bag reads authoritative equipment state
+02:03 +245 -1: loading /workspace/Nimzo/nimzo/test/tingle_friends_screen_test.dart
+02:03 +245 -1: /workspace/Nimzo/nimzo/test/tingle_friends_screen_test.dart: Friends, Following and Followers tabs never invent people
+02:04 +246 -1: /workspace/Nimzo/nimzo/test/tingle_friends_screen_test.dart: Friends search matches the displayed numeric NIMZO ID
+02:05 +247 -1: loading /workspace/Nimzo/nimzo/test/remaining_interactions_test.dart
+02:05 +247 -1: /workspace/Nimzo/nimzo/test/remaining_interactions_test.dart: UI language resets when the signed-in identity changes
+02:05 +248 -1: /workspace/Nimzo/nimzo/test/remaining_interactions_test.dart: confirmed friend request refreshes state after leaving the profile
+02:06 +249 -1: /workspace/Nimzo/nimzo/test/remaining_interactions_test.dart: friend request prevents duplicate taps and waits for confirmation
+02:06 +250 -1: /workspace/Nimzo/nimzo/test/remaining_interactions_test.dart: language remains unchanged until the existing profile save confirms
+02:06 +251 -1: /workspace/Nimzo/nimzo/test/remaining_interactions_test.dart: failed language save retains the confirmed language and offers retry
+02:06 +252 -1: /workspace/Nimzo/nimzo/test/remaining_interactions_test.dart: broadcast uses supplied server callback once and preserves failure draft
+02:07 +253 -1: /workspace/Nimzo/nimzo/test/remaining_interactions_test.dart: feed comment action opens reference sheet with live comment identity
+02:07 +254 -1: loading /workspace/Nimzo/nimzo/test/free_gift_bundle_test.dart
+02:08 +254 -1: /workspace/Nimzo/nimzo/test/free_gift_bundle_test.dart: all six complete gift icons are packaged (no blank cards)
+02:08 +255 -1: /workspace/Nimzo/nimzo/test/free_gift_bundle_test.dart: both matching gift animations are actually packaged
+02:08 +256 -1: loading /workspace/Nimzo/nimzo/test/asset_bundle_integrity_test.dart
+02:08 +256 -1: /workspace/Nimzo/nimzo/test/asset_bundle_integrity_test.dart: room, games, levels and gift assets load from Flutter bundle
+02:08 +257 -1: loading /workspace/Nimzo/nimzo/test/gift_room_recipient_test.dart
+02:09 +257 -1: /workspace/Nimzo/nimzo/test/gift_room_recipient_test.dart: room gift recipient can switch to Myself on mic
+02:10 +258 -1: /workspace/Nimzo/nimzo/test/gift_room_recipient_test.dart: room gift recipient can switch to Myself off mic
+02:11 +259 -1: loading /workspace/Nimzo/nimzo/test/family_backend_flow_test.dart
+02:12 +259 -1: /workspace/Nimzo/nimzo/test/family_backend_flow_test.dart: Family directory shows real membership and an actionable join
+02:12 +260 -1: loading /workspace/Nimzo/nimzo/test/issue15_room_walkthrough_test.dart
+02:13 +260 -1: /workspace/Nimzo/nimzo/test/issue15_room_walkthrough_test.dart: audio room sheets and ten seats fit 320.0dp
+02:16 +261 -1: /workspace/Nimzo/nimzo/test/issue15_room_walkthrough_test.dart: audio room sheets and ten seats fit 360.0dp
+02:17 +262 -1: /workspace/Nimzo/nimzo/test/issue15_room_walkthrough_test.dart: audio room sheets and ten seats fit 390.0dp
+02:17 +263 -1: loading /workspace/Nimzo/nimzo/test/message_draft_test.dart
+02:18 +263 -1: /workspace/Nimzo/nimzo/test/message_draft_test.dart: sending a message preserves the next draft typed before response
+02:20 +264 -1: loading /workspace/Nimzo/nimzo/test/room_rocket_test.dart
+02:20 +264 -1: /workspace/Nimzo/nimzo/test/room_rocket_test.dart: six approved Rocket levels map one-to-one to distinct VAP clips
+02:20 +265 -1: /workspace/Nimzo/nimzo/test/room_rocket_test.dart: Rocket progress uses existing server-signed status, not fake UI data
+02:21 +266 -1: /workspace/Nimzo/nimzo/test/room_rocket_test.dart: settled 6-stage Rocket events queue exactly once in server order
+02:21 +267 -1: /workspace/Nimzo/nimzo/test/room_rocket_test.dart: Rocket progress explains verified giving and daily reset
+02:22 +268 -1: loading /workspace/Nimzo/nimzo/test/premium_preview_interaction_test.dart
+02:22 +268 -1: /workspace/Nimzo/nimzo/test/premium_preview_interaction_test.dart: composer uses the compact header Post action
+02:23 +269 -1: /workspace/Nimzo/nimzo/test/premium_preview_interaction_test.dart: entrance preview replay and reduced motion at 320.0
+02:24 +270 -1: /workspace/Nimzo/nimzo/test/premium_preview_interaction_test.dart: entrance preview replay and reduced motion at 360.0
+02:24 +271 -1: /workspace/Nimzo/nimzo/test/premium_preview_interaction_test.dart: entrance preview replay and reduced motion at 390.0
+02:24 +272 -1: loading /workspace/Nimzo/nimzo/test/home_narrow_layout_test.dart
+02:25 +272 -1: /workspace/Nimzo/nimzo/test/home_narrow_layout_test.dart: Explore header keeps controls visible on a 320dp Android screen
+02:25 +273 -1: loading /workspace/Nimzo/nimzo/test/profile_image_format_test.dart
+02:26 +273 -1: /workspace/Nimzo/nimzo/test/profile_image_format_test.dart: gallery PNG keeps its actual media type
+02:26 +274 -1: /workspace/Nimzo/nimzo/test/profile_image_format_test.dart: unsupported bytes are not relabeled as a JPEG
+02:26 +275 -1: loading /workspace/Nimzo/nimzo/test/moment_gift_refresh_test.dart
+02:27 +275 -1: /workspace/Nimzo/nimzo/test/moment_gift_refresh_test.dart: Moment gift refreshes detail and author Moments caches
+02:28 +276 -1: loading /workspace/Nimzo/nimzo/test/moment_comment_lifecycle_test.dart
+02:29 +276 -1: /workspace/Nimzo/nimzo/test/moment_comment_lifecycle_test.dart: comment completion preserves a newer draft and refreshes feed
+02:30 +277 -1: /workspace/Nimzo/nimzo/test/moment_comment_lifecycle_test.dart: comment completion after leaving refreshes feed safely
+02:30 +278 -1: loading /workspace/Nimzo/nimzo/test/app_update_service_test.dart
+02:31 +278 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: offers higher build from compatible manifest
+02:31 +279 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: rejects same and older builds
+02:31 +280 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: rejects other signing certificate
+02:31 +281 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: rejects other repository and HTTP APK URLs
+02:31 +282 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: unsupported platforms do not fetch metadata
+02:31 +283 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: concurrent checks share one request sequence
+02:31 +284 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: different package and invalid checksum cannot be offered
+02:31 +285 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: transport failure remains an error and can be retried
+02:31 +286 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: untrusted manifest URL is never fetched
+02:31 +287 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: APK must belong to the manifest release tag
+02:31 +288 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: unknown installed signing certificate cannot be offered updates
+02:31 +289 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: navigator context shows one optional dialog and failed verified download is visible
+02:32 +290 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: manual no-update and failed check have distinct feedback
+02:32 +291 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: unavailable latest manifest still allows compatible earlier release
+02:32 +292 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: native installer receives every verified manifest field
+02:32 +293 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: verified download shows protected progress and permission instructions
+02:32 +294 -1: /workspace/Nimzo/nimzo/test/app_update_service_test.dart: unexpected native response is rejected rather than claiming installation
+02:32 +295 -1: loading /workspace/Nimzo/nimzo/test/moment_media_test.dart
+02:32 +295 -1: /workspace/Nimzo/nimzo/test/moment_media_test.dart: legacy single-photo Moments remain visible
+02:32 +296 -1: /workspace/Nimzo/nimzo/test/moment_media_test.dart: multi-photo Moments retain order without repeating legacy cover
+02:32 +297 -1: loading /workspace/Nimzo/nimzo/test/family_repository_test.dart
+02:33 +297 -1: /workspace/Nimzo/nimzo/test/family_repository_test.dart: old owned and joined families stay visible outside newest directory
+02:33 +298 -1: /workspace/Nimzo/nimzo/test/family_repository_test.dart: creation rejects an unverified backend response
+02:33 +299 -1: loading /workspace/Nimzo/nimzo/test/profile_level_pill_test.dart
+02:34 +299 -1: /workspace/Nimzo/nimzo/test/profile_level_pill_test.dart: room and Me use distinct verified wealth/charm/active pills
+02:34 +300 -1: /workspace/Nimzo/nimzo/test/profile_level_pill_test.dart: missing levels never look earned
+02:34 +301 -1: loading /workspace/Nimzo/nimzo/test/clone_constraints_test.dart
+02:35 +301 -1: /workspace/Nimzo/nimzo/test/clone_constraints_test.dart: NIMZO audio rooms retain exactly ten microphones
+02:35 +302 -1: /workspace/Nimzo/nimzo/test/clone_constraints_test.dart: NIMZO OAuth callback remains bound to our own package
+02:35 +303 -1: /workspace/Nimzo/nimzo/test/clone_constraints_test.dart: All seven requested game boards stay represented
+02:35 +304 -1: /workspace/Nimzo/nimzo/test/clone_constraints_test.dart: Unsettled game previews cannot masquerade as playable
+02:35 +305 -1: loading /workspace/Nimzo/nimzo/test/create_room_photo_source_test.dart
+02:35 +305 -1: /workspace/Nimzo/nimzo/test/create_room_photo_source_test.dart: room photo chooser offers camera and gallery and cancels safely
+02:36 +306 -1: loading /workspace/Nimzo/nimzo/test/hilo_game_level_screen_test.dart
+02:37 +306 -1: /workspace/Nimzo/nimzo/test/hilo_game_level_screen_test.dart: verified game level shows progress and correct artwork
+02:38 +307 -1: /workspace/Nimzo/nimzo/test/hilo_game_level_screen_test.dart: max game level has no fake next target
+02:38 +308 -1: loading /workspace/Nimzo/nimzo/test/store_category_preview_ui_test.dart
+02:38 +308 -1: /workspace/Nimzo/nimzo/test/store_category_preview_ui_test.dart: reference store preview stays within phone width 320.0
+02:39 +309 -1: /workspace/Nimzo/nimzo/test/store_category_preview_ui_test.dart: reference store preview stays within phone width 390.0
+
+Warning: A call to tap() with finder "Found 1 widget with key [<'store-preview-style-4'>]: [
+  InkWell-[<'store-preview-style-4'>](dependencies: [_ScrollableScope]),
+]" derived an Offset (Offset(195.0, 683.8)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderSemanticsAnnotations#20213
+The hit test result at that offset is: HitTestResult(HitTestEntry<HitTestTarget>#c6a41(TextSpan(debugLabel: (((englishLike labelLarge 2021).merge((blackMountainView labelLarge).apply)).copyWith).copyWith, inherit: false, color: Color(alpha: 1.0000, red: 0.2863, green: 0.2706, blue: 0.3098, colorSpace: ColorSpace.sRGB), family: Roboto, size: 14.0, weight: 500, letterSpacing: 0.1, baseline: alphabetic, height: 1.4x, leadingDistribution: even, decoration: Color(alpha: 1.0000, red: 0.1137, green: 0.1059, blue: 0.1255, colorSpace: ColorSpace.sRGB) TextDecoration.none, "Preview only")), RenderParagraph#f9449@Offset(84.6, 10.0), RenderPadding#489bc@Offset(45.2, 19.0), RenderPointerListener#003c3@Offset(45.2, 19.0), RenderSemanticsAnnotations#cec60@Offset(45.2, 19.0), RenderMouseRegion#b9955@Offset(45.2, 19.0), RenderSemanticsAnnotations#38a82@Offset(45.2, 19.0), _RenderInkFeatures#3a476@Offset(45.2, 19.0), RenderCustomPaint#3b2e9@Offset(45.2, 19.0), RenderPhysicalShape#3a5fc@Offset(45.2, 19.0), RenderPositionedBox#f8b5d@Offset(45.2, 24.0), RenderSemanticsAnnotations#4551c@Offset(45.2, 3.8), RenderFlex#2f691@Offset(178.0, 3.8), RenderPadding#ef9f7@Offset(195.0, 15.8), RenderPadding#509c6@Offset(195.0, 15.8), RenderCustomMultiChildLayoutBox#cf3de@Offset(195.0, 683.8), _RenderInkFeatures#588da@Offset(195.0, 683.8), RenderPhysicalModel#a884c@Offset(195.0, 683.8), RenderSemanticsAnnotations#d5050@Offset(195.0, 683.8), RenderRepaintBoundary#1771c@Offset(195.0, 683.8), RenderIgnorePointer#ff51b@Offset(195.0, 683.8), RenderAnimatedOpacity#27631@Offset(195.0, 683.8), RenderAnimatedOpacity#7ce48@Offset(195.0, 683.8), _RenderColoredBox#c27ec@Offset(195.0, 683.8), RenderAnimatedOpacity#17882@Offset(195.0, 683.8), RenderIgnorePointer#34a46@Offset(195.0, 683.8), RenderAnimatedOpacity#1d1f3@Offset(195.0, 683.8), RenderRepaintBoundary#c343f@Offset(195.0, 683.8), RenderSemanticsAnnotations#64564@Offset(195.0, 683.8), RenderOffstage#e9a3d@Offset(195.0, 683.8), RenderSemanticsAnnotations#79a3e@Offset(195.0, 683.8), _RenderTheater#d5108@Offset(195.0, 683.8), RenderAbsorbPointer#659b3@Offset(195.0, 683.8), RenderPointerListener#20c89@Offset(195.0, 683.8), RenderSemanticsAnnotations#43ec4@Offset(195.0, 683.8), RenderCustomPaint#43ce2@Offset(195.0, 683.8), RenderSemanticsAnnotations#6d9ca@Offset(195.0, 683.8), RenderSemanticsAnnotations#916ab@Offset(195.0, 683.8), RenderSemanticsAnnotations#72a7b@Offset(195.0, 683.8), RenderTapRegionSurface#68ab7@Offset(195.0, 683.8), RenderSemanticsAnnotations#9f85a@Offset(195.0, 683.8), RenderSemanticsAnnotations#da998@Offset(195.0, 683.8), HitTestEntry<HitTestTarget>#b1f64(_ReusableRenderView#50fa8), HitTestEntry<HitTestTarget>#a7652(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2165:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///workspace/Nimzo/nimzo/test/store_category_preview_ui_test.dart:32:20)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "tap()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+02:39 +310 -1: loading /workspace/Nimzo/nimzo/test/social_avatar_test.dart
+02:40 +310 -1: /workspace/Nimzo/nimzo/test/social_avatar_test.dart: social lists display actual stored avatar path
+02:41 +311 -1: loading /workspace/Nimzo/nimzo/test/gift_media_repository_test.dart
+02:41 +311 -1: /workspace/Nimzo/nimzo/test/gift_media_repository_test.dart: Dragon IDs map to the two actual approved local video paths
+02:41 +312 -1: /workspace/Nimzo/nimzo/test/gift_media_repository_test.dart: approved media is looked up by exact catalog ID e1e65664-37f8-4cfd-9640-3bb035723b98
+02:41 +313 -1: /workspace/Nimzo/nimzo/test/gift_media_repository_test.dart: approved media is looked up by exact catalog ID c3f41e6e-68d5-4e56-9253-33421ec18fc3
+02:41 +314 -1: /workspace/Nimzo/nimzo/test/gift_media_repository_test.dart: missing or unapproved source never invents a local video: []
+02:41 +315 -1: /workspace/Nimzo/nimzo/test/gift_media_repository_test.dart: missing or unapproved source never invents a local video: [{video_url: null}]
+02:41 +316 -1: /workspace/Nimzo/nimzo/test/gift_media_repository_test.dart: missing or unapproved source never invents a local video: [{video_url: http://example.com/insecure.mp4}]
+02:41 +317 -1: /workspace/Nimzo/nimzo/test/gift_media_repository_test.dart: missing or unapproved source never invents a local video: [{video_url: assets/gifts/unbundled.mp4}]
+02:41 +318 -1: loading /workspace/Nimzo/nimzo/test/blocked_users_test.dart
+02:42 +318 -1: /workspace/Nimzo/nimzo/test/blocked_users_test.dart: unblock success refreshes list prevents duplicate requests
+02:43 +319 -1: /workspace/Nimzo/nimzo/test/blocked_users_test.dart: unblock failure preserves list prevents duplicate requests
+02:43 +320 -1: /workspace/Nimzo/nimzo/test/blocked_users_test.dart: ranking opens authoritative Wealth weekly instead of unsupported blank default
+02:43 +321 -1: loading /workspace/Nimzo/nimzo/test/issue15_navigation_test.dart
+02:44 +321 -1: /workspace/Nimzo/nimzo/test/issue15_navigation_test.dart: all five navigation branches retain their scroll position at 320.0
+02:45 +322 -1: /workspace/Nimzo/nimzo/test/issue15_navigation_test.dart: all five navigation branches retain their scroll position at 360.0
+02:45 +323 -1: /workspace/Nimzo/nimzo/test/issue15_navigation_test.dart: all five navigation branches retain their scroll position at 390.0
+02:45 +324 -1: loading /workspace/Nimzo/nimzo/test/game_layout_test.dart
+02:46 +324 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: board selection is nonfinancial and rules flag identity
+02:47 +325 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Fruit Party Jackpot stays bounded at text scale 1.0 without fake results
+02:47 +326 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Fruit Party Jackpot stays bounded at text scale 1.8 without fake results
+02:48 +327 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Grady Lion stays bounded at text scale 1.0 without fake results
+02:48 +328 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Grady Lion stays bounded at text scale 1.8 without fake results
+02:48 +329 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Bigetar stays bounded at text scale 1.0 without fake results
+02:48 +330 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Bigetar stays bounded at text scale 1.8 without fake results
+02:48 +331 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Slot stays bounded at text scale 1.0 without fake results
+02:49 +332 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Slot stays bounded at text scale 1.8 without fake results
+02:49 +333 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Teen Patti stays bounded at text scale 1.0 without fake results
+02:49 +334 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Teen Patti stays bounded at text scale 1.8 without fake results
+02:49 +335 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Lucky Wheel 77 stays bounded at text scale 1.0 without fake results
+02:49 +336 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Lucky Wheel 77 stays bounded at text scale 1.8 without fake results
+02:50 +337 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Bounty Football stays bounded at text scale 1.0 without fake results
+02:50 +338 -1: /workspace/Nimzo/nimzo/test/game_layout_test.dart: Bounty Football stays bounded at text scale 1.8 without fake results
+02:50 +339 -1: loading /workspace/Nimzo/nimzo/test/gift_free_animated_catalog_test.dart
+02:51 +339 -1: /workspace/Nimzo/nimzo/test/gift_free_animated_catalog_test.dart: Only real, matching Rocket and Sports Car free SVGA effects are mapped
+02:51 +340 -1: /workspace/Nimzo/nimzo/test/gift_free_animated_catalog_test.dart: Real original gift movies and pictures are registered in Flutter
+02:51 +341 -1: /workspace/Nimzo/nimzo/test/gift_free_animated_catalog_test.dart: Sports Car artwork is a real SVGA animation, not fake text
+02:52 +342 -1: loading /workspace/Nimzo/nimzo/test/remaining_visual_qa_test.dart
+02:53 +342 -1: /workspace/Nimzo/nimzo/test/remaining_visual_qa_test.dart: remaining reference surfaces have reviewed phone screenshots
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: null
+  Actual: FlutterError:<Golden "goldens/remaining/catalog.png": Pixel test failed, 87.19%, 287005px
+diff detected.
+          Failure feedback can be found at /workspace/Nimzo/nimzo/test/failures>
+catalog
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///workspace/Nimzo/nimzo/test/remaining_visual_qa_test.dart:684:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///workspace/Nimzo/nimzo/test/remaining_visual_qa_test.dart line 684
+The test description was:
+  remaining reference surfaces have reviewed phone screenshots
+════════════════════════════════════════════════════════════════════════════════════════════════════
+02:57 +342 -2: /workspace/Nimzo/nimzo/test/remaining_visual_qa_test.dart: remaining reference surfaces have reviewed phone screenshots [E]
+  Test failed. See exception logs above.
+  The test description was: remaining reference surfaces have reviewed phone screenshots
+  
+Warning: At least one test in this suite creates an HttpClient. When running a test suite that uses
+TestWidgetsFlutterBinding, all HTTP requests will return status code 400, and no network request
+will actually be made. Any test expecting a real network connection and status code will fail.
+To test code that needs an HttpClient, provide your own HttpClient implementation to the code under
+test, so that your test can consistently provide a testable response to the code under test.
+02:57 +342 -2: loading /workspace/Nimzo/nimzo/test/gift_settlement_error_test.dart
+02:57 +342 -2: /workspace/Nimzo/nimzo/test/gift_settlement_error_test.dart: room gift explains insufficient coins without exposing RPC text
+02:57 +343 -2: /workspace/Nimzo/nimzo/test/gift_settlement_error_test.dart: profile gift explains insufficient coins without exposing RPC text
+02:57 +344 -2: /workspace/Nimzo/nimzo/test/gift_settlement_error_test.dart: moment gift explains insufficient coins without exposing RPC text
+02:57 +345 -2: loading /workspace/Nimzo/nimzo/test/profile_repository_test.dart
+02:58 +345 -2: /workspace/Nimzo/nimzo/test/profile_repository_test.dart: profile edit sends only editable fields and verifies persisted row
+02:58 +346 -2: /workspace/Nimzo/nimzo/test/profile_repository_test.dart: zero affected rows must not report a successful save
+02:58 +347 -2: /workspace/Nimzo/nimzo/test/profile_repository_test.dart: profile search matches username and display name without .or() filters
+02:58 +348 -2: /workspace/Nimzo/nimzo/test/profile_repository_test.dart: profile search treats percent and underscore as literal characters
+02:58 +349 -2: /workspace/Nimzo/nimzo/test/profile_repository_test.dart: numeric profile search uses permanent Nimzo ID
+02:58 +350 -2: /workspace/Nimzo/nimzo/test/profile_repository_test.dart: blank profile search does not query the server
+02:58 +351 -2: /workspace/Nimzo/nimzo/test/profile_repository_test.dart: invalid gift quantity never calls Supabase
+02:58 +352 -2: /workspace/Nimzo/nimzo/test/profile_repository_test.dart: gift requests require recipient, gift, room and stable key
+02:58 +353 -2: /workspace/Nimzo/nimzo/test/profile_repository_test.dart: profile gift forwards recipient and stable key without room or client price
+02:58 +354 -2: loading /workspace/Nimzo/nimzo/test/home_country_sheet_test.dart
+02:59 +354 -2: /workspace/Nimzo/nimzo/test/home_country_sheet_test.dart: country bottom sheet keeps Search, All and flags accessible
+03:00 +355 -2: loading /workspace/Nimzo/nimzo/test/user_preferences_test.dart
+03:00 +355 -2: /workspace/Nimzo/nimzo/test/user_preferences_test.dart: preferences persist server response and serialize saves
+03:01 +356 -2: /workspace/Nimzo/nimzo/test/user_preferences_test.dart: preferences preserve confirmed values on failure and serialize saves
+03:01 +357 -2: /workspace/Nimzo/nimzo/test/user_preferences_test.dart: late save cannot replace preferences after account repository changes
+03:01 +358 -2: loading /workspace/Nimzo/nimzo/test/room_rocket_leaderboard_test.dart
+03:01 +358 -2: /workspace/Nimzo/nimzo/test/room_rocket_leaderboard_test.dart: verified gift podium parses earned values without inventing medals
+03:01 +359 -2: /workspace/Nimzo/nimzo/test/room_rocket_leaderboard_test.dart: rejects forged or invalid place and negative contribution
+03:01 +360 -2: loading /workspace/Nimzo/nimzo/test/data_flow_test.dart
+03:02 +360 -2: /workspace/Nimzo/nimzo/test/data_flow_test.dart: verification refuses HTTP success without explicit settlement
+03:02 +361 -2: /workspace/Nimzo/nimzo/test/data_flow_test.dart: verification rejects bare success without matching settlement
+03:02 +362 -2: /workspace/Nimzo/nimzo/test/data_flow_test.dart: verification accepts confirmed settlement and normalizes store alias
+03:02 +363 -2: /workspace/Nimzo/nimzo/test/data_flow_test.dart: roomless games refuse before sending a request
+03:02 +364 -2: /workspace/Nimzo/nimzo/test/data_flow_test.dart: game forwards room and stable key and keeps server payout
+03:02 +365 -2: /workspace/Nimzo/nimzo/test/data_flow_test.dart: moment detail shows real like and comment counts
+03:02 +366 -2: loading /workspace/Nimzo/nimzo/test/moment_comment_identity_test.dart
+03:03 +366 -2: /workspace/Nimzo/nimzo/test/moment_comment_identity_test.dart: Moment comments show real author identity on a small phone
+03:04 +367 -2: loading /workspace/Nimzo/nimzo/test/reference_preview_test.dart
+03:04 +367 -2: /workspace/Nimzo/nimzo/test/reference_preview_test.dart: approved boards and real empty home remain visually stable
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "goldens/home_empty.png": Pixel test failed, 100.00%, 329160px diff detected.
+Failure feedback can be found at /workspace/Nimzo/nimzo/test/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///workspace/Nimzo/nimzo/test/reference_preview_test.dart:50:5)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "goldens/fruit_party_jackpot.png": Pixel test failed, 0.12%, 390px diff detected.
+Failure feedback can be found at /workspace/Nimzo/nimzo/test/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///workspace/Nimzo/nimzo/test/reference_preview_test.dart:103:7)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "goldens/grady_lion.png": Pixel test failed, 0.12%, 390px diff detected.
+Failure feedback can be found at /workspace/Nimzo/nimzo/test/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///workspace/Nimzo/nimzo/test/reference_preview_test.dart:103:7)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "goldens/slot.png": Pixel test failed, 0.12%, 390px diff detected.
+Failure feedback can be found at /workspace/Nimzo/nimzo/test/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///workspace/Nimzo/nimzo/test/reference_preview_test.dart:103:7)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "goldens/lucky_wheel_77.png": Pixel test failed, 0.12%, 390px diff detected.
+Failure feedback can be found at /workspace/Nimzo/nimzo/test/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///workspace/Nimzo/nimzo/test/reference_preview_test.dart:103:7)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (5) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+03:07 +367 -3: /workspace/Nimzo/nimzo/test/reference_preview_test.dart: approved boards and real empty home remain visually stable [E]
+  Test failed. See exception logs above.
+  The test description was: approved boards and real empty home remain visually stable
+  
+03:07 +367 -3: loading /workspace/Nimzo/nimzo/test/moment_delete_confirmation_test.dart
+03:08 +367 -3: /workspace/Nimzo/nimzo/test/moment_delete_confirmation_test.dart: own Moment deletion requires explicit confirmation
+03:09 +368 -3: loading /workspace/Nimzo/nimzo/test/profile_setup_redirect_test.dart
+03:10 +368 -3: /workspace/Nimzo/nimzo/test/profile_setup_redirect_test.dart: verified new account cannot bypass required profile setup
+03:10 +369 -3: /workspace/Nimzo/nimzo/test/profile_setup_redirect_test.dart: password recovery stays first even when profile is incomplete
+03:10 +370 -3: loading /workspace/Nimzo/nimzo/test/game_catalog_test.dart
+03:10 +370 -3: /workspace/Nimzo/nimzo/test/game_catalog_test.dart: approved seven games are represented without fake playable engines
+03:10 +371 -3: /workspace/Nimzo/nimzo/test/game_catalog_test.dart: only existing legacy RPC-backed games are enabled
+03:10 +372 -3: Some tests failed.
+
+Failing tests:
+  /workspace/Nimzo/nimzo/test/master_visual_preview_test.dart: room overlay visual previews
+  /workspace/Nimzo/nimzo/test/reference_preview_test.dart: approved boards and real empty home remain visually stable
+  /workspace/Nimzo/nimzo/test/remaining_visual_qa_test.dart: remaining reference surfaces have reviewed phone screenshots

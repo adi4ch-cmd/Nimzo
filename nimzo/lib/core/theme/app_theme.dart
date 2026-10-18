@@ -5,27 +5,27 @@ import '../widgets/master_ui.dart';
 /// Unified ByChance-inspired color language with original NIMZO components.
 /// These are independently authored colors; no third-party artwork is bundled.
 abstract final class NimzoStyle {
-  static const primary = Color(0xff8b3dff);
-  static const pink = Color(0xfff45191);
-  static const blue = Color(0xff298df5);
-  static const orange = Color(0xffff941f);
-  static const royal = Color(0xff6628cf);
-  static const surface = Color(0xfff8f6ff);
-  static const ink = Color(0xff241b38);
-  static const muted = Color(0xff79728d);
-  static const line = Color(0xffebe4f7);
+  static const primary = Color(0xffa243f5);
+  static const pink = Color(0xffed428c);
+  static const blue = Color(0xff3a85ff);
+  static const orange = Color(0xffffab21);
+  static const royal = Color(0xff7439d4);
+  static const surface = Color(0xfff6f5ff);
+  static const ink = Color(0xff17111f);
+  static const muted = Color(0xff81749c);
+  static const line = Color(0xffeeeaf8);
   static const gradient = LinearGradient(
-    colors: [royal, primary, pink],
+    colors: [primary, royal],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
   static const heroGradient = LinearGradient(
-    colors: [royal, Color(0xff8b3dff), pink],
+    colors: [primary, royal],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
   static const softGradient = LinearGradient(
-    colors: [Color(0xffede4ff), Color(0xffffe9f3)],
+    colors: [Color(0xffdbd9ff), Color(0xfff3eefe), Color(0xfffcf9ff)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

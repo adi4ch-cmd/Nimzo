@@ -2,8 +2,10 @@ import '../../core/widgets/master_ui.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/tingle_surface.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,39 +18,158 @@ import '../gifts/gift_sheet.dart';
 import '../gifts/yo2_gift_ui.dart';
 import 'moment_repository.dart';
 
-class MomentsScreen extends ConsumerWidget {
+final followedMomentsAuthorsProvider =
+    FutureProvider.autoDispose<Set<String>>((ref) async {
+  final me = ref.watch(currentUserIdProvider);
+  if (me == null) return <String>{};
+  final rows = await ref
+      .watch(sessionSupabaseProvider)
+      .client
+      .from('follows')
+      .select('followee_id')
+      .eq('follower_id', me)
+      .limit(300);
+  return rows.map((row) => row['followee_id'].toString()).toSet();
+});
+
+/// Reference-style Moments feed, retaining the real MomentCard actions.
+class MomentsScreen extends ConsumerStatefulWidget {
   const MomentsScreen({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(
-          title: const GradientText('Moments'),
-          actions: [
-            IconButton(
-              onPressed: () => context.push('/moments/create'),
-              icon: const Icon(Icons.add),
-            ),
-          ],
-        ),
-        body: RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(momentsFeedProvider);
-            await ref.read(momentsFeedProvider.future);
-          },
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              AsyncContent(
-                value: ref.watch(momentsFeedProvider),
-                onRetry: () => ref.invalidate(momentsFeedProvider),
-                builder: (p) => p.isEmpty
-                    ? const EmptyContent('No Moments yet')
-                    : Column(
-                        children: [for (final m in p) MomentCard(moment: m)]),
-              ),
-            ],
+  ConsumerState<MomentsScreen> createState() => _MomentsState();
+}
+
+class _MomentsState extends ConsumerState<MomentsScreen> {
+  int selected = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final moments = ref.watch(momentsFeedProvider);
+    final following = ref.watch(followedMomentsAuthorsProvider);
+    return Scaffold(
+      backgroundColor: const Color(0xfff6f5ff),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(gradient: tingleSky),
+        child: Column(children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 4, 6, 0),
+            child: Row(children: [
+              Expanded(
+                  child: TingleTabs(
+                      labels: const ['Square', 'Follow'],
+                      selected: selected,
+                      light: true,
+                      onSelected: (value) => setState(() => selected = value))),
+              IconButton(
+                  tooltip: 'Search people',
+                  onPressed: () => context.push('/discover'),
+                  icon: const Icon(Icons.search_rounded,
+                      color: Colors.white, size: 22)),
+              IconButton(
+                  key: const ValueKey('moments-post-button'),
+                  tooltip: 'Create moment',
+                  onPressed: () => context.push('/moments/create'),
+                  icon: const Icon(Icons.add_box_outlined,
+                      color: Colors.white, size: 22)),
+            ]),
           ),
-        ),
-      );
+          const Padding(
+            padding: EdgeInsets.fromLTRB(14, 0, 14, 8),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Moments',
+                    style: TextStyle(
+                        color: Color(0xffa32cf4),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700))),
+          ),
+          Expanded(
+              child: RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(momentsFeedProvider);
+              ref.invalidate(followedMomentsAuthorsProvider);
+              await ref.read(momentsFeedProvider.future);
+              if (selected == 1) {
+                await ref.read(followedMomentsAuthorsProvider.future);
+              }
+            },
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 24),
+              children: [
+                moments.when(
+                  loading: () => const Padding(
+                      padding: EdgeInsets.all(35),
+                      child: Center(child: CircularProgressIndicator())),
+                  error: (_, __) => Column(
+                    children: [
+                      const Text('Moments could not be loaded'),
+                      TextButton(
+                          onPressed: () => ref.invalidate(momentsFeedProvider),
+                          child: const Text('Retry')),
+                    ],
+                  ),
+                  data: (all) {
+                    if (selected == 1 && following.isLoading) {
+                      return const Padding(
+                          padding: EdgeInsets.all(35),
+                          child: Center(child: CircularProgressIndicator()));
+                    }
+                    if (selected == 1 && following.hasError) {
+                      return Column(children: [
+                        const Text('Following list unavailable'),
+                        TextButton(
+                            onPressed: () =>
+                                ref.invalidate(followedMomentsAuthorsProvider),
+                            child: const Text('Retry')),
+                      ]);
+                    }
+                    final authors = following.valueOrNull ?? <String>{};
+                    final visible = selected == 0
+                        ? all
+                        : all
+                            .where((m) => authors.contains(m.authorId))
+                            .toList();
+                    if (visible.isEmpty) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 55, horizontal: 18),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(23)),
+                        child: Column(children: [
+                          const NimzoIdentityArt(
+                              kind: NimzoArt.mascot,
+                              size: 88,
+                              color: Color(0xffb09cda)),
+                          const SizedBox(height: 12),
+                          Text(
+                              selected == 0
+                                  ? 'No Moments yet'
+                                  : 'Nothing from people you follow',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xff716687))),
+                          if (selected == 0)
+                            TextButton(
+                                onPressed: () =>
+                                    context.push('/moments/create'),
+                                child: const Text('Share a moment')),
+                        ]),
+                      );
+                    }
+                    return Column(children: [
+                      for (final moment in visible) MomentCard(moment: moment),
+                    ]);
+                  },
+                ),
+              ],
+            ),
+          )),
+        ]),
+      ),
+    );
+  }
 }
 
 class MomentCard extends ConsumerStatefulWidget {
@@ -70,182 +191,192 @@ class _MomentCardState extends ConsumerState<MomentCard> {
     final author = ref.watch(profileProvider(moment.authorId)).valueOrNull;
     return Container(
       key: const ValueKey('premium-moment-card'),
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.fromLTRB(10, 9, 10, 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: NimzoStyle.line),
-        boxShadow: const [BoxShadow(
-          color: Color(0x176628cf), blurRadius: 12, offset: Offset(0, 3))],
+        boxShadow: const [
+          BoxShadow(
+              color: Color(0x176628cf), blurRadius: 12, offset: Offset(0, 3))
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            minTileHeight: 42,
-            leading: NimzoAvatar(
-              name: author?.displayName ?? 'N',
-              url: author?.avatarPath == null
-                  ? null
-                  : ref
-                      .watch(supabaseProvider)
-                      .storage
-                      .from('avatars')
-                      .getPublicUrl(author!.avatarPath!),
-            ),
-            title: Tooltip(
-              message: moment.createdAt.toLocal().toString().split('.').first,
-              child: Text(author?.displayName ?? 'Nimzo user'),
-            ),
-            onTap: () => context.push('/profile/${moment.authorId}'),
-          ),
-          if (moment.text != null) Text(moment.text!),
-          if (moment.imagePath != null)
-            Image.network(
-              ref
-                  .watch(supabaseProvider)
-                  .storage
-                  .from('moments')
-                  .getPublicUrl(moment.imagePath!),
-              errorBuilder: (_, __, ___) =>
-                  const EmptyContent('Image unavailable'),
-            ),
-          Wrap(
-            children: [
-              TextButton(
-                onPressed: _likeBusy
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              minTileHeight: 42,
+              leading: NimzoAvatar(
+                name: author?.displayName ?? 'N',
+                url: author?.avatarPath == null
                     ? null
-                    : () async {
-                        final id = moment.id;
-                        final authorId = moment.authorId;
-                        final container = ProviderScope.containerOf(
-                          context,
-                          listen: false,
-                        );
-                        setState(() => _likeBusy = true);
-                        try {
-                          await ref
-                              .read(momentRepositoryProvider)
-                              .toggleLike(id);
-                          container.invalidate(momentsFeedProvider);
-                          container.invalidate(momentDetailProvider(id));
-                          container.invalidate(
-                            profileMomentsProvider(authorId),
-                          );
-                        } catch (_) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Unable to update like.'),
-                              ),
-                            );
-                          }
-                        } finally {
-                          if (mounted) setState(() => _likeBusy = false);
-                        }
-                      },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ReferenceIcon(
-                      moment.liked ? 'cp_filled' : 'cp',
-                      size: 18,
-                      color: moment.liked ? NimzoStyle.pink : NimzoStyle.muted,
-                    ),
-                    const SizedBox(width: 4),
-                    Text('${moment.likes} likes'),
-                  ],
-                ),
+                    : ref
+                        .watch(supabaseProvider)
+                        .storage
+                        .from('avatars')
+                        .getPublicUrl(author!.avatarPath!),
               ),
-              TextButton(
-                onPressed: () => showReferenceSheet(
-                  context,
-                  MomentDetailScreen(id: moment.id, sheet: true),
-                ),
-                child: Text('Comment ${moment.comments}'),
+              title: Tooltip(
+                message: moment.createdAt.toLocal().toString().split('.').first,
+                child: Text(author?.displayName ?? 'Nimzo user'),
               ),
-              TextButton(
-                onPressed: () =>
-                    showMomentGiftSheet(context, moment.id, moment.authorId),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Yo2GiftPanelArt(
-                      'ic_moment_gift.webp',
-                      width: 18,
-                      height: 18,
-                      fallback: Icon(Icons.card_giftcard, size: 17),
-                    ),
-                    SizedBox(width: 5),
-                    Text('Gift'),
-                  ],
-                ),
-              ),
-              if (ref.watch(currentUserIdProvider) == moment.authorId)
-                TextButton(
-                  child: const Text('Delete'),
-                  onPressed: () async {
-                    final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (c) => AlertDialog(
-                        title: const Text('Delete this Moment?'),
-                        content: const Text(
-                          'This removes your post from Moments.',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(c, false),
-                            child: const Text('Cancel'),
-                          ),
-                          FilledButton(
-                            onPressed: () => Navigator.pop(c, true),
-                            child: const Text('Delete'),
-                          ),
-                        ],
+              onTap: () => context.push('/profile/${moment.authorId}'),
+            ),
+            if (moment.text != null) Text(moment.text!),
+            if (moment.imagePaths.isNotEmpty)
+              SizedBox(
+                height: moment.imagePaths.length > 1 ? 240 : null,
+                child: moment.imagePaths.length == 1
+                    ? _momentImage(ref, moment.imagePaths.first)
+                    : ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: moment.imagePaths.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 6),
+                        itemBuilder: (_, i) => SizedBox(
+                            width: 240,
+                            child: _momentImage(ref, moment.imagePaths[i])),
                       ),
-                    );
-                    if (confirmed != true || !context.mounted) return;
-                    final container = ProviderScope.containerOf(
-                      context,
-                      listen: false,
-                    );
-                    final repo = ref.read(momentRepositoryProvider);
-                    try {
-                      await repo.delete(moment.id);
-                      container.invalidate(momentsFeedProvider);
-                      container.invalidate(
-                        profileMomentsProvider(moment.authorId),
-                      );
-                      container.invalidate(
-                        profileStatsProvider(moment.authorId),
-                      );
-                      container.invalidate(momentDetailProvider(moment.id));
-                      if (context.mounted) widget.onDeleted?.call();
-                    } catch (_) {
-                      if (context.mounted)
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Moment could not be deleted. Please retry.',
-                            ),
-                          ),
-                        );
-                    }
-                  },
-                ),
-              if (ref.watch(currentUserIdProvider) == moment.authorId)
+              ),
+            if (moment.imagePaths.length > 1)
+              Text('${moment.imagePaths.length} photos · Swipe to view',
+                  style: const TextStyle(fontSize: 11)),
+            Wrap(
+              children: [
                 TextButton(
-                  onPressed: () => context.push('/moments/${moment.id}/edit'),
-                  child: const Text('Edit'),
+                  onPressed: _likeBusy
+                      ? null
+                      : () async {
+                          final id = moment.id;
+                          final authorId = moment.authorId;
+                          final container = ProviderScope.containerOf(
+                            context,
+                            listen: false,
+                          );
+                          setState(() => _likeBusy = true);
+                          try {
+                            await ref
+                                .read(momentRepositoryProvider)
+                                .toggleLike(id);
+                            container.invalidate(momentsFeedProvider);
+                            container.invalidate(momentDetailProvider(id));
+                            container.invalidate(
+                              profileMomentsProvider(authorId),
+                            );
+                          } catch (_) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Unable to update like.'),
+                                ),
+                              );
+                            }
+                          } finally {
+                            if (mounted) setState(() => _likeBusy = false);
+                          }
+                        },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ReferenceIcon(
+                        moment.liked ? 'cp_filled' : 'cp',
+                        size: 18,
+                        color:
+                            moment.liked ? NimzoStyle.pink : NimzoStyle.muted,
+                      ),
+                      const SizedBox(width: 4),
+                      Text('${moment.likes} likes'),
+                    ],
+                  ),
                 ),
-            ],
-          ),
-        ],
-      ),
+                TextButton(
+                  onPressed: () => showReferenceSheet(
+                    context,
+                    MomentDetailScreen(id: moment.id, sheet: true),
+                  ),
+                  child: Text('Comment ${moment.comments}'),
+                ),
+                TextButton(
+                  onPressed: () =>
+                      showMomentGiftSheet(context, moment.id, moment.authorId),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Yo2GiftPanelArt(
+                        'ic_moment_gift.webp',
+                        width: 18,
+                        height: 18,
+                        fallback: Icon(Icons.card_giftcard, size: 17),
+                      ),
+                      SizedBox(width: 5),
+                      Text('Gift'),
+                    ],
+                  ),
+                ),
+                if (ref.watch(currentUserIdProvider) == moment.authorId)
+                  TextButton(
+                    child: const Text('Delete'),
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (c) => AlertDialog(
+                          title: const Text('Delete this Moment?'),
+                          content: const Text(
+                            'This removes your post from Moments.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(c, false),
+                              child: const Text('Cancel'),
+                            ),
+                            FilledButton(
+                              onPressed: () => Navigator.pop(c, true),
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed != true || !context.mounted) return;
+                      final container = ProviderScope.containerOf(
+                        context,
+                        listen: false,
+                      );
+                      final repo = ref.read(momentRepositoryProvider);
+                      try {
+                        await repo.delete(moment.id);
+                        container.invalidate(momentsFeedProvider);
+                        container.invalidate(
+                          profileMomentsProvider(moment.authorId),
+                        );
+                        container.invalidate(
+                          profileStatsProvider(moment.authorId),
+                        );
+                        container.invalidate(momentDetailProvider(moment.id));
+                        if (context.mounted) widget.onDeleted?.call();
+                      } catch (_) {
+                        if (context.mounted)
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Moment could not be deleted. Please retry.',
+                              ),
+                            ),
+                          );
+                      }
+                    },
+                  ),
+                if (ref.watch(currentUserIdProvider) == moment.authorId)
+                  TextButton(
+                    onPressed: () => context.push('/moments/${moment.id}/edit'),
+                    child: const Text('Edit'),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -260,12 +391,20 @@ class CreateMomentScreen extends ConsumerStatefulWidget {
 
 class _CreateState extends ConsumerState<CreateMomentScreen> {
   final text = TextEditingController();
-  String? image;
+  List<String> images = [];
+  String? get image => images.isEmpty ? null : images.first;
   bool busy = false, ready = false;
   bool loadFailed = false;
+  bool get canPost => image != null || text.text.trim().isNotEmpty;
+
+  void _draftChanged() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
+    text.addListener(_draftChanged);
     Future.microtask(_load);
   }
 
@@ -281,7 +420,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
         final m = await repository.get(widget.id!);
         if (!mounted) return;
         text.text = m.text ?? '';
-        image = m.imagePath;
+        images = List.of(m.imagePaths);
       }
       if (mounted) setState(() => ready = true);
     } catch (_) {
@@ -291,14 +430,77 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
 
   @override
   void dispose() {
+    text.removeListener(_draftChanged);
     text.dispose();
     super.dispose();
   }
 
+  Future<void> _saveMoment() async {
+    if (!mounted ||
+        !ready ||
+        busy ||
+        (text.text.trim().isEmpty && image == null)) return;
+
+    // Capture providers and the container before the await. A successful
+    // network save must still refresh feeds if the editor gets dismissed.
+    final repository = ref.read(momentRepositoryProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
+    final id = widget.id;
+    final body = text.text.trim();
+    final photos = List<String>.of(images);
+    final photo = image;
+    String? authorId = ref.read(currentUserIdProvider);
+
+    setState(() => busy = true);
+    try {
+      if (id == null) {
+        await repository.create(
+            text: body, imagePath: photo, imagePaths: photos);
+      } else {
+        authorId ??= (await repository.get(id)).authorId;
+        await repository.update(id,
+            text: body, imagePath: photo, imagePaths: photos);
+        container.invalidate(momentDetailProvider(id));
+      }
+      container.invalidate(momentsFeedProvider);
+      if (authorId != null) {
+        container.invalidate(profileMomentsProvider(authorId));
+        container.invalidate(profileStatsProvider(authorId));
+      }
+      if (mounted) Navigator.of(context).maybePop();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Moment could not be saved.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text(widget.id == null ? 'New moment' : 'Edit Moment'),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          foregroundColor: const Color(0xff332347),
+          title: Text(widget.id == null ? 'Post Moments' : 'Edit Moment',
+              style:
+                  const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+          actions: [
+            TextButton(
+              key: const ValueKey('moment-top-post'),
+              onPressed: busy || !ready || !canPost ? null : _saveMoment,
+              child: Text(widget.id == null ? 'Post' : 'Save',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: busy || !ready || !canPost
+                          ? const Color(0xffaaa5bc)
+                          : NimzoStyle.primary)),
+            ),
+          ],
         ),
         body: loadFailed
             ? Center(
@@ -314,171 +516,190 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
             : !ready
                 ? const Center(child: CircularProgressIndicator())
                 : ListView(
-                    padding: const EdgeInsets.all(16),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 24),
                     children: [
-                       Container(
-                         padding: const EdgeInsets.all(16),
-                         margin: const EdgeInsets.only(bottom: 14),
-                         decoration: BoxDecoration(
-                           gradient: NimzoStyle.heroGradient,
-                           borderRadius: BorderRadius.circular(17),
-                         ),
-                         child: const Row(children: [
-                           Icon(Icons.auto_awesome_outlined,
-                             color: Colors.white, size: 25),
-                           SizedBox(width: 12),
-                           Expanded(child: Column(
-                             crossAxisAlignment: CrossAxisAlignment.start,
-                             children: [
-                               Text('Share your story',
-                                 style: TextStyle(color: Colors.white,
-                                   fontWeight: FontWeight.w800, fontSize: 17)),
-                               SizedBox(height: 3),
-                               Text('Photos and words for your NIMZO community',
-                                 style: TextStyle(color: Color(0xfff5eaff),
-                                   fontSize: 12)),
-                             ],
-                           )),
-                         ]),
-                       ),
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Tooltip(
+                          message: 'Add photo (${images.length}/9)',
+                          child: SizedBox(
+                            width: 88,
+                            height: 88,
+                            child: OutlinedButton(
+                              key: const ValueKey('moment-photo-picker'),
+                              onPressed: busy || images.length >= 9
+                                  ? null
+                                  : () async {
+                                      final source = await showModalBottomSheet<
+                                          ImageSource>(
+                                        context: context,
+                                        builder: (c) => SafeArea(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              ListTile(
+                                                leading: const Icon(Icons
+                                                    .photo_library_outlined),
+                                                title: const Text(
+                                                    'Choose from gallery'),
+                                                onTap: () => Navigator.pop(
+                                                    c, ImageSource.gallery),
+                                              ),
+                                              ListTile(
+                                                leading: const Icon(
+                                                    Icons.camera_alt_outlined),
+                                                title:
+                                                    const Text('Take a photo'),
+                                                onTap: () => Navigator.pop(
+                                                    c, ImageSource.camera),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                      if (source == null || !mounted) return;
+                                      setState(() => busy = true);
+                                      try {
+                                        final path = await ref
+                                            .read(storageServiceProvider)
+                                            .pickAndUpload('moments',
+                                                source: source);
+                                        if (path != null && mounted)
+                                          setState(() => images.add(path));
+                                      } catch (_) {
+                                        if (context.mounted)
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Image could not be uploaded.'),
+                                            ),
+                                          );
+                                      } finally {
+                                        if (mounted)
+                                          setState(() => busy = false);
+                                      }
+                                    },
+                              style: OutlinedButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                backgroundColor: const Color(0xfff2f4fb),
+                                foregroundColor: const Color(0xff9d99b0),
+                                side:
+                                    const BorderSide(color: Color(0xffe5e9f4)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                              ),
+                              child: const Icon(Icons.add_rounded, size: 28),
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (images.isNotEmpty)
+                        Wrap(spacing: 8, runSpacing: 8, children: [
+                          for (final path in images)
+                            SizedBox(
+                                width: 88,
+                                child: Column(children: [
+                                  SizedBox(
+                                      height: 88,
+                                      child: _momentImage(ref, path)),
+                                  TextButton(
+                                      onPressed: busy
+                                          ? null
+                                          : () => setState(
+                                              () => images.remove(path)),
+                                      child: const Text('Remove photo')),
+                                ])),
+                        ]),
                       TextField(
                         controller: text,
                         maxLength: 2000,
-                        maxLines: 5,
+                        minLines: 5,
+                        maxLines: 8,
+                        textCapitalization: TextCapitalization.sentences,
                         decoration: const InputDecoration(
-                          hintText: 'Write a moment worth sharing…',
+                          hintText: 'Say something to record this moment...',
+                          hintStyle:
+                              TextStyle(color: Color(0xff9b98a9), fontSize: 12),
                           filled: true,
-                          fillColor: NimzoStyle.surface,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(16)),
-                            borderSide: BorderSide(color: NimzoStyle.line)),
+                          fillColor: Color(0xfff2f4fb),
+                          contentPadding: EdgeInsets.fromLTRB(12, 12, 12, 12),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(color: Color(0xffe5dff2))),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                  color: NimzoStyle.primary, width: 1.8)),
                         ),
                       ),
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.add_photo_alternate_outlined),
-                        onPressed: busy
-                            ? null
-                            : () async {
-                                final source =
-                                    await showModalBottomSheet<ImageSource>(
-                                  context: context,
-                                  builder: (c) => SafeArea(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        ListTile(
-                                          leading: const Icon(Icons.photo_library_outlined),
-                                          title: const Text('Choose from gallery'),
-                                          onTap: () => Navigator.pop(
-                                              c, ImageSource.gallery),
-                                        ),
-                                        ListTile(
-                                          leading: const Icon(Icons.camera_alt_outlined),
-                                          title: const Text('Take a photo'),
-                                          onTap: () => Navigator.pop(
-                                              c, ImageSource.camera),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                                if (source == null || !mounted) return;
-                                setState(() => busy = true);
-                                try {
-                                  final path = await ref
-                                      .read(storageServiceProvider)
-                                      .pickAndUpload('moments', source: source);
-                                  if (path != null && mounted)
-                                    setState(() => image = path);
-                                } catch (_) {
-                                  if (context.mounted)
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                            'Image could not be uploaded.'),
-                                      ),
-                                    );
-                                } finally {
-                                  if (mounted) setState(() => busy = false);
-                                }
+                      const SizedBox(height: 11),
+                      InkWell(
+                        key: const ValueKey('moment-mention-entry'),
+                        onTap: () {
+                          text.text = text.text.trimRight() + ' @';
+                          text.selection =
+                              TextSelection.collapsed(offset: text.text.length);
+                        },
+                        child: Container(
+                          height: 44,
+                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          color: const Color(0xfff2f4fb),
+                          child: const Row(children: [
+                            Icon(Icons.alternate_email_rounded,
+                                color: Color(0xff292332)),
+                            SizedBox(width: 10),
+                            Text('Mention',
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.w700)),
+                            Spacer(),
+                            Icon(Icons.chevron_right_rounded,
+                                color: Color(0xff9a93b1)),
+                          ]),
+                        ),
+                      ),
+                      const SizedBox(height: 13),
+                      const Text('#  Recommended topics',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w800)),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 7,
+                        runSpacing: 6,
+                        children: [
+                          for (final topic in const [
+                            '#Bookworm',
+                            '#OpenMinded',
+                            '#Photography',
+                            '#KindHearted',
+                            '#JustFriends',
+                            '#LongTermOnly',
+                            '#SeriousRelationship',
+                            '#LookingForLove',
+                          ])
+                            ActionChip(
+                              key: ValueKey('moment-topic-' + topic),
+                              label: Text(topic,
+                                  style: const TextStyle(
+                                      fontSize: 11, color: Color(0xff79659c))),
+                              backgroundColor: const Color(0xfff3efff),
+                              side: BorderSide.none,
+                              onPressed: () {
+                                final current = text.text.trimRight();
+                                text.text = current.isEmpty
+                                    ? topic
+                                    : current + ' ' + topic;
+                                text.selection = TextSelection.collapsed(
+                                    offset: text.text.length);
                               },
-                        label: Text(
-                            image == null ? 'Choose photo' : 'Replace photo'),
+                            ),
+                        ],
                       ),
-                      if (image != null) ...[
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Image.network(
-                            ref
-                                .watch(supabaseProvider)
-                                .storage
-                                .from('moments')
-                                .getPublicUrl(image!),
-                            height: 220,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                const EmptyContent('Image unavailable'),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed:
-                              busy ? null : () => setState(() => image = null),
-                          child: const Text('Remove photo'),
-                        ),
-                      ],
-                      FilledButton(
-                        onPressed: busy
-                            ? null
-                            : () async {
-                                if (text.text.trim().isEmpty && image == null)
-                                  return;
-                                setState(() => busy = true);
-                                try {
-                                  final r = ref.read(momentRepositoryProvider);
-                                  final container = ProviderScope.containerOf(
-                                    context,
-                                    listen: false,
-                                  );
-                                  final id = widget.id;
-                                  final body = text.text.trim();
-                                  final photo = image;
-                                  final currentUserId =
-                                      ref.read(currentUserIdProvider);
-                                  String? authorId = currentUserId;
-                                  if (id == null) {
-                                    await r.create(
-                                        text: body, imagePath: photo);
-                                  } else {
-                                    authorId ??= (await r.get(id)).authorId;
-                                    await r.update(id,
-                                        text: body, imagePath: photo);
-                                    container
-                                        .invalidate(momentDetailProvider(id));
-                                  }
-                                  container.invalidate(momentsFeedProvider);
-                                  if (authorId != null) {
-                                    container.invalidate(
-                                      profileMomentsProvider(authorId),
-                                    );
-                                    container.invalidate(
-                                      profileStatsProvider(authorId),
-                                    );
-                                  }
-                                  if (context.mounted) Navigator.pop(context);
-                                } catch (_) {
-                                  if (context.mounted)
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content:
-                                            Text('Moment could not be saved.'),
-                                      ),
-                                    );
-                                } finally {
-                                  if (mounted) setState(() => busy = false);
-                                }
-                              },
-                        child: Text(widget.id == null ? 'Publish moment' : 'Save changes'),
-                      ),
+                      const SizedBox(height: 16),
                     ],
                   ),
       );
@@ -580,7 +801,7 @@ class _DetailState extends ConsumerState<MomentDetailScreen> {
             children: [
               const Text(
                 'Comments',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
               ),
               content,
             ],
@@ -633,3 +854,9 @@ class MomentCommentTile extends ConsumerWidget {
     );
   }
 }
+
+Widget _momentImage(WidgetRef ref, String path) => Image.network(
+      ref.watch(supabaseProvider).storage.from('moments').getPublicUrl(path),
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => const EmptyContent('Image unavailable'),
+    );
