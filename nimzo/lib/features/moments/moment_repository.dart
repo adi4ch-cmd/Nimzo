@@ -8,6 +8,7 @@ import '../../core/providers/supabase_provider.dart';
 class Moment {
   final String id, authorId;
   final String? text, imagePath;
+  final List<String> imagePaths;
   final int likes, comments;
   final bool liked;
   final DateTime createdAt;
@@ -16,6 +17,7 @@ class Moment {
     required this.authorId,
     this.text,
     this.imagePath,
+    this.imagePaths = const [],
     required this.likes,
     required this.comments,
     required this.liked,
@@ -26,6 +28,14 @@ class Moment {
         authorId: j['author_id'],
         text: j['body'],
         imagePath: j['image_path'],
+        imagePaths: j['image_paths'] is List
+            ? (j['image_paths'] as List)
+                .whereType<String>()
+                .where((p) => p.isNotEmpty)
+                .toList(growable: false)
+            : j['image_path'] is String && (j['image_path'] as String).isNotEmpty
+                ? <String>[j['image_path'] as String]
+                : const <String>[],
         likes: (j['like_count'] as num?)?.toInt() ?? 0,
         comments: (j['comment_count'] as num?)?.toInt() ?? 0,
         liked: j['liked'] ?? false,
@@ -39,7 +49,7 @@ class MomentRepository {
 
   Future<List<Moment>> feed() async {
     try {
-      return (await _db.rpc('moments_feed') as List)
+      return (await _db.rpc('moments_feed_v2') as List)
           .map((e) => Moment.fromJson(e))
           .toList();
     } catch (e) {
@@ -114,6 +124,58 @@ class MomentRepository {
           .single();
     } catch (e) {
       throw mapError(e);
+    }
+  }
+
+  /// Save multiple user-owned photos without altering existing single-image
+  /// callers or the legacy MomentRepository.create/update signatures.
+  /// The database trigger keeps image_path equal to the first image.
+  Future<void> createMany({
+    String? text,
+    required List<String> imagePaths,
+  }) async {
+    final uid = _db.auth.currentUser?.id;
+    if (uid == null) throw StateError('Please sign in again.');
+    final paths = List<String>.of(imagePaths);
+    if (paths.isEmpty || paths.length > 9) {
+      throw const FormatException('Choose between 1 and 9 photos.');
+    }
+    if (paths.any((path) =>
+        !path.startsWith('$uid/') || path.contains('..'))) {
+      throw const FormatException('Images must be uploaded by the author.');
+    }
+    try {
+      await _db.from('moments').insert({
+        'author_id': uid,
+        'body': text,
+        'image_path': paths.first,
+        'image_paths': paths,
+      });
+    } catch (error) {
+      throw mapError(error);
+    }
+  }
+
+  Future<void> updateMany(
+    String id, {
+    String? text,
+    required List<String> imagePaths,
+  }) async {
+    final uid = _db.auth.currentUser?.id;
+    if (uid == null) throw StateError('Please sign in again.');
+    final paths = List<String>.of(imagePaths);
+    if (paths.length > 9 || paths.any((path) =>
+        !path.startsWith('$uid/') || path.contains('..'))) {
+      throw const FormatException('Invalid Moment photo selection.');
+    }
+    try {
+      await _db.from('moments').update({
+        'body': text,
+        'image_path': paths.isEmpty ? null : paths.first,
+        'image_paths': paths,
+      }).eq('id', id).eq('author_id', uid).select('id').single();
+    } catch (error) {
+      throw mapError(error);
     }
   }
 
