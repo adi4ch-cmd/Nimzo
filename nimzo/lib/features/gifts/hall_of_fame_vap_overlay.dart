@@ -40,7 +40,7 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
       return;
     }
     final controller = VapPlayerController.networkUrl(
-      widget.source,
+      uri,
       options: const VapPlayerOptions(
         viewType: VapViewType.textureView,
         scaleType: VapScaleType.fitCenter,
