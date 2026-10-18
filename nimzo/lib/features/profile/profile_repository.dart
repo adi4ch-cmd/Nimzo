@@ -174,6 +174,12 @@ final profileModelsProvider =
 final profileMomentsProvider = FutureProvider.family<List<Moment>, String>(
   (ref, id) => ref.watch(momentRepositoryProvider).byAuthor(id),
 );
+// Compatibility for older widget test harnesses; received-gift history was
+// retired and is intentionally never fetched or displayed.
+@Deprecated('Gift history was removed from NIMZO')
+final profileGiftsProvider =
+    FutureProvider.family<List<Map<String, dynamic>>, String>((ref, id) async => []);
+
 final profileAchievementsProvider = FutureProvider.family<List<String>, String>(
   (ref, id) => ref.watch(profileRepositoryProvider).achievements(id),
 );
