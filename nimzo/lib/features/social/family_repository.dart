@@ -102,6 +102,25 @@ class NimzoFamilyRepository {
     return response['family_id'].toString();
   }
 
+  Future<void> edit(
+    NimzoFamily family, {
+    required String name,
+    required String description,
+  }) async {
+    final uid = _uid;
+    if (family.ownerId != uid) {
+      throw StateError('Only the Family owner can edit these details.');
+    }
+    if (name.trim().length < 2 || name.trim().length > 40 ||
+        description.trim().length > 500) {
+      throw const FormatException('Invalid Family name or description.');
+    }
+    await _db.from('nimzo_families').update({
+      'name': name.trim(),
+      'description': description.trim(),
+    }).eq('id', family.id).eq('owner_id', uid).select('id').single();
+  }
+
   Future<void> join(String familyId) async {
     final uid = _uid;
     await _db.from('nimzo_family_members').insert({
