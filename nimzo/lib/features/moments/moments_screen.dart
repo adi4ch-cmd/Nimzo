@@ -227,16 +227,23 @@ class _MomentCardState extends ConsumerState<MomentCard> {
               onTap: () => context.push('/profile/${moment.authorId}'),
             ),
             if (moment.text != null) Text(moment.text!),
-            if (moment.imagePath != null)
-              Image.network(
-                ref
-                    .watch(supabaseProvider)
-                    .storage
-                    .from('moments')
-                    .getPublicUrl(moment.imagePath!),
-                errorBuilder: (_, __, ___) =>
-                    const EmptyContent('Image unavailable'),
+            if (moment.imagePaths.isNotEmpty)
+              SizedBox(
+                height: moment.imagePaths.length > 1 ? 240 : null,
+                child: moment.imagePaths.length == 1
+                    ? _momentImage(ref, moment.imagePaths.first)
+                    : ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: moment.imagePaths.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 6),
+                        itemBuilder: (_, i) => SizedBox(
+                            width: 240,
+                            child: _momentImage(ref, moment.imagePaths[i])),
+                      ),
               ),
+            if (moment.imagePaths.length > 1)
+              Text('${moment.imagePaths.length} photos · Swipe to view',
+                  style: const TextStyle(fontSize: 11)),
             Wrap(
               children: [
                 TextButton(
@@ -384,7 +391,8 @@ class CreateMomentScreen extends ConsumerStatefulWidget {
 
 class _CreateState extends ConsumerState<CreateMomentScreen> {
   final text = TextEditingController();
-  String? image;
+  List<String> images = [];
+  String? get image => images.isEmpty ? null : images.first;
   bool busy = false, ready = false;
   bool loadFailed = false;
   bool get canPost => image != null || text.text.trim().isNotEmpty;
@@ -412,7 +420,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
         final m = await repository.get(widget.id!);
         if (!mounted) return;
         text.text = m.text ?? '';
-        image = m.imagePath;
+        images = List.of(m.imagePaths);
       }
       if (mounted) setState(() => ready = true);
     } catch (_) {
@@ -439,16 +447,19 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
     final container = ProviderScope.containerOf(context, listen: false);
     final id = widget.id;
     final body = text.text.trim();
+    final photos = List<String>.of(images);
     final photo = image;
     String? authorId = ref.read(currentUserIdProvider);
 
     setState(() => busy = true);
     try {
       if (id == null) {
-        await repository.create(text: body, imagePath: photo);
+        await repository.create(
+            text: body, imagePath: photo, imagePaths: photos);
       } else {
         authorId ??= (await repository.get(id)).authorId;
-        await repository.update(id, text: body, imagePath: photo);
+        await repository.update(id,
+            text: body, imagePath: photo, imagePaths: photos);
         container.invalidate(momentDetailProvider(id));
       }
       container.invalidate(momentsFeedProvider);
@@ -512,14 +523,13 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Tooltip(
-                          message:
-                              image == null ? 'Choose photo' : 'Replace photo',
+                          message: 'Add photo (${images.length}/9)',
                           child: SizedBox(
                             width: 88,
                             height: 88,
                             child: OutlinedButton(
                               key: const ValueKey('moment-photo-picker'),
-                              onPressed: busy
+                              onPressed: busy || images.length >= 9
                                   ? null
                                   : () async {
                                       final source = await showModalBottomSheet<
@@ -557,7 +567,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                             .pickAndUpload('moments',
                                                 source: source);
                                         if (path != null && mounted)
-                                          setState(() => image = path);
+                                          setState(() => images.add(path));
                                       } catch (_) {
                                         if (context.mounted)
                                           ScaffoldMessenger.of(context)
@@ -581,39 +591,28 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)),
                               ),
-                              child: image == null
-                                  ? const Icon(Icons.add_rounded, size: 28)
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        ref
-                                            .watch(supabaseProvider)
-                                            .storage
-                                            .from('moments')
-                                            .getPublicUrl(image!),
-                                        width: 88,
-                                        height: 88,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) =>
-                                            const Icon(Icons.photo_rounded,
-                                                color: Color(0xff948aa8),
-                                                size: 40),
-                                      ),
-                                    ),
+                              child: const Icon(Icons.add_rounded, size: 28),
                             ),
                           ),
                         ),
                       ),
-                      if (image != null)
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: TextButton(
-                            onPressed: busy
-                                ? null
-                                : () => setState(() => image = null),
-                            child: const Text('Remove photo'),
-                          ),
-                        ),
+                      if (images.isNotEmpty)
+                        Wrap(spacing: 8, runSpacing: 8, children: [
+                          for (final path in images)
+                            SizedBox(
+                                width: 88,
+                                child: Column(children: [
+                                  SizedBox(
+                                      height: 88,
+                                      child: _momentImage(ref, path)),
+                                  TextButton(
+                                      onPressed: busy
+                                          ? null
+                                          : () => setState(
+                                              () => images.remove(path)),
+                                      child: const Text('Remove photo')),
+                                ])),
+                        ]),
                       TextField(
                         controller: text,
                         maxLength: 2000,
@@ -855,3 +854,9 @@ class MomentCommentTile extends ConsumerWidget {
     );
   }
 }
+
+Widget _momentImage(WidgetRef ref, String path) => Image.network(
+      ref.watch(supabaseProvider).storage.from('moments').getPublicUrl(path),
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => const EmptyContent('Image unavailable'),
+    );

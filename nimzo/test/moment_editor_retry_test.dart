@@ -47,7 +47,8 @@ class SaveRepository extends MomentRepository {
   final pending = Completer<void>();
   int creates = 0;
   @override
-  Future<void> create({String? text, String? imagePath}) {
+  Future<void> create(
+      {String? text, String? imagePath, List<String>? imagePaths}) {
     creates++;
     return pending.future;
   }
@@ -91,8 +92,9 @@ void main() {
     await tester.enterText(find.byType(TextField), 'New post');
     await tester.pump();
     expect(
-      tester.widget<TextButton>(
-        find.byKey(const ValueKey('moment-top-post'))).onPressed,
+      tester
+          .widget<TextButton>(find.byKey(const ValueKey('moment-top-post')))
+          .onPressed,
       isNotNull,
       reason: 'Typing must visibly enable Post before submitting',
     );
@@ -105,7 +107,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('moment-top-post')));
     await tester.pump();
     expect(repo.creates, 1,
-      reason: 'Post must initiate the real repository save before dismissal');
+        reason: 'Post must initiate the real repository save before dismissal');
     await tester.pumpWidget(const SizedBox());
     repo.pending.complete();
     await tester.pumpAndSettle();
@@ -158,16 +160,17 @@ void main() {
       190,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(find.byTooltip('Replace photo'), findsOneWidget);
+    expect(find.byTooltip('Add photo (1/9)'), findsOneWidget);
     await tester.tap(find.text('Remove photo'));
     await tester.pumpAndSettle();
     // Removing the photo changes the scroll extent: scroll back to the
     // picker before verifying the restored Choose photo action.
     await tester.scrollUntilVisible(
-      find.byKey(const ValueKey('moment-photo-picker')), -140,
+      find.byKey(const ValueKey('moment-photo-picker')),
+      -140,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(find.byTooltip('Choose photo'), findsOneWidget);
+    expect(find.byTooltip('Add photo (0/9)'), findsOneWidget);
     expect(find.text('Remove photo'), findsNothing);
   });
 
@@ -201,9 +204,10 @@ void main() {
   testWidgets('reference Moment topics and Mention edit the actual draft',
       (tester) async {
     final db = (await tester.runAsync(() async => SupabaseClient(
-      'https://example.supabase.co', 'test-key',
-      authOptions: const AuthClientOptions(autoRefreshToken: false),
-    )))!;
+          'https://example.supabase.co',
+          'test-key',
+          authOptions: const AuthClientOptions(autoRefreshToken: false),
+        )))!;
     addTearDown(() => tester.runAsync(db.dispose));
     await tester.pumpWidget(ProviderScope(
       overrides: [
@@ -213,12 +217,15 @@ void main() {
     ));
     await tester.pumpAndSettle();
     expect(
-      tester.widget<TextButton>(
-        find.byKey(const ValueKey('moment-top-post'))).onPressed,
-      isNull, reason: 'An empty reference Post action is disabled',
+      tester
+          .widget<TextButton>(find.byKey(const ValueKey('moment-top-post')))
+          .onPressed,
+      isNull,
+      reason: 'An empty reference Post action is disabled',
     );
     await tester.scrollUntilVisible(
-      find.byKey(const ValueKey('moment-topic-#Bookworm')), 140,
+      find.byKey(const ValueKey('moment-topic-#Bookworm')),
+      140,
       scrollable: find.byType(Scrollable).first,
     );
     await tester.tap(find.byKey(const ValueKey('moment-topic-#Bookworm')));
@@ -228,12 +235,14 @@ void main() {
       contains('#Bookworm'),
     );
     expect(
-      tester.widget<TextButton>(
-        find.byKey(const ValueKey('moment-top-post'))).onPressed,
-      isNotNull, reason: 'Typing a topic enables the real Post action',
+      tester
+          .widget<TextButton>(find.byKey(const ValueKey('moment-top-post')))
+          .onPressed,
+      isNotNull,
+      reason: 'Typing a topic enables the real Post action',
     );
-    await tester.ensureVisible(
-      find.byKey(const ValueKey('moment-mention-entry')));
+    await tester
+        .ensureVisible(find.byKey(const ValueKey('moment-mention-entry')));
     await tester.tap(find.byKey(const ValueKey('moment-mention-entry')));
     await tester.pump();
     expect(
@@ -242,5 +251,4 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
-
 }

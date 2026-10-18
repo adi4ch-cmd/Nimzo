@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/nimzo_logo.dart';
 import '../../support/legal_content.dart';
 import 'auth_controller.dart';
 
@@ -87,33 +88,11 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
+                      const Row(
                         children: [
-                          Container(
-                            width: 58,
-                            height: 58,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(14),
-                              gradient: const LinearGradient(
-                                colors: [Color(0xffff8fcc), Color(0xff8c82ff)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                            ),
-                            alignment: Alignment.center,
-                            child: const Text(
-                              'N',
-                              style: TextStyle(
-                                fontSize: 42,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900,
-                                fontStyle: FontStyle.italic,
-                                height: 1,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          const Expanded(
+                          NimzoLogo(size: 58),
+                          SizedBox(width: 16),
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

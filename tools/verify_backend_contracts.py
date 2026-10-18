@@ -30,7 +30,9 @@ def schema_sql(snapshot):
         columns = []
         for col in table['columns']:
             declaration = ident(col['name']) + ' ' + col['type']
-            if col['identity']:
+            if col.get('generated'):
+                declaration += ' generated always as (' + col['default'] + ') stored'
+            elif col['identity']:
                 declaration += ' generated ' + ('always' if col['identity'] == 'a' else 'by default') + ' as identity'
             elif col['default']:
                 declaration += ' default ' + col['default']
@@ -60,6 +62,8 @@ def schema_sql(snapshot):
         if policy['check']:
             statement += ' with check (' + policy['check'] + ')'
         parts.append(statement + ';')
+    for grant in snapshot.get('table_grants', []):
+        parts.append('grant ' + grant['privilege'] + ' on public.' + ident(grant['table']) + ' to ' + ident(grant['role']) + ';')
     for grant in snapshot['column_grants']:
         parts.append('grant ' + grant['privilege'] + '(' + ident(grant['column']) + ') on public.' + ident(grant['table']) + ' to ' + ident(grant['role']) + ';')
     for fn in snapshot['functions']:

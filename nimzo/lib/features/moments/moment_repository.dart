@@ -8,6 +8,12 @@ import '../../core/providers/supabase_provider.dart';
 class Moment {
   final String id, authorId;
   final String? text, imagePath;
+  final List<String> images;
+  List<String> get imagePaths => images.isNotEmpty
+      ? images
+      : imagePath == null
+          ? const []
+          : [imagePath!];
   final int likes, comments;
   final bool liked;
   final DateTime createdAt;
@@ -16,6 +22,7 @@ class Moment {
     required this.authorId,
     this.text,
     this.imagePath,
+    this.images = const [],
     required this.likes,
     required this.comments,
     required this.liked,
@@ -26,6 +33,7 @@ class Moment {
         authorId: j['author_id'],
         text: j['body'],
         imagePath: j['image_path'],
+        images: List<String>.from(j['image_paths'] ?? const []),
         likes: (j['like_count'] as num?)?.toInt() ?? 0,
         comments: (j['comment_count'] as num?)?.toInt() ?? 0,
         liked: j['liked'] ?? false,
@@ -39,7 +47,7 @@ class MomentRepository {
 
   Future<List<Moment>> feed() async {
     try {
-      return (await _db.rpc('moments_feed') as List)
+      return (await _db.rpc('moments_feed_v2') as List)
           .map((e) => Moment.fromJson(e))
           .toList();
     } catch (e) {
@@ -91,23 +99,30 @@ class MomentRepository {
     }
   }
 
-  Future<void> create({String? text, String? imagePath}) async {
+  Future<void> create(
+      {String? text, String? imagePath, List<String>? imagePaths}) async {
     try {
       await _db.from('moments').insert({
         'author_id': _db.auth.currentUser!.id,
         'body': text,
         'image_path': imagePath,
+        if (imagePaths != null) 'image_paths': imagePaths,
       });
     } catch (e) {
       throw mapError(e);
     }
   }
 
-  Future<void> update(String id, {String? text, String? imagePath}) async {
+  Future<void> update(String id,
+      {String? text, String? imagePath, List<String>? imagePaths}) async {
     try {
       await _db
           .from('moments')
-          .update({'body': text, 'image_path': imagePath})
+          .update({
+            'body': text,
+            'image_path': imagePath,
+            if (imagePaths != null) 'image_paths': imagePaths
+          })
           .eq('id', id)
           .eq('author_id', _db.auth.currentUser!.id)
           .select('id')

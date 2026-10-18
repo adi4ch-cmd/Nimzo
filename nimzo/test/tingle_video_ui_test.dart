@@ -26,6 +26,7 @@ import 'package:nimzo/features/rooms/presentation/room_user_sheet.dart';
 import 'package:nimzo/features/rooms/presentation/room_controller.dart';
 import 'package:nimzo/features/social/tingle_friends_screen.dart';
 import 'package:nimzo/features/social/family_screen.dart';
+import 'package:nimzo/features/social/family_repository.dart';
 import 'package:nimzo/features/store/store_screen.dart';
 import 'package:nimzo/features/wallet/wallet_screen.dart';
 import 'package:nimzo/features/social/social_screens.dart';
@@ -147,6 +148,7 @@ void main() {
             key: ValueKey(entry.key),
             overrides: [
               supabaseProvider.overrideWithValue(db),
+              familyDirectoryProvider.overrideWith((_) async => []),
               currentUserIdProvider.overrideWithValue('review'),
               profileProvider('review').overrideWith((_) async => account),
               profileStatsProvider('review')
@@ -199,6 +201,16 @@ void main() {
                             .apply(fontFamily: 'Roboto')),
                     home: entry.value))));
         await tester.pumpAndSettle();
+        if (entry.key == 'login') {
+          await tester.runAsync(() => precacheImage(
+                const AssetImage('assets/brand/nimzo_purple_gold.png'),
+                boundary.currentContext!,
+              ));
+          await tester.pumpAndSettle();
+          expect(tester.widget<RawImage>(find.byType(RawImage).first).image,
+              isNotNull,
+              reason: 'Approved logo must decode before screenshot');
+        }
         expect(tester.takeException(), isNull, reason: '${entry.key} $width');
         await capture(tester, '${entry.key}-${width.toInt()}', boundary);
         // ignore: avoid_print

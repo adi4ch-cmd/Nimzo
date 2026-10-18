@@ -1,14 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/art/nimzo_identity_art.dart';
+import 'family_repository.dart';
+import '../wallet/wallet_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// UI-only unavailable state; never invents family records or membership.
-class FamilyScreen extends StatelessWidget {
+class FamilyScreen extends ConsumerStatefulWidget {
   const FamilyScreen({super.key});
+  @override
+  ConsumerState<FamilyScreen> createState() => _FamilyState();
+}
+
+class _FamilyState extends ConsumerState<FamilyScreen> {
+  bool busy = false;
+  (String, String)? pendingDraft;
+  String? pendingKey;
+  Future<void> _run(Future<void> Function() action) async {
+    if (busy) return;
+    final container = ProviderScope.containerOf(context, listen: false);
+    setState(() => busy = true);
+    try {
+      await action();
+      container.invalidate(familyDirectoryProvider);
+      container.invalidate(walletProvider);
+    } catch (error) {
+      final message = error is PostgrestException && error.code == '23514'
+          ? 'Family creation requires 1,000,000 coins in your wallet.'
+          : error is PostgrestException && error.code == '23505'
+              ? 'You already own a family. Pull down to refresh.'
+              : 'Family action failed. Please retry.';
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  Future<void> _create() async {
+    final draft = await showDialog<(String, String)>(
+        context: context, builder: (_) => const _FamilyCreateDialog());
+    if (mounted && draft != null) {
+      final repository = ref.read(familyRepositoryProvider);
+      if (pendingDraft != draft || pendingKey == null) {
+        pendingDraft = draft;
+        pendingKey = repository.newRequestKey();
+      }
+      await _run(() => repository.create(draft.$1, draft.$2, pendingKey!));
+    }
+  }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: const Color(0xff1b062c),
-        body: DecoratedBox(
+  Widget build(BuildContext context) {
+    final families = ref.watch(familyDirectoryProvider);
+    final me = ref.watch(currentUserIdProvider);
+    final owns = families.valueOrNull?.any((f) => f.ownerId == me) ?? false;
+    return Scaffold(
+      backgroundColor: const Color(0xff1b062c),
+      body: DecoratedBox(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -34,64 +84,169 @@ class FamilyScreen extends StatelessWidget {
                           style: TextStyle(
                               color: Color(0xffead2ff),
                               fontSize: 28,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1))),
-                  const SizedBox(width: 48),
+                              fontWeight: FontWeight.w700))),
+                  const SizedBox(width: 48)
                 ]),
-                const SizedBox(height: 36),
-                const NimzoIdentityArt(
-                    kind: NimzoArt.family, size: 130, color: Color(0xffc9a2e2)),
                 const SizedBox(height: 20),
+                const NimzoIdentityArt(
+                    kind: NimzoArt.family, size: 110, color: Color(0xffc9a2e2)),
                 const Text('All Family',
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700)),
+                        color: Colors.white, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 16),
                 Expanded(
-                    child: Center(
-                        child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 32, horizontal: 20),
-                                decoration: BoxDecoration(
-                                    color: const Color(0xaa35104e),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                        color: const Color(0xffbb8b56))),
-                                child: const Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      NimzoIdentityArt(
-                                          kind: NimzoArt.mascot,
-                                          size: 90,
-                                          color: Color(0xffe8c6ff)),
-                                      SizedBox(height: 14),
-                                      Text(
-                                          'Family directory is not available yet.',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: Colors.white70,
-                                              fontSize: 13)),
-                                    ]))))),
+                    child: families.when(
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (_, __) => Center(
+                      child: TextButton(
+                          onPressed: () =>
+                              ref.invalidate(familyDirectoryProvider),
+                          child: const Text('Could not load families · Retry',
+                              style: TextStyle(color: Colors.white)))),
+                  data: (items) => RefreshIndicator(
+                      onRefresh: () async {
+                        ref.invalidate(familyDirectoryProvider);
+                        await ref.read(familyDirectoryProvider.future);
+                      },
+                      child: ListView(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            if (items.isEmpty)
+                              const Padding(
+                                  padding: EdgeInsets.all(32),
+                                  child: Column(children: [
+                                    NimzoIdentityArt(
+                                        kind: NimzoArt.mascot,
+                                        size: 90,
+                                        color: Color(0xffe8c6ff)),
+                                    Text(
+                                        'No families yet. Create the first one.',
+                                        style:
+                                            TextStyle(color: Colors.white70)),
+                                  ])),
+                            for (final family in items)
+                              Card(
+                                  color: const Color(0xff35104e),
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(family.name,
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.w700)),
+                                            if (family.description.isNotEmpty)
+                                              Text(family.description,
+                                                  style: const TextStyle(
+                                                      color: Colors.white70)),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                                '${family.memberCount} members',
+                                                style: const TextStyle(
+                                                    color: Colors.white70)),
+                                            if (family.ownerId == me)
+                                              const Text('Your family',
+                                                  style: TextStyle(
+                                                      color: Color(0xffe0bbff)))
+                                            else
+                                              FilledButton(
+                                                  onPressed: busy
+                                                      ? null
+                                                      : () => _run(() => family
+                                                              .includes(me)
+                                                          ? ref
+                                                              .read(
+                                                                  familyRepositoryProvider)
+                                                              .leave(family.id)
+                                                          : ref
+                                                              .read(
+                                                                  familyRepositoryProvider)
+                                                              .join(family.id)),
+                                                  child: Text(
+                                                      family.includes(me)
+                                                          ? 'Leave'
+                                                          : 'Join')),
+                                          ]))),
+                          ])),
+                )),
                 Padding(
                     padding: const EdgeInsets.fromLTRB(24, 12, 24, 18),
-                    child: Tooltip(
-                        message: 'Family creation is not available yet.',
-                        child: OutlinedButton(
-                            key: const ValueKey('family-create-unavailable'),
-                            onPressed: null,
-                            style: OutlinedButton.styleFrom(
-                                minimumSize: const Size.fromHeight(46),
-                                disabledForegroundColor:
-                                    const Color(0xffc29cdd),
-                                side:
-                                    const BorderSide(color: Color(0xff9865bb)),
-                                shape: const StadiumBorder()),
-                            child: const Text('Create Family')))),
-              ]))),
-        ),
+                    child: OutlinedButton(
+                        onPressed: busy || owns || me == null ? null : _create,
+                        style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xffe0bbff),
+                            disabledForegroundColor: Colors.white54,
+                            minimumSize: const Size.fromHeight(46),
+                            side: const BorderSide(color: Color(0xff9865bb)),
+                            shape: const StadiumBorder()),
+                        child: Text(owns
+                            ? 'Your family is ready'
+                            : 'Create Family · 1,000,000 coins'))),
+              ])))),
+    );
+  }
+}
+
+class _FamilyCreateDialog extends StatefulWidget {
+  const _FamilyCreateDialog();
+  @override
+  State<_FamilyCreateDialog> createState() => _FamilyCreateDialogState();
+}
+
+class _FamilyCreateDialogState extends State<_FamilyCreateDialog> {
+  final name = TextEditingController();
+  final description = TextEditingController();
+  final form = GlobalKey<FormState>();
+  @override
+  void dispose() {
+    name.dispose();
+    description.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('Create Family'),
+        content: SingleChildScrollView(
+            child: Form(
+                key: form,
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  const Text(
+                      'Creating a family costs 1,000,000 coins. Joining is free.'),
+                  TextFormField(
+                      controller: name,
+                      maxLength: 40,
+                      decoration:
+                          const InputDecoration(labelText: 'Family name'),
+                      validator: (value) => (value?.trim().length ?? 0) < 2
+                          ? 'Enter at least 2 characters'
+                          : null),
+                  TextFormField(
+                      controller: description,
+                      maxLength: 500,
+                      maxLines: 3,
+                      decoration:
+                          const InputDecoration(labelText: 'Description')),
+                ]))),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
+          FilledButton(
+              onPressed: () {
+                if (form.currentState!.validate()) {
+                  Navigator.pop(
+                      context, (name.text.trim(), description.text.trim()));
+                }
+              },
+              child: const Text('Pay 1,000,000 coins & Create'))
+        ],
       );
 }
 
