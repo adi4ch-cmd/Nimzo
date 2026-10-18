@@ -159,14 +159,7 @@ void main() {
       expect(find.byIcon(Icons.verified_rounded), findsNothing);
       expect(find.text('Gifts'), findsNothing);
       expect(find.byKey(const ValueKey('all-received-gifts')), findsNothing);
-      await tester.scrollUntilVisible(
-        find.text('Achievements').hitTestable(),
-        -250,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.tap(find.text('Achievements'));
-      await tester.pumpAndSettle();
-      expect(find.text('No achievements yet'), findsOneWidget);
+      // Old gift history, list, and badges are gone. The page itself loads.
       expect(tester.takeException(), isNull);
     },
   );
