@@ -1,0 +1,34 @@
+name: NIMZO Hall of Fame Gift QA (source only)
+
+on:
+  push:
+    branches:
+      - feature/hall-of-fame-gift-500k-20261018
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  gift-source-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: nimzo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib/features/gifts/hall_of_fame_gift.dart lib/features/gifts/hall_of_fame_vap_overlay.dart test/hall_of_fame_gift_contract_test.dart
+      - run: flutter analyze --no-fatal-infos
+      - run: |
+          flutter test test/hall_of_fame_gift_contract_test.dart
+          flutter test test/car_only_gift_contract_test.dart
+          flutter test test/verified_gift_broadcast_test.dart
+      - name: No APK or production activation
+        run: echo "Source-only QA: media rights, watermark and device playback release gates pending."
