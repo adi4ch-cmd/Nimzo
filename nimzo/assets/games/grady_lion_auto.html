@@ -35,7 +35,7 @@
 .controls{display:flex;align-items:end;justify-content:space-between;gap:7px;padding:8px 9px 8px;margin-top:auto;background:#b83335;border-top:2px solid #e47655}.mini-info{display:grid;gap:4px;min-width:0;flex:1}.mini-info small{font-size:10px;color:#ffd8bb}.mini-info strong{font-size:12px;color:white;font-variant-numeric:tabular-nums}.actions{display:flex;gap:6px;align-items:end}.actionbtn{border-radius:17px;border:2px solid #ffcf9b;color:#5c2146;padding:9px 8px;font-weight:1000;font-size:11px;background:linear-gradient(#fff8bd,#ffb839);white-space:nowrap;box-shadow:0 3px 0 #7e2b20}.actionbtn.clear{background:#fff4db;border-color:#fff3c5}.actionbtn.auto{background:linear-gradient(#aaff41,#42c809);color:#24601d;border-color:#cbff93}.actionbtn.auto.on{background:linear-gradient(#4effe0,#13ba9a);color:#034f55}
 .hint{font-size:10px;color:#fff1bc;padding:3px 10px 8px;text-align:center;opacity:.92}.toast{position:absolute;z-index:15;left:50%;bottom:18%;transform:translateX(-50%);min-width:max-content;max-width:85%;border:1px solid #ffe3aa;border-radius:18px;background:#371349f2;padding:12px 16px;font-weight:800;box-shadow:0 10px 40px #0009;display:none;text-align:center}.toast.visible{display:block}
 .overlay{display:none;position:absolute;z-index:20;inset:0;background:#140823ad;align-items:center;justify-content:center;padding:15px}.overlay.visible{display:flex}.result-card{width:min(340px,95%);position:relative;text-align:center;overflow:hidden;border-radius:24px;background:radial-gradient(circle at 50% 23%,#f9a32b,#c43542 39%,#6b173e 90%);border:3px solid #ffd880;box-shadow:0 0 45px #f5a55588;padding:22px 16px;color:#fff8dd}.result-card:before{content:"";position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg,transparent 0 17deg,#fff6a31e 17deg 24deg);animation:rotate 10s linear infinite}@keyframes rotate{to{transform:rotate(360deg)}}.result-card>*{position:relative}.result-card .lionface{font-size:52px;filter:drop-shadow(0 3px 5px #311)}.result-card h2{font-size:25px;margin:4px 0;text-shadow:0 2px 4px #7a1f2b}.result-card .outcome{display:flex;align-items:center;justify-content:center;margin:8px 0}
-.board-match-symbol{display:inline-block;flex-shrink:0;width:64px;height:64px;border-radius:16px;border:2px solid #ffe39f;background-image:var(--grady-board-image);background-size:588.24% 588.24%;background-repeat:no-repeat;background-color:#137f9e;box-shadow:0 4px 14px #39112655}
+.board-match-symbol{display:inline-block;flex-shrink:0;width:64px;height:64px;border-radius:16px;border:2px solid #ffe39f;background-image:var(--grady-board-image);background-size:666.67% 666.67%;background-repeat:no-repeat;background-color:#137f9e;box-shadow:0 4px 14px #39112655}
 .result-card .outcome .board-match-symbol{height:86px;width:86px;border-radius:18px}
 .resulticon .board-match-symbol{width:100%;height:100%;border:none;border-radius:50%;box-shadow:none}.result-card .winnings{background:#661930be;padding:10px;border-radius:12px;margin:11px 0;font-weight:900;line-height:1.8}.result-card button{width:100%;padding:11px;border:0;border-radius:15px;background:linear-gradient(#fff4aa,#f4a532);color:#75252d;font-weight:1000;font-size:15px}
 .modal{display:none;position:absolute;z-index:21;inset:0;align-items:center;justify-content:center;background:#090a1acb;padding:20px}.modal.visible{display:flex}.modal article{background:#fff3df;color:#6f2c37;width:100%;border:4px solid #fbc26c;border-radius:20px;padding:20px;line-height:1.55}.modal h2{margin:0 0 10px;color:#8b3531}.modal button{border:0;background:#ca383a;color:white;padding:11px 18px;border-radius:13px;width:100%;font-weight:850}
@@ -132,13 +132,13 @@ function renderSpots(){ $('spots').innerHTML=OPTIONS.map((o,i)=>{const v=bets[i]
 // Every result uses a crop of the SAME artwork displayed behind the eight board stalls.
 // Board positions come from OPTIONS, so the result and history cannot drift into
 // different emoji styles or incorrect character designs.
-const BOARD_ART_CENTERS=[[23,21],[47,12],[71,20],[14,45],[79,44],[22,71],[46,84],[71,71]];
+const BOARD_ART_CENTERS=[[23,21],[47,12],[69,20],[14,45],[78,44],[22,71],[46,84],[71,71]];
 const boardImage=getComputedStyle($('board')).backgroundImage;
 document.documentElement.style.setProperty('--grady-board-image',boardImage);
 function boardSymbol(i){
  const option=OPTIONS[i];
  const center=BOARD_ART_CENTERS[i];
- const fraction=.17;
+ const fraction=.15;
  const px=Math.max(0,Math.min(100,(center[0]/100-fraction/2)/(1-fraction)*100));
  const py=Math.max(0,Math.min(100,(center[1]/100-fraction/2)/(1-fraction)*100));
  return `<span class="board-match-symbol" role="img" aria-label="${option.name}" style="background-position:${px}% ${py}%"></span>`;
