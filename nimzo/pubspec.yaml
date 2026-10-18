@@ -39,6 +39,8 @@ flutter:
     - assets/brand/
     - assets/games/
     - assets/gifts/hall_of_fame.svg
+    - assets/gifts/libra.svg
+    - assets/gifts/aries.svg
     - assets/gifts/free/
     - assets/reference/game/
     - assets/reference/fruit/

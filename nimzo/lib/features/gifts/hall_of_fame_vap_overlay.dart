@@ -14,9 +14,10 @@ class HallOfFameVapOverlay extends StatefulWidget {
     required this.recipient,
     required this.quantity,
     required this.onFinished,
+    this.giftName = 'Hall of Fame',
   });
 
-  final String source, sender, recipient;
+  final String source, sender, recipient, giftName;
   final int quantity;
   final VoidCallback onFinished;
 
@@ -103,7 +104,7 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
                     child: _ready
                         ? VapPlayer(_controller!)
                         : const Center(
-                            child: Text('Loading Hall of Fame…',
+                            child: Text('Loading gift animation…',
                               style: TextStyle(color: Colors.white)),
                           ),
                   ),
@@ -133,7 +134,7 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Text(
-                      '${widget.sender} sent Hall of Fame × ${widget.quantity} to ${widget.recipient}',
+                      '${widget.sender} sent ${widget.giftName} × ${widget.quantity} to ${widget.recipient}',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Color(0xffffe7ad),

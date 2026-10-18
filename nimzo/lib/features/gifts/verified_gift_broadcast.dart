@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'gift_repository.dart';
 import 'hall_of_fame_gift.dart';
+import 'zodiac_gifts.dart';
 import 'hall_of_fame_vap_overlay.dart';
 import 'gift_video_overlay.dart';
 import 'gift_svga_overlay.dart';
@@ -133,7 +134,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     }
     final fresh = rows.where((r) =>
           (r['gift_id']?.toString() == '35e4c570-cb02-4466-ae86-d670b3fb05ab' ||
-              r['gift_id']?.toString() == hallOfFameGiftId) &&
+              r['gift_id']?.toString() == hallOfFameGiftId ||
+              zodiacVapGiftIds.contains(r['gift_id']?.toString())) &&
           _seen.add('${r['id']}')).toList()
       ..sort((a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'));
     // The server stream retains 100 events. Bound deduplication memory too.
@@ -237,17 +239,30 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       }
     }
     final giftName = catalogName;
-    if (_video != null && '${event['gift_id']}' == hallOfFameGiftId) {
+    if (_video != null &&
+        ('${event['gift_id']}' == hallOfFameGiftId ||
+            zodiacVapGiftIds.contains('${event['gift_id']}'))) {
       return HallOfFameVapOverlay(
         key: ValueKey(event['id']),
         source: _video!,
         sender: sender,
         recipient: recipient,
+        giftName: giftName,
         quantity: quantity,
         onFinished: () {
           if (mounted && identical(_active, event)) _next();
         },
       );
+    }
+    // For VAP-only gifts, do not fabricate a static celebration if the
+    // approved transparent animation is offline or not approved.
+    final eventGiftId = '${event['gift_id']}';
+    if (!_loading && _video == null &&
+        (eventGiftId == hallOfFameGiftId || zodiacVapGiftIds.contains(eventGiftId))) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && identical(_active, event)) _next();
+      });
+      return const SizedBox.shrink();
     }
     if (_video != null) {
       return GiftVideoOverlay(
