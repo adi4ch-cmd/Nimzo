@@ -131,13 +131,6 @@ class ProfileRepository {
     return unique.values.toList();
   }
 
-  Future<List<Map<String, dynamic>>> gifts(String id) async {
-    final rows = await _db.rpc('profile_gifts', params: {'p_user': id});
-    return (rows as List)
-        .map((r) => Map<String, dynamic>.from(r as Map))
-        .toList();
-  }
-
   Future<List<String>> achievements(String id) async {
     final profile = await get(id);
     // Show only facts recorded on the profile; membership is not identity verification.
@@ -180,10 +173,6 @@ final profileModelsProvider =
 
 final profileMomentsProvider = FutureProvider.family<List<Moment>, String>(
   (ref, id) => ref.watch(momentRepositoryProvider).byAuthor(id),
-);
-final profileGiftsProvider =
-    FutureProvider.family<List<Map<String, dynamic>>, String>(
-  (ref, id) => ref.watch(profileRepositoryProvider).gifts(id),
 );
 final profileAchievementsProvider = FutureProvider.family<List<String>, String>(
   (ref, id) => ref.watch(profileRepositoryProvider).achievements(id),
