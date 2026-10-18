@@ -9,3 +9,7 @@ nimzo/android/
 nimzo/.metadata
 
 nimzo/test/failures/
+
+# Firebase administrative keys stay in Supabase secrets, never in source.
+**/*service-account*.json
+**/firebase-adminsdk*.json

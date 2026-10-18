@@ -241,6 +241,27 @@ jobs:
             fi
           fi
 
+      - name: Configure Firebase public Android resources when supplied
+        env:
+          FIREBASE_ANDROID_CONFIG: ${{ secrets.NIMZO_FIREBASE_ANDROID_CONFIG }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          config="config/firebase/google-services.json"
+          if [ -n "$FIREBASE_ANDROID_CONFIG" ]; then
+            mkdir -p config/firebase
+            python3 - <<'PYCONFIG'
+          import os
+          from pathlib import Path
+          Path('config/firebase/google-services.json').write_text(os.environ['FIREBASE_ANDROID_CONFIG'])
+          PYCONFIG
+          fi
+          if [ -f "$config" ]; then
+            python3 ../tools/configure_android_firebase.py android "$config"
+          else
+            echo "Firebase Android configuration not supplied; push remains unavailable."
+          fi
+
       - name: Install Flutter packages
         run: flutter pub get
       - name: Analyzer

@@ -45,6 +45,9 @@ try:
     run((root / 'supabase/migrations/20261018082335_account_presence.sql').read_text())
     run((root / 'supabase/tests/account_presence.sql').read_text())
     run((root / 'supabase/tests/disabled_rewards.sql').read_text())
+    run('create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id),not_after timestamptz)')
+    run((root / 'supabase/migrations/20261018084224_firebase_push_delivery.sql').read_text())
+    run((root / 'supabase/tests/firebase_push_delivery.sql').read_text())
     query = """set role authenticated;
     select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000103',false);
     select public.create_family('Concurrent family','','concurrent_family_key');"""
@@ -57,6 +60,6 @@ try:
        or (select count(*) from ledger where user_id='00000000-0000-4000-8000-000000000103' and kind='family_creation')<>1 then
        raise exception 'Concurrent family charge was not exactly once'; end if;
     end$$;""")
-    print('PASS: full schema migrations, social authorization, 1M creation/free join, replay/concurrent debit, media, history, notifications, multi-session presence and disabled rewards')
+    print('PASS: full schema migrations, social authorization, 1M creation/free join, replay/concurrent debit, media, history, notifications, multi-session presence disabled rewards and session-bound FCM queue')
 finally:
     subprocess.run(['docker', 'rm', '-f', container], check=False, stdout=subprocess.DEVNULL)

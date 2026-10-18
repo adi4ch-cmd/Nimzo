@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/app.dart';
+import 'core/services/firebase_push_service.dart';
 import 'core/constants/app_constants.dart';
 
 Future<void> main() async {
@@ -18,5 +19,9 @@ Future<void> main() async {
     ),
   );
 
-  runApp(const ProviderScope(child: NimzoApp()));
+  final push = await initializeFirebasePush();
+  runApp(ProviderScope(
+    overrides: [pushGatewayProvider.overrideWithValue(push)],
+    child: const NimzoApp(),
+  ));
 }

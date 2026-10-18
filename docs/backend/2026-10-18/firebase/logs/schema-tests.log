@@ -1,0 +1,2 @@
+4e0c4390e2771a6c3252483fa7558308bea511217752974fcd26f1d952531825
+PASS: full schema migrations, social authorization, 1M creation/free join, replay/concurrent debit, media, history, notifications, multi-session presence disabled rewards and session-bound FCM queue

@@ -54,3 +54,7 @@ Provider/device limits remain explicit: phone background push cannot be complete
 Final continuation analyzer: `flutter analyze --no-fatal-infos` passed with0 errors,0 warnings and37 existing infos.
 
 Final continuation full Flutter suite: **372 passed /3 existing golden failures** in the same three named suites above. No new failing test; baselines were not regenerated and tests were not disabled. Logs are retained alongside this report.
+
+Firebase follow-up: owner approved FCM-only integration. Android client and authenticated server sender are implemented; private session-bound queue migration and sender are deployed. Configuration and scheduler activation remain pending owner Firebase project setup. See [setup and verification](firebase/setup.md). No APK build was dispatched.
+
+Firebase client project `nimzo-1f296` supplied by owner and connected to exact package `io.nimzo.app`. Latest full suite377 pass/3 deferred existing golden failures; analyzer0 errors/warnings,37 infos. Server credential and delivery schedule activation remain pending; see Firebase setup report.
