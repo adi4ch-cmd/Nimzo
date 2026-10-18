@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>NIMZO · Jackpot Practice</title>
+<style>
+:root{--gold:#ffd981;--cream:#fff2d4;--violet:#43107d;--pink:#e83ea7;--blue:#30ddf6}
+*{box-sizing:border-box}html,body{padding:0;margin:0;background:#0b081c;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}button:disabled{opacity:.5;cursor:default}
+.shell{max-width:430px;margin:auto;min-height:100dvh;background:#150c2b;display:flex;flex-direction:column;box-shadow:0 0 45px #0007}
+.room{min-height:172px;flex:0 0 172px;padding:13px 15px 9px;background:linear-gradient(170deg,#311d45d9,#312b4bbd),radial-gradient(ellipse at center,#6e5985 5%,#152637 75%);overflow:hidden}
+.room-top{display:flex;align-items:center;gap:9px;font-weight:800}.dp{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(150deg,#ffd76a,#b16723);font-size:22px}.room-top .small{display:block;font-weight:500;font-size:11px;color:#ded8ff}.online{margin-left:auto;background:#ffffff1c;border:1px solid #ffffff45;padding:5px 8px;border-radius:40px;font-size:11px;color:#e8faff}
+.mics{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:15px 0 9px}.mic{text-align:center;color:#c6b5ee;font-size:10px}.mic span{margin:auto auto 3px;display:grid;place-items:center;width:41px;height:41px;border-radius:50%;background:#ffffff14;border:1px solid #fff7;color:#eee8ff;font-weight:700;font-size:24px}
+.game{flex:1;min-width:0;padding:10px 10px 16px;background:radial-gradient(circle at 50% 6%,#813bbb 0,#410e73 29%,#230849 57%,#120629 100%);border:2px solid #db79f5;border-radius:24px 24px 0 0;box-shadow:0 -8px 25px #10041a88;position:relative}
+.game-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 3px 9px}.game-head h1{margin:0;color:#ffe8a2;text-shadow:0 2px 0 #8c2861,0 0 15px #ffad52;font-size:21px;letter-spacing:.5px}.game-head .action{font-size:11px;border:1px solid #e3a1ff;background:#512176;color:#fff4ff;border-radius:50%;height:31px;width:31px}
+.note{font-size:10px;background:#a75bea35;border:1px solid #d48afd90;padding:3px 7px;border-radius:30px;color:#ffe0ff;display:inline-block}
+.jackpot-frame{padding:9px 12px 10px;text-align:center;background:radial-gradient(ellipse at 50% 0,#fb8e20 0,#da3b55 27%,#79205a 85%);border:3px solid #ffc55d;border-radius:22px;box-shadow:inset 0 2px 8px #fff2a766,0 5px 0 #682159,0 0 18px #ffa63855;position:relative;overflow:hidden}
+.jackpot-frame:before{content:"";position:absolute;inset:-20%;background:repeating-conic-gradient(from 0deg,#ffdd7623 0 13deg,transparent 13deg 23deg);pointer-events:none}
+.jackpot-frame>*{position:relative}.jackpot-label{font-weight:1000;font-size:13px;letter-spacing:2px;color:#fff2cc}.jackpot-value{font-size:clamp(24px,7.2vw,37px);font-weight:1000;color:#fff6b5;text-shadow:0 3px 0 #9d3c1f,0 0 16px #ffff9a;line-height:1.2;letter-spacing:.3px;font-variant-numeric:tabular-nums}
+.jackpot-sub{font-size:10px;color:#ffe8be}
+.slot-box{background:linear-gradient(#5b207b,#2a0f53);border:4px solid #eec468;border-radius:20px;margin:11px 1px 6px;padding:9px 5px 7px;box-shadow:0 0 0 2px #7b3687,inset 0 0 15px #e26cffa6}
+.reel-wrap{position:relative}.reels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}.reel{display:grid;grid-template-rows:repeat(3,1fr);gap:3px;min-width:0}
+.cell{border-radius:9px;aspect-ratio:1/.90;background:linear-gradient(175deg,#fff9e9 0,#ffe2be 55%,#dfb5b4 100%);border:1px solid #ffe0a7;display:grid;place-items:center;box-shadow:inset 0 -3px 4px #92304d33;position:relative;overflow:hidden}
+.cell .symbol{font-size:clamp(22px,8vw,37px);line-height:1;filter:drop-shadow(0 3px 2px #8b244c55)}.cell.seven .symbol{font-size:clamp(30px,9vw,44px);font-style:italic;font-weight:1000;color:#eb1841;text-shadow:2px 2px 0 #75166f,0 0 2px #fff2b1;-webkit-text-stroke:1px #ffbe59}
+.cell.win{border:2px solid #fdff56;box-shadow:inset 0 0 9px #ffffa8,0 0 12px #b5f923;animation:pulse .46s infinite alternate}@keyframes pulse{to{filter:brightness(1.4)}}
+.spin-veil .cell .symbol{animation:jitter .10s infinite alternate}@keyframes jitter{to{transform:translateY(4px);filter:blur(2px)}}
+.line-drawing{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.line-key{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;margin:8px 2px 2px}
+.line-key button{height:22px;min-width:27px;border-radius:6px;border:1px solid #ffcd6699;background:#ffffff17;color:#ffe2a7;font-size:10px;font-weight:800}.line-key button.enabled{background:#edbd55;color:#51165a}.line-key button.selected{box-shadow:0 0 0 2px #60f9ff}
+.line-note{font-size:10px;color:#e8ceff;text-align:center;margin:5px 0 9px}
+.control-card{background:#3c1765bb;border-radius:14px;padding:10px;margin-top:8px;border:1px solid #ae67d588}.control-title{color:#ffeca9;font-size:11px;font-weight:900;letter-spacing:.4px}
+.line-control{display:flex;align-items:center;justify-content:space-between;margin-top:7px}.adjust{display:flex;align-items:center;gap:12px}.adjust button{width:36px;height:34px;background:linear-gradient(#c559e8,#7c269e);border:1px solid #f09dff;border-radius:11px;color:#fff;font-size:22px;font-weight:800}.adjust strong{color:#fff3b0;font-size:20px;min-width:23px;text-align:center}
+.chips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:9px}.chips button{min-width:0;padding:9px 1px;border-radius:13px;background:linear-gradient(#cd50bb,#7c1e86);color:#fff4d3;border:2px solid #e69fc9;font-size:12px;font-weight:900;box-shadow:inset 0 2px 5px #ffe3ef44}.chips button:nth-child(2){background:linear-gradient(#50c6c0,#1d7ca1);border-color:#8aefff}.chips button:nth-child(3){background:linear-gradient(#e8a743,#a75828);border-color:#ffdf7a}.chips button:nth-child(4){background:linear-gradient(#7183ec,#353ca2);border-color:#b9c8ff}.chips button:nth-child(5){background:linear-gradient(#d65c78,#8c2046);border-color:#ffb1b3}.chips button.active{outline:2px solid #fdf588;outline-offset:2px;filter:brightness(1.2)}
+.total{display:flex;align-items:center;justify-content:space-between;margin:9px 0 7px;gap:8px;background:#1b0836;padding:8px 10px;border-radius:11px;border:1px solid #bc78d15c}.total span{font-size:11px;color:#edceff}.total strong{font-size:19px;color:#ffe78d;font-variant-numeric:tabular-nums}
+.buttons{display:flex;gap:7px}.buttons button{border-radius:12px;padding:11px 9px;font-weight:900}.spin{flex:1;color:#57234a;border:0;background:linear-gradient(#fff6b4,#f2a42b);box-shadow:0 4px 0 #9b4e2a;font-size:17px}.secondary{background:linear-gradient(#ab53d8,#74248c);color:#fff;border:1px solid #e9b5ff;font-size:11px}.secondary.on{background:linear-gradient(#45d2a0,#16796b);border-color:#80ffe1}
+.bar{display:flex;justify-content:space-between;margin:9px 2px;color:#ecd4fa;font-size:10px;gap:5px}.bar b{color:#ffe6a1}
+.log{padding:9px 10px;border-radius:10px;background:#1206239f;border:1px solid #754690;color:#fcecd8;font-size:12px;min-height:38px}.log strong{color:#ffd46b}
+.result{margin-top:8px;border:2px solid #ffd36a;border-radius:15px;background:linear-gradient(140deg,#902a8c,#2d1256);padding:11px;text-align:center}.result[hidden]{display:none}.result strong{font-size:18px;color:#fff1ac}.result small{display:block;color:#f0d3f5;margin-top:4px}
+.footer{background:#130d27;display:flex;align-items:center;justify-content:space-between;padding:12px 15px;color:#bcb5d5;font-size:12px}
+@media (min-width:480px){.shell{min-height:870px}.room{flex-basis:185px;min-height:185px}}
+@media (max-height:780px){.room{min-height:135px;flex-basis:135px}.mics{margin:8px 0 4px}.mic span{height:31px;width:31px;font-size:19px}.game{padding-top:8px}.jackpot-frame{padding:6px}.slot-box{margin-top:7px}.control-card{padding:8px}.line-note{margin:4px}}
+</style>
+</head>
+<body>
+<div class="shell" id="jackpot-game">
+  <div class="room">
+    <div class="room-top"><span class="dp">👑</span><span>STAY FOREVER<span class="small">● Live NIMZO room · layout preview</span></span><span class="online">🎙️ 10 seats</span></div>
+    <div class="mics" aria-hidden="true"><div class="mic"><span>＋</span>1</div><div class="mic"><span>＋</span>2</div><div class="mic"><span>＋</span>3</div><div class="mic"><span>＋</span>4</div><div class="mic"><span>＋</span>5</div></div>
+  </div>
+  <main class="game">
+    <header class="game-head"><h1>🎰 JACKPOT</h1><span class="note">FREE PRACTICE · NO REAL COINS</span><button class="action" id="rules-btn" aria-label="Rules">?</button></header>
+    <section class="jackpot-frame" aria-label="Demo progressive jackpot pool">
+      <div class="jackpot-label">👑 PROGRESSIVE JACKPOT 👑</div><div class="jackpot-value" id="pool-value">12,800,000</div>
+      <div class="jackpot-sub">Local-only example · 1% demo contribution · resets to seed after jackpot</div>
+    </section>
+    <section class="slot-box">
+      <div class="reel-wrap">
+        <div class="reels" id="reels" aria-label="Five slot reels, three rows each"></div>
+        <svg viewBox="0 0 500 300" preserveAspectRatio="none" class="line-drawing" id="line-overlay"></svg>
+      </div>
+      <div class="line-key" id="line-key" aria-label="Nine winning payline indicators"></div>
+    </section>
+    <div class="line-note" id="line-note">Lines 1–9 active · tap a line number to preview its path</div>
+    <section class="control-card">
+      <div class="line-control"><span class="control-title">ACTIVE PAYLINES</span><div class="adjust"><button id="minus-line" aria-label="Decrease lines">−</button><strong id="line-count">9</strong><button id="plus-line" aria-label="Increase lines">+</button></div><span class="control-title">/ 9</span></div>
+      <div class="control-title" style="margin-top:10px">BET PER LINE</div>
+      <div class="chips" id="chips" aria-label="Select bet per line"></div>
+      <div class="total"><span><b id="total-formula">9 lines × 500</b><br>TOTAL BET</span><strong id="total-bet">4,500</strong></div>
+      <div class="buttons"><button id="auto-btn" class="secondary">AUTO OFF</button><button class="spin" id="spin-btn">▶ SPIN</button><button class="secondary" id="test-btn" title="Sample jackpot outcome without real wallet">DEMO<br>JP</button></div>
+      <div class="bar"><span>Spins: <b id="spin-count">0</b></span><span>Last win: <b id="last-win">0</b></span><span>Pool added: <b id="pool-added">0</b></span></div>
+      <div class="log" id="message" role="status">Select your lines and bet, then press <strong>SPIN</strong>.</div>
+    </section>
+    <section class="result" id="result" hidden><strong id="result-head"></strong><small id="result-detail"></small></section>
+  </main>
+  <footer class="footer"><span>🎤 Voice room (visual preview only)</span><span>💬 &nbsp; 🔊</span></footer>
+</div>
+<script>
+(function(){
+'use strict';
+const el=id=>document.getElementById(id);
+const money=n=>Math.round(n).toLocaleString('en-US');
+const bets=[500,5000,50000,500000,1000000];
+const patterns=[[0,0,0,0,0],[1,1,1,1,1],[2,2,2,2,2],[0,1,2,1,0],[2,1,0,1,2],[0,0,1,2,2],[2,2,1,0,0],[1,0,1,2,1],[1,2,1,0,1]];
+const colors=['#ffd15a','#50e6fc','#f596cf','#b8ff83','#fc7e86','#a8adff','#ffa958','#aff5b3','#ffe18f'];
+const symbols=[
+{id:'seven',glyph:'7',pay:[0,0,20,100,800]},
+{id:'gem',glyph:'💎',pay:[0,0,10,32,175]},
+{id:'crown',glyph:'👑',pay:[0,0,8,24,120]},
+{id:'bell',glyph:'🔔',pay:[0,0,6,15,65]},
+{id:'star',glyph:'⭐',pay:[0,0,5,11,40]},
+{id:'orange',glyph:'🍊',pay:[0,0,4,9,28]},
+{id:'cherry',glyph:'🍒',pay:[0,0,3,7,19]},
+{id:'melon',glyph:'🍉',pay:[0,0,3,6,18]}];
+// The 1% contribution is an illustrative configuration, not an industry-wide rule.
+// This offline practice mode does NOT publish real jackpot odds or enable payouts.
+const JACKPOT_CONFIG=Object.freeze({contributionRate:0.01,seedAmount:12800000});
+let lines=9, perLine=500, spins=0, jackpotPool=JACKPOT_CONFIG.seedAmount, contributed=0, lastWin=0, busy=false, auto=false, previewLine=null, highlighted=[],autoHandle=null;
+let reels=Array.from({length:5},()=>Array.from({length:3},()=>randomIndex()));
+let rngCounter=0;
+function randomIndex(){
+ const c=new Uint32Array(1);
+ if(window.crypto&&crypto.getRandomValues){crypto.getRandomValues(c);return c[0]%symbols.length;}
+ return Math.floor(Math.random()*symbols.length);
+}
+function totalBet(){return lines*perLine}
+function renderReels(){
+ el('reels').innerHTML=reels.map(col=>'<div class="reel">'+col.map(idx=>'<div class="cell'+(idx===0?' seven':'')+'"><span class="symbol">'+symbols[idx].glyph+'</span></div>').join('')+'</div>').join('');
+ // The 5 reels are columns and each has three rows.
+ highlighted.forEach(lineNo=>patterns[lineNo].forEach((row,col)=>{
+   const cell=el('reels').children[col]?.children[row];
+   if(cell)cell.classList.add('win');
+ }));
+}
+function pathFor(line){return patterns[line].map((row,col)=>(col===0?'M':'L')+(col*100+50)+' '+(row*100+50)).join(' ');}
+function showPath(which){
+ const svg=el('line-overlay');
+ svg.innerHTML='';
+ if(which===null)return;
+ const xmlns='http://www.w3.org/2000/svg';
+ const path=document.createElementNS(xmlns,'path');path.setAttribute('d',pathFor(which));
+ path.setAttribute('fill','none');path.setAttribute('stroke',colors[which]);
+ path.setAttribute('stroke-width','5');path.setAttribute('stroke-linecap','round');
+ path.setAttribute('stroke-linejoin','round');path.setAttribute('opacity','.9');
+ path.setAttribute('filter','drop-shadow(0 2px 4px #260b49)');
+ svg.appendChild(path);
+}
+function renderLines(){
+ el('line-key').innerHTML=patterns.map((_,i)=>'<button data-index="'+i+'" class="'+(i<lines?'enabled ':'')+(i===previewLine?'selected':'')+'">'+(i+1)+'</button>').join('');
+ el('line-key').querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{
+  if(busy)return;
+  const i=Number(button.dataset.index);
+  previewLine=(previewLine===i?null:i);
+  showPath(previewLine);renderLines();
+  el('line-note').textContent=previewLine===null?'Lines 1–'+lines+' active · tap number to preview':('Line '+(previewLine+1)+(previewLine<lines?' · ACTIVE':' · INACTIVE')+' · example path');
+ }));
+}
+function renderControls(){
+ el('line-count').textContent=lines;
+ el('minus-line').disabled=busy||lines<=1;
+ el('plus-line').disabled=busy||lines>=9;
+ el('total-formula').textContent=lines+' lines × '+money(perLine);
+ el('total-bet').textContent=money(totalBet());
+ el('pool-value').textContent=money(jackpotPool);
+ el('spin-count').textContent=spins;
+ el('last-win').textContent=money(lastWin);
+ el('pool-added').textContent=money(contributed);
+ el('spin-btn').disabled=busy;
+ el('auto-btn').classList.toggle('on',auto);
+ el('auto-btn').textContent=auto?'AUTO ON':'AUTO OFF';
+ el('chips').innerHTML=bets.map(v=>'<button data-bet="'+v+'" class="'+(v===perLine?'active':'')+'">'+(v>=1000000?'1M':v>=1000?v/1000+'K':'500')+'</button>').join('');
+ el('chips').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  if(busy)return;perLine=Number(b.dataset.bet);renderControls();
+ }));
+ renderLines();
+}
+function setMessage(t){el('message').textContent=t}
+function spinResult(forcedJackpot){
+ const stop=Array.from({length:5},()=>Array.from({length:3},()=>randomIndex()));
+ // The first payline is always enabled, even with 1 selected line.
+ if(forcedJackpot){for(let c=0;c<5;c++)stop[c][patterns[0][c]]=0;}
+ return stop;
+}
+function evaluate(grid){
+ let award=0,winning=[];
+ for(let l=0;l<lines;l++){
+  const p=patterns[l],sym=grid[0][p[0]];
+  let n=1;for(let c=1;c<5;c++){if(grid[c][p[c]]===sym)n++;else break;}
+  if(n>=3){award+=perLine*symbols[sym].pay[n-1];winning.push(l);}
+ }
+ return {award,winning};
+}
+async function spin(forcedJackpot=false){
+ if(busy)return;
+ busy=true;el('result').hidden=true;
+ if(autoHandle){clearTimeout(autoHandle);autoHandle=null;}
+ highlighted=[];previewLine=null;showPath(null);
+ let wager=totalBet();spins++;
+ const contribution=Math.round(wager*JACKPOT_CONFIG.contributionRate);jackpotPool+=contribution;contributed+=contribution;
+ renderControls();el('spin-btn').textContent='SPINNING…';
+ el('reels').classList.add('spin-veil');
+ const target=spinResult(forcedJackpot);
+ let cycles=0;
+ const timer=setInterval(()=>{
+  cycles++;reels=reels.map(col=>col.map(()=>randomIndex()));renderReels();
+  if(cycles>=19){
+   clearInterval(timer);reels=target;
+   el('reels').classList.remove('spin-veil');
+   const score=evaluate(target);highlighted=score.winning;
+   // The display demonstration awards the whole visible pool upon the five-7
+   // event on the first active payline, then resets to the published seed.
+   // Real jackpot eligibility, RNG odds, contribution rates and award math
+   // require a verified server-authoritative game contract.
+   const jackpotEligible=patterns[0].every((row,c)=>target[c][row]===0);
+   let jackpotAward=0;
+   if(jackpotEligible){
+    jackpotAward=jackpotPool;
+    jackpotPool=JACKPOT_CONFIG.seedAmount;
+   }
+   lastWin=score.award+jackpotAward;
+   renderReels();if(highlighted.length)showPath(highlighted[0]);
+   el('result').hidden=false;
+   el('result-head').textContent=jackpotAward?'👑 DEMO JACKPOT!':score.award?'🎉 LINE WIN!':'ROUND COMPLETE';
+   el('result-detail').textContent=(jackpotAward?'Full jackpot '+money(jackpotAward)+' + ':'')+'Payline return '+money(score.award)+' · Total '+money(lastWin)+' practice coins. This is NOT a live pool.';
+   setMessage('Spin '+spins+' · '+highlighted.length+' winning line(s) · '+money(lastWin)+' practice coins returned.');
+   busy=false;el('spin-btn').textContent='▶ SPIN';renderControls();
+   if(auto&&!forcedJackpot)autoHandle=setTimeout(()=>spin(false),1150);
+  }
+ },95);
+}
+el('minus-line').onclick=()=>{if(lines>1&&!busy){lines--;previewLine=null;showPath(null);renderControls();}};
+el('plus-line').onclick=()=>{if(lines<9&&!busy){lines++;previewLine=null;showPath(null);renderControls();}};
+el('spin-btn').onclick=()=>spin(false);
+el('test-btn').onclick=()=>{if(busy)return;spin(true);};
+el('auto-btn').onclick=()=>{auto=!auto;if(!auto&&autoHandle){clearTimeout(autoHandle);autoHandle=null;}renderControls();setMessage(auto?'Autospin will continue after your next spin.':'Autospin OFF.');};
+el('rules-btn').onclick=()=>{alert('JACKPOT PRACTICE\\n\\n9 selectable paylines (1-9).\\nTotal wager = active lines × bet per line.\\nSample-only contribution: 1% of each wager; not a default for real machines.\\nPayline wins are scored left-to-right for 3, 4 or 5 matching symbols. Only enabled lines count.\\nDEMO JP forces five 7s on active line 1, awards the visible local demonstration pool, then resets to the seed. Real odds, eligibility and payout policies are unapproved; no real wallet or shared pool is connected.');};
+window.JACKPOT_PRACTICE={getState:()=>({lines,perLine,totalBet:totalBet(),spins,jackpotPool,contributed,lastWin,busy,auto,reels:reels.map(x=>[...x])}),spin,patterns};
+renderReels();renderControls();
+})();
+</script>
+</body>
+</html>
