@@ -68,7 +68,7 @@ try:
  create view vault.decrypted_secrets as select id,name,secret decrypted_secret from vault.secrets;
  create function vault.create_secret(new_secret text,new_name text,new_description text default null) returns uuid language plpgsql as $$declare result uuid;begin insert into vault.secrets(name,secret) values(new_name,new_secret) returning id into result;return result;end$$;
  insert into vault.secrets(name,secret) values('nimzo_push_dispatch_hmac',repeat('ab',32)),('nimzo_push_gateway_anon','public-fixture-key');
- create schema net; create function net.http_post(url text,headers jsonb,body jsonb,timeout_milliseconds int) returns bigint language sql as $$select 1::bigint$$;
+ create schema net; create table net.http_request_queue(id bigserial primary key,headers jsonb); create table net._http_response(id bigint,content text); grant all on net.http_request_queue,net._http_response to public; create function net.http_post(url text,headers jsonb,body jsonb,timeout_milliseconds int) returns bigint language sql as $$select 1::bigint$$;
  """)
  for path in a.migration:
   # Managed pg_net is represented by the local net.http_post stub above.
