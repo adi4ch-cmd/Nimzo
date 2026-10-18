@@ -35,7 +35,7 @@
 .controls{display:flex;align-items:end;justify-content:space-between;gap:7px;padding:8px 9px 8px;margin-top:auto;background:#b83335;border-top:2px solid #e47655}.mini-info{display:grid;gap:4px;min-width:0;flex:1}.mini-info small{font-size:10px;color:#ffd8bb}.mini-info strong{font-size:12px;color:white;font-variant-numeric:tabular-nums}.actions{display:flex;gap:6px;align-items:end}.actionbtn{border-radius:17px;border:2px solid #ffcf9b;color:#5c2146;padding:9px 8px;font-weight:1000;font-size:11px;background:linear-gradient(#fff8bd,#ffb839);white-space:nowrap;box-shadow:0 3px 0 #7e2b20}.actionbtn.clear{background:#fff4db;border-color:#fff3c5}.actionbtn.auto{background:linear-gradient(#aaff41,#42c809);color:#24601d;border-color:#cbff93}.actionbtn.auto.on{background:linear-gradient(#4effe0,#13ba9a);color:#034f55}
 .hint{font-size:10px;color:#fff1bc;padding:3px 10px 8px;text-align:center;opacity:.92}.toast{position:absolute;z-index:15;left:50%;bottom:18%;transform:translateX(-50%);min-width:max-content;max-width:85%;border:1px solid #ffe3aa;border-radius:18px;background:#371349f2;padding:12px 16px;font-weight:800;box-shadow:0 10px 40px #0009;display:none;text-align:center}.toast.visible{display:block}
 .overlay{display:none;position:absolute;z-index:20;inset:0;background:#140823ad;align-items:center;justify-content:center;padding:15px}.overlay.visible{display:flex}.result-card{width:min(340px,95%);position:relative;text-align:center;overflow:hidden;border-radius:24px;background:radial-gradient(circle at 50% 23%,#f9a32b,#c43542 39%,#6b173e 90%);border:3px solid #ffd880;box-shadow:0 0 45px #f5a55588;padding:22px 16px;color:#fff8dd}.result-card:before{content:"";position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg,transparent 0 17deg,#fff6a31e 17deg 24deg);animation:rotate 10s linear infinite}@keyframes rotate{to{transform:rotate(360deg)}}.result-card>*{position:relative}.result-card .lionface{font-size:52px;filter:drop-shadow(0 3px 5px #311)}.result-card h2{font-size:25px;margin:4px 0;text-shadow:0 2px 4px #7a1f2b}.result-card .outcome{display:flex;align-items:center;justify-content:center;margin:8px 0}
-.board-match-symbol{display:inline-block;flex-shrink:0;width:64px;height:64px;border-radius:16px;border:2px solid #ffe39f;background-image:var(--grady-board-image);background-size:500% 500%;background-repeat:no-repeat;background-color:#137f9e;box-shadow:0 4px 14px #39112655}
+.board-match-symbol{display:inline-block;flex-shrink:0;width:64px;height:64px;border-radius:16px;border:2px solid #ffe39f;background-image:var(--grady-board-image);background-size:588.24% 588.24%;background-repeat:no-repeat;background-color:#137f9e;box-shadow:0 4px 14px #39112655}
 .result-card .outcome .board-match-symbol{height:86px;width:86px;border-radius:18px}
 .resulticon .board-match-symbol{width:100%;height:100%;border:none;border-radius:50%;box-shadow:none}.result-card .winnings{background:#661930be;padding:10px;border-radius:12px;margin:11px 0;font-weight:900;line-height:1.8}.result-card button{width:100%;padding:11px;border:0;border-radius:15px;background:linear-gradient(#fff4aa,#f4a532);color:#75252d;font-weight:1000;font-size:15px}
 .modal{display:none;position:absolute;z-index:21;inset:0;align-items:center;justify-content:center;background:#090a1acb;padding:20px}.modal.visible{display:flex}.modal article{background:#fff3df;color:#6f2c37;width:100%;border:4px solid #fbc26c;border-radius:20px;padding:20px;line-height:1.55}.modal h2{margin:0 0 10px;color:#8b3531}.modal button{border:0;background:#ca383a;color:white;padding:11px 18px;border-radius:13px;width:100%;font-weight:850}
@@ -50,6 +50,23 @@ html.nimzo-embedded .board{height:54dvh;max-height:65%;aspect-ratio:auto;backgro
 html.nimzo-embedded .pickbar{flex:1 1 auto;min-height:0}
 html.nimzo-embedded .overlay,html.nimzo-embedded .modal{position:absolute}
 @media(max-height:520px){html.nimzo-embedded .board{height:55dvh;max-height:62%}html.nimzo-embedded .score-strip{min-height:33px;padding:4px}html.nimzo-embedded .chip{min-height:39px}}
+
+.result-card{max-height:calc(100% - 22px);overflow-y:auto;overscroll-behavior:contain}
+.round-ranking{margin:11px 0 13px;padding:9px 7px 11px;border-radius:13px;background:#51142ec9;border:1px solid #f3b96288}
+.round-ranking-title{text-align:center;color:#ffd576;font-size:12px;font-weight:900;margin:0 0 5px}
+.round-ranking-note{display:block;text-align:center;font-size:9px;color:#f3d1df;margin-bottom:8px}
+.round-ranking-podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:6px}
+.round-leader{min-width:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}
+.round-leader.first{transform:translateY(-4px)}
+.round-leader .crown{font-size:17px;line-height:1;filter:drop-shadow(0 1px 2px #3d143c)}
+.round-leader .dp{height:44px;width:44px;border-radius:50%;border:3px solid #ffd56c;background:linear-gradient(140deg,#c073de,#56265d);box-shadow:0 3px 9px #3e09287d;display:grid;place-items:center;font-size:24px;overflow:hidden}
+.round-leader.first .dp{height:52px;width:52px;border-color:#ffe439}
+.round-leader .dp img{width:100%;height:100%;object-fit:cover}
+.round-leader .name{display:block;width:100%;max-width:100%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:10px;font-weight:850;padding:3px 1px;border-radius:3px;background:#d6a2a4;color:#583243}
+.round-leader.first .name{background:#ffed42;color:#622431}
+.round-leader.second .name{background:#c1def0;color:#183e60}
+.round-leader .value{font-size:11px;font-weight:900;color:#ffd46c;margin-top:2px}
+.round-leader .rank{font-size:10px;opacity:.85}
 </style>
 </head>
 <body>
@@ -81,7 +98,7 @@ html.nimzo-embedded .overlay,html.nimzo-embedded .modal{position:absolute}
     </div>
   </section>
   <div class="toast" id="toast"></div>
-  <div class="overlay" id="overlay"><div class="result-card"><h2>ROUND RESULT</h2><div class="outcome" id="winnerIcon">🍇</div><div id="winnerName" style="font-size:20px;font-weight:1000">Grapes · 5x</div><div class="winnings" id="winReport"></div><button id="nextBtn">Continue playing</button></div></div>
+  <div class="overlay" id="overlay"><div class="result-card"><h2>ROUND RESULT</h2><div class="outcome" id="winnerIcon">🍇</div><div id="winnerName" style="font-size:20px;font-weight:1000">Grapes · 5x</div><div class="winnings" id="winReport"></div><section class="round-ranking" aria-label="This round top 3"><h3 class="round-ranking-title">This Round Ranking</h3><small class="round-ranking-note">DEMO — sample winners, not real users</small><div class="round-ranking-podium" id="roundWinners"></div></section><button id="nextBtn">Continue playing</button></div></div>
   <div class="modal" id="modal"><article><h2 id="modalTitle">Rules</h2><div id="modalContent"></div><p><button id="modalClose">Close</button></p></article></div>
 </div>
 <script>
@@ -115,13 +132,14 @@ function renderSpots(){ $('spots').innerHTML=OPTIONS.map((o,i)=>{const v=bets[i]
 // Every result uses a crop of the SAME artwork displayed behind the eight board stalls.
 // Board positions come from OPTIONS, so the result and history cannot drift into
 // different emoji styles or incorrect character designs.
+const BOARD_ART_CENTERS=[[23,21],[47,12],[71,20],[14,45],[79,44],[22,71],[46,84],[71,71]];
 const boardImage=getComputedStyle($('board')).backgroundImage;
 document.documentElement.style.setProperty('--grady-board-image',boardImage);
 function boardSymbol(i){
- const option=OPTIONS[i];
- const fraction=.20;
- const px=Math.max(0,Math.min(100,(option.x/100-fraction/2)/(1-fraction)*100));
- const py=Math.max(0,Math.min(100,(option.y/100-fraction/2)/(1-fraction)*100));
+ const center=BOARD_ART_CENTERS[i];
+ const fraction=.17;
+ const px=Math.max(0,Math.min(100,(center[0]/100-fraction/2)/(1-fraction)*100));
+ const py=Math.max(0,Math.min(100,(center[1]/100-fraction/2)/(1-fraction)*100));
  return `<span class="board-match-symbol" role="img" aria-label="${option.name}" style="background-position:${px}% ${py}%"></span>`;
 }
 function renderHistory(){const copy=history.length?history.slice(0,8):[0,3,5,7,6,3,0,4];$('history').innerHTML=copy.map(i=>`<span class="resulticon" title="${OPTIONS[i].name}">${boardSymbol(i)}</span>`).join('')}
@@ -151,11 +169,54 @@ function reset(){
  if(phase!=='betting')return;
  bets=Array(OPTIONS.length).fill(0);refresh();
 }
+// Practice-only podium preview. No server-authoritative wager or winners exist yet.
+// The three names/pictures are explicitly mock data and must never be presented
+// as actual room users. Trusted game backends can later supply real rankings.
+const sampleRoundLeaders=[
+  {name:'Demo B',amount:50000,face:'🧑🏾',avatar:''},
+  {name:'Demo A',amount:50000,face:'👩🏻',avatar:''},
+  {name:'Demo C',amount:25000,face:'🧑🏻',avatar:''}
+];
+let roundLeaders=[...sampleRoundLeaders];
+function renderRoundLeaders(){
+ const pod=$('roundWinners');if(!pod)return;
+ const ranks=[1,0,2];
+ pod.replaceChildren();
+ ranks.forEach((index)=>{
+  const winner=roundLeaders[index]||null;
+  const tile=document.createElement('div');
+  tile.className='round-leader '+(index===0?'first':index===1?'second':'third');
+  const crown=document.createElement('span');crown.className='crown';crown.textContent=['👑','♕','♛'][index];
+  const dp=document.createElement('span');dp.className='dp';
+  if(winner && typeof winner.avatar==='string' && (/^https:\/\//.test(winner.avatar)||/^data:image\/(png|jpeg|webp);base64,/.test(winner.avatar))){
+    const img=document.createElement('img');img.alt=winner.name+' avatar';img.src=winner.avatar;dp.append(img);
+  }else{dp.textContent=winner?.face||'👤'}
+  const label=document.createElement('span');label.className='name';label.textContent=winner?.name||'No winner';
+  const amount=document.createElement('span');amount.className='value';
+  amount.textContent=winner?('🪙 '+short(Number(winner.amount)||0)):'—';
+  const rank=document.createElement('span');rank.className='rank';rank.textContent='#'+(index+1);
+  tile.append(crown,dp,label,amount,rank);pod.append(tile);
+ });
+}
+// Future bridge for verified server round rankings. No wallet bridge is exposed.
+// The mock ranking remains labelled DEMO until server-authoritative multiplayer
+// rounds are implemented, verified, and the label is deliberately removed.
+function setRoundWinnersForPreview(rows){
+ if(!Array.isArray(rows))return;
+ roundLeaders=rows.slice(0,3).map((row,index)=>({
+  name:String(row?.name||'Demo '+(index+1)).slice(0,40),
+  avatar:String(row?.avatar||'').slice(0,1024),
+  face:'👤',
+  amount:Number.isSafeInteger(row?.amount)&&row.amount>=0?row.amount:0
+ }));
+ renderRoundLeaders();
+}
 function resultPanel(i,payout){
  const o=OPTIONS[i];
  $('winnerIcon').innerHTML=boardSymbol(i);
  $('winnerName').textContent=`${o.name} · ${o.mult}x`;
  $('winReport').innerHTML=`Your bet on this stall: <b>${fmt(bets[i])}</b><br>Practice return: <b>${fmt(payout)}</b><br><small>No real coins have moved</small>`;
+ renderRoundLeaders();
  $('overlay').classList.add('visible');
 }
 function startDraw(){
@@ -224,7 +285,7 @@ $('topBack').onclick=minimize;$('minBtn').onclick=minimize;$('restore').onclick=
 window.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('modal').classList.contains('visible'))$('modal').classList.remove('visible');else if($('overlay').classList.contains('visible'))next();else minimize()}});
 renderMics();refresh();
 roundTimer=setInterval(tick,1000);
-window.GRADY_LION_DEMO={getState:()=>({chip,bets:[...bets],selected:selected(),total:total(),round,history:[...history],auto,spinning,phase,seconds,totalWon}),betOn,reset,next,minimize,restore,toggleAuto};
+window.GRADY_LION_DEMO={getState:()=>({chip,bets:[...bets],selected:selected(),total:total(),round,history:[...history],auto,spinning,phase,seconds,totalWon}),betOn,reset,next,minimize,restore,toggleAuto,setRoundWinnersForPreview};
 })();
 </script>
 </body>
