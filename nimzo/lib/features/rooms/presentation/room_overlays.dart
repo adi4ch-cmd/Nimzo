@@ -14,7 +14,6 @@ import 'room_controller.dart';
 import '../diamond/room_diamond_widgets.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../data/room_chat_repository.dart';
-import '../../store/store_badge.dart';
 
 const roomToolNames = [
   'Broadcast',
@@ -676,10 +675,6 @@ class _RoomProfileState extends ConsumerState<RoomProfilePage> {
                               ),
                               title: Text(
                                 p.displayName ?? p.username ?? 'Nimzo user',
-                              ),
-                              trailing: EquippedRoyalMedal(
-                                userId: p.id,
-                                compact: true,
                               ),
                               onTap: () => context.push('/profile/${p.id}'),
                             ),
