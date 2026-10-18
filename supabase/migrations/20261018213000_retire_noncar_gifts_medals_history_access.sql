@@ -7,7 +7,7 @@ declare
   v_car uuid;
   v_car_count integer;
 begin
-  select count(*), min(id) into v_car_count, v_car
+  select count(*), (array_agg(id))[1] into v_car_count, v_car
   from public.gifts where lower(trim(name))='sports car';
   if v_car_count <> 1 then
     raise exception 'Cleanup stopped: expected one Sports Car gift, got %',v_car_count;
