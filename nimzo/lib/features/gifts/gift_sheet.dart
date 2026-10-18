@@ -12,6 +12,9 @@ import 'gift_error.dart';
 import 'gift_artwork.dart';
 import 'gift_svga_overlay.dart';
 import 'gift_celebration_overlay.dart';
+import 'hall_of_fame_gift.dart';
+import 'zodiac_gifts.dart';
+import 'personal_vap_gift_overlay.dart';
 import 'yo2_gift_ui.dart';
 import 'nimzo_gift_control_art.dart';
 import '../../core/widgets/master_ui.dart';
@@ -48,6 +51,10 @@ Future<void> showMomentGiftSheet(
       isScrollControlled: true,
       builder: (_) => GiftSheet(receiverId: receiverId, momentId: momentId),
     );
+
+class _GiftMediaNotReady implements Exception {
+  const _GiftMediaNotReady();
+}
 
 class GiftSheet extends ConsumerStatefulWidget {
   final String receiverId;
@@ -108,6 +115,14 @@ class _State extends ConsumerState<GiftSheet> {
     setState(() => busy = true);
     try {
       final r = ref.read(giftRepositoryProvider), g = gift;
+      final requiresVap = g.id == hallOfFameGiftId ||
+          zodiacVapGiftIds.contains(g.id);
+      // Do not charge for a VAP-only gift unless approved media resolves.
+      final approvedVapUrl =
+          requiresVap ? await r.approvedAnimationUrl(g.id) : null;
+      if (requiresVap && approvedVapUrl == null) {
+        throw const _GiftMediaNotReady();
+      }
       if (widget.momentId != null) {
         await ref.read(momentRepositoryProvider).sendGift(
               momentId: widget.momentId!,
@@ -169,32 +184,46 @@ class _State extends ConsumerState<GiftSheet> {
       // starts only after the server confirms debit and gifting. Room gifts
       // are animated for all listeners by VerifiedGiftBroadcast instead.
       if (mounted && widget.roomId == null) {
-        showSettledPersonalGiftCelebration(
-          context,
-          giftName: g.name,
-          quantity: requestQuantity,
-          unitPrice: g.price,
-          assetPath: g.assetPath,
-          videoUrl: null,
-          recipientName:
-              ref.read(profileProvider(receiverId)).valueOrNull?.displayName ??
-                  ref.read(profileProvider(receiverId)).valueOrNull?.username,
-        );
+        final recipientName =
+            ref.read(profileProvider(receiverId)).valueOrNull?.displayName ??
+                ref.read(profileProvider(receiverId)).valueOrNull?.username ??
+                'a member';
+        if (requiresVap && approvedVapUrl != null) {
+          showSettledPersonalVapGiftOverlay(
+            context,
+            source: approvedVapUrl,
+            giftName: g.name,
+            quantity: requestQuantity,
+            recipientName: recipientName,
+          );
+        } else {
+          showSettledPersonalGiftCelebration(
+            context,
+            giftName: g.name,
+            quantity: requestQuantity,
+            unitPrice: g.price,
+            assetPath: g.assetPath,
+            videoUrl: null,
+            recipientName: recipientName,
+          );
+        }
       }
       if (mounted) Navigator.pop(context);
     } catch (error) {
       // Known RPC rejections roll back settlement, so a new selection is safe.
       // Uncertain responses keep the original key and payload for retry.
-      if (mounted && error is GiftRejectedException) {
+      if (mounted && (error is GiftRejectedException || error is _GiftMediaNotReady)) {
         setState(() => key = null);
       }
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              error is GiftRejectedException
-                  ? error.message
-                  : 'Gift was not confirmed. Retry to check this same request.',
+              error is _GiftMediaNotReady
+                  ? 'Gift animation is not ready. No coins were charged.'
+                  : error is GiftRejectedException
+                      ? error.message
+                      : 'Gift was not confirmed. Retry to check this same request.',
             ),
           ),
         );
