@@ -1,6 +1,6 @@
+import '../../app/feature_availability.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -201,7 +201,7 @@ class _TaskCard extends StatelessWidget {
             padding: EdgeInsets.zero,
             shape: const StadiumBorder(),
           ),
-          onPressed: () => context.go(task.route),
+          onPressed: () => openAvailableDestination(context, task.route, replace: true),
           child: Text(verified == true ? 'View' : 'Go',
             style: const TextStyle(
               fontSize: 12, fontWeight: FontWeight.w800,

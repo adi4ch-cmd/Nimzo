@@ -1,5 +1,6 @@
 import '../features/auth/domain/auth_user.dart';
 import 'routes.dart';
+import 'feature_availability.dart';
 
 String? authRedirect({
   required String location,
@@ -30,5 +31,6 @@ String? authRedirect({
       public.contains(location) ||
       location == Routes.verify ||
       location == Routes.updatePassword) return Routes.home;
+  if (isComingSoonLocation(location)) return Routes.profile;
   return null;
 }

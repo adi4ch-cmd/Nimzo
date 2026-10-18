@@ -251,7 +251,7 @@ jobs:
       - name: Analyzer
         run: flutter analyze --no-fatal-infos
       - name: Backend regression checks
-        run: flutter test test/family_backend_flow_test.dart test/family_repository_test.dart test/moment_media_test.dart test/moment_editor_retry_test.dart test/backend_targeted_integration_test.dart test/auth_redirect_test.dart test/logout_cleanup_test.dart
+        run: flutter test test/coming_soon_navigation_test.dart test/membership_retirement_test.dart test/family_backend_flow_test.dart test/family_repository_test.dart test/moment_media_test.dart test/moment_editor_retry_test.dart test/backend_targeted_integration_test.dart test/auth_redirect_test.dart test/logout_cleanup_test.dart
       - name: Build Android debug APK (device backend QA)
         run: flutter build apk --debug
       - name: Validate APK, checksum and package

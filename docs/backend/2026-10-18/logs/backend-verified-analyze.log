@@ -66,18 +66,18 @@ Analyzing nimzo...
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:84:21 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:86:30 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/onboarding/onboarding_screen.dart:87:42 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:40:16 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:46:16 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:52:16 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:58:16 • prefer_const_constructors
-   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:171:46 • prefer_interpolation_to_compose_strings
-   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:192:45 • prefer_interpolation_to_compose_strings
-   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:215:34 • prefer_interpolation_to_compose_strings
-   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:226:45 • prefer_interpolation_to_compose_strings
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:41:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:47:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:53:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/profile/tingle_me_screen.dart:59:16 • prefer_const_constructors
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:172:46 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:193:45 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:216:34 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/profile/tingle_me_screen.dart:227:45 • prefer_interpolation_to_compose_strings
    info • Unnecessary braces in a string interpolation. Try removing the braces • lib/features/rooms/presentation/create_room_screen.dart:141:18 • unnecessary_brace_in_string_interps
    info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/rooms/presentation/create_room_screen.dart:171:31 • prefer_interpolation_to_compose_strings
    info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/rooms/presentation/create_room_screen.dart:173:27 • prefer_interpolation_to_compose_strings
    info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/settings/tingle_blocked_users_screen.dart:132:36 • prefer_interpolation_to_compose_strings
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • test/mobile_otp_login_test.dart:24:18 • prefer_const_constructors
 
-37 issues found. (ran in 5.9s)
+37 issues found. (ran in 2.4s)

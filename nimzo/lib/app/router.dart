@@ -1,5 +1,4 @@
 import '../core/providers/supabase_provider.dart';
-import '../features/profile/tingle_membership_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -28,7 +27,6 @@ import '../features/profile/tingle_tasks_screen.dart';
 import '../features/profile/tingle_daily_checkin_screen.dart';
 import '../features/games/game_screen.dart';
 import '../features/games/game_level_screen.dart';
-import '../features/store/store_screen.dart';
 import '../features/games/games_catalog_screen.dart';
 import '../features/rooms/presentation/create_room_screen.dart';
 import '../features/rooms/presentation/room_settings_screen.dart';
@@ -145,9 +143,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
           path: '/settings/blocked',
           builder: (_, __) => const TingleBlockedUsersScreen()),
-      GoRoute(
-          path: '/svip',
-          builder: (_, __) => const TingleMembershipScreen(svip: true)),
+      GoRoute(path: '/svip', redirect: (_, __) => Routes.profile),
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
@@ -156,10 +152,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           path: '/daily-checkin',
           builder: (_, __) => const TingleDailyCheckinScreen()),
       GoRoute(path: '/game-level', builder: (_, __) => const GameLevelScreen()),
-      GoRoute(
-          path: '/store',
-          builder: (_, s) => RoyalStoreScreen(
-              initialBag: s.uri.queryParameters['bag'] == '1')),
+      GoRoute(path: '/store', redirect: (_, __) => Routes.profile),
       GoRoute(
         path: '/social/:kind/:id',
         builder: (_, s) => SocialListScreen(
@@ -193,9 +186,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.recharge,
         builder: (_, __) => const RechargeScreen(),
       ),
-      GoRoute(
-          path: Routes.vip,
-          builder: (_, __) => const TingleMembershipScreen(svip: false)),
+      GoRoute(path: Routes.vip, redirect: (_, __) => Routes.profile),
       GoRoute(
         path: '/profile/:id',
         builder: (_, s) => ProfileScreen(userId: s.pathParameters['id']),

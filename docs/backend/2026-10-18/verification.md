@@ -21,8 +21,10 @@ Validation:
 - Supabase security advisors unchanged:8 no-policy INFO notices,62 existing authenticated SECURITY DEFINER warnings and existing leaked-password-protection warning. New features introduced no new advisor notices. See [advisor guidance](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) and [password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
 
 Remaining product/provider decisions:
-- VIP/SVIP purchase RPCs explicitly reject grants under the prior approved retirement. UI previews do not authorize reversing retirement. Await owner's decision and replacement prices/durations/rewards if reactivated.
-- CP reward claims, referral rewards and new preview-only Store categories lack approved fulfillment/pricing rules. Existing server-catalog Store purchases remain intact; no prices or rewards invented.
+- Owner confirmed VIP, SVIP and Store must stay paused. All taps (including Backpack, task and Honor Wall Store links) show Coming soon without navigation. Direct links, query variants and trailing slash URLs redirect to Profile; paused screens have no router builders. Membership backend remains retired.
+- CP reward claims and referral rewards lack approved fulfillment rules. Store UI is paused; existing server catalog/ownership records remain intact. No prices or rewards invented.
 - Physical microphone/OAuth/purchases/push delivery require provider accounts and device validation. No physical device available in this workspace. Existing device-token registration alone is not evidence of end-to-end push delivery.
 
 No merge, production APK release or updater publication. GitHub Actions test artifact verification is recorded separately after build.
+
+Follow-up paused-feature tests:20 pass, including real Profile taps, authentication precedence and actual router deep-link rejection. Final full-suite rerun and test APK artifact verification pending at this commit.
