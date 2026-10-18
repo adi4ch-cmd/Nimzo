@@ -21,7 +21,7 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
 
   static String kind(String slug) {
     if (slug == 'teen_patti') return 'Cards';
-    if (slug == 'slot' || slug == 'fruit_party_jackpot') return 'Slots';
+    if (slug == 'jackpot' || slug == 'lucky_77') return 'Slots';
     return 'Party';
   }
 
@@ -93,7 +93,7 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
                         color: Colors.white,
                         fontSize: 24, fontWeight: FontWeight.w900)),
                     SizedBox(height: 9),
-                    Text('Seven room game boards',
+                    Text('Seven room game boards · three interactive demos',
                       style: TextStyle(
                         color: Color(0xfff2e6ff), fontSize: 12)),
                   ],
@@ -282,11 +282,7 @@ Future<void> showRoomGamesSheet(
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      game.artwork == 1
-                          ? 'Grady Pro'
-                          : game.artwork == 3
-                              ? 'Slot Jackpots'
-                              : game.title,
+                      game.title,
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 12),
                     ),
