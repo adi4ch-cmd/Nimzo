@@ -99,7 +99,7 @@ const OPTIONS=[
 ];
 const CHIPS=[5000,10000,50000,300000,1000000];
 let chip=10000,bets=Array(OPTIONS.length).fill(0),previous=Array(OPTIONS.length).fill(0),auto=false,spinning=false,round=871,history=[],lastReturn=0,totalWon=0,music=true,toastTimeout,spinTimer,autoTimeout;
-const BET_SECONDS=12, RESULT_MS=2700;
+const BET_SECONDS=20, RESULT_MS=2700;
 let phase='betting',seconds=BET_SECONDS,roundTimer=null;
 const fmt=n=>new Intl.NumberFormat('en-US').format(n);
 const short=n=>n>=1000000?((n/1000000)%1===0?(n/1000000):(n/1000000).toFixed(2))+'M':n>=1000?((n/1000)%1===0?n/1000:(n/1000).toFixed(1))+'K':String(n);
