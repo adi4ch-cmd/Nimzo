@@ -48,17 +48,43 @@ class MessageRepository {
     }
   }
 
-  Stream<List<Message>> watch(String other) =>
-      _db.from('messages').stream(primaryKey: ['id']).order('created_at').map(
-            (rows) => rows
-                .where(
-                  (r) =>
-                      (r['sender_id'] == _me && r['receiver_id'] == other) ||
-                      (r['sender_id'] == other && r['receiver_id'] == _me),
-                )
-                .map(Message.fromJson)
-                .toList(),
-          );
+  String _conversationKey(String other) {
+    final ids = [_me.toLowerCase(), other.toLowerCase()]..sort();
+    return ids.join(':');
+  }
+
+  Stream<List<Message>> watch(String other) async* {
+    yield await recent(other);
+    // Re-fetch after initial subscribe and reconnect to cover messages received
+    // while the subscription was unavailable. All REST reads stay pair-scoped.
+    yield* accountTableActivity(_db, 'messages', ['sender_id', 'receiver_id'],
+            emitInitial: true)
+        .asyncMap((_) => recent(other));
+  }
+
+  Future<List<Message>> recent(String other) async {
+    final rows = await _db
+        .from('messages')
+        .select()
+        .eq('conversation_key', _conversationKey(other))
+        .order('created_at', ascending: false)
+        .order('id', ascending: false)
+        .limit(50);
+    return mergeMessageHistory(const [], rows.map(Message.fromJson));
+  }
+
+  Future<List<Message>> older(String other, {required Message before}) async {
+    final timestamp = before.createdAt.toUtc().toIso8601String();
+    final rows = await _db
+        .from('messages')
+        .select()
+        .eq('conversation_key', _conversationKey(other))
+        .or('created_at.lt.$timestamp,and(created_at.eq.$timestamp,id.lt.${before.id})')
+        .order('created_at', ascending: false)
+        .order('id', ascending: false)
+        .limit(50);
+    return mergeMessageHistory(const [], rows.map(Message.fromJson));
+  }
 
   /// kind: text | emoji | gift | room_invite. Blocked-user checks happen in RLS/RPC.
   Future<void> send(String to, String body, {String kind = 'text'}) async {
@@ -80,6 +106,39 @@ class MessageRepository {
     final ids = [_me, other]..sort();
     return _db.channel('typing:${ids.join(':')}');
   }
+}
+
+/// Live rows win over cached history, including updated read receipts.
+List<Message> mergeMessageHistory(
+    Iterable<Message> history, Iterable<Message> live) {
+  final unique = <String, Message>{for (final m in history) m.id: m};
+  for (final message in live) {
+    unique[message.id] = message;
+  }
+  return unique.values.toList()
+    ..sort((a, b) {
+      final time = a.createdAt.compareTo(b.createdAt);
+      return time == 0 ? a.id.compareTo(b.id) : time;
+    });
+}
+
+/// Retain rows that leave a sliding live window. A disjoint reconnect page
+/// restarts pagination so an unseen middle range never becomes unreachable.
+({List<Message> rows, bool reset}) reconcileMessageWindow(
+    List<Message> cached, List<Message> recent,
+    {required Set<String> previousPageIds}) {
+  final ordered = mergeMessageHistory(const [], recent);
+  if (ordered.isEmpty)
+    return (rows: <Message>[], reset: previousPageIds.isNotEmpty);
+  final reset = previousPageIds.isNotEmpty &&
+      !ordered.any((m) => previousPageIds.contains(m.id));
+  if (reset) return (rows: ordered, reset: true);
+  final first = ordered.first;
+  final retained = cached.where((m) {
+    final time = m.createdAt.compareTo(first.createdAt);
+    return time < 0 || (time == 0 && m.id.compareTo(first.id) < 0);
+  });
+  return (rows: mergeMessageHistory(retained, ordered), reset: false);
 }
 
 final messageRepositoryProvider = Provider(

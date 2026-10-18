@@ -10,6 +10,7 @@ import '../../core/widgets/reference_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/tingle_surface.dart';
 import 'message_repository.dart';
+import '../../core/services/presence_service.dart';
 import '../social/social_repositories.dart';
 import '../social/blocked_users_screen.dart';
 import '../profile/profile_repository.dart';
@@ -188,9 +189,7 @@ class _InboxState extends ConsumerState<MessagesScreen> {
                         ]),
                       );
                     }
-                    return Column(children: [
-                      for (final row in visible) ConversationTile(row: row),
-                    ]);
+                    return _ConversationList(rows: visible);
                   },
                 ),
               ],
@@ -202,9 +201,32 @@ class _InboxState extends ConsumerState<MessagesScreen> {
   }
 }
 
+class _ConversationList extends ConsumerWidget {
+  const _ConversationList({required this.rows});
+  final List<Map<String, dynamic>> rows;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ids = rows
+        .map((r) => r['other_id']?.toString())
+        .whereType<String>()
+        .toSet()
+        .toList()
+      ..sort();
+    final statuses =
+        ref.watch(onlineStatusesProvider(ids.join(','))).valueOrNull ??
+            const <String, bool>{};
+    return Column(children: [
+      for (final row in rows)
+        ConversationTile(
+            row: row, online: statuses[row['other_id']?.toString()])
+    ]);
+  }
+}
+
 class ConversationTile extends ConsumerWidget {
   final Map<String, dynamic> row;
-  const ConversationTile({super.key, required this.row});
+  final bool? online;
+  const ConversationTile({super.key, required this.row, this.online});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = row['other_id']?.toString();
@@ -226,16 +248,34 @@ class ConversationTile extends ConsumerWidget {
       ),
       child: ListTile(
         contentPadding: EdgeInsets.zero,
-        leading: NimzoAvatar(
-          name: name,
-          url: profile?.avatarPath == null
-              ? null
-              : ref
-                  .watch(supabaseProvider)
-                  .storage
-                  .from('avatars')
-                  .getPublicUrl(profile!.avatarPath!),
-        ),
+        leading: Stack(clipBehavior: Clip.none, children: [
+          NimzoAvatar(
+            name: name,
+            url: profile?.avatarPath == null
+                ? null
+                : ref
+                    .watch(supabaseProvider)
+                    .storage
+                    .from('avatars')
+                    .getPublicUrl(profile!.avatarPath!),
+          ),
+          if (online != null)
+            Positioned(
+                right: 0,
+                bottom: 0,
+                child: Semantics(
+                    label: online! ? 'Online' : 'Offline',
+                    child: Container(
+                        width: 11,
+                        height: 11,
+                        decoration: BoxDecoration(
+                            color: online!
+                                ? const Color(0xff24b782)
+                                : const Color(0xff9b93a8),
+                            shape: BoxShape.circle,
+                            border:
+                                Border.all(color: Colors.white, width: 2))))),
+        ]),
         title: Text(name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -278,6 +318,49 @@ class ConversationScreen extends ConsumerStatefulWidget {
 class _State extends ConsumerState<ConversationScreen> {
   final body = TextEditingController();
   bool busy = false, reading = false, blockBusy = false;
+  bool loadingHistory = false, hasMore = true;
+  List<Message> history = [];
+  Set<String> recentIds = {};
+  int historyGeneration = 0;
+
+  @override
+  void didUpdateWidget(covariant ConversationScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.otherId != widget.otherId) {
+      history = [];
+      recentIds = {};
+      historyGeneration++;
+      loadingHistory = false;
+      hasMore = true;
+      body.clear();
+    }
+  }
+
+  Future<void> loadOlder(List<Message> messages) async {
+    if (loadingHistory || !hasMore || messages.isEmpty) return;
+    final otherId = widget.otherId;
+    final generation = historyGeneration;
+    final repository = ref.read(messageRepositoryProvider);
+    setState(() => loadingHistory = true);
+    try {
+      final rows = await repository.older(otherId, before: messages.first);
+      if (mounted &&
+          widget.otherId == otherId &&
+          generation == historyGeneration)
+        setState(() {
+          history = mergeMessageHistory(history, rows);
+          hasMore = rows.length == 50;
+        });
+    } catch (_) {
+      if (mounted && widget.otherId == otherId)
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Earlier messages could not be loaded. Retry.')));
+    } finally {
+      if (mounted && widget.otherId == otherId)
+        setState(() => loadingHistory = false);
+    }
+  }
+
   @override
   void dispose() {
     body.dispose();
@@ -317,6 +400,7 @@ class _State extends ConsumerState<ConversationScreen> {
         await repository.block(widget.otherId);
       }
       container.invalidate(blockedUserIdsProvider);
+      container.invalidate(onlineStatusesProvider(widget.otherId));
     } catch (_) {
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
@@ -332,6 +416,9 @@ class _State extends ConsumerState<ConversationScreen> {
     final me = ref.watch(currentUserIdProvider);
     final other = ref.watch(profileProvider(widget.otherId)).valueOrNull;
     final avatar = other?.avatarPath;
+    final online = ref
+        .watch(onlineStatusesProvider(widget.otherId))
+        .valueOrNull?[widget.otherId];
     ref.listen(chatProvider(widget.otherId), (_, next) {
       final unread =
           next.valueOrNull?.any((m) => m.receiverId == me && !m.read) ?? false;
@@ -387,11 +474,24 @@ class _State extends ConsumerState<ConversationScreen> {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  other?.displayName ?? other?.username ?? 'Conversation',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          other?.displayName ??
+                              other?.username ??
+                              'Conversation',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                      if (online != null)
+                        Text(online ? 'Online' : 'Offline',
+                            style: TextStyle(
+                                fontSize: 11,
+                                color: online
+                                    ? const Color(0xff24b782)
+                                    : NimzoStyle.muted)),
+                    ]),
               ),
             ],
           ),
@@ -404,56 +504,76 @@ class _State extends ConsumerState<ConversationScreen> {
               child: AsyncContent(
                 value: ref.watch(chatProvider(widget.otherId)),
                 onRetry: () => ref.invalidate(chatProvider(widget.otherId)),
-                builder: (messages) => ListView(
-                  reverse: true,
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    for (final m in messages.reversed)
-                      Align(
-                        alignment: m.senderId == me
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 11,
-                            vertical: 7,
-                          ),
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.sizeOf(context).width * .8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: m.senderId == me ? null : NimzoStyle.surface,
-                            gradient:
-                                m.senderId == me ? NimzoStyle.gradient : null,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                m.body ?? '',
-                                style: TextStyle(
-                                  color: m.senderId == me
-                                      ? Colors.white
-                                      : NimzoStyle.ink,
+                builder: (messages) {
+                  final window = reconcileMessageWindow(history, messages,
+                      previousPageIds: recentIds);
+                  history = window.rows;
+                  recentIds = {for (final m in messages) m.id};
+                  if (window.reset) {
+                    historyGeneration++;
+                    hasMore = true;
+                  }
+                  final all = history;
+                  return ListView(
+                    reverse: true,
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      for (final m in all.reversed)
+                        Align(
+                          alignment: m.senderId == me
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 11,
+                              vertical: 7,
+                            ),
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.sizeOf(context).width * .8,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  m.senderId == me ? null : NimzoStyle.surface,
+                              gradient:
+                                  m.senderId == me ? NimzoStyle.gradient : null,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  m.body ?? '',
+                                  style: TextStyle(
+                                    color: m.senderId == me
+                                        ? Colors.white
+                                        : NimzoStyle.ink,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                '${m.createdAt.toLocal().hour}:${m.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: m.senderId == me
-                                      ? Colors.white70
-                                      : NimzoStyle.muted,
+                                Text(
+                                  '${m.createdAt.toLocal().hour}:${m.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: m.senderId == me
+                                        ? Colors.white70
+                                        : NimzoStyle.muted,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                  ],
-                ),
+                      if (all.isNotEmpty && hasMore)
+                        TextButton(
+                            key: const ValueKey('conversation-load-older'),
+                            onPressed:
+                                loadingHistory ? null : () => loadOlder(all),
+                            child: Text(loadingHistory
+                                ? 'Loading…'
+                                : 'Load earlier messages')),
+                    ],
+                  );
+                },
               ),
             ),
             Padding(

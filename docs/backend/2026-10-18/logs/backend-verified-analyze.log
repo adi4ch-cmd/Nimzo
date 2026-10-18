@@ -80,4 +80,4 @@ Analyzing nimzo...
    info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/features/settings/tingle_blocked_users_screen.dart:132:36 • prefer_interpolation_to_compose_strings
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • test/mobile_otp_login_test.dart:24:18 • prefer_const_constructors
 
-37 issues found. (ran in 2.4s)
+37 issues found. (ran in 4.4s)

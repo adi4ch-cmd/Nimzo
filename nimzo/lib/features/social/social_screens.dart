@@ -9,6 +9,7 @@ import '../profile/profile.dart';
 import '../profile/profile_repository.dart';
 import 'follow_button.dart';
 import 'social_repositories.dart';
+import 'cp_relationship_clock.dart';
 
 final socialListProvider =
     FutureProvider.family<List<Profile>, (String, String)>((ref, args) async {
@@ -173,12 +174,13 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
 
   Future<void> run(Future<void> Function() operation) async {
     if (busy) return;
+    final container = ProviderScope.containerOf(context, listen: false);
+    final me = ref.read(currentUserIdProvider);
     setState(() => busy = true);
     try {
       await operation();
-      ref.invalidate(coupleRequestsProvider);
-      final me = ref.read(currentUserIdProvider);
-      if (me != null) ref.invalidate(profileCoupleProvider(me));
+      container.invalidate(coupleRequestsProvider);
+      if (me != null) container.invalidate(profileCoupleProvider(me));
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -314,45 +316,9 @@ class _CPState extends ConsumerState<CoupleRequestsScreen> {
                               letterSpacing: 2.5,
                               fontSize: 24)),
                       const SizedBox(height: 16),
-                      Row(children: [
-                        for (final label in const [
-                          'Days',
-                          'Hours',
-                          'Minutes',
-                          'Seconds',
-                        ])
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 3),
-                              child: Container(
-                                height: 66,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: const Color(0x88340851),
-                                  border: Border.all(
-                                      color: const Color(0xffe380e7),
-                                      width: 1.5),
-                                  borderRadius: BorderRadius.circular(13),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text('—',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 21,
-                                            fontWeight: FontWeight.w900)),
-                                    Text(label,
-                                        style: const TextStyle(
-                                            color: Color(0xffd7a9e3),
-                                            fontSize: 11)),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                      ]),
+                      CpRelationshipClock(
+                          startedAt:
+                              couple?.valueOrNull?['created_at']?.toString()),
                       const SizedBox(height: 27),
                       Container(
                         height: 133,

@@ -26,6 +26,12 @@ class NotificationRepository {
     return await q.order('created_at', ascending: false).limit(100);
   }
 
+  Future<void> markRead(String id) async {
+    final result =
+        await _db.rpc('mark_notification_read', params: {'p_id': id});
+    if (result != true) throw StateError('Notification was not confirmed');
+  }
+
   Future<void> markAllRead() => _db.rpc('mark_notifications_read');
   Future<void> registerDevice(String token) =>
       _db.rpc('register_device', params: {'p_token': token});
@@ -42,3 +48,14 @@ final notificationsProvider =
   ref.watch(notificationActivityProvider);
   return ref.watch(notificationRepositoryProvider).list(c);
 });
+
+String? notificationDestination(Map<String, dynamic> notification) {
+  final event = notification['event_type']?.toString();
+  if (event == 'cp_request' || event == 'cp_accepted') return '/cp';
+  final actor = notification['actor_id']?.toString();
+  if (actor == null || actor.isEmpty) return null;
+  if (const {'follow', 'friend_request', 'friend_accepted'}.contains(event)) {
+    return '/profile/${Uri.encodeComponent(actor)}';
+  }
+  return null;
+}

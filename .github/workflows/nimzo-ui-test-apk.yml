@@ -2,11 +2,6 @@ name: NIMZO Backend Branch Test APK
 # Explicit owner-requested device test only. NOT a signed production release.
 # Owner-requested UI checkpoint APK on 2026-10-18; debug test build, not a production release.
 on:
-  push:
-    branches:
-      - feature/tingle-ui-rebuild-20261017
-    paths:
-      - .github/workflows/nimzo-ui-test-apk.yml
   workflow_dispatch: {}
 
 permissions:

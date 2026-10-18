@@ -6,6 +6,7 @@ import '../core/providers/ui_language_provider.dart';
 import '../core/providers/supabase_provider.dart';
 import '../features/profile/profile_repository.dart';
 import 'router.dart';
+import '../core/services/presence_service.dart';
 
 /// Tingle-reference rebuild entry point.
 ///
@@ -17,6 +18,7 @@ class NimzoApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(presenceLifecycleProvider);
     final id = ref.watch(currentUserIdProvider);
     if (id != null) {
       ref.listen(profileProvider(id), (_, next) {

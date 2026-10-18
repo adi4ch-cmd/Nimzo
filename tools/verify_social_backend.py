@@ -22,7 +22,7 @@ subprocess.run(['docker', 'run', '-d', '--name', container, '-e',
                 'POSTGRES_HOST_AUTH_METHOD=trust', 'postgres:17-alpine'], check=True)
 try:
     for _ in range(80):
-        if subprocess.run(['docker', 'exec', container, 'pg_isready', '-U', 'postgres'],
+        if subprocess.run(['docker', 'exec', container, 'pg_isready', '-h', '127.0.0.1', '-U', 'postgres'],
                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
             break
         time.sleep(.25)
@@ -30,11 +30,21 @@ try:
         raise RuntimeError('Disposable database did not start')
     command = ['docker', 'exec', '-i', container, 'psql', '-X', '-q', '-U', 'postgres', '-v', 'ON_ERROR_STOP=1']
     def run(sql):
-        return subprocess.run(command, input=sql, text=True, check=True, capture_output=True).stdout
+        result = subprocess.run(command, input=sql, text=True, capture_output=True)
+        if result.returncode:
+            raise RuntimeError(result.stderr)
+        return result.stdout
     run(schema_sql(json.loads(args.snapshot.read_text())))
     run((root / 'supabase/tests/fixtures/social_baseline.sql').read_text())
     run((root / 'supabase/migrations/20261018035405_family_and_moment_media.sql').read_text())
     run((root / 'supabase/tests/family_and_moment_media.sql').read_text())
+    run((root / 'supabase/migrations/20261018082326_conversation_history.sql').read_text())
+    run((root / 'supabase/tests/conversation_history.sql').read_text())
+    run((root / 'supabase/migrations/20261018082329_social_notifications.sql').read_text())
+    run((root / 'supabase/tests/social_notifications.sql').read_text())
+    run((root / 'supabase/migrations/20261018082335_account_presence.sql').read_text())
+    run((root / 'supabase/tests/account_presence.sql').read_text())
+    run((root / 'supabase/tests/disabled_rewards.sql').read_text())
     query = """set role authenticated;
     select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000103',false);
     select public.create_family('Concurrent family','','concurrent_family_key');"""
@@ -47,6 +57,6 @@ try:
        or (select count(*) from ledger where user_id='00000000-0000-4000-8000-000000000103' and kind='family_creation')<>1 then
        raise exception 'Concurrent family charge was not exactly once'; end if;
     end$$;""")
-    print('PASS: full schema migration, social authorization, 1M creation, free join, replay and concurrent debit')
+    print('PASS: full schema migrations, social authorization, 1M creation/free join, replay/concurrent debit, media, history, notifications, multi-session presence and disabled rewards')
 finally:
     subprocess.run(['docker', 'rm', '-f', container], check=False, stdout=subprocess.DEVNULL)

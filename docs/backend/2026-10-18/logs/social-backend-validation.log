@@ -1,2 +1,2 @@
-4827e70db6cb4ae3b50e9c476056487e63385af1c0efee7fe6c2cfdf5623dbcb
-PASS: full schema migration, social authorization, 1M creation, free join, replay and concurrent debit
+75784072faa32b61a29e988de00369beadc18e0c68f741cdc1e91a67289185fd
+PASS: full schema migrations, social authorization, 1M creation/free join, replay/concurrent debit, media, history, notifications, multi-session presence and disabled rewards
