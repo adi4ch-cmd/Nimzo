@@ -25,7 +25,7 @@ class HallOfFameVapOverlay extends StatefulWidget {
 }
 
 class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
-  late final VapPlayerController _controller;
+  VapPlayerController? _controller;
   StreamSubscription<dynamic>? _events;
   Timer? _watchdog;
   bool _ready = false;
@@ -39,7 +39,7 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
       scheduleMicrotask(_finish);
       return;
     }
-    _controller = VapPlayerController.networkUrl(
+    final controller = VapPlayerController.networkUrl(
       widget.source,
       options: const VapPlayerOptions(
         viewType: VapViewType.textureView,
@@ -47,7 +47,8 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
         repeatCount: 0,
       ),
     );
-    _events = _controller.events.listen((event) {
+    _controller = controller;
+    _events = controller.events.listen((event) {
       if (event is VapCompletedEvent || event is VapErrorEvent) _finish();
     }, onError: (Object _) => _finish());
     _watchdog = Timer(const Duration(seconds: 22), _finish);
@@ -56,12 +57,14 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
 
   Future<void> _start() async {
     try {
-      await _controller.initialize();
+      final controller = _controller;
+      if (controller == null) return;
+      await controller.initialize();
       if (!mounted || _finished) return;
       setState(() => _ready = true);
       // Use the audio track multiplexed into the approved VAP MP4.
       // A Flutter-only fallback should never expose the packed alpha as video.
-      await _controller.play();
+      await controller.play();
     } catch (_) {
       _finish();
     }
@@ -78,12 +81,8 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
   void dispose() {
     _watchdog?.cancel();
     unawaited(_events?.cancel());
-    if (_ready) {
-      unawaited(_controller.dispose());
-    } else {
-      // initState can exit before constructing the controller for invalid URL.
-      // The source is validated by the server media lookup as well.
-    }
+    final controller = _controller;
+    if (controller != null) unawaited(controller.dispose());
     super.dispose();
   }
 
@@ -102,7 +101,7 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
                     width: (size.width * .92).clamp(0.0, 500.0),
                     height: (size.height * .75).clamp(0.0, 760.0),
                     child: _ready
-                        ? VapPlayer(_controller)
+                        ? VapPlayer(_controller!)
                         : const Center(
                             child: Text('Loading Hall of Fame…',
                               style: TextStyle(color: Colors.white)),
