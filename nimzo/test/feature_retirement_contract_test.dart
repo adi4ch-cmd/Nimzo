@@ -12,7 +12,8 @@ void main() {
     ]) {
       expect(me, isNot(contains(old)), reason: old);
     }
-    expect(me, contains("title: 'Coin Trading'"));
+    expect(me, isNot(contains("title: 'Coin Trading'")));
+    expect(me, contains("title: 'Help'"));
   });
 
   test('Coin screen does not fetch or display financial ledger history', () async {
