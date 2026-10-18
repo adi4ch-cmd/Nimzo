@@ -1,9 +1,9 @@
-name: NIMZO Grady Lion Room Test APK (20s)
+name: NIMZO Grady Lion Top 3 Result Test APK (20s)
 
 on:
   push:
     branches:
-      - feature/grady-lion-html5-room-apk-20261018
+      - feature/grady-lion-result-symbols-20261018
     paths:
       - .github/workflows/nimzo-grady-voice-test-apk.yml
   workflow_dispatch: {}
@@ -250,7 +250,7 @@ jobs:
       - name: Upload installable APK and checksum
         uses: actions/upload-artifact@v4
         with:
-          name: nimzo-grady-lion-20s-lucky77-test-apk
+          name: nimzo-grady-top3-result-20s-test-apk
           path: |
             nimzo/build/app/outputs/flutter-apk/app-debug.apk
             nimzo/build/app/outputs/flutter-apk/app-debug.apk.sha256

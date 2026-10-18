@@ -22,6 +22,20 @@ void main() {
     expect(html, contains("window.NimzoGameBridge.postMessage('minimize')"));
     expect(html, contains("window.NimzoGameBridge.postMessage('expand')"));
     expect(html, isNot(contains('supabase.co')));
+    // The result and history use the same original art as the playing board.
+    expect(html, contains('function boardSymbol(i)'));
+    expect(html, contains(r"getComputedStyle($('board')).backgroundImage"));
+    expect(html, contains(r"$('winnerIcon').innerHTML=boardSymbol(i)"));
+    expect(html, contains('BOARD_ART_CENTERS'));
+    expect(html, contains('background-size:666.67% 666.67%'));
+    expect(html, isNot(contains('<div class="lionface">🦁</div>')));
+    // Reference video: #2 at left, #1 in center, #3 at right.
+    expect(html, contains('This Round Ranking'));
+    expect(html, contains('function renderRoundLeaders()'));
+    expect(html, contains('const ranks=[1,0,2]'));
+    expect(html, contains("img.alt=winner.name+' avatar'"));
+    expect(html, contains('DEMO — sample winners, not real users'));
+    expect(html, contains('setRoundWinnersForPreview'));
     expect(html, isNot(contains('p_bet_amount')));
     expect(html, isNot(contains("spinBtn').onclick")));
   });
