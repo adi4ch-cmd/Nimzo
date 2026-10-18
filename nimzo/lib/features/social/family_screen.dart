@@ -109,6 +109,63 @@ class _FamilyScreenState extends ConsumerState<FamilyScreen> {
     }
   }
 
+  Future<void> _editFamily(NimzoFamily family) async {
+    if (_busyFamily != null) return;
+    final name = TextEditingController(text: family.name);
+    final description = TextEditingController(text: family.description);
+    final data = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit Family'),
+        content: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            TextField(
+              controller: name,
+              maxLength: 40,
+              decoration: const InputDecoration(labelText: 'Family name'),
+            ),
+            TextField(
+              controller: description,
+              maxLength: 500,
+              maxLines: 3,
+              decoration: const InputDecoration(labelText: 'Description'),
+            ),
+          ]),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, {
+              'name': name.text,
+              'description': description.text,
+            }),
+            child: const Text('Save details'),
+          ),
+        ],
+      ),
+    );
+    name.dispose();
+    description.dispose();
+    if (!mounted || data == null) return;
+    setState(() => _busyFamily = family.id);
+    try {
+      await ref.read(nimzoFamilyRepositoryProvider).edit(
+        family,
+        name: data['name'] ?? '',
+        description: data['description'] ?? '',
+      );
+      ref.invalidate(nimzoFamilyDirectoryProvider);
+      _notify('Family details updated.');
+    } catch (error) {
+      _notify('Family could not be updated: $error');
+    } finally {
+      if (mounted) setState(() => _busyFamily = null);
+    }
+  }
+
   Future<void> _changeMembership(NimzoFamily family) async {
     if (_busyFamily != null) return;
     if (family.isMember && family.ownerId ==
@@ -329,18 +386,19 @@ class _FamilyScreenState extends ConsumerState<FamilyScreen> {
                                   ),
                                   const SizedBox(width: 5),
                                   OutlinedButton(
-                                    onPressed: owner ||
-                                            _busyFamily != null ||
+                                    onPressed: _busyFamily != null ||
                                             userId == null
                                         ? null
-                                        : () => _changeMembership(family),
+                                        : owner
+                                            ? () => _editFamily(family)
+                                            : () => _changeMembership(family),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor:
                                           const Color(0xfff0d0a2),
                                       side: const BorderSide(
                                         color: Color(0xffbb8b56)),
                                     ),
-                                    child: Text(owner ? 'Owner'
+                                    child: Text(owner ? 'Edit'
                                         : family.isMember ? 'Leave' : 'Join'),
                                   ),
                                 ]),
