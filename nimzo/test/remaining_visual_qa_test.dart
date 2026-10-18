@@ -357,12 +357,12 @@ void main() {
                 profileCollectionProvider((id, kind)).overrideWith(
                   (_) async => [
                     for (var i = 0;
-                        i < (kind == ProfileCollection.medal ? 5 : 2);
+                        i < (kind == ProfileCollection.frame ? 5 : 2);
                         i++)
                       {
                         'name': 'Owned ${kind.name} ${i + 1}',
                         'image_path':
-                            'assets/reference/${kind == ProfileCollection.medal ? 'med' : kind.name}/$i.jpg',
+                            'assets/reference/${kind == ProfileCollection.frame ? 'med' : kind.name}/$i.jpg',
                       },
                   ],
                 ),
