@@ -284,7 +284,7 @@ Future<void> showRoomGamesSheet(
                     const SizedBox(height: 4),
                     Text(
                       game.artwork == 1
-                          ? 'Grady Pro'
+                          ? 'Grady Lion'
                           : game.artwork == 3
                               ? 'Slot Jackpots'
                               : game.title,

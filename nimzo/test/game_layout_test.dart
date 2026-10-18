@@ -30,7 +30,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
   // Lucky 77 uses a native-platform WebView and has separate HTML contract tests.
-  for (final g in NimzoRoomGames.approved.where((g) => g.slug != 'lucky_77')) {
+  for (final g in NimzoRoomGames.approved.where((g) => g.slug != 'lucky_77' && g.slug != 'grady_lion')) {
     for (final textScale in [1.0, 1.8]) {
       testWidgets(
         '${g.title} stays bounded at text scale $textScale without fake results',

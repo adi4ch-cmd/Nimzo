@@ -46,3 +46,22 @@ boxes, but never both 2x boxes together; chip denominations 5k, 10k, 50k,
 300k, 500k, 1m; repeat and auto-repeat. Current spin probabilities are
 **illustrative only**, not production odds. Visual parity on physical
 Android/iOS devices and secure server-side rules remain separate release gates.
+
+## Grady Lion approved in-room demo (20-second timer)
+
+The owner approved the separate turquoise/red HTML5 Grady Lion UI in
+`assets/games/grady_lion_auto.html`. It is hosted inside the existing voice
+room by `GradyLionRoomWebView` through the restricted bridge, while the real
+room stays mounted. The prior simplified `GradyLionPracticeScreen` remains
+available for isolated tests, but is not the approved in-room presentation.
+
+Each automatic betting countdown is **20 seconds** before the illustrative
+spin begins; then the result display and automatic next round occur. The UI
+offers 5k, 10k, 50k, 300k, 1m chips, up to six distinct betting selections,
+and repeat/autoplay of those selections. No Spin Now interaction is required.
+
+The balance, outcomes, and winnings belong only to the local client demo:
+no production odds, real coins, RPC wagers, authoritative multiplayer round
+or Supabase wallet writes have been implemented for Grady Lion. A successful
+Flutter build or source test does not certify multiplayer economy or device
+visual parity.
