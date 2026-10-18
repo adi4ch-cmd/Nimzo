@@ -1,0 +1,37 @@
+name: NIMZO Grady Result and Ranking QA (No APK)
+
+on:
+  push:
+    branches:
+      - feature/grady-lion-result-symbols-20261018
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  game-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: nimzo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Packages
+        run: flutter pub get
+      - name: Analyzer
+        run: flutter analyze --no-fatal-infos
+      - name: Game and room regression tests
+        run: |
+          flutter test --reporter expanded \
+            test/grady_lion_html_contract_test.dart \
+            test/lucky77_html_contract_test.dart \
+            test/game_catalog_test.dart \
+            test/room_game_host_test.dart
+      # Explicitly no APK built in this source-validation job.
