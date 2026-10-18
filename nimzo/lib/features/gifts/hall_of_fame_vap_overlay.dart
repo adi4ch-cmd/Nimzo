@@ -98,8 +98,8 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
               child: IgnorePointer(
                 child: Center(
                   child: SizedBox(
-                    width: (size.width * .92).clamp(0.0, 500.0),
-                    height: (size.height * .75).clamp(0.0, 760.0),
+                    width: (size.width * .92).clamp(0.0, 500.0).toDouble(),
+                    height: (size.height * .75).clamp(0.0, 760.0).toDouble(),
                     child: _ready
                         ? VapPlayer(_controller!)
                         : const Center(
