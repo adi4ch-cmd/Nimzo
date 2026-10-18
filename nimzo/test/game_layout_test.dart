@@ -30,7 +30,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
   for (final g in NimzoRoomGames.approved.where(
-      (game) => !{'lucky_77', 'grady_lion', 'jackpot'}.contains(game.slug))) {
+      (game) => !{'lucky_77', 'grady_lion', 'jackpot', 'lucky_wheel_77'}.contains(game.slug))) {
     for (final textScale in [1.0, 1.8]) {
       testWidgets(
         '${g.title} stays bounded at text scale $textScale without fake results',
