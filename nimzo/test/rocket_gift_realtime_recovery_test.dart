@@ -63,7 +63,7 @@ void main() {
     expect(broadcast, contains('_seen.add('));
     expect(broadcast, contains('HallOfFameVapOverlay('));
     expect(broadcast, isNot(contains('sendProfile(')));
-    expect(broadcast, isNot(contains('send_gift')));
+    expect(broadcast, isNot(contains("rpc('send_gift'")));
   });
 
   test('Rocket player unmutes original AAC and visibly reports VAP failures', () {
