@@ -38,7 +38,7 @@ Deno.serve(async (req:Request) => {
   const user=await userResult.json();
   const body=await req.json();const giftId=String(body.gift_id??'');
   const directory=REGISTRY[giftId];
-  if(!directory || !['animation','thumbnail','ready'].includes(body.kind)) return json(400,{error:'Unsupported media'});
+  if(!directory || !['animation','thumbnail','ready','qa_animation'].includes(body.kind)) return json(400,{error:'Unsupported media'});
   const profiles=await fetch(`${base}/rest/v1/profiles?id=eq.${user.id}&status=eq.active&select=id`,{headers:admin});
   const profileRows=profiles.ok?await profiles.json():[];
   if(!profileRows.length) return json(403,{error:'Account unavailable'});
@@ -48,6 +48,12 @@ Deno.serve(async (req:Request) => {
     const encoded=object.split('/').map(encodeURIComponent).join('/');
     const metadata=await fetch(`${base}/storage/v1/object/info/${BUCKET}/${encoded}`,{headers:admin});
     return json(200,{ready:metadata.ok});
+  }
+  // QA-only (no charge) VAP playback for the explicitly authorized test account.
+  // Authenticated identity is checked with Supabase Auth, never by client ID.
+  if(body.kind==='qa_animation' &&
+     user.id !== '15e10a70-e8fe-4a1f-afd0-1292ffde3978') {
+    return json(403,{error:'QA playback not authorized'});
   }
   if(body.kind==='animation'){
    const since=encodeURIComponent(new Date(Date.now()-120000).toISOString());
@@ -61,7 +67,7 @@ Deno.serve(async (req:Request) => {
    }
    if(!paid) return json(403,{error:'Recent verified gift required'});
   }
-  const object=`${directory}/${body.kind==='animation'?'video.mp4':'thumbnail.png'}`;
+  const object=`${directory}/${(body.kind==='animation'||body.kind==='qa_animation')?'video.mp4':'thumbnail.png'}`;
   const response=await fetch(`${base}/storage/v1/object/sign/${BUCKET}/${object}`,{method:'POST',headers:{...admin,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:60})});
   if(!response.ok) return json(503,{error:'Gift media unavailable'});
   const signed=await response.json();

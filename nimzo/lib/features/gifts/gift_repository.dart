@@ -109,6 +109,22 @@ class GiftRepository {
     return body is Map && body['ready'] == true;
   }
 
+  /// Authenticated read-only test URL for the designated debug test account.
+  /// The Edge Function enforces the account allowlist server-side; this path
+  /// NEVER invokes send_gift, creates an event, or updates any coin balance.
+  Future<String?> qaGiftAnimationUrl(String giftId) async {
+    if (!privateAnimalVapGiftIds.contains(giftId)) return null;
+    final response = await _db.functions.invoke(
+      'gift-media', body: {'gift_id': giftId, 'kind': 'qa_animation'},
+    );
+    final body = response.data;
+    final url = body is Map ? body['url'] as String? : null;
+    final uri = Uri.tryParse(url ?? '');
+    return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
+        ? url
+        : null;
+  }
+
   Future<String?> privateMediaUrl(String giftId, {required String kind}) async {
     if (!privateAnimalVapGiftIds.contains(giftId)) return null;
     final response = await _db.functions.invoke(
