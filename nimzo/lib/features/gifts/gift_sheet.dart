@@ -8,6 +8,7 @@ import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
+import 'private_premium_gifts.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
 import 'gift_svga_overlay.dart';
@@ -109,6 +110,27 @@ class _State extends ConsumerState<GiftSheet> {
     try {
       final r = ref.read(giftRepositoryProvider), g = gift;
       String? approvedDragonVideo;
+      String? approvedPrivateVideo;
+      if (privatePremiumGiftIds.contains(g.id)) {
+        try {
+          approvedPrivateVideo = await r
+              .approvedAnimationUrl(g.id)
+              .timeout(const Duration(seconds: 8));
+        } catch (_) {
+          // An unsigned or missing original cannot authorize a paid send.
+        }
+        if (approvedPrivateVideo == null) {
+          if (mounted) {
+            setState(() => key = null);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text(
+                'Gift video unavailable. No coins were deducted.',
+              )),
+            );
+          }
+          return;
+        }
+      }
       if (premiumDragonGiftIds.contains(g.id)) {
         // Never debit one or five million coins for a gift whose promised
         // premium animation has not actually been approved and published.
@@ -201,7 +223,7 @@ class _State extends ConsumerState<GiftSheet> {
           quantity: requestQuantity,
           unitPrice: g.price,
           assetPath: g.assetPath,
-          videoUrl: approvedDragonVideo,
+          videoUrl: approvedPrivateVideo ?? approvedDragonVideo,
           recipientName:
               ref.read(profileProvider(receiverId)).valueOrNull?.displayName ??
                   ref.read(profileProvider(receiverId)).valueOrNull?.username,
