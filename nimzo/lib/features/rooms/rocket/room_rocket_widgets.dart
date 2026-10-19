@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
@@ -31,6 +32,54 @@ class RoomRocketSheet extends ConsumerStatefulWidget {
 class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
   int? selectedStage;
   bool showRewards = false;
+
+  Future<void> _previewRocket(int stage) async {
+    // Only compiled in debug builds. This is media QA, not a paid gift,
+    // server milestone, prize or wallet transaction.
+    await showDialog<void>(
+      context: context,
+      useSafeArea: false,
+      barrierColor: Colors.black87,
+      builder: (dialogContext) => Material(
+        type: MaterialType.transparency,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            RoomRocketPlayback(
+              stage: stage,
+              targetCoins: roomRocketTargets[stage],
+              onFinished: () {
+                if (dialogContext.mounted) {
+                  Navigator.of(dialogContext).maybePop();
+                }
+              },
+            ),
+            Positioned(
+              top: 40, left: 16, right: 54,
+              child: SafeArea(
+                child: Text(
+                  'ROCKET ${stage + 1} LOCAL PREVIEW · 0 COINS',
+                  style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 36, right: 12,
+              child: SafeArea(
+                child: IconButton(
+                  tooltip: 'Close Rocket test',
+                  color: Colors.white,
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +197,16 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
                   ],
                 ),
               ),
+              if (kDebugMode)
+                Padding(
+                  padding: const EdgeInsets.only(top: 9),
+                  child: TextButton.icon(
+                    key: const ValueKey('rocket-local-vap-preview'),
+                    onPressed: () => _previewRocket(selection),
+                    icon: const Icon(Icons.play_circle_outline),
+                    label: const Text('Test Rocket Animation (Free)'),
+                  ),
+                ),
               const SizedBox(height: 12),
               if (id == null)
                 const Text('Join a room to view Rocket progress.', style: TextStyle(color: Colors.white70))
