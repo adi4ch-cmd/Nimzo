@@ -1,35 +1,15 @@
 import 'package:flutter/material.dart';
+import 'store_live_catalog.dart';
 import '../../core/widgets/art/nimzo_identity_art.dart';
 
-/// Remaining Store categories are design previews only; the removed medals
-/// are no longer available to buy, equip, see in a Bag, or show on profiles.
+/// Original NIMZO Store and a persistent Backpack.
 class RoyalStoreScreen extends StatelessWidget {
   final bool initialBag;
   const RoyalStoreScreen({super.key, this.initialBag = false});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xffebeaff),
-    appBar: AppBar(
-      centerTitle: true,
-      title: const Text('My Store'),
-      backgroundColor: const Color(0xffb4b7ff),
-      foregroundColor: Colors.white,
-    ),
-    body: ListView(
-      padding: const EdgeInsets.fromLTRB(15, 16, 15, 32),
-      children: const [
-        Text('NIMZO Store',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-        SizedBox(height: 8),
-        Text('Choose a design category. No medal store or paid medal '
-          'purchases are available.',
-          style: TextStyle(color: Color(0xff81748e), fontSize: 12)),
-        SizedBox(height: 18),
-        StoreDesignGallery(),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) =>
+      NimzoLiveStore(initialBag: initialBag);
 }
 
 /// UI-only collection preview for product categories whose server catalog

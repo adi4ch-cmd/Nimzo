@@ -1,6 +1,9 @@
 name: NIMZO Verified Repair Test APK
 
 on:
+  push:
+    branches:
+      - feature/activate-store-from-verified-apk-20261020
   workflow_dispatch:
     inputs:
       publish_verified_run:
@@ -371,3 +374,38 @@ jobs:
           else
             gh release create "$tag" NIMZO_Test.apk SHA256SUMS.txt source-sha.txt app-release.apk.signing.txt app-release.apk.fcm-verification.txt --target "$(cat source-sha.txt)" --prerelease --title "NIMZO Moments and Room Repairs Android Test APK" --notes-file ../docs/superpowers/verified-apk-release-notes.md
           fi
+
+  publish-store-test:
+    name: Publish verified NIMZO Store test APK
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/activate-store-from-verified-apk-20261020' }}
+    needs: android-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: nimzo-repair-test-apk-${{ github.sha }}
+          path: verified-store-apk
+      - name: Verify and publish tested Android APK
+        run: |
+          set -euo pipefail
+          cd verified-store-apk
+          test "$(cat source-sha.txt)" = "$GITHUB_SHA"
+          expected="$(awk '{print $1}' app-release.apk.sha256)"
+          actual="$(sha256sum app-release.apk | awk '{print $1}')"
+          test "$expected" = "$actual"
+          cp app-release.apk NIMZO_Store_Test.apk
+          sha256sum NIMZO_Store_Test.apk > SHA256SUMS.txt
+          tag="nimzo-store-test-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            NIMZO_Store_Test.apk SHA256SUMS.txt source-sha.txt \
+            app-release.apk.signing.txt app-release.apk.fcm-verification.txt \
+            --target "$GITHUB_SHA" --prerelease \
+            --title "NIMZO Store & Backpack Test APK" \
+            --notes "Original NIMZO cosmetic Store: 42 free designs, Store and Backpack enabled, cloud Collect/Equip and profile frame display. No third-party DangLive copyrighted media distributed. APK is a development-signed test, not a production release; payment checkout and other cosmetic renderers remain disabled. Verified Flutter tests, native APK checks and Android emulator smoke test passed in Actions run ${GITHUB_RUN_ID}."

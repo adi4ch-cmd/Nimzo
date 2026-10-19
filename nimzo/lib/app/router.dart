@@ -28,6 +28,7 @@ import '../features/profile/tingle_daily_checkin_screen.dart';
 import '../features/games/game_screen.dart';
 import '../features/games/game_level_screen.dart';
 import '../features/games/games_catalog_screen.dart';
+import '../features/store/store_screen.dart';
 import '../features/rooms/presentation/create_room_screen.dart';
 import '../features/rooms/presentation/room_settings_screen.dart';
 import '../features/home/home_screen.dart';
@@ -152,7 +153,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           path: '/daily-checkin',
           builder: (_, __) => const TingleDailyCheckinScreen()),
       GoRoute(path: '/game-level', builder: (_, __) => const GameLevelScreen()),
-      GoRoute(path: '/store', redirect: (_, __) => Routes.profile),
+      GoRoute(
+        path: '/store',
+        builder: (_, state) => RoyalStoreScreen(
+          initialBag: state.uri.queryParameters['bag'] == '1',
+        ),
+      ),
       GoRoute(
         path: '/social/:kind/:id',
         builder: (_, s) => SocialListScreen(
