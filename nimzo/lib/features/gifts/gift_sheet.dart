@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,6 +15,7 @@ import 'gift_error.dart';
 import 'gift_artwork.dart';
 import 'staged_gift_previews.dart';
 import 'gift_svga_overlay.dart';
+import 'hall_of_fame_vap_overlay.dart';
 import 'gift_celebration_overlay.dart';
 import 'yo2_gift_ui.dart';
 import 'nimzo_gift_control_art.dart';
@@ -73,6 +75,85 @@ class _State extends ConsumerState<GiftSheet> {
   int quantity = 1;
   String activeGiftCategory = 'All';
   String? key;
+  /// No-charge decoder test for the verified owner of test ID 100005.
+  /// The backend independently authorizes each signed QA media URL.
+  /// Never call send_gift, create gift events, or change wallet balances here.
+  Future<void> _testGiftAnimation() async {
+    final gift = selected;
+    if (!kDebugMode || gift == null || busy || confirming) return;
+    final bundled = freeGiftAnimationForId(gift.id);
+    String? mediaUrl;
+    if (bundled == null) {
+      if (!privateAnimalVapGiftIds.contains(gift.id)) return;
+      try {
+        mediaUrl = await ref.read(giftRepositoryProvider)
+            .qaGiftAnimationUrl(gift.id)
+            .timeout(const Duration(seconds: 12));
+      } catch (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Gift test video unavailable; 0 coins charged.'),
+          ));
+        }
+        return;
+      }
+      if (mediaUrl == null) return;
+    }
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      useSafeArea: false,
+      barrierColor: Colors.black87,
+      builder: (dialogContext) => Material(
+        type: MaterialType.transparency,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (bundled != null)
+              FreeGiftSvgaOverlay(
+                source: bundled,
+                giftName: gift.name,
+                sender: 'Test',
+                recipient: 'Test',
+                quantity: 1,
+                onFinished: () {
+                  if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+                },
+              )
+            else
+              HallOfFameVapOverlay(
+                source: mediaUrl!,
+                giftName: gift.name,
+                sender: 'Test',
+                recipient: 'Test',
+                quantity: 1,
+                onFinished: () {
+                  if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+                },
+              ),
+            const Positioned(
+              top: 38,
+              left: 12,
+              child: SafeArea(child: Text(
+                'FREE PLAYBACK TEST · 0 COINS',
+                style: TextStyle(color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              )),
+            ),
+            Positioned(
+              top: 38,
+              right: 12,
+              child: SafeArea(child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: () => Navigator.of(dialogContext).pop(),
+              )),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> send() async {
     if (selected == null || busy || confirming) return;
     final gift = selected!;
@@ -483,6 +564,20 @@ class _State extends ConsumerState<GiftSheet> {
                         ),
                       ),
                   ],
+                ),
+              ),
+            if (kDebugMode &&
+                me == '15e10a70-e8fe-4a1f-afd0-1292ffde3978' &&
+                selected != null &&
+                (privateAnimalVapGiftIds.contains(selected!.id) ||
+                  freeGiftAnimationForId(selected!.id) != null))
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  key: const ValueKey('gift-playback-free-qa'),
+                  onPressed: busy || confirming ? null : _testGiftAnimation,
+                  icon: const Icon(Icons.play_circle_outline, size: 18),
+                  label: const Text('Test Animation (FREE)'),
                 ),
               ),
             Padding(
