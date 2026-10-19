@@ -53,6 +53,7 @@ jobs:
           mkdir -p android/app/src/main/cpp
           mkdir -p android/app/src/main/res/drawable
           cp native/vivox/android/nimzo_launcher.xml android/app/src/main/res/drawable/nimzo_launcher.xml
+          cp assets/brand/nimzo_purple_gold.png android/app/src/main/res/drawable/nimzo_brand_icon.png
           cp native/vivox/android/proguard-rules.pro android/app/proguard-rules.pro
           cp native/vivox/android/NimzoUpdate.java android/app/src/main/java/io/nimzo/app/NimzoUpdate.java
           cp native/vivox/android/MainActivity.java android/app/src/main/java/io/nimzo/app/MainActivity.java
