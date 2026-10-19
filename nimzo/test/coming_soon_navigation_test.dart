@@ -41,12 +41,14 @@ void main() {
     testWidgets('profile $label follows active/retired route policy',
         (tester) async {
       var opened = false;
+      String? bagFromRoute;
       final router = GoRouter(initialLocation: '/profile', routes: [
         GoRoute(path: '/profile', builder: (_, __) => const TingleMeScreen()),
         GoRoute(
           path: '/store',
-          builder: (_, __) {
+          builder: (_, state) {
             opened = true;
+            bagFromRoute = state.uri.queryParameters['bag'];
             return const Scaffold(body: Text('Store opened'));
           },
         ),
@@ -77,13 +79,10 @@ void main() {
         expect(find.text('Store opened'), findsOneWidget);
         expect(find.text('Coming soon'), findsNothing);
         expect(opened, isTrue);
-        expect(router.routeInformationProvider.value.uri.path, '/store');
-        if (label == 'Backpack') {
-          expect(
-            router.routeInformationProvider.value.uri.queryParameters['bag'],
-            '1',
-          );
-        }
+        // A push adds an imperative route on top of /profile; some GoRouter
+        // versions keep the initial path in routeInformationProvider. The
+        // rendered route and captured matched state are authoritative.
+        expect(bagFromRoute, label == 'Backpack' ? '1' : isNull);
       }
     });
   }
