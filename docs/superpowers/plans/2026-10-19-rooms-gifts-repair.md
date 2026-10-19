@@ -9,7 +9,7 @@ Release source: `feature/profile-reference-redesign` at `f1140e5`.
 - [x] Reproduce missing Moment image: legacy object exists in `moment-images`, current renderer only reads `moments`. Retry legacy bucket without changing user content; test both missing objects terminate in a visible error.
 - [x] Repair room gift daily task, which still reads private receipts. Return a caller-scoped UTC-day boolean via authenticated RPC, retaining receipt privacy.
 - [x] Verify application analysis, complete tests, rollback settlement tests and authenticated read contracts. Record pre-existing fixture/golden failures explicitly.
-- [ ] Review and publish repair branch/PR against the release source.
+- [x] Review and publish repair branch/PR against the release source: https://github.com/adi4ch-cmd/Nimzo/pull/31 (draft; visual baselines/device release pending).
 
 Constraints: preserve atomic settlement, idempotency, wallet balances, RLS and private media access. Inactive gifts without playable media are a catalog limitation, not permission to fabricate approved media. No real bets, gifts or purchases during verification: database writes roll back.
 
