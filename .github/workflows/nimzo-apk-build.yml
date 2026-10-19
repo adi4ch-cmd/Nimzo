@@ -1,60 +1,12 @@
-name: Nimzo APK Build
+name: NIMZO Verified APK (nimzo-apk-build)
+
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: nimzo
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: feature/profile-reference-redesign
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "21"
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.47.6"
-          channel: stable
-          cache: true
-      - run: flutter create --platforms=android --org io.nimzo .
-      - name: Configure Nimzo deep link
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-          p = Path("android/app/src/main/AndroidManifest.xml")
-          s = p.read_text()
-          meta = '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />'
-          deep_link = '''<intent-filter>
-              <action android:name="android.intent.action.VIEW" />
-              <category android:name="android.intent.category.DEFAULT" />
-              <category android:name="android.intent.category.BROWSABLE" />
-              <data android:scheme="io.nimzo.app" android:host="login-callback" />
-            </intent-filter>'''
-          main = re.search(r'(<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>)(.*?)(</activity>)', s, re.DOTALL)
-          if not main:
-              raise SystemExit("MainActivity block not found")
-          opening, body, closing = main.groups()
-          opening = re.sub(r'\sandroid:exported="[^"]*"', '', opening)
-          opening = re.sub(r'\sandroid:launchMode="[^"]*"', '', opening)
-          opening = opening[:-1] + ' android:exported="true" android:launchMode="singleTask">'
-          body = re.sub(r'\s*<meta-data\s+android:name="flutter_deeplinking_enabled"\s+android:value="[^"]*"\s*/>', '', body)
-          if 'android:scheme="io.nimzo.app"' not in body:
-              body += "\n            " + meta + "\n            " + deep_link + "\n        "
-          else:
-              body = "\n            " + meta + "\n            " + deep_link + "\n        "
-          s = s[:main.start()] + opening + body + closing + s[main.end():]
-          p.write_text(s)
-          PY
-      - run: rm -f test/widget_test.dart
-      - run: flutter pub get
-      - run: flutter analyze lib --no-fatal-infos --no-fatal-warnings
-      - run: flutter build apk --release --dart-define=SUPABASE_URL=https://kvqvlpozqokwarovwmwv.supabase.co
-      - uses: actions/upload-artifact@v4
-        with:
-          name: nimzo-pro-polish-release
-          path: nimzo/build/app/outputs/flutter-apk/app-release.apk
+  verified-apk:
+    uses: ./.github/workflows/android-apk.yml
+    secrets: inherit
