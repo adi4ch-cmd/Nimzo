@@ -41,6 +41,7 @@ flutter:
     - assets/gifts/hall_of_fame.svg
     - assets/gifts/libra.svg
     - assets/gifts/aries.svg
+    - assets/gifts/staged/
     - assets/gifts/free/
     - assets/reference/game/
     - assets/reference/fruit/
