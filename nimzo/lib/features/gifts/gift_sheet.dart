@@ -542,13 +542,20 @@ class _State extends ConsumerState<GiftSheet> {
       child: InkWell(
         key: ValueKey('gift-preview-${gift.name.toLowerCase().replaceAll(' ', '-')}'),
         borderRadius: BorderRadius.circular(15),
-        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${gift.name} is a preview. The original transparent video is not approved. No coins charged.',
-            ),
-          ),
-        ),
+        onTap: busy || confirming || key != null
+            ? null
+            : () {
+                // Prevent a previously selected paid gift remaining selected
+                // after the user taps a preview-only item.
+                setState(() => selected = null);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${gift.name} is a preview. The original transparent video is not approved. No coins charged.',
+                    ),
+                  ),
+                );
+              },
         child: DecoratedBox(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
