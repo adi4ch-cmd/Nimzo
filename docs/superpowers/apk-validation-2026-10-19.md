@@ -36,4 +36,6 @@ The decoded-photo preview test also checks the actual MomentCard: author/title a
 
 This confirms startup on an emulator. Physical-device voice calls, authenticated media playback and store purchases have not been tested.
 
-Downloaded APK independently verified: 194,133,362 bytes; SHA-256 `b1974b7908f7afc6673fc01b403fb727af6bc7b17b43a50d9df7f23891c471c6`. All three Vivox ELF ABI pairs and 12 Rocket clips are present. [Test APK release](https://github.com/adi4ch-cmd/Nimzo/releases/tag/nimzo-repair-test-39309708246) includes the installer, checksum, verification JSON and screenshots.
+Downloaded APK independently verified: 194,133,362 bytes; SHA-256 `b1974b7908f7afc6673fc01b403fb727af6bc7b17b43a50d9df7f23891c471c6`. All three Vivox ELF ABI pairs and 12 Rocket clips are present. [Test APK release](https://github.com/adi4ch-cmd/Nimzo/releases/tag/nimzo-repair-test-39309708246) includes the installer, checksum, exact source SHA, signing details and Firebase verification evidence. Local verification JSON and inspected screenshots are retained in the delivery workspace.
+
+Publication [run 39312226808](https://github.com/adi4ch-cmd/Nimzo/actions/runs/39312226808) succeeded after creating the release separately from attachment upload. GitHub reports asset `NIMZO_Test.apk`, 194,133,362 bytes, with the same SHA-256 digest as the independently verified APK. [Direct APK download](https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-repair-test-39309708246/NIMZO_Test.apk). APK bytes and source remained unchanged during publication.
