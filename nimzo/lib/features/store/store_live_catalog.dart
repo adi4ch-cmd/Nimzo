@@ -64,10 +64,22 @@ final nimzoStoreProvider = FutureProvider.autoDispose<NimzoStoreSnapshot>(
         .select('category,item_id')
         .eq('user_id', id);
 
+    // Interleave different product types in the All tab instead of showing
+    // seven nearly identical badges in a row (the v1.0.31 screenshot issue).
+    final items = (catalog as List)
+        .map((e) => NimzoCosmeticItem.fromJson(e as Map<String, dynamic>))
+        .toList();
+    const order = <String>[
+      'Avatar Frame', 'Rides', 'Party Theme',
+      'Chat Bubble', 'Live Frame', 'Royal Badge',
+    ];
+    items.sort((a, b) {
+      final byVariant = a.variant.compareTo(b.variant);
+      if (byVariant != 0) return byVariant;
+      return order.indexOf(a.category).compareTo(order.indexOf(b.category));
+    });
     return NimzoStoreSnapshot(
-      items: (catalog as List)
-          .map((e) => NimzoCosmeticItem.fromJson(e as Map<String, dynamic>))
-          .toList(growable: false),
+      items: items,
       owned: (ownership as List)
           .map((e) => (e as Map<String, dynamic>)['item_id'] as String)
           .toSet(),
@@ -291,7 +303,9 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
           ),
         ],
       ),
-      body: Column(children: [
+      body: SafeArea(
+        top: false,
+        child: Column(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(15, 12, 15, 8),
           child: Row(children: [
@@ -385,7 +399,7 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                     : constraints.maxWidth >= 460 ? 3 : 2;
                 return GridView.builder(
                   key: ValueKey(bag ? 'store-backpack-grid' : 'store-catalog-grid'),
-                  padding: const EdgeInsets.fromLTRB(15, 6, 15, 28),
+                  padding: const EdgeInsets.fromLTRB(15, 6, 15, 60),
                   itemCount: filtered.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: cols,
@@ -400,6 +414,7 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
           ),
         ),
       ]),
+      ),
     );
   }
 
