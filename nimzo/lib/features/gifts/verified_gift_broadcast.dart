@@ -38,6 +38,42 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   bool _foreground = true;
   Timer? _mediaTimer;
   Completer<String?>? _mediaWait;
+  Timer? _recoveryTimer;
+  bool _recovering = false;
+  int _recoveryGeneration = 0;
+  late DateTime _listeningSince;
+
+  void _startRecovery() {
+    _recoveryTimer?.cancel();
+    _recoveryGeneration++;
+    _listeningSince = DateTime.now().toUtc();
+    _recoveryTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      unawaited(_recoverRoomEvents());
+    });
+    unawaited(_recoverRoomEvents());
+  }
+
+  Future<void> _recoverRoomEvents() async {
+    if (!mounted || !_foreground || _recovering) return;
+    _recovering = true;
+    final generation = _recoveryGeneration;
+    final room = widget.roomId;
+    try {
+      final rows = await ref.read(giftRepositoryProvider)
+          .recentVerifiedRoomAnimations(
+            room,
+            since: _listeningSince.subtract(const Duration(seconds: 2)),
+          );
+      if (!mounted || !_foreground || widget.roomId != room ||
+          generation != _recoveryGeneration) return;
+      _receive(rows);
+    } catch (_) {
+      // RLS/network failures retry without re-sending or charging for gifts.
+    } finally {
+      _recovering = false;
+    }
+  }
+
 
   void _cancelMediaLookup() {
     _mediaTimer?.cancel();
@@ -83,11 +119,15 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _startRecovery();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _foreground = state == AppLifecycleState.resumed;
+    if (_foreground) {
+      _listeningSince = DateTime.now().toUtc();
+    }
     if (!_foreground) {
       _timer?.cancel();
       _cancelMediaLookup();
@@ -117,6 +157,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       _participants = const {};
       _video = null;
       _loading = false;
+      _startRecovery();
     }
   }
 
@@ -124,28 +165,33 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   void dispose() {
     _timer?.cancel();
     _cancelMediaLookup();
+    _recoveryTimer?.cancel();
+    _recoveryGeneration++;
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   void _receive(List<Map<String, dynamic>> rows) {
-    if (!_primed) {
-      _seen.addAll(rows.map((r) => '${r['id']}'));
-      _primed = true;
-      return;
-    }
+    // Ignore history from before joining this room, but do not discard
+    // a real gift that settles during initial Realtime subscription.
+    _primed = true;
     final fresh =
         rows
             .where(
-              (r) =>
-                  (r['gift_id']?.toString() ==
+              (r) {
+                final date = DateTime.tryParse('${r['created_at'] ?? ''}');
+                if (date == null || date.toUtc().isBefore(_listeningSince)) {
+                  return false;
+                }
+                return (r['gift_id']?.toString() ==
                           '35e4c570-cb02-4466-ae86-d670b3fb05ab' ||
                       r['gift_id']?.toString() == hallOfFameGiftId ||
                       zodiacVapGiftIds.contains(r['gift_id']?.toString()) ||
                       privateAnimalVapGiftIds.contains(
                         r['gift_id']?.toString(),
                       )) &&
-                  _seen.add('${r['id']}'),
+                    _seen.add('${r['id']}');
+              },
             )
             .toList()
           ..sort(
