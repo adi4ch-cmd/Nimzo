@@ -44,7 +44,7 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
       uri,
       options: const VapPlayerOptions(
         viewType: VapViewType.textureView,
-        scaleType: VapScaleType.fitCenter,
+        scaleType: VapScaleType.centerCrop,
         repeatCount: 0,
       ),
     );
@@ -89,55 +89,64 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
+    // The host already inserts this widget as a full-room Positioned.fill.
+    // Rendering in a nested 92% x 75% box used to shrink the actual gift into
+    // the centre of the screen. Keep the texture edge-to-edge; centerCrop
+    // preserves the gift's aspect ratio while filling the viewport.
     return Material(
       type: MaterialType.transparency,
-      child: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: IgnorePointer(
-                child: Center(
-                  child: SizedBox(
-                    width: (size.width * .92).clamp(0.0, 500.0).toDouble(),
-                    height: (size.height * .75).clamp(0.0, 760.0).toDouble(),
-                    child: _ready
-                        ? VapPlayer(_controller!)
-                        : const Center(
-                            child: Text('Loading gift animation…',
-                              style: TextStyle(color: Colors.white)),
-                          ),
-                  ),
-                ),
-              ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: _ready
+                  ? SizedBox.expand(child: VapPlayer(_controller!))
+                  : const Center(
+                      child: Text(
+                        'Loading gift animation…',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
             ),
-            Positioned(
-              top: 8,
-              right: 10,
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: SafeArea(
               child: IconButton(
                 tooltip: 'Close gift animation',
                 onPressed: _finish,
                 icon: const Icon(Icons.close, color: Colors.white),
               ),
             ),
-            Positioned(
-              bottom: 16,
-              left: 20,
-              right: 20,
+          ),
+          Positioned(
+            bottom: 4,
+            left: 12,
+            right: 12,
+            child: SafeArea(
+              top: false,
               child: IgnorePointer(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: const Color(0xee20182a),
-                    borderRadius: BorderRadius.circular(16),
+                    color: const Color(0xbb20182a),
+                    borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: const Color(0xffe5bb64)),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     child: Text(
                       '${widget.sender} sent ${widget.giftName} × ${widget.quantity} to ${widget.recipient}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Color(0xffffe7ad),
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -145,8 +154,8 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
