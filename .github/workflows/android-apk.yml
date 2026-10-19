@@ -1,13 +1,20 @@
 name: NIMZO Verified Repair Test APK
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      publish_verified_run:
+        description: 'Publish artifacts from an already successful test APK run; leave blank to build'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
 
 jobs:
   android-test:
+    if: ${{ inputs.publish_verified_run == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 100
     steps:
@@ -308,3 +315,47 @@ jobs:
           path: android-launch-diagnostics/
           if-no-files-found: warn
           retention-days: 14
+
+  publish-verified:
+    if: ${{ inputs.publish_verified_run != '' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      VERIFIED_RUN: ${{ inputs.publish_verified_run }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate completed source run
+        run: |
+          set -euo pipefail
+          [[ "$VERIFIED_RUN" =~ ^[0-9]+$ ]]
+          gh api "repos/$GH_REPO/actions/runs/$VERIFIED_RUN" > /tmp/verified-run.json
+          python3 - <<'PYCODE'
+          import json
+          from pathlib import Path
+          run = json.loads(Path('/tmp/verified-run.json').read_text())
+          assert run['conclusion'] == 'success', 'Source APK workflow must have passed'
+          assert run['path'] == '.github/workflows/android-apk.yml', 'Unexpected source workflow'
+          assert run['event'] == 'workflow_dispatch', 'Unexpected source event'
+          Path('/tmp/verified-source.txt').write_text(run['head_sha'])
+          PYCODE
+      - name: Download verified APK
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.publish_verified_run }}
+          pattern: nimzo-repair-test-apk-*
+          merge-multiple: true
+          path: verified-apk
+      - name: Publish original tested bytes
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          test "$(cat source-sha.txt)" = "$(cat /tmp/verified-source.txt)"
+          sha256sum --check app-release.apk.sha256
+          cp app-release.apk NIMZO_Test.apk
+          sha256sum NIMZO_Test.apk > SHA256SUMS.txt
+          gh release create "nimzo-repair-test-$VERIFIED_RUN" NIMZO_Test.apk SHA256SUMS.txt source-sha.txt app-release.apk.signing.txt app-release.apk.fcm-verification.txt --target "$(cat source-sha.txt)" --prerelease --title "NIMZO Moments and Room Repairs Android Test APK" --notes-file ../docs/superpowers/verified-apk-release-notes.md
