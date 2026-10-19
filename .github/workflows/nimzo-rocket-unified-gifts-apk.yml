@@ -3,7 +3,7 @@ name: NIMZO Audited Gifts and Rocket APK (test)
 on:
   push:
     branches:
-      - feature/rocket-unified-gifts-apk-20261019
+      - feature/fullscreen-gifts-room-20261019
     paths:
       - .github/workflows/nimzo-rocket-unified-gifts-apk.yml
   pull_request:
@@ -240,7 +240,7 @@ jobs:
         run: flutter analyze --no-fatal-infos
       - name: Verify gift rendering and Rocket VAP packaging
         working-directory: nimzo
-        run: flutter test --reporter expanded test/rocket_unified_gifts_contract_test.dart
+        run: flutter test --reporter expanded test/rocket_unified_gifts_contract_test.dart test/fullscreen_vap_gifts_contract_test.dart
       - name: Verify private gateway access
         uses: actions/setup-node@v4
         with:
@@ -276,7 +276,7 @@ jobs:
       - name: Upload installable APK and checksum
         uses: actions/upload-artifact@v4
         with:
-          name: nimzo-rocket-unified-gifts-debug-apk
+          name: nimzo-fullscreen-gifts-debug-apk
           path: |
             nimzo/build/app/outputs/flutter-apk/app-debug.apk
             nimzo/build/app/outputs/flutter-apk/app-debug.apk.sha256
