@@ -6,7 +6,7 @@ on:
       - feature/fullscreen-gifts-room-20261019
   pull_request:
     branches:
-      - feature/locked-games-three-gifts-20261018
+      - feature/rocket-unified-gifts-apk-20261019
   workflow_dispatch: {}
 
 permissions:
