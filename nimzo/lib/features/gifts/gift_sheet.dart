@@ -9,6 +9,7 @@ import '../profile/profile_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
 import 'private_animal_gifts.dart';
+import 'pending_gift_gallery.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
 import 'gift_svga_overlay.dart';
@@ -425,7 +426,11 @@ class _State extends ConsumerState<GiftSheet> {
                               ),
                             ),
                           ),
-                          const SliverToBoxAdapter(
+                          if (activeGiftCategory != 'Cars')
+                             const SliverToBoxAdapter(
+                               child: PendingGiftGallery(),
+                             ),
+                           const SliverToBoxAdapter(
                             child: Padding(
                               padding: EdgeInsets.all(16),
                               child: Text(
