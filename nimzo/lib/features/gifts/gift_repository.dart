@@ -100,6 +100,16 @@ class GiftRepository {
         : null;
   }
 
+  Future<bool> privateMediaReady(String giftId) async {
+    if (!privatePremiumGiftIds.contains(giftId)) return false;
+    final response = await _db.functions.invoke(
+      'gift-media',
+      body: {'gift_id': giftId, 'kind': 'ready'},
+    );
+    final body = response.data;
+    return body is Map && body['ready'] == true;
+  }
+
   Future<String?> privateMediaUrl(String giftId, {required String kind}) async {
     if (!privatePremiumGiftIds.contains(giftId) ||
         (kind != 'thumbnail' && kind != 'animation')) return null;
