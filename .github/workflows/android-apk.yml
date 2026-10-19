@@ -355,7 +355,14 @@ jobs:
           set -euo pipefail
           cd verified-apk
           test "$(cat source-sha.txt)" = "$(cat /tmp/verified-source.txt)"
-          sha256sum --check app-release.apk.sha256
+          python3 - <<'PYCODE'
+          import hashlib
+          from pathlib import Path
+          expected = Path('app-release.apk.sha256').read_text().split()[0]
+          with Path('app-release.apk').open('rb') as apk:
+              actual = hashlib.file_digest(apk, 'sha256').hexdigest()
+          assert actual == expected, 'Downloaded APK checksum mismatch'
+          PYCODE
           cp app-release.apk NIMZO_Test.apk
           sha256sum NIMZO_Test.apk > SHA256SUMS.txt
           gh release create "nimzo-repair-test-$VERIFIED_RUN" NIMZO_Test.apk SHA256SUMS.txt source-sha.txt app-release.apk.signing.txt app-release.apk.fcm-verification.txt --target "$(cat source-sha.txt)" --prerelease --title "NIMZO Moments and Room Repairs Android Test APK" --notes-file ../docs/superpowers/verified-apk-release-notes.md
