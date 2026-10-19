@@ -40,7 +40,7 @@ void main() {
     expect(host, contains('.recentBlasts('));
     expect(host, contains("kDebugMode"));
     expect(host, contains("rocket-local-vap-preview"));
-    expect(host, contains('ROCKET ${stage + 1} LOCAL PREVIEW'));
+    expect(host, contains(r'ROCKET ${stage + 1} LOCAL PREVIEW'));
     expect(host, contains('targetCoins: roomRocketTargets[stage]'));
     expect(host, isNot(contains('await r.send(')));
 
