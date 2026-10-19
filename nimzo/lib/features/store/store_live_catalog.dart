@@ -179,8 +179,20 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
     final busy = pending == item.id;
     final accent = colors[item.variant % colors.length];
 
-    return Container(
-      key: ValueKey('nimzo-store-item-${item.id}'),
+    return InkWell(
+      key: ValueKey('nimzo-store-preview-${item.id}'),
+      borderRadius: BorderRadius.circular(17),
+      onTap: () => Navigator.of(context).push<void>(
+        MaterialPageRoute(
+          builder: (_) => NimzoStoreFullPreview(
+            item: item,
+            owned: isOwned,
+            equipped: equipped,
+          ),
+        ),
+      ),
+      child: Container(
+        key: ValueKey('nimzo-store-item-${item.id}'),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(17),
@@ -256,6 +268,7 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -416,4 +429,151 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
       ),
     ),
   );
+}
+
+
+/// Full-screen, zoomable, replayable preview of the actual original NIMZO
+/// vector item. This is a preview, NOT a purchase or ownership grant.
+/// No third-party APK media is loaded or distributed by this screen.
+class NimzoStoreFullPreview extends StatefulWidget {
+  const NimzoStoreFullPreview({
+    super.key,
+    required this.item,
+    required this.owned,
+    required this.equipped,
+  });
+
+  final NimzoCosmeticItem item;
+  final bool owned;
+  final bool equipped;
+
+  @override
+  State<NimzoStoreFullPreview> createState() => _NimzoStoreFullPreviewState();
+}
+
+class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1800),
+  )..forward();
+
+  NimzoArt get art => switch (widget.item.category) {
+        'Avatar Frame' => NimzoArt.frame,
+        'Party Theme' => NimzoArt.theme,
+        'Rides' => NimzoArt.entrance,
+        'Chat Bubble' => NimzoArt.bubble,
+        'Live Frame' => NimzoArt.live,
+        'Royal Badge' => NimzoArt.crest,
+        _ => NimzoArt.reward,
+      };
+
+  static const accents = <Color>[
+    Color(0xffefbf65),
+    Color(0xfff48cad),
+    Color(0xffe9a08e),
+    Color(0xffa395ed),
+    Color(0xff55c6ab),
+    Color(0xff79b8e8),
+    Color(0xffd4a467),
+  ];
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final item = widget.item;
+    final color = accents[item.variant % accents.length];
+    final canvas = (MediaQuery.sizeOf(context).width * .84)
+        .clamp(180.0, 390.0)
+        .toDouble();
+    return Scaffold(
+      key: const ValueKey('nimzo-store-full-preview'),
+      backgroundColor: const Color(0xfff7f9f7),
+      appBar: AppBar(
+        title: Text(item.name),
+        centerTitle: true,
+        foregroundColor: const Color(0xff153d32),
+        backgroundColor: Colors.white,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: InteractiveViewer(
+                  minScale: .7,
+                  maxScale: 3,
+                  child: AnimatedBuilder(
+                    animation: controller,
+                    builder: (_, __) => NimzoIdentityArt(
+                      kind: art,
+                      variant: item.variant,
+                      color: color,
+                      size: canvas,
+                      progress: MediaQuery.disableAnimationsOf(context)
+                          ? 1
+                          : controller.value,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+              child: Column(
+                children: [
+                  Text(item.name,
+                    style: const TextStyle(fontWeight: FontWeight.w800,
+                      fontSize: 22)),
+                  const SizedBox(height: 5),
+                  Text(item.category,
+                    style: const TextStyle(color: Color(0xff64766a))),
+                  const SizedBox(height: 12),
+                  Text(
+                    widget.equipped
+                        ? 'Equipped'
+                        : widget.owned
+                            ? 'In your Backpack'
+                            : 'Preview only — not yet owned',
+                    key: const ValueKey('nimzo-preview-ownership-status'),
+                    style: const TextStyle(color: Color(0xff587666)),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      key: const ValueKey('nimzo-preview-replay'),
+                      onPressed: () {
+                        if (MediaQuery.disableAnimationsOf(context)) {
+                          controller.value = 1;
+                        } else {
+                          controller.forward(from: 0);
+                        }
+                      },
+                      icon: const Icon(Icons.replay_rounded),
+                      label: const Text('Replay full preview'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xff078e69)),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Original NIMZO design. Preview does not charge coins.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 11,
+                      color: Color(0xff64766a)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
