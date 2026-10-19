@@ -63,7 +63,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _watchdog = Timer(const Duration(seconds: 16), _finish);
+    _watchdog = Timer(const Duration(seconds: 16), _playbackFailed);
     unawaited(_start());
   }
 
@@ -75,20 +75,12 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
       final fly = rocketFlyPath(widget.stage);
       if (!manifest.listAssets().contains(reward) ||
           !manifest.listAssets().contains(fly)) {
-        if (mounted) {
-          setState(() => _unavailable = true);
-          _watchdog?.cancel();
-          _watchdog = Timer(const Duration(milliseconds: 900), _finish);
-        }
+        _playbackFailed();
         return;
       }
       await _playSegment(fly);
     } catch (_) {
-      if (mounted) {
-        setState(() => _unavailable = true);
-        _watchdog?.cancel();
-        _watchdog = Timer(const Duration(milliseconds: 900), _finish);
-      }
+      _playbackFailed();
     }
   }
 
