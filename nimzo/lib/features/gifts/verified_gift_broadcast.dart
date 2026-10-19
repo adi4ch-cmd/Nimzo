@@ -29,7 +29,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     with WidgetsBindingObserver {
   final Set<String> _seen = {};
   final List<Map<String, dynamic>> _pending = [];
-  bool _primed = false;
   Map<String, dynamic>? _active;
   Map<String, String> _participants = const {};
   Timer? _timer;
@@ -152,7 +151,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       _cancelMediaLookup();
       _seen.clear();
       _pending.clear();
-      _primed = false;
       _active = null;
       _participants = const {};
       _video = null;
@@ -174,7 +172,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   void _receive(List<Map<String, dynamic>> rows) {
     // Ignore history from before joining this room, but do not discard
     // a real gift that settles during initial Realtime subscription.
-    _primed = true;
     final fresh =
         rows
             .where(
