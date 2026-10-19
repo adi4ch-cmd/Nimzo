@@ -43,6 +43,8 @@ void main() {
         .readAsStringSync();
     expect(broadcast, contains('HallOfFameVapOverlay('));
     expect(broadcast, contains('privatePremiumGiftIds.contains('));
-    expect(broadcast, contains('VapPlayer'));
+    final vap = File('lib/features/gifts/hall_of_fame_vap_overlay.dart')
+        .readAsStringSync();
+    expect(vap, contains('VapPlayer('));
   });
 }
