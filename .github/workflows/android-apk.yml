@@ -1,6 +1,9 @@
 name: NIMZO Verified Repair Test APK
 
 on:
+  push:
+    branches:
+      - feature/activate-store-from-verified-apk-20261020
   workflow_dispatch:
     inputs:
       publish_verified_run:
