@@ -369,7 +369,7 @@ jobs:
           sha256sum NIMZO_Test.apk NIMZO_Test.zip > SHA256SUMS.txt
           tag="nimzo-repair-test-$VERIFIED_RUN"
           if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" NIMZO_Test.apk NIMZO_Test.zip SHA256SUMS.txt source-sha.txt app-release.apk.signing.txt app-release.apk.fcm-verification.txt --clobber
+            gh release upload "$tag" NIMZO_Test.zip SHA256SUMS.txt --clobber
           else
             gh release create "$tag" NIMZO_Test.apk NIMZO_Test.zip SHA256SUMS.txt source-sha.txt app-release.apk.signing.txt app-release.apk.fcm-verification.txt --target "$(cat source-sha.txt)" --prerelease --title "NIMZO Moments and Room Repairs Android Test APK" --notes-file ../docs/superpowers/verified-apk-release-notes.md
           fi
