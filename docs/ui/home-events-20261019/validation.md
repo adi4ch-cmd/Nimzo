@@ -17,7 +17,7 @@ The full test suite is not green. Its run reported 356 passes and 15 failures. T
 - master_visual_preview_test.dart: room overlay golden mismatch.
 - issue15_room_walkthrough_test.dart: room sheet checks at 320, 360 and 390.
 - tingle_video_ui_test.dart: obsolete ranking tab checks at 320, 360 and 390.
-- remaining_visual_qa_test.dart: existing room gift visual expectation.
+- remaining_visual_qa_test.dart: existing games catalog golden mismatch.
 - room_user_sheet_test.dart: gift-sheet opening, member actions, and own-seat gift expectations.
 
 No APK was built or released for this UI change.
