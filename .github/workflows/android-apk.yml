@@ -284,7 +284,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          VERSION=nimzo-audited-gifts-test-20261019
+          VERSION="nimzo-test-${GITHUB_RUN_ID}"
           mkdir -p /tmp/nimzo-rocket-gifts
           cp nimzo/build/app/outputs/flutter-apk/app-debug.apk /tmp/nimzo-rocket-gifts/NIMZO_Audited_Gifts_Test.apk
           cp nimzo/build/app/outputs/flutter-apk/app-debug.apk.sha256 /tmp/nimzo-rocket-gifts/SHA256SUMS.txt
@@ -292,7 +292,7 @@ jobs:
             gh release upload "$VERSION" /tmp/nimzo-rocket-gifts/NIMZO_Audited_Gifts_Test.apk --clobber
           else
             gh release create "$VERSION" /tmp/nimzo-rocket-gifts/NIMZO_Audited_Gifts_Test.apk /tmp/nimzo-rocket-gifts/SHA256SUMS.txt \
-              --target "$GITHUB_SHA" --title "NIMZO Audited Gifts + Rocket Android Test APK" \
+              --target "$(git rev-parse HEAD)" --title "NIMZO Audited Gifts + Rocket Android Test APK" \
               --notes "Test-only Android build with unified real gift catalog, private 4-gift thumbnails and transparency-capable Rocket 1-6 video effects. Existing server coin price and active status unchanged. Rocket triggers at verified cumulative thresholds, not every gift; not a final release." \
               --prerelease
           fi
