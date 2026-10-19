@@ -35,7 +35,7 @@ class CarGiftRepository extends GiftRepository {
   }
 }
 
-Map<String, dynamic> event(String id, String giftId) => {
+Map<String, dynamic> event(String id, String giftId, {bool history = false}) => {
   'id': id,
   'gift_id': giftId,
   'sender_id': '11111111-1111-4111-8111-111111111111',
@@ -43,7 +43,9 @@ Map<String, dynamic> event(String id, String giftId) => {
   'unit_price': 100000,
   'quantity': 3,
   'scope': 'room',
-  'created_at': '2026-10-18T01:00:00Z',
+  'created_at': history
+      ? '2026-10-18T01:00:00Z'
+      : DateTime.now().toUtc().toIso8601String(),
 };
 
 void main() {
@@ -83,7 +85,7 @@ void main() {
           verifiedGiftAnimationProvider((roomId: 'room', countryCode: 'PK'))
               .overrideWith((_) async* {
                 // Initial history should never replay after room entry.
-                yield [event('history', sportsCarId)];
+                yield [event('history', sportsCarId, history: true)];
                 yield* events.stream;
               }),
         ],
