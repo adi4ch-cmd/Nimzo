@@ -113,9 +113,10 @@ class _State extends ConsumerState<GiftSheet> {
       String? approvedPrivateVideo;
       if (privatePremiumGiftIds.contains(g.id)) {
         try {
-          approvedPrivateVideo = await r
-              .approvedAnimationUrl(g.id)
+          final mediaReady = await r
+              .privateMediaReady(g.id)
               .timeout(const Duration(seconds: 8));
+          approvedPrivateVideo = mediaReady ? 'ready' : null;
         } catch (_) {
           // An unsigned or missing original cannot authorize a paid send.
         }
@@ -191,6 +192,17 @@ class _State extends ConsumerState<GiftSheet> {
       if (me != null) {
         container.invalidate(profileProvider(me));
         container.invalidate(profileStatsProvider(me));
+      }
+      // Authenticated premium download is deliberately forbidden BEFORE
+      // settlement. Resolve the one-time signed URL only after the RPC returns.
+      if (widget.roomId == null && approvedPrivateVideo != null) {
+        try {
+          approvedPrivateVideo = await r
+              .approvedAnimationUrl(g.id)
+              .timeout(const Duration(seconds: 8));
+        } catch (_) {
+          approvedPrivateVideo = null;
+        }
       }
       // Use locally bundled gift artwork after server-confirmed settlement.
       // Room animations are driven separately by verified backend events.
