@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/art/nimzo_identity_art.dart';
 import 'store_live_catalog.dart';
-import '../../core/widge/// Live original NIMZO cosmetics Store and account-persistent Backpack.
+
+/// Live NIMZO Store, keeping the existing catalog, ownership and Backpack.
 class RoyalStoreScreen extends StatelessWidget {
-  final bool initialBag;
   const RoyalStoreScreen({super.key, this.initialBag = false});
+  final bool initialBag;
 
   @override
   Widget build(BuildContext context) =>
       NimzoLiveStore(initialBag: initialBag);
-}
-
-allery(),
-      ],
-    ),
-  );
 }
 
 /// UI-only collection preview for product categories whose server catalog
