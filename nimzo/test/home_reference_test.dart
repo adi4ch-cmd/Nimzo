@@ -11,7 +11,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [popularRoomsProvider(null).overrideWith((_) async => [])],
-        child: const MaterialApp(home: HomeScreen()),
+        child: const MaterialApp(home: HomeScreen(initialTab: 1)),
       ),
     );
     await tester.pumpAndSettle();

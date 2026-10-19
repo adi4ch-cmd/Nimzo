@@ -36,7 +36,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         key: const ValueKey('home-scope'),
-        overrides: [popularRoomsProvider(null).overrideWith((_) async => [])],
+        overrides: [
+          myRoomsProvider
+              .overrideWith((_) async => {'recent': [], 'followed': []})
+        ],
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const RepaintBoundary(

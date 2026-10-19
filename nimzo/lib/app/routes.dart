@@ -9,6 +9,7 @@ class Routes {
   static const profileSetup = '/profile-setup';
   static const home = '/home';
   static const games = '/games';
+  static const events = '/events';
   static const moments = '/moments';
   static const messages = '/messages';
   static const profile = '/profile';
