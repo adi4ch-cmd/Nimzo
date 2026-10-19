@@ -1,7 +1,7 @@
 name: nimzo
 description: Nimzo social voice-room app
 publish_to: none
-version: 1.0.29+129
+version: 1.0.30+130
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:
@@ -41,6 +41,7 @@ flutter:
     - assets/gifts/hall_of_fame.svg
     - assets/gifts/libra.svg
     - assets/gifts/aries.svg
+    - assets/gifts/staged/
     - assets/gifts/free/
     - assets/reference/game/
     - assets/reference/fruit/
