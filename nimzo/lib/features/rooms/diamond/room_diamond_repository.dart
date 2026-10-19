@@ -110,6 +110,32 @@ class RoomDiamondRepository {
     return RoomDiamondStatus.fromJson(Map<String, dynamic>.from(row as Map));
   }
 
+  /// Recover server-settled Rocket threshold events if Realtime drops them.
+  /// RLS limits the result to members of the active room. This read never
+  /// creates blast events, grants prizes or writes wallet data.
+  Future<List<DiamondBlastEvent>> recentBlasts(
+    String roomId, {
+    required DateTime since,
+  }) async {
+    final rows = await db
+        .from('room_diamond_blast_events')
+        .select('id,room_id,stage,target_coins,cycle_start')
+        .eq('room_id', roomId)
+        .gte('created_at', since.toUtc().toIso8601String())
+        .order('created_at', ascending: true)
+        .limit(24);
+    final results = <DiamondBlastEvent>[];
+    for (final row in rows) {
+      try {
+        results.add(DiamondBlastEvent.fromJson(
+            Map<String, dynamic>.from(row)));
+      } on FormatException {
+        // Never render a malformed or unsupported milestone.
+      }
+    }
+    return results;
+  }
+
   Stream<DiamondUpdate> changes(String roomId) {
     late StreamController<DiamondUpdate> stream;
     var sequence = 0;

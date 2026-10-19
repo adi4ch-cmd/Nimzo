@@ -49,6 +49,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
   Timer? _watchdog;
   bool _finished = false;
   bool _unavailable = false;
+  bool _initialized = false;
   int _part = 0; // 0: rocket launch; 1: achieved-level reward
 
   void _finish() {
@@ -62,7 +63,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _watchdog = Timer(const Duration(seconds: 16), _finish);
+    _watchdog = Timer(const Duration(seconds: 16), _playbackFailed);
     unawaited(_start());
   }
 
@@ -74,20 +75,12 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
       final fly = rocketFlyPath(widget.stage);
       if (!manifest.listAssets().contains(reward) ||
           !manifest.listAssets().contains(fly)) {
-        if (mounted) {
-          setState(() => _unavailable = true);
-          _watchdog?.cancel();
-          _watchdog = Timer(const Duration(milliseconds: 900), _finish);
-        }
+        _playbackFailed();
         return;
       }
       await _playSegment(fly);
     } catch (_) {
-      if (mounted) {
-        setState(() => _unavailable = true);
-        _watchdog?.cancel();
-        _watchdog = Timer(const Duration(milliseconds: 900), _finish);
-      }
+      _playbackFailed();
     }
   }
 
@@ -138,7 +131,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
         viewType: VapViewType.textureView,
         scaleType: VapScaleType.fitCenter,
         repeatCount: 0,
-        mute: true,
+        mute: false, // Preserve the original Rocket 4-6 AAC audio where present.
         resourceDelegate: VapResourceDelegate(
           resolveText: (resource) async {
             if (widget.eventId == null) return null;
@@ -154,11 +147,12 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
       ),
     );
     _player = controller;
+    if (mounted) setState(() => _initialized = false);
     _events = controller.events.listen(
       (event) {
         if (_finished) return;
         if (event is VapErrorEvent) {
-          _finish();
+          _playbackFailed();
         } else if (event is VapCompletedEvent) {
           if (_part == 0) {
             _part = 1;
@@ -168,12 +162,19 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
           }
         }
       },
-      onError: (Object _) => _finish(),
+      onError: (Object _) => _playbackFailed(),
     );
     await controller.initialize();
     if (!mounted || _finished) return;
-    setState(() {});
+    setState(() => _initialized = true);
     await controller.play();
+  }
+
+  void _playbackFailed() {
+    if (!mounted || _finished) return;
+    setState(() => _unavailable = true);
+    _watchdog?.cancel();
+    _watchdog = Timer(const Duration(seconds: 3), _finish);
   }
 
   @override
@@ -198,7 +199,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
         child: SafeArea(
           child: Stack(
             children: [
-              if (!_unavailable && _player != null)
+              if (!_unavailable && _player != null && _initialized)
                 Positioned.fill(child: IgnorePointer(
                   child: VapPlayer(_player!),
                 )),
@@ -235,6 +236,8 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
                     ),
                   ),
                 ),
+              if (!_unavailable && !_initialized)
+                const Center(child: CircularProgressIndicator()),
               if (_unavailable)
                 Center(
                   child: DecoratedBox(
@@ -245,7 +248,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
                     child: const Padding(
                       padding: EdgeInsets.all(12),
                       child: Text(
-                        'Rocket level reached. Video media unavailable.',
+                        'Rocket reached, but VAP playback failed on this device.',
                         style: TextStyle(color: Colors.white),
                         textAlign: TextAlign.center,
                       ),

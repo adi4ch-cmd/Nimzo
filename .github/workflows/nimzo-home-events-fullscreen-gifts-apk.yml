@@ -1,4 +1,4 @@
-name: NIMZO Home Events and Fullscreen Gifts APK (test)
+name: NIMZO Home Events Gifts and Rocket Recovery APK
 
 on:
   push:
@@ -254,6 +254,9 @@ jobs:
       - name: Gift settlement, room playback, retirement and rocket regression tests
         working-directory: nimzo
         run: flutter test --reporter expanded test/private_animal_gifts_test.dart test/private_gift_readiness_test.dart test/car_only_gift_contract_test.dart test/verified_gift_broadcast_test.dart test/gift_retry_test.dart test/gift_rejection_test.dart test/gift_celebration_overlay_test.dart test/yo2_gift_ui_test.dart test/room_rocket_test.dart test/room_rocket_leaderboard_test.dart test/feature_retirement_contract_test.dart test/membership_retirement_test.dart
+      - name: Verify Rocket and gift event recovery regression tests
+        working-directory: nimzo
+        run: flutter test --reporter expanded test/rocket_gift_realtime_recovery_test.dart
       - name: Build debug APK for game testing
         working-directory: nimzo
         run: flutter build apk --debug
@@ -281,7 +284,7 @@ jobs:
       - name: Upload installable APK and checksum
         uses: actions/upload-artifact@v4
         with:
-          name: nimzo-combined-home-events-fullscreen-gifts-apk
+          name: nimzo-realtime-rocket-gift-recovery-apk
           path: |
             nimzo/build/app/outputs/flutter-apk/app-debug.apk
             nimzo/build/app/outputs/flutter-apk/app-debug.apk.sha256

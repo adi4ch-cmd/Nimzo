@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
@@ -30,6 +32,54 @@ class RoomRocketSheet extends ConsumerStatefulWidget {
 class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
   int? selectedStage;
   bool showRewards = false;
+
+  Future<void> _previewRocket(int stage) async {
+    // Only compiled in debug builds. This is media QA, not a paid gift,
+    // server milestone, prize or wallet transaction.
+    await showDialog<void>(
+      context: context,
+      useSafeArea: false,
+      barrierColor: Colors.black87,
+      builder: (dialogContext) => Material(
+        type: MaterialType.transparency,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            RoomRocketPlayback(
+              stage: stage,
+              targetCoins: roomRocketTargets[stage],
+              onFinished: () {
+                if (dialogContext.mounted) {
+                  Navigator.of(dialogContext).maybePop();
+                }
+              },
+            ),
+            Positioned(
+              top: 40, left: 16, right: 54,
+              child: SafeArea(
+                child: Text(
+                  'ROCKET ${stage + 1} LOCAL PREVIEW · 0 COINS',
+                  style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 36, right: 12,
+              child: SafeArea(
+                child: IconButton(
+                  tooltip: 'Close Rocket test',
+                  color: Colors.white,
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +197,16 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
                   ],
                 ),
               ),
+              if (kDebugMode)
+                Padding(
+                  padding: const EdgeInsets.only(top: 9),
+                  child: TextButton.icon(
+                    key: const ValueKey('rocket-local-vap-preview'),
+                    onPressed: () => _previewRocket(selection),
+                    icon: const Icon(Icons.play_circle_outline),
+                    label: const Text('Test Rocket Animation (Free)'),
+                  ),
+                ),
               const SizedBox(height: 12),
               if (id == null)
                 const Text('Join a room to view Rocket progress.', style: TextStyle(color: Colors.white70))
@@ -440,14 +500,86 @@ class _RoomRocketHostState extends ConsumerState<RoomRocketHost> {
   final _queue = <DiamondBlastEvent>[];
   final _seen = <String>{};
   DateTime? _cycle;
+  Timer? _recoveryTimer;
+  bool _recovering = false;
+  int _recoveryGeneration = 0;
+  late DateTime _joinedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    _joinedAt = DateTime.now().toUtc();
+    if (widget.enabled) _startRecovery();
+  }
+
+  void _startRecovery() {
+    _recoveryTimer?.cancel();
+    _recoveryGeneration++;
+    _joinedAt = DateTime.now().toUtc();
+    // Realtime normally delivers immediate milestone events. Also query the
+    // authoritative event table: mobile connections can miss INSERT messages.
+    _recoveryTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      unawaited(_recover());
+    });
+    unawaited(_recover());
+  }
+
+  Future<void> _recover() async {
+    if (!mounted || !widget.enabled || _recovering) return;
+    _recovering = true;
+    final generation = _recoveryGeneration;
+    final targetRoom = widget.roomId;
+    try {
+      final events = await ref.read(roomDiamondRepositoryProvider)
+          .recentBlasts(
+            targetRoom,
+            since: _joinedAt.subtract(const Duration(seconds: 2)),
+          );
+      if (!mounted || !widget.enabled ||
+          generation != _recoveryGeneration || targetRoom != widget.roomId) {
+        return;
+      }
+      for (final event in events) {
+        _enqueue(event);
+      }
+    } catch (_) {
+      // A temporary offline/RLS failure never invents an animation; next
+      // scheduled poll retries while the room is still joined.
+    } finally {
+      _recovering = false;
+    }
+  }
+
+  void _enqueue(DiamondBlastEvent event) {
+    if (!mounted || !widget.enabled ||
+        event.roomId != widget.roomId || _seen.contains(event.id) ||
+        (_cycle != null && event.cycleStart.isBefore(_cycle!))) {
+      return;
+    }
+    if (_cycle != null && event.cycleStart.isAfter(_cycle!)) {
+      _queue.clear();
+      _seen.clear();
+    }
+    _seen.add(event.id);
+    if (_seen.length > 200) _seen.remove(_seen.first);
+    _cycle = event.cycleStart;
+    setState(() {
+      // All six threshold animations can be queued in server order.
+      if (_queue.length < 6) _queue.add(event);
+    });
+  }
 
   @override
   void didUpdateWidget(covariant RoomRocketHost oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.roomId != widget.roomId || !widget.enabled) {
+    if (oldWidget.roomId != widget.roomId ||
+        oldWidget.enabled != widget.enabled) {
+      _recoveryTimer?.cancel();
+      _recoveryGeneration++;
       _queue.clear();
       _seen.clear();
       _cycle = null;
+      if (widget.enabled) _startRecovery();
     }
   }
 
@@ -455,6 +587,13 @@ class _RoomRocketHostState extends ConsumerState<RoomRocketHost> {
     if (mounted && _queue.isNotEmpty) {
       setState(() => _queue.removeAt(0));
     }
+  }
+
+  @override
+  void dispose() {
+    _recoveryTimer?.cancel();
+    _recoveryGeneration++;
+    super.dispose();
   }
 
   @override
@@ -474,22 +613,7 @@ class _RoomRocketHostState extends ConsumerState<RoomRocketHost> {
       });
       ref.listen(roomDiamondEventsProvider(widget.roomId), (previous, next) {
         final event = next.valueOrNull?.blast;
-        if (event == null ||
-            event.roomId != widget.roomId ||
-            _seen.contains(event.id) ||
-            (_cycle != null && event.cycleStart.isBefore(_cycle!))) {
-          return;
-        }
-        if (_cycle != null && event.cycleStart.isAfter(_cycle!)) {
-          _queue.clear();
-          _seen.clear();
-        }
-        _seen.add(event.id);
-        if (_seen.length > 100) _seen.remove(_seen.first);
-        _cycle = event.cycleStart;
-        setState(() {
-          if (_queue.length < 6) _queue.add(event);
-        });
+        if (event != null) _enqueue(event);
       });
     }
     return Stack(
