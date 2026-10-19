@@ -31,7 +31,7 @@ import '../features/games/games_catalog_screen.dart';
 import '../features/rooms/presentation/create_room_screen.dart';
 import '../features/rooms/presentation/room_settings_screen.dart';
 import '../features/home/home_screen.dart';
-import '../features/home/party_screen.dart';
+import '../features/events/events_screen.dart';
 import '../features/home/pk_battles_screen.dart';
 import '../features/messages/messages_screen.dart';
 import '../features/moments/moments_screen.dart';
@@ -136,6 +136,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           slug: s.uri.queryParameters['game'],
         ),
       ),
+      // Keep old bookmarks and in-room game links working.
+      GoRoute(
+        path: Routes.games,
+        builder: (_, state) => GamesCatalogScreen(
+          roomId: state.uri.queryParameters['room'],
+        ),
+      ),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
       GoRoute(
           path: '/friends', builder: (_, __) => const TingleFriendsScreen()),
@@ -225,17 +232,18 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.home,
-                builder: (_, __) => const HomeScreen(),
+                builder: (_, state) => HomeScreen(
+                  initialTab:
+                      int.tryParse(state.uri.queryParameters['tab'] ?? '') ?? 0,
+                ),
               ),
             ],
           ),
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: Routes.games,
-                builder: (_, s) => s.uri.queryParameters['room'] == null
-                    ? const PartyScreen()
-                    : GamesCatalogScreen(roomId: s.uri.queryParameters['room']),
+                path: Routes.events,
+                builder: (_, __) => const EventsScreen(),
               ),
             ],
           ),

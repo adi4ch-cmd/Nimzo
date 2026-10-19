@@ -26,7 +26,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Follow'));
+    await tester.tap(find.text('My'));
     await tester.pumpAndSettle();
     var complete = false;
     final refresh = tester
