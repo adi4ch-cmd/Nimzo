@@ -438,7 +438,7 @@ class _State extends ConsumerState<GiftSheet> {
                             child: Padding(
                               padding: EdgeInsets.all(16),
                               child: Text(
-                                'Gift prices and delivery are verified by the NIMZO server.',
+                                'Active gifts are billed by NIMZO server. PREVIEW gifts cannot be sent.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: NimzoStyle.muted,
@@ -693,13 +693,13 @@ class _State extends ConsumerState<GiftSheet> {
                             color: NimzoStyle.royal,
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 5,
                               vertical: 2,
                             ),
                             child: Text(
-                              'SVGA',
+                              privateAnimalVapGiftIds.contains(gift.id) ? 'VAP' : 'SVGA',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 8,
