@@ -1,6 +1,10 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'private_premium_gifts.dart';
+import 'gift_repository.dart';
 import 'package:flutter_svga/flutter_svga.dart';
 
 import 'gift_svga_overlay.dart';
@@ -92,6 +96,33 @@ class GiftArtwork extends StatelessWidget {
   const GiftArtwork({super.key, required this.name, this.assetPath});
   @override
   Widget build(BuildContext context) {
+    final protectedId = privatePremiumGiftNames[name.trim().toLowerCase()];
+    if (protectedId != null) {
+      return Consumer(
+        builder: (context, ref, _) => ref
+            .watch(privatePremiumThumbnailProvider(protectedId))
+            .when(
+              data: (url) => url == null
+                  ? const Icon(Icons.card_giftcard, color: Color(0xffe6bc58))
+                  : Image.network(
+                      url,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.card_giftcard,
+                        color: Color(0xffe6bc58),
+                      ),
+                    ),
+              loading: () => const Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              error: (_, __) => const Icon(
+                Icons.card_giftcard,
+                color: Color(0xffe6bc58),
+              ),
+            ),
+      );
+    }
     // Use the actual commissioned photo-realistic NIMZO artwork when
     // bundled. Fall back to the correctly named vector on older APKs.
     if (name.trim().toLowerCase() == 'private jet') {
