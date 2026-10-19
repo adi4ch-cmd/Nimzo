@@ -366,9 +366,9 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                             ],
                             Expanded(
                               child: _MiniAction(
-                                icon: Icons.directions_car_rounded,
+                                icon: Icons.card_giftcard_rounded,
                                 color: const Color(0xffdfd94a),
-                                label: 'Send Car',
+                                label: 'Send Gifts',
                                 onTap: busy || me == null ? null : gift,
                               ),
                             ),

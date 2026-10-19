@@ -13,6 +13,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/services/storage_service.dart';
+import 'moment_photo.dart';
+import 'moment_photo_grid.dart';
 import '../profile/profile_repository.dart';
 import '../gifts/gift_sheet.dart';
 import 'moment_repository.dart';
@@ -208,6 +210,7 @@ class _MomentCardState extends ConsumerState<MomentCard> {
           children: [
             ListTile(
               contentPadding: EdgeInsets.zero,
+              horizontalTitleGap: 10,
               minTileHeight: 42,
               leading: NimzoAvatar(
                 name: author?.displayName ?? 'N',
@@ -225,24 +228,20 @@ class _MomentCardState extends ConsumerState<MomentCard> {
               ),
               onTap: () => context.push('/profile/${moment.authorId}'),
             ),
-            if (moment.text != null) Text(moment.text!),
-            if (moment.imagePaths.isNotEmpty)
-              SizedBox(
-                height: moment.imagePaths.length > 1 ? 240 : null,
-                child: moment.imagePaths.length == 1
-                    ? _momentImage(ref, moment.imagePaths.first)
-                    : ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: moment.imagePaths.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 6),
-                        itemBuilder: (_, i) => SizedBox(
-                            width: 240,
-                            child: _momentImage(ref, moment.imagePaths[i])),
-                      ),
+            Padding(
+              padding: const EdgeInsetsDirectional.only(start: 56, bottom: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (moment.text?.isNotEmpty == true)
+                    Text(moment.text!, style: const TextStyle(height: 1.5)),
+                  if (moment.imagePaths.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    MomentPhotoGrid(paths: moment.imagePaths),
+                  ],
+                ],
               ),
-            if (moment.imagePaths.length > 1)
-              Text('${moment.imagePaths.length} photos · Swipe to view',
-                  style: const TextStyle(fontSize: 11)),
+            ),
             Wrap(
               children: [
                 TextButton(
@@ -849,8 +848,4 @@ class MomentCommentTile extends ConsumerWidget {
   }
 }
 
-Widget _momentImage(WidgetRef ref, String path) => Image.network(
-      ref.watch(supabaseProvider).storage.from('moments').getPublicUrl(path),
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => const EmptyContent('Image unavailable'),
-    );
+Widget _momentImage(WidgetRef ref, String path) => MomentPhoto(path: path);

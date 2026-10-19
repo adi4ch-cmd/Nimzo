@@ -14,10 +14,10 @@ void main() {
     final slugs = NimzoRoomGames.approved.map((g) => g.slug).toList();
     expect(slugs.toSet().length, slugs.length);
     expect(slugs, containsAll(<String>[
-      'fruit_party_jackpot',
+      'lucky_77',
       'grady_lion',
       'bigetar',
-      'slot',
+      'jackpot',
       'teen_patti',
       'lucky_wheel_77',
       'bounty_football',

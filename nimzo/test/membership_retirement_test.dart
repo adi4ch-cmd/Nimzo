@@ -10,7 +10,6 @@ import 'package:nimzo/features/profile/profile.dart';
 import 'package:nimzo/features/profile/profile_repository.dart';
 import 'package:nimzo/features/profile/tingle_membership_screen.dart';
 import 'package:nimzo/features/profile/tingle_me_screen.dart';
-import 'package:nimzo/features/store/store_screen.dart';
 
 void main() {
   test('stale server membership cannot restore retired identity', () {
@@ -25,8 +24,8 @@ void main() {
     expect(p.vipLevel, 0);
     expect(p.svipLevel, 0);
   });
-  for (final path in ['/vip', '/svip', '/store', '/store?bag=1', '/store/']) {
-    testWidgets('$path direct link cannot open a paused premium or Store page',
+  for (final path in ['/vip', '/svip']) {
+    testWidgets('$path direct link cannot reopen a retired membership page',
         (tester) async {
       final db = (await tester.runAsync(() async => SupabaseClient(
             'https://example.supabase.co',
@@ -58,7 +57,6 @@ void main() {
       ));
       await tester.pumpAndSettle();
       expect(find.byType(TingleMembershipScreen), findsNothing);
-      expect(find.byType(RoyalStoreScreen), findsNothing);
       expect(find.byType(TingleMeScreen), findsOneWidget);
       expect(router.routeInformationProvider.value.uri.path, '/profile');
       expect(tester.takeException(), isNull);

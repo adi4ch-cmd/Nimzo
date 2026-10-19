@@ -14,7 +14,7 @@ final taskProgressProvider =
   final uid = ref.watch(currentUserIdProvider);
   if (uid == null) return {};
   final profile = await ref.watch(profileProvider(uid).future);
-  // Daily tasks reset at the start of the user's local calendar day.
+  // The legacy Store task uses local midnight; the gift RPC uses UTC.
   final now = DateTime.now();
   final dayStartUtc = DateTime(now.year, now.month, now.day)
       .toUtc().toIso8601String();
@@ -28,8 +28,13 @@ final taskProgressProvider =
       return null;
     }
   }
-  final gifts = await hasRows('gift_events', 'sender_id',
-    since: 'created_at');
+  bool? gifts;
+  try {
+    // Caller-scoped status includes gifts from rooms the user has left.
+    gifts = await db.rpc('my_daily_room_gift_status') as bool;
+  } catch (_) {
+    // Keep unavailable status unknown rather than falsely incomplete.
+  }
   final recharge = await hasRows('purchases', 'user_id');
   final played = await hasRows('game_bets', 'user_id');
   final store = await hasRows('profile_owned_collectibles', 'user_id',

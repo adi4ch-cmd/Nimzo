@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'tingle_video_ui_test.dart' show capture;
+import 'support/test_game_webview.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -129,6 +130,7 @@ void main() {
   testWidgets('remaining reference surfaces have reviewed phone screenshots', (
     tester,
   ) async {
+    final nativeGames = TestGameWebViewPlatform.install();
     for (final font in [
       ('Roboto', 'test/fonts/Roboto-Regular.ttf'),
       ('Cinzel', 'assets/reference/fonts/Cinzel.ttf'),
@@ -218,6 +220,7 @@ void main() {
     for (final entry in previews.entries) {
       if (targetedGolden.isNotEmpty &&
           !targetedGolden.split(',').contains(entry.key)) continue;
+      nativeGames.reset();
       final key = GlobalKey();
       GoRouter? router;
       Widget app;
@@ -351,8 +354,7 @@ void main() {
                         i++)
                       {
                         'name': 'Owned ${kind.name} ${i + 1}',
-                        'image_path':
-                            'assets/reference/${kind.name}/$i.jpg',
+                        'image_path': 'assets/reference/${kind.name}/$i.jpg',
                       },
                   ],
                 ),
@@ -487,12 +489,6 @@ void main() {
                 !f.path.replaceAll('\\', '/').contains('/vip/'))) {
           await precacheImage(AssetImage(file.path), context);
         }
-        if (entry.key == 'honor_wall') {
-          for (final n in [1, 2, 3]) {
-            await precacheImage(
-                AssetImage('assets/hilo/store/royal_$n.webp'), context);
-          }
-        }
         // Eagerly decode gift controls so the golden never captures blank
         // placeholders while Flutter is decoding first-use WebP assets.
         if (entry.key == 'room_tools' || entry.key == 'room_games') {
@@ -545,7 +541,20 @@ void main() {
         expect(find.byKey(const ValueKey('verified-membership-row')),
             findsNothing);
       }
-      if (entry.key == 'room') {
+      if (const {'game_0', 'game_1', 'game_3'}.contains(entry.key)) {
+        // Native HTML games are tested at their platform boundary; a Flutter
+        // bitmap cannot capture the Android WebView's rendered HTML content.
+        final asset = switch (entry.key) {
+          'game_0' => 'assets/games/lucky77_room_demo.html',
+          'game_1' => 'assets/games/grady_lion_auto.html',
+          _ => 'assets/games/jackpot_9lines_demo.html',
+        };
+        expect(nativeGames.controllers.single.flutterAsset, asset);
+        nativeGames.controllers.single.finishPage();
+        await tester.pump();
+        expect(find.byKey(const ValueKey('native-game-webview-test-boundary')),
+            findsOneWidget);
+      } else if (entry.key == 'room') {
         expect(find.byType(Image), findsWidgets);
         expect(find.byKey(key), findsOneWidget);
         expect(find.textContaining('Diamond Blast'), findsNothing);
@@ -609,16 +618,16 @@ void main() {
           for (var tab = 0; tab < 3; tab++) {
             expect(find.byKey(ValueKey('level-tab-$tab')), findsOneWidget);
           }
-          for (final label in const [
-            'Brown',
-            'Green',
-            'Blue',
-            'Pink',
-            'Red',
-            'Gold',
+          for (final (label, range) in const [
+            ('Brown', 'Lv. 1–20'),
+            ('Green', 'Lv. 21–39'),
+            ('Blue', 'Lv. 40–59'),
+            ('Pink', 'Lv. 60–79'),
+            ('Red', 'Lv. 80–99'),
+            ('Gold', 'Lv. 100–120'),
           ]) {
             await tester.scrollUntilVisible(
-              find.text(label),
+              find.text(range),
               120,
               scrollable: find.byType(Scrollable).first,
             );

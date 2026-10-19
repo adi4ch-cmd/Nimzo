@@ -70,37 +70,40 @@ class _State extends ConsumerState<RankingScreen> {
                               borderRadius: BorderRadius.circular(19),
                               border: Border.all(color: NimzoStyle.line),
                             ),
-                            child: ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                    width: 22,
-                                    child: Text(
-                                      '${i + 1}',
-                                      style: const TextStyle(
-                                        color: NimzoStyle.muted,
+                            child: Material(
+                              type: MaterialType.transparency,
+                              child: ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(
+                                      width: 22,
+                                      child: Text(
+                                        '${i + 1}',
+                                        style: const TextStyle(
+                                          color: NimzoStyle.muted,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  NimzoAvatar(
-                                    name: rows[i]['name']?.toString() ?? 'N',
-                                  ),
-                                ],
-                              ),
-                              title: Text(
-                                rows[i]['name']?.toString() ?? 'Nimzo user',
-                              ),
-                              trailing: Text(
-                                '${rows[i]['score']}',
-                                style: const TextStyle(
-                                  color: NimzoStyle.primary,
-                                  fontWeight: FontWeight.w700,
+                                    NimzoAvatar(
+                                      name: rows[i]['name']?.toString() ?? 'N',
+                                    ),
+                                  ],
                                 ),
+                                title: Text(
+                                  rows[i]['name']?.toString() ?? 'Nimzo user',
+                                ),
+                                trailing: Text(
+                                  '${rows[i]['score']}',
+                                  style: const TextStyle(
+                                    color: NimzoStyle.primary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                onTap: () =>
+                                    context.push('/profile/${rows[i]['id']}'),
                               ),
-                              onTap: () =>
-                                  context.push('/profile/${rows[i]['id']}'),
                             ),
                           ),
                       ],
