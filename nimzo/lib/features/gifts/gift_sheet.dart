@@ -8,7 +8,6 @@ import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
-import 'new_gift_previews.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
 import 'gift_svga_overlay.dart';
@@ -280,7 +279,6 @@ class _State extends ConsumerState<GiftSheet> {
                 ),
               ),
             ),
-            const NewGiftPreviewCollection(),
             // Room members can gift themselves even when not seated on
             // a microphone. The seat roster must not hide "Myself".
             if (widget.roomId != null &&
