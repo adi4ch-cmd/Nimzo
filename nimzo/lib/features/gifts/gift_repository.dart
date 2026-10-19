@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/errors/error_handler.dart';
 import 'gift_error.dart';
+import 'private_premium_gifts.dart';
 
 /// Server catalog IDs of premium dragon gifts that require approved videos.
 /// They must not be charged while their licensed animation is unavailable.
@@ -82,6 +83,9 @@ class GiftRepository {
 
   /// Only admin-approved HTTPS video media may be played.
   Future<String?> approvedAnimationUrl(String giftId) async {
+    if (privatePremiumGiftIds.contains(giftId)) {
+      return privateMediaUrl(giftId, kind: 'animation');
+    }
     final rows = await _db
         .from('gift_animation_media')
         .select('video_url')
@@ -90,6 +94,21 @@ class GiftRepository {
         .limit(1);
     if (rows.isEmpty) return null;
     final url = rows.first['video_url'] as String?;
+    final uri = Uri.tryParse(url ?? '');
+    return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
+        ? url
+        : null;
+  }
+
+  Future<String?> privateMediaUrl(String giftId, {required String kind}) async {
+    if (!privatePremiumGiftIds.contains(giftId) ||
+        (kind != 'thumbnail' && kind != 'animation')) return null;
+    final response = await _db.functions.invoke(
+      'gift-media',
+      body: {'gift_id': giftId, 'kind': kind},
+    );
+    final data = response.data;
+    final url = data is Map ? data['url'] as String? : null;
     final uri = Uri.tryParse(url ?? '');
     return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
         ? url
@@ -275,4 +294,10 @@ final verifiedGiftAnimationProvider = StreamProvider.autoDispose
         roomId: args.roomId,
         countryCode: args.countryCode,
       ),
+);
+
+final privatePremiumThumbnailProvider =
+    FutureProvider.autoDispose.family<String?, String>(
+  (ref, giftId) => ref.watch(giftRepositoryProvider)
+      .privateMediaUrl(giftId, kind: 'thumbnail'),
 );
