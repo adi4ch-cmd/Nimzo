@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - feature/fullscreen-gifts-room-20261019
-    paths:
-      - .github/workflows/nimzo-rocket-unified-gifts-apk.yml
   pull_request:
     branches:
       - feature/locked-games-three-gifts-20261018
