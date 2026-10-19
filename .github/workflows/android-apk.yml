@@ -364,10 +364,12 @@ jobs:
           assert actual == expected, 'Downloaded APK checksum mismatch'
           PYCODE
           cp app-release.apk NIMZO_Test.apk
-          sha256sum NIMZO_Test.apk > SHA256SUMS.txt
+          zip -9 NIMZO_Test.zip NIMZO_Test.apk
+          unzip -t NIMZO_Test.zip
+          sha256sum NIMZO_Test.apk NIMZO_Test.zip > SHA256SUMS.txt
           tag="nimzo-repair-test-$VERIFIED_RUN"
           if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" NIMZO_Test.apk SHA256SUMS.txt source-sha.txt app-release.apk.signing.txt app-release.apk.fcm-verification.txt --clobber
+            gh release upload "$tag" NIMZO_Test.apk NIMZO_Test.zip SHA256SUMS.txt source-sha.txt app-release.apk.signing.txt app-release.apk.fcm-verification.txt --clobber
           else
-            gh release create "$tag" NIMZO_Test.apk SHA256SUMS.txt source-sha.txt app-release.apk.signing.txt app-release.apk.fcm-verification.txt --target "$(cat source-sha.txt)" --prerelease --title "NIMZO Moments and Room Repairs Android Test APK" --notes-file ../docs/superpowers/verified-apk-release-notes.md
+            gh release create "$tag" NIMZO_Test.apk NIMZO_Test.zip SHA256SUMS.txt source-sha.txt app-release.apk.signing.txt app-release.apk.fcm-verification.txt --target "$(cat source-sha.txt)" --prerelease --title "NIMZO Moments and Room Repairs Android Test APK" --notes-file ../docs/superpowers/verified-apk-release-notes.md
           fi
