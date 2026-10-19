@@ -1137,7 +1137,7 @@ class _State extends ConsumerState<RoomScreen> {
                                     color: Color(0xffa74be7)),
                               ),
                               IconButton(
-                                tooltip: 'Send Car',
+                                tooltip: 'Gift',
                                 onPressed: !joined || me == null
                                     ? null
                                     : () async {
@@ -1179,7 +1179,7 @@ class _State extends ConsumerState<RoomScreen> {
                                             id,
                                           );
                                       },
-                                icon: const Icon(Icons.directions_car_rounded, color: NimzoStyle.pink),
+                                icon: const Icon(Icons.card_giftcard_rounded, color: NimzoStyle.pink),
                               ),
                             ],
                           ),

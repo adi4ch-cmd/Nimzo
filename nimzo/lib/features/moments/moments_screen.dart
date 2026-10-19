@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../../core/services/storage_service.dart';
+import 'moment_photo.dart';
 import '../profile/profile_repository.dart';
 import '../gifts/gift_sheet.dart';
 import 'moment_repository.dart';
@@ -849,8 +850,4 @@ class MomentCommentTile extends ConsumerWidget {
   }
 }
 
-Widget _momentImage(WidgetRef ref, String path) => Image.network(
-      ref.watch(supabaseProvider).storage.from('moments').getPublicUrl(path),
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => const EmptyContent('Image unavailable'),
-    );
+Widget _momentImage(WidgetRef ref, String path) => MomentPhoto(path: path);

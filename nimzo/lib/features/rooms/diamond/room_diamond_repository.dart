@@ -121,7 +121,9 @@ class RoomDiamondRepository {
         channel.onPostgresChanges(
           event: PostgresChangeEvent.insert,
           schema: 'public',
-          table: 'gift_events',
+          // Financial receipts are private. This read-only event is emitted
+          // by the same settlement transaction and is visible to room members.
+          table: 'gift_animation_events',
           filter: PostgresChangeFilter(
             type: PostgresChangeFilterType.eq,
             column: 'room_id',
