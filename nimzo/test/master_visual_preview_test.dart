@@ -66,6 +66,10 @@ void main() {
         ),
       );
       await tester.pump();
+      await tester.runAsync(() => precacheImage(
+            const AssetImage('assets/reference/chest/0.jpg'),
+            tester.element(find.byKey(const ValueKey('preview'))),
+          ));
       await tester.pump(const Duration(milliseconds: 300));
       if (preview.$1 == 'crystal_final') {
         // The original Diamond screenshot was deliberately retired. Validate
