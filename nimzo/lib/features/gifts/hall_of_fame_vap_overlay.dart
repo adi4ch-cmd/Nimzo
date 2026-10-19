@@ -30,6 +30,7 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
   StreamSubscription<dynamic>? _events;
   Timer? _watchdog;
   bool _ready = false;
+  String? _failure;
   bool _finished = false;
 
   @override
@@ -37,7 +38,7 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
     super.initState();
     final uri = Uri.tryParse(widget.source);
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
-      scheduleMicrotask(_finish);
+      scheduleMicrotask(() => _fail('Gift video URL is invalid'));
       return;
     }
     final controller = VapPlayerController.networkUrl(
@@ -46,13 +47,16 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
         viewType: VapViewType.textureView,
         scaleType: VapScaleType.centerCrop,
         repeatCount: 0,
+        mute: false,
       ),
     );
     _controller = controller;
     _events = controller.events.listen((event) {
-      if (event is VapCompletedEvent || event is VapErrorEvent) _finish();
-    }, onError: (Object _) => _finish());
-    _watchdog = Timer(const Duration(seconds: 22), _finish);
+      if (event is VapCompletedEvent) _finish();
+      if (event is VapErrorEvent) _fail('Native VAP player failed');
+    }, onError: (Object _) => _fail('Native VAP event stream error'));
+    _watchdog = Timer(const Duration(seconds: 22),
+        () => _fail('Gift video timed out'));
     unawaited(_start());
   }
 
@@ -67,8 +71,17 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
       // A Flutter-only fallback should never expose the packed alpha as video.
       await controller.play();
     } catch (_) {
-      _finish();
+      _fail('VAP initialization or network playback failed');
     }
+  }
+
+  void _fail(String reason) {
+    if (_finished || !mounted || _failure != null) return;
+    setState(() => _failure = reason);
+    _watchdog?.cancel();
+    // Keep the diagnostic visible so QA can capture a screenshot, without
+    // blocking the room forever. No new gift transaction is attempted.
+    _watchdog = Timer(const Duration(seconds: 8), _finish);
   }
 
   void _finish() {
@@ -100,7 +113,22 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
         children: [
           Positioned.fill(
             child: IgnorePointer(
-              child: _ready
+              child: _failure != null
+                  ? Center(child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xdd24152b),
+                        borderRadius: BorderRadius.circular(14)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Text(
+                          'Gift animation could not play: $_failure\\n'
+                          'No additional coins charged by playback.',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ))
+                  : _ready
                   ? SizedBox.expand(child: VapPlayer(_controller!))
                   : const Center(
                       child: Text(
