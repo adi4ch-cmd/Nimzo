@@ -1,4 +1,4 @@
-name: NIMZO Rocket and Unified Gifts APK (test)
+name: NIMZO Audited Gifts and Rocket APK (test)
 
 on:
   push:
@@ -241,6 +241,14 @@ jobs:
       - name: Verify gift rendering and Rocket VAP packaging
         working-directory: nimzo
         run: flutter test --reporter expanded test/rocket_unified_gifts_contract_test.dart
+      - name: Verify private gateway access
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test supabase/functions/gift-media/tests/access.test.mjs
+      - name: Gift settlement, room playback, retirement and rocket regression tests
+        working-directory: nimzo
+        run: flutter test --reporter expanded test/private_animal_gifts_test.dart test/private_gift_readiness_test.dart test/car_only_gift_contract_test.dart test/verified_gift_broadcast_test.dart test/gift_retry_test.dart test/gift_rejection_test.dart test/gift_celebration_overlay_test.dart test/yo2_gift_ui_test.dart test/room_rocket_test.dart test/room_rocket_leaderboard_test.dart test/feature_retirement_contract_test.dart test/membership_retirement_test.dart
       - name: Build debug APK for game testing
         working-directory: nimzo
         run: flutter build apk --debug
@@ -281,15 +289,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          VERSION=nimzo-rocket-gifts-test-20261019
+          VERSION=nimzo-audited-gifts-test-20261019
           mkdir -p /tmp/nimzo-rocket-gifts
-          cp nimzo/build/app/outputs/flutter-apk/app-debug.apk /tmp/nimzo-rocket-gifts/NIMZO_Rocket_Gifts_Test.apk
+          cp nimzo/build/app/outputs/flutter-apk/app-debug.apk /tmp/nimzo-rocket-gifts/NIMZO_Audited_Gifts_Test.apk
           cp nimzo/build/app/outputs/flutter-apk/app-debug.apk.sha256 /tmp/nimzo-rocket-gifts/SHA256SUMS.txt
           if gh release view "$VERSION" >/dev/null 2>&1; then
-            gh release upload "$VERSION" /tmp/nimzo-rocket-gifts/NIMZO_Rocket_Gifts_Test.apk --clobber
+            gh release upload "$VERSION" /tmp/nimzo-rocket-gifts/NIMZO_Audited_Gifts_Test.apk --clobber
           else
-            gh release create "$VERSION" /tmp/nimzo-rocket-gifts/NIMZO_Rocket_Gifts_Test.apk /tmp/nimzo-rocket-gifts/SHA256SUMS.txt \
-              --target "$GITHUB_SHA" --title "NIMZO Rocket + Unified Gifts Android Test APK" \
+            gh release create "$VERSION" /tmp/nimzo-rocket-gifts/NIMZO_Audited_Gifts_Test.apk /tmp/nimzo-rocket-gifts/SHA256SUMS.txt \
+              --target "$GITHUB_SHA" --title "NIMZO Audited Gifts + Rocket Android Test APK" \
               --notes "Test-only Android build with unified real gift catalog, private 4-gift thumbnails and transparency-capable Rocket 1-6 video effects. Existing server coin price and active status unchanged. Rocket triggers at verified cumulative thresholds, not every gift; not a final release." \
               --prerelease
           fi

@@ -3,17 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svga/flutter_svga.dart';
 
-/// Only these two real, byte-verified, MIT-repository SVGA animations have
-/// a corresponding live NIMZO gift. Never substitute an unrelated animation.
+/// Sports Car is the sole retained animated gift. Legacy IDs do not play.
 const freeGiftAnimationsById = <String, String>{
-  '99faac6c-933c-4c08-8026-08c39227751e':
-      'assets/gifts/free/rocket.svga',
   '35e4c570-cb02-4466-ae86-d670b3fb05ab':
       'assets/gifts/free/sports_car.svga',
 };
 
 const freeGiftAnimationsByName = <String, String>{
-  'rocket': 'assets/gifts/free/rocket.svga',
   'sports car': 'assets/gifts/free/sports_car.svga',
 };
 

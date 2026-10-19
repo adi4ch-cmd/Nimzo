@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 import '../../profile/profile_repository.dart';
-import '../../store/store_badge.dart';
 import '../../gifts/verified_gift_broadcast.dart';
 
 import 'dart:async';
@@ -14,7 +13,6 @@ import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/reference_widgets.dart';
 import '../../gifts/gift_sheet.dart';
-import '../../gifts/yo2_gift_ui.dart';
 import '../../games/games_catalog_screen.dart';
 import '../../home/pk_battles_screen.dart';
 import '../../games/room_game_host.dart';
@@ -30,7 +28,6 @@ import 'room_overlays.dart';
 import '../rocket/room_rocket_widgets.dart';
 import '../diamond/room_diamond_repository.dart';
 import '../../../core/widgets/master_ui.dart';
-import '../../../core/utils/formatters.dart';
 
 class RoomScreen extends ConsumerStatefulWidget {
   final String roomId;
@@ -596,44 +593,9 @@ class _State extends ConsumerState<RoomScreen> {
                       ],
                     ),
                   ),
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(32),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: NimzoStyle.orange.withValues(alpha: .11),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.emoji_events_rounded,
-                                    size: 17, color: NimzoStyle.orange),
-                                const SizedBox(width: 6),
-                                Text(
-                                  compactNumber(
-                                    room.valueOrNull?.lifetimeGiftCoins ?? 0,
-                                  ),
-                                  key: const ValueKey(
-                                      'room-header-total-gifting'),
-                                  style: const TextStyle(
-                                    color: NimzoStyle.royal,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  bottom: const PreferredSize(
+                    preferredSize: Size.zero,
+                    child: SizedBox.shrink(),
                   ),
                 ),
                 body: SafeArea(
@@ -843,16 +805,6 @@ class _State extends ConsumerState<RoomScreen> {
                                                                         .getPublicUrl(
                                                                           p!.avatarPath!,
                                                                         ),
-                                                              ),
-                                                            ),
-                                                            Positioned(
-                                                              right: -8,
-                                                              bottom: -5,
-                                                              child:
-                                                                  EquippedRoyalMedal(
-                                                                userId:
-                                                                    s.userId!,
-                                                                compact: true,
                                                               ),
                                                             ),
                                                           ],
@@ -1185,7 +1137,7 @@ class _State extends ConsumerState<RoomScreen> {
                                     color: Color(0xffa74be7)),
                               ),
                               IconButton(
-                                tooltip: 'Gift',
+                                tooltip: 'Send Car',
                                 onPressed: !joined || me == null
                                     ? null
                                     : () async {
@@ -1227,15 +1179,7 @@ class _State extends ConsumerState<RoomScreen> {
                                             id,
                                           );
                                       },
-                                icon: const Yo2GiftPanelArt(
-                                  'ic_capsule_mic_gift.webp',
-                                  width: 26,
-                                  height: 26,
-                                  fallback: ReferenceIcon(
-                                    'gift',
-                                    color: NimzoStyle.pink,
-                                  ),
-                                ),
+                                icon: const Icon(Icons.directions_car_rounded, color: NimzoStyle.pink),
                               ),
                             ],
                           ),

@@ -37,7 +37,6 @@ import 'package:nimzo/features/profile/tingle_tasks_screen.dart';
 import 'package:nimzo/features/profile/tingle_daily_checkin_screen.dart';
 import 'package:nimzo/features/discover/ranking_screen.dart';
 import 'package:nimzo/features/discover/leaderboard_repository.dart';
-import 'package:nimzo/features/store/store_repository.dart';
 
 const account = Profile(
     id: 'review',
@@ -175,8 +174,6 @@ void main() {
               taskProgressProvider.overrideWith((_) async => {}),
               dailyAttendanceProvider.overrideWith(
                   (_) async => throw StateError('No attendance fixture')),
-              royalCatalogProvider.overrideWith((_) async => []),
-              royalBagProvider('review').overrideWith((_) async => []),
               for (final kind in ['wealth', 'charm'])
                 for (final period in ['weekly', 'monthly'])
                   leaderboardProvider((kind, period))

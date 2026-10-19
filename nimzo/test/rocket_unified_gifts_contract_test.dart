@@ -31,7 +31,7 @@ void main() {
     final artwork = File('lib/features/gifts/gift_artwork.dart').readAsStringSync();
     final repository = File('lib/features/gifts/gift_repository.dart')
         .readAsStringSync();
-    expect(artwork, contains('privatePremiumThumbnailProvider'));
+    expect(artwork, contains('privateGiftThumbnailProvider'));
     expect(repository, contains("'gift-media'"));
     expect(repository, contains("kind: 'thumbnail'"));
     expect(repository, contains("kind: 'animation'"));
@@ -42,7 +42,7 @@ void main() {
     final broadcast = File('lib/features/gifts/verified_gift_broadcast.dart')
         .readAsStringSync();
     expect(broadcast, contains('HallOfFameVapOverlay('));
-    expect(broadcast, contains('privatePremiumGiftIds.contains('));
+    expect(broadcast, contains('privateAnimalVapGiftIds.contains('));
     final vap = File('lib/features/gifts/hall_of_fame_vap_overlay.dart')
         .readAsStringSync();
     expect(vap, contains('VapPlayer('));
