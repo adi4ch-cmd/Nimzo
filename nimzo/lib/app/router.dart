@@ -162,6 +162,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/info/:title',
+        // Retired agency, host, BD, demo coin, medal and Honor Wall pages
+        // are not navigable even from an older bookmark/deep link.
+        redirect: (_, state) {
+          const retired = {
+            'host request', 'demo agency', 'demo host', 'demo bd',
+            'agency', 'host', 'bd', 'demo coin', 'demo coins',
+            'honor wall', 'medals', 'medal wall',
+          };
+          final name = state.pathParameters['title']?.trim().toLowerCase();
+          return retired.contains(name) ? Routes.profile : null;
+        },
         builder: (_, s) => s.pathParameters['title'] == 'Family'
             ? const FamilyScreen()
             : InfoScreen(title: s.pathParameters['title']!),

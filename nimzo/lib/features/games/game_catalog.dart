@@ -12,10 +12,10 @@ class NimzoGame {
 
 abstract final class NimzoRoomGames {
   static const approved = [
-    NimzoGame('fruit_party_jackpot', 'Fruit Party Jackpot', 0),
+    NimzoGame('lucky_77', 'Lucky 77', 0),
     NimzoGame('grady_lion', 'Grady Lion', 1),
     NimzoGame('bigetar', 'Bigetar', 2),
-    NimzoGame('slot', 'Slot', 3),
+    NimzoGame('jackpot', 'Jackpot', 3),
     NimzoGame('teen_patti', 'Teen Patti', 4),
     NimzoGame('lucky_wheel_77', 'Lucky Wheel 77', 5),
     NimzoGame('bounty_football', 'Bounty Football', 6),

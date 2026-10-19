@@ -6,10 +6,10 @@ void main() {
     'approved seven games are represented without fake playable engines',
     () {
       const approved = [
-        'Fruit Party Jackpot',
+        'Lucky 77',
         'Grady Lion',
         'Bigetar',
-        'Slot',
+        'Jackpot',
         'Teen Patti',
         'Lucky Wheel 77',
         'Bounty Football',

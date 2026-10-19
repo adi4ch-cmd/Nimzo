@@ -13,7 +13,6 @@ import 'profile_repository.dart';
 import 'profile_presentation.dart';
 import 'profile_level_pills.dart';
 import 'levels_screen.dart';
-import '../store/store_badge.dart';
 
 class MeScreen extends ConsumerWidget {
   const MeScreen({super.key});
@@ -90,11 +89,6 @@ class MeScreen extends ConsumerWidget {
                                         fontSize: 18,
                                         fontWeight: FontWeight.w700,
                                       )),
-                                  EquippedRoyalMedal(
-                                    userId: id,
-                                    compact: true,
-                                    onDark: true,
-                                  ),
                                   if (p.dateOfBirth != null)
                                     Container(
                                       padding: const EdgeInsets.symmetric(
@@ -228,7 +222,6 @@ class MeScreen extends ConsumerWidget {
                         ('Task', 'task', '/info/Task'),
                         ('Store', 'store', '/store'),
                         ('Ranking', 'cup', '/ranking'),
-                        ('Honor Wall', 'moments', '/info/Honor%20Wall'),
                       ],
                     ),
                     Row(
@@ -253,18 +246,6 @@ class MeScreen extends ConsumerWidget {
                         ('Level', 'bars', '/levels'),
                         ('About', 'info', '/info/About'),
                       ],
-                    ),
-                    const ReferenceCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '1M+ Gift Live Ranking',
-                            style: TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                          EmptyContent('Ranking service is not available yet.'),
-                        ],
-                      ),
                     ),
                   ],
                 ),

@@ -1,24 +1,11 @@
+import 'private_animal_gifts.dart';
 import '../../core/providers/supabase_provider.dart';
 
-import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/errors/error_handler.dart';
 import 'gift_error.dart';
-
-/// Server catalog IDs of premium dragon gifts that require approved videos.
-/// They must not be charged while their licensed animation is unavailable.
-const premiumDragonVideos = <String, String>{
-  'e1e65664-37f8-4cfd-9640-3bb035723b98':
-      'assets/gifts/dragon_1m.mp4',
-  'c3f41e6e-68d5-4e56-9253-33421ec18fc3':
-      'assets/gifts/golden_dragon_5m.mp4',
-};
-const premiumDragonGiftIds = <String>{
-  'e1e65664-37f8-4cfd-9640-3bb035723b98',
-  'c3f41e6e-68d5-4e56-9253-33421ec18fc3',
-};
 
 class Gift {
   final String id, name, category;
@@ -28,15 +15,10 @@ class Gift {
 }
 
 class GiftRepository {
-  Stream<List<Map<String, dynamic>>> watchRoomGiftEvents(String roomId) => _db
-      .from('gift_events')
-      .stream(primaryKey: ['id'])
-      .eq('room_id', roomId)
-      .order('created_at', ascending: false)
-      .limit(20)
-      .map(
-        (rows) => rows.map((row) => Map<String, dynamic>.from(row)).toList(),
-      );
+  // Historical paid gift receipts are private audit records.
+  // Do not query the retired public gift_events history from a client.
+  Stream<List<Map<String, dynamic>>> watchRoomGiftEvents(String roomId) =>
+      Stream.value(const <Map<String, dynamic>>[]);
 
   /// Read-only, RLS-scoped animation events created by the settlement trigger.
   /// Subscribe only while a room is active; do not treat these as payment proof
@@ -82,6 +64,9 @@ class GiftRepository {
 
   /// Only admin-approved HTTPS video media may be played.
   Future<String?> approvedAnimationUrl(String giftId) async {
+    if (privateAnimalVapGiftIds.contains(giftId)) {
+      return privateMediaUrl(giftId, kind: 'animation');
+    }
     final rows = await _db
         .from('gift_animation_media')
         .select('video_url')
@@ -96,22 +81,28 @@ class GiftRepository {
         : null;
   }
 
-  /// Returns a trusted, playable source only if its media has been
-  /// published (approved HTTPS URL) or is bundled in this installed app.
-  /// A GitHub source-code reference alone does not qualify as bundled media.
-  Future<String?> playablePremiumDragonVideo(String giftId) async {
-    final bundledPath = premiumDragonVideos[giftId];
-    if (bundledPath != null) {
-      try {
-        final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-        if (manifest.listAssets().contains(bundledPath)) {
-          return bundledPath;
-        }
-      } catch (_) {
-        // Absent or corrupt manifest: fall through to approved remote media.
-      }
-    }
-    return approvedAnimationUrl(giftId);
+  /// Checks private media availability before a debit without issuing a URL.
+  Future<bool> privateMediaReady(String giftId) async {
+    if (!privateAnimalVapGiftIds.contains(giftId)) return false;
+    final response = await _db.functions.invoke(
+      'gift-media', body: {'gift_id': giftId, 'kind': 'ready'},
+    );
+    final body = response.data;
+    return body is Map && body['ready'] == true;
+  }
+
+  Future<String?> privateMediaUrl(String giftId, {required String kind}) async {
+    if (!privateAnimalVapGiftIds.contains(giftId)) return null;
+    final response = await _db.functions.invoke(
+      'gift-media',
+      body: {'gift_id': giftId, 'kind': kind},
+    );
+    final data = response.data;
+    final url = data is Map ? data['url'] as String? : null;
+    final uri = Uri.tryParse(url ?? '');
+    return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
+        ? url
+        : null;
   }
 
   final SupabaseClient _db;
@@ -122,12 +113,18 @@ class GiftRepository {
   Future<Map<String, String>> participantNamesForVerifiedEvent(
     Map<String, dynamic> event,
   ) async {
-    final ids = <String>{
-      if (event['sender_id'] is String) event['sender_id'] as String,
-      if (event['receiver_id'] is String) event['receiver_id'] as String,
-    }.where((id) =>
-        RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-            .hasMatch(id)).toList();
+    final ids =
+        <String>{
+              if (event['sender_id'] is String) event['sender_id'] as String,
+              if (event['receiver_id'] is String)
+                event['receiver_id'] as String,
+            }
+            .where(
+              (id) => RegExp(
+                r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+              ).hasMatch(id),
+            )
+            .toList();
     if (ids.isEmpty) return const {};
     try {
       final rows = await _db
@@ -145,10 +142,10 @@ class GiftRepository {
         final name = display != null && display.isNotEmpty
             ? display
             : username != null && username.isNotEmpty
-                ? username
-                : number is num
-                    ? 'ID ${number.toString()}'
-                    : '';
+            ? username
+            : number is num
+            ? 'ID ${number.toString()}'
+            : '';
         if (name.isNotEmpty) names[id] = name;
       }
       return names;
@@ -263,16 +260,25 @@ final giftRepositoryProvider = Provider(
 final giftCatalogProvider = FutureProvider(
   (ref) => ref.watch(giftRepositoryProvider).catalog(),
 );
-final roomGiftEventProvider =
-    StreamProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
-  (ref, roomId) =>
-      ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
-);
+final roomGiftEventProvider = StreamProvider.autoDispose
+    .family<List<Map<String, dynamic>>, String>(
+      (ref, roomId) =>
+          ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
+    );
 
 final verifiedGiftAnimationProvider = StreamProvider.autoDispose
     .family<List<Map<String, dynamic>>, ({String roomId, String countryCode})>(
-  (ref, args) => ref.watch(giftRepositoryProvider).watchVerifiedAnimations(
-        roomId: args.roomId,
-        countryCode: args.countryCode,
-      ),
-);
+      (ref, args) => ref
+          .watch(giftRepositoryProvider)
+          .watchVerifiedAnimations(
+            roomId: args.roomId,
+            countryCode: args.countryCode,
+          ),
+    );
+
+final privateGiftThumbnailProvider = FutureProvider.autoDispose
+    .family<String?, String>(
+      (ref, giftId) => ref
+          .watch(giftRepositoryProvider)
+          .privateMediaUrl(giftId, kind: 'thumbnail'),
+    );

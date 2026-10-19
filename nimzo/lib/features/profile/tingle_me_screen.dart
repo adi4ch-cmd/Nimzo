@@ -87,36 +87,6 @@ class TingleMeScreen extends ConsumerWidget {
     ];
     const menu = <({String title, IconData icon, Color color, String route})>[
       (
-        title: 'Host Request',
-        icon: Icons.person_add_alt_1_rounded,
-        color: Color(0xff9e69e5),
-        route: '/info/Host%20Request'
-      ),
-      (
-        title: 'Demo Agency',
-        icon: Icons.badge_rounded,
-        color: Color(0xff2699e4),
-        route: '/info/Demo%20Agency'
-      ),
-      (
-        title: 'Demo Host',
-        icon: Icons.support_agent_rounded,
-        color: Color(0xff82c233),
-        route: '/info/Demo%20Host'
-      ),
-      (
-        title: 'Demo BD',
-        icon: Icons.verified_rounded,
-        color: Color(0xffef5993),
-        route: '/info/Demo%20BD'
-      ),
-      (
-        title: 'Coin Trading',
-        icon: Icons.wallet_rounded,
-        color: Color(0xffa13ae5),
-        route: '/wallet'
-      ),
-      (
         title: 'Help',
         icon: Icons.support_agent_rounded,
         color: Color(0xffffae36),
@@ -165,14 +135,6 @@ class TingleMeScreen extends ConsumerWidget {
                               fontSize: 21,
                               fontWeight: FontWeight.w900,
                               color: Colors.black))),
-                  IconButton(
-                    tooltip: 'My QR / profile',
-                    onPressed: id == null
-                        ? null
-                        : () => _go(context, '/profile/' + id),
-                    icon: const Icon(Icons.qr_code_2_rounded,
-                        size: 23, color: Color(0xff24243e)),
-                  ),
                   IconButton(
                     tooltip: 'Friends',
                     onPressed: () => _go(context, '/friends'),

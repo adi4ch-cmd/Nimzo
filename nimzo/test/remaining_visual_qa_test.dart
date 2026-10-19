@@ -50,8 +50,6 @@ import 'package:nimzo/features/recharge/recharge_repository.dart';
 import 'package:nimzo/features/discover/ranking_screen.dart';
 import 'package:nimzo/features/discover/leaderboard_repository.dart';
 import 'package:nimzo/features/settings/settings_screen.dart';
-import 'package:nimzo/features/store/store_repository.dart';
-import 'package:nimzo/features/store/store_badge.dart';
 import 'package:nimzo/features/notifications/notifications_screen.dart';
 import 'package:nimzo/features/notifications/notification_repository.dart';
 
@@ -280,14 +278,6 @@ void main() {
             ),
             supabaseProvider.overrideWithValue(db),
             currentUserIdProvider.overrideWithValue('me'),
-            equippedRoyalMedalProvider('me')
-                .overrideWith((_) async => const RoyalBagItem(
-                      id: 'crest-4',
-                      name: 'Royal Crest IV',
-                      image: 'assets/hilo/store/royal_4.webp',
-                      equipped: true,
-                    )),
-            equippedRoyalMedalProvider('other').overrideWith((_) async => null),
             authControllerProvider.overrideWith(AuthController.new),
             voiceServiceProvider.overrideWithValue(FixtureVoice()),
             ownedRoomPreviewProvider.overrideWith((_) async => fixtureRoom),
@@ -357,54 +347,15 @@ void main() {
                 profileCollectionProvider((id, kind)).overrideWith(
                   (_) async => [
                     for (var i = 0;
-                        i < (kind == ProfileCollection.medal ? 5 : 2);
+                        i < (kind == ProfileCollection.frame ? 5 : 2);
                         i++)
                       {
                         'name': 'Owned ${kind.name} ${i + 1}',
                         'image_path':
-                            'assets/reference/${kind == ProfileCollection.medal ? 'med' : kind.name}/$i.jpg',
+                            'assets/reference/${kind.name}/$i.jpg',
                       },
                   ],
                 ),
-            ],
-            if (entry.key == 'honor_wall') ...[
-              royalBagProvider('me').overrideWith((_) async => const [
-                    RoyalBagItem(
-                      id: 'crest-1',
-                      name: 'Royal Crest I',
-                      image: 'assets/hilo/store/royal_1.webp',
-                      equipped: true,
-                    ),
-                    RoyalBagItem(
-                      id: 'crest-2',
-                      name: 'Royal Crest II',
-                      image: 'assets/hilo/store/royal_2.webp',
-                      equipped: false,
-                    ),
-                  ]),
-              royalCatalogProvider.overrideWith((_) async => const [
-                    RoyalStoreItem(
-                      id: 'crest-1',
-                      name: 'Royal Crest I',
-                      image: 'assets/hilo/store/royal_1.webp',
-                      description: 'Royal collectible',
-                      price: 10000,
-                    ),
-                    RoyalStoreItem(
-                      id: 'crest-2',
-                      name: 'Royal Crest II',
-                      image: 'assets/hilo/store/royal_2.webp',
-                      description: 'Royal collectible',
-                      price: 25000,
-                    ),
-                    RoyalStoreItem(
-                      id: 'crest-3',
-                      name: 'Royal Crest III',
-                      image: 'assets/hilo/store/royal_3.webp',
-                      description: 'Royal collectible',
-                      price: 50000,
-                    ),
-                  ]),
             ],
             walletProvider.overrideWith(
               (_) async => (coins: 14402, diamonds: 0),

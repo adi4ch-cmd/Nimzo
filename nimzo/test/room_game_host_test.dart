@@ -29,7 +29,7 @@ void main() {
       ),
     );
     final roomElement = room.currentContext;
-    host.currentState!.open('fruit_party_jackpot');
+    host.currentState!.open('bigetar');
     await tester.pumpAndSettle();
     expect(find.text('Connected'), findsOneWidget);
     await tester.tap(find.byTooltip('Enable microphone'));

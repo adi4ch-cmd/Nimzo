@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/supabase_provider.dart';
 
-enum ProfileCollection { medal, frame, car }
+enum ProfileCollection { frame, car }
 
 final profileCollectionProvider = FutureProvider.family<
     List<Map<String, dynamic>>, (String, ProfileCollection)>((ref, args) async {

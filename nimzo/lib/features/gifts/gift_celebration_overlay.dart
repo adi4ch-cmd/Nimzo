@@ -1,11 +1,14 @@
+import 'private_animal_gifts.dart';
+import 'hall_of_fame_vap_overlay.dart';
+
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import 'gift_artwork.dart';
 import 'nimzo_gift_control_art.dart';
 import 'gift_svga_overlay.dart';
 import 'gift_video_overlay.dart';
-import 'nimzo_custom_gift_effect.dart';
 import '../../core/utils/formatters.dart';
 
 /// NIMZO's own non-video celebration, shown only for server-settled gifts.
@@ -42,19 +45,20 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
     final milliseconds = widget.unitPrice >= 5000000
         ? 4700
         : widget.unitPrice >= 1000000
-            ? 3700
-            : widget.unitPrice >= 10000
-                ? 2600
-                : 1700;
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: milliseconds),
-    )..addStatusListener((status) {
-        if (status == AnimationStatus.completed && !_finished) {
-          _finished = true;
-          widget.onFinished();
-        }
-      });
+        ? 3700
+        : widget.unitPrice >= 10000
+        ? 2600
+        : 1700;
+    _controller =
+        AnimationController(
+          vsync: this,
+          duration: Duration(milliseconds: milliseconds),
+        )..addStatusListener((status) {
+          if (status == AnimationStatus.completed && !_finished) {
+            _finished = true;
+            widget.onFinished();
+          }
+        });
     _controller.forward();
   }
 
@@ -70,10 +74,10 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
     final accent = widget.unitPrice >= 5000000
         ? const Color(0xfff6c868)
         : premium
-            ? const Color(0xffd79bfa)
-            : widget.unitPrice >= 10000
-                ? const Color(0xff79d5e9)
-                : const Color(0xffb0edb9);
+        ? const Color(0xffd79bfa)
+        : widget.unitPrice >= 10000
+        ? const Color(0xff79d5e9)
+        : const Color(0xffb0edb9);
     final narrow = MediaQuery.sizeOf(context).width < 360;
     return IgnorePointer(
       child: Material(
@@ -86,8 +90,8 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
               final fade = t < .14
                   ? t / .14
                   : t > .87
-                      ? (1 - t) / .13
-                      : 1.0;
+                  ? (1 - t) / .13
+                  : 1.0;
               final scale = .72 + .28 * Curves.easeOutCubic.transform(t);
               return Opacity(
                 opacity: fade.clamp(0.0, 1.0),
@@ -155,7 +159,9 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             border: Border.all(
-                                              color: accent.withValues(alpha: .5),
+                                              color: accent.withValues(
+                                                alpha: .5,
+                                              ),
                                               width: 2,
                                             ),
                                           ),
@@ -166,10 +172,12 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
                                         height: 136,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          gradient: RadialGradient(colors: [
-                                            accent.withValues(alpha: .3),
-                                            accent.withValues(alpha: .02),
-                                          ]),
+                                          gradient: RadialGradient(
+                                            colors: [
+                                              accent.withValues(alpha: .3),
+                                              accent.withValues(alpha: .02),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       SizedBox(
@@ -300,6 +308,8 @@ void showSettledPersonalGiftCelebration(
   String? recipientName,
   String? videoUrl,
 }) {
+  final protectedGift = privateAnimalGiftIdForName(giftName) != null;
+  if (protectedGift && videoUrl == null) return;
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return;
   late OverlayEntry entry;
@@ -317,7 +327,16 @@ void showSettledPersonalGiftCelebration(
       : 'a member';
   final originalSvga = freeGiftAnimationForName(giftName);
   entry = OverlayEntry(
-    builder: (_) => videoUrl != null
+    builder: (_) => protectedGift && videoUrl != null
+        ? HallOfFameVapOverlay(
+            source: videoUrl,
+            sender: 'You',
+            recipient: recipient,
+            giftName: giftName,
+            quantity: quantity,
+            onFinished: dismiss,
+          )
+        : videoUrl != null
         ? GiftVideoOverlay(
             source: videoUrl,
             sender: 'You',
@@ -335,23 +354,15 @@ void showSettledPersonalGiftCelebration(
             quantity: quantity,
             onFinished: dismiss,
           )
-        : hasOriginalNimzoGiftEffect(giftName)
-          ? NimzoCustomGiftEffect(
-              name: giftName,
-              sender: 'You',
-              recipient: recipient,
-              quantity: quantity,
-              onFinished: dismiss,
-            )
-          : NimzoGiftCelebration(
-      giftName: giftName,
-      sender: 'You',
-      recipient: recipient,
-      quantity: quantity,
-      unitPrice: unitPrice,
-      assetPath: assetPath,
-      onFinished: dismiss,
-    ),
+        : NimzoGiftCelebration(
+            giftName: giftName,
+            sender: 'You',
+            recipient: recipient,
+            quantity: quantity,
+            unitPrice: unitPrice,
+            assetPath: assetPath,
+            onFinished: dismiss,
+          ),
   );
   overlay.insert(entry);
 }
