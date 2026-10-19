@@ -5,6 +5,8 @@ import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'gift_repository.dart';
+import 'private_premium_gifts.dart';
+import 'hall_of_fame_vap_overlay.dart';
 import 'gift_video_overlay.dart';
 import 'gift_svga_overlay.dart';
 import 'nimzo_custom_gift_effect.dart';
@@ -257,6 +259,28 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       'c3f41e6e-68d5-4e56-9253-33421ec18fc3' => 'Golden Dragon',
       _ => catalogName,
     };
+    if (_video != null &&
+        privatePremiumGiftIds.contains('${event['gift_id']}')) {
+      return HallOfFameVapOverlay(
+        key: ValueKey(event['id']),
+        source: _video!,
+        giftName: giftName,
+        sender: sender,
+        recipient: recipient,
+        quantity: quantity,
+        onFinished: () {
+          if (mounted && identical(_active, event)) _next();
+        },
+      );
+    }
+    if (!_loading && _video == null &&
+        privatePremiumGiftIds.contains('${event['gift_id']}')) {
+      // Never substitute a misleading static card for a VAP effect.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && identical(_active, event)) _next();
+      });
+      return const SizedBox.shrink();
+    }
     if (_video != null) {
       return GiftVideoOverlay(
         key: ValueKey(event['id']),
