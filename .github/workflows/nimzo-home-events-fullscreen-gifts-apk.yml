@@ -6,7 +6,7 @@ on:
       - feature/home-events-fullscreen-gifts-20261019
   pull_request:
     branches:
-      - feature/home-events-fullscreen-gifts-20261019
+      - feature/profile-reference-redesign
   workflow_dispatch: {}
 
 permissions:
