@@ -62,6 +62,24 @@ class GiftRepository {
         );
   }
 
+  /// Read-only fallback for missed Realtime gift events in the joined room.
+  /// Uses the same row-level security as the live animation stream; never
+  /// creates a gift event or adjusts wallet balances.
+  Future<List<Map<String, dynamic>>> recentVerifiedRoomAnimations(
+    String roomId, {
+    required DateTime since,
+  }) async {
+    final rows = await _db
+        .from('gift_animation_events')
+        .select()
+        .eq('room_id', roomId)
+        .eq('scope', 'room')
+        .gte('created_at', since.toUtc().toIso8601String())
+        .order('created_at', ascending: true)
+        .limit(50);
+    return rows.map((row) => Map<String, dynamic>.from(row)).toList();
+  }
+
   /// Only admin-approved HTTPS video media may be played.
   Future<String?> approvedAnimationUrl(String giftId) async {
     if (privateAnimalVapGiftIds.contains(giftId)) {
