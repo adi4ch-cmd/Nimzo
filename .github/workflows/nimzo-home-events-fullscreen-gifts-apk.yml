@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - feature/home-events-fullscreen-gifts-20261019
-      - fix/rocket-blast-recovery-gift-delivery-20261019
   pull_request:
     branches:
       - feature/profile-reference-redesign
