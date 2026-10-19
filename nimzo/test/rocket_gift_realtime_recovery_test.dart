@@ -38,6 +38,12 @@ void main() {
     expect(repository, contains(".gte('created_at', since.toUtc().toIso8601String())"));
     expect(host, contains('Timer.periodic(const Duration(seconds: 3)'));
     expect(host, contains('.recentBlasts('));
+    expect(host, contains("kDebugMode"));
+    expect(host, contains("rocket-local-vap-preview"));
+    expect(host, contains('ROCKET ${stage + 1} LOCAL PREVIEW'));
+    expect(host, contains('targetCoins: roomRocketTargets[stage]'));
+    expect(host, isNot(contains('await r.send(')));
+
     expect(host, contains('_seen.contains(event.id)'));
     expect(host, contains('event.cycleStart.isBefore(_cycle!)'));
     expect(host, contains('if (widget.enabled && _queue.isNotEmpty)'));
