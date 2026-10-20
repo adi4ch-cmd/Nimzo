@@ -619,7 +619,7 @@ void main() {
             'Gold',
           ]) {
             await tester.scrollUntilVisible(
-              find.text(label).first,
+              find.byKey(ValueKey('level-band-$label')),
               120,
               scrollable: find.byType(Scrollable).first,
             );
