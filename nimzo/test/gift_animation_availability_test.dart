@@ -28,11 +28,13 @@ void main() {
   testWidgets('unavailable promised animation is rejected before settlement', (
     tester,
   ) async {
-    final db = SupabaseClient(
-      'https://example.supabase.co',
-      'test',
-      authOptions: const AuthClientOptions(autoRefreshToken: false),
-    );
+    final db = (await tester.runAsync(
+      () async => SupabaseClient(
+        'https://example.supabase.co',
+        'test',
+        authOptions: const AuthClientOptions(autoRefreshToken: false),
+      ),
+    ))!;
     addTearDown(() => tester.runAsync(db.dispose));
     final repository = UnavailableAnimatedGiftRepository(db);
     await tester.pumpWidget(

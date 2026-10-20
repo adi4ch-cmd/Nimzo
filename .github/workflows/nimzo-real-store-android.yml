@@ -1,0 +1,299 @@
+name: NIMZO Real Store Android Test APK
+
+# Called only after the source QA job succeeds in the feature-branch workflow.
+# The caller must use needs: verify and grant contents: write.
+on:
+  workflow_call: {}
+
+permissions:
+  contents: write
+
+jobs:
+  android-test:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/real-store-room-gifts-20261020' && github.workflow == 'NIMZO Real Store and Room Gifts QA'
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    steps:
+      - name: Checkout exact source QA commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Verify exact checkout
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+
+      - name: Verify NIMZO FEATURES lock before building
+        run: python3 tools/verify_nimzo_feature_lock.py
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Verify native auth key policy against SDK PKCE key
+        run: python3 tools/test_native_auth_storage_key_policy.py
+
+      - name: Flutter stable
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.6"
+          channel: stable
+          cache: true
+
+      - name: Generate Android project
+        working-directory: nimzo
+        run: flutter create --platforms=android --project-name nimzo .
+
+      - name: Configure API 36 compatible Android toolchain
+        working-directory: nimzo
+        run: python3 ../tools/configure_android_gradle.py android
+
+      - name: Prepare minimal Android activity without Vivox SDK
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p android/app/src/main/java/io/nimzo/app android/app/src/main/res/drawable
+          cp native/vivox/android/nimzo_launcher.xml android/app/src/main/res/drawable/nimzo_launcher.xml
+          cp assets/brand/nimzo_purple_gold.png android/app/src/main/res/drawable/nimzo_brand_icon.png
+          cp native/vivox/android/NimzoUpdate.java android/app/src/main/java/io/nimzo/app/NimzoUpdate.java
+          cp native/voice_disabled/android/MainActivity.java android/app/src/main/java/io/nimzo/app/MainActivity.java
+
+      - name: Configure Android ID permissions and OAuth callback
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          gradle = Path("android/app/build.gradle.kts")
+          if not gradle.exists():
+              gradle = Path("android/app/build.gradle")
+          s = gradle.read_text()
+
+          if gradle.suffix == ".kts":
+              s = re.sub(r'namespace\s*=\s*"[^"]+"', 'namespace = "io.nimzo.app"', s, count=1)
+              s = re.sub(r'applicationId\s*=\s*"[^"]+"', 'applicationId = "io.nimzo.app"', s, count=1)
+          gradle.write_text(s)
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          m = manifest.read_text()
+          m = re.sub(r'android:label="[^"]+"', 'android:label="Nimzo"', m, count=1)
+          m = re.sub(r'android:icon="[^"]+"', 'android:icon="@drawable/nimzo_launcher"', m, count=1)
+          if "xmlns:tools=" not in m:
+              m = m.replace("<manifest", '<manifest xmlns:tools="http://schemas.android.com/tools"', 1)
+
+          for perm in [
+              "android.permission.REQUEST_INSTALL_PACKAGES",
+              "android.permission.INTERNET",
+              "android.permission.RECORD_AUDIO",
+              "android.permission.MODIFY_AUDIO_SETTINGS",
+              "android.permission.BLUETOOTH",
+              "android.permission.BLUETOOTH_CONNECT",
+              "android.permission.BLUETOOTH_SCAN",
+          ]:
+              tag = f'<uses-permission android:name="{perm}" />'
+              if perm not in m:
+                  m = m.replace("<application", tag + "\n    <application", 1)
+
+          m = re.sub(
+              r'<meta-data\s+android:name="flutter_deeplinking_enabled"\s+android:value="(?:true|false)"\s*/>',
+              '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />',
+              m,
+          )
+
+          activity = re.search(
+              r'<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>(.*?)</activity>',
+              m,
+              re.DOTALL,
+          )
+          if not activity:
+              raise SystemExit("MainActivity block not found")
+
+          block = activity.group(0)
+          opening = re.match(r'<activity\b[^>]*>', block).group(0)
+          opening = re.sub(r'\sandroid:exported="[^"]*"', '', opening)
+          opening = re.sub(r'\sandroid:launchMode="[^"]*"', '', opening)
+          opening = opening[:-1] + ' android:exported="true" android:launchMode="singleTask">'
+          body = block[len(re.match(r'<activity\b[^>]*>', block).group(0)):]
+          if 'android:scheme="io.nimzo.app"' not in body:
+              body = body.replace("</activity>", '''<intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <data android:scheme="io.nimzo.app" android:host="login-callback" />
+          </intent-filter>
+          </activity>''')
+          if 'android:name="flutter_deeplinking_enabled"' not in body:
+              body = body.replace("</activity>", '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />\n</activity>')
+          m = m[:activity.start()] + opening + body + m[activity.end():]
+
+          if 'tools:replace="android:name"' not in m:
+              m = m.replace("<application", '<application tools:replace="android:name"', 1)
+
+          if 'android:name="flutter_deeplinking_enabled"' not in m:
+              m = m.replace(
+                  "<application",
+                  '<application',
+                  1,
+              )
+              app_end = m.find(">", m.find("<application"))
+              m = m[:app_end+1] + '\n        <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />' + m[app_end+1:]
+
+          provider = '''<provider android:name="androidx.core.content.FileProvider" android:authorities="io.nimzo.app.apk_updates" android:exported="false" android:grantUriPermissions="true"><meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/nimzo_apk_paths" /></provider>'''
+          m = m.replace("</application>", provider + "\n</application>")
+          paths = Path("android/app/src/main/res/xml/nimzo_apk_paths.xml")
+          paths.parent.mkdir(parents=True, exist_ok=True)
+          paths.write_text('<paths xmlns:android="http://schemas.android.com/apk/res/android"><cache-path name="nimzo_updates" path="nimzo_updates/" /></paths>')
+          manifest.write_text(m)
+
+          # Fail fast: verify the exact OAuth contract that Supabase expects.
+          final = manifest.read_text()
+          assert 'application tools:replace="android:name"' in final
+          assert 'android:scheme="io.nimzo.app" android:host="login-callback"' in final
+          assert 'android:exported="true"' in final
+          assert 'android:launchMode="singleTask"' in final
+          activity_final = re.search(r'<activity\b[^>]*>.*?</activity>', final, re.DOTALL).group(0)
+          assert 'android:name="flutter_deeplinking_enabled" android:value="false"' in activity_final
+          print("OAuth manifest verification: PASS")
+          PY
+
+      - name: Preserve original Vivox SDK integration files untouched
+        run: |
+          test -s nimzo/native/vivox/android/MainActivity.java
+          test -s nimzo/native/vivox/android/NimzoVivox.java
+          test -s nimzo/native/vivox/android/vivox_bridge.cpp
+          test -s nimzo/native/vivox/android/CMakeLists.txt
+          echo "Vivox source retained, SDK deferred for this test APK"
+
+      - name: Enable core library desugaring for Android notifications
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >> android/app/build.gradle.kts <<'GRADLE'
+          // flutter_local_notifications requires Java 8+ API desugaring.
+          android {
+              compileOptions {
+                  isCoreLibraryDesugaringEnabled = true
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+          }
+          dependencies {
+              coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+          }
+          GRADLE
+      - name: Flutter dependencies
+        working-directory: nimzo
+        run: |
+          rm -f test/widget_test.dart
+          flutter pub get
+      - name: Require reviewed auth runtime smoke helper
+        run: test -s tools/nimzo_auth_runtime_qa.py
+      - name: Build SDK-deferred Store test APK
+        working-directory: nimzo
+        run: flutter build apk --release --build-name=1.0.37 --build-number=137
+      - name: Verify all pinned Store assets and no linked Vivox SDK
+        run: |
+          set -euo pipefail
+          apk=nimzo/build/app/outputs/flutter-apk/app-release.apk
+          python3 tools/verify_premium_store_apk.py "$apk"
+          sha256sum "$apk" > "$apk.sha256"
+          git rev-parse HEAD > nimzo/build/SOURCE_SHA.txt
+          mkdir -p "$RUNNER_TEMP/nimzo-real-store-verified"
+          cp "$apk" "$RUNNER_TEMP/nimzo-real-store-verified/app-release.apk"
+      - name: Preserve test APK and package evidence even if later smoke fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: NIMZO-1.0.37-real-store-test-${{ github.run_id }}
+          path: |
+            nimzo/build/app/outputs/flutter-apk/app-release.apk
+            nimzo/build/app/outputs/flutter-apk/app-release.apk.sha256
+            nimzo/build/premium-store-apk-report.json
+            nimzo/build/SOURCE_SHA.txt
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Enable KVM access
+        run: |
+          test -e /dev/kvm
+          sudo chmod a+rw /dev/kvm
+      - name: Verify startup and auth form on Android 35 before publishing
+        uses: reactivecircus/android-emulator-runner@v2
+        timeout-minutes: 40
+        env:
+          NIMZO_QA_APK: ${{ runner.temp }}/nimzo-real-store-verified/app-release.apk
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          ram-size: 2048M
+          heap-size: 256M
+          emulator-boot-timeout: 900
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot -camera-back none -camera-front none -accel on
+          script: |
+            bash -euo pipefail -c 'cd nimzo; mkdir -p build/premium-store-runtime; trap "adb logcat -d -v time > build/premium-store-runtime/logcat.txt || true" EXIT; flutter drive --driver=test_driver/store_media_driver.dart --target=integration_test/store_media_runtime_test.dart -d emulator-5554 2>&1 | tee build/premium-store-runtime/flutter-drive.log'
+            adb uninstall io.nimzo.app
+            bash -euo pipefail -c 'mkdir -p nimzo/build/app/outputs/flutter-apk; cp "$NIMZO_QA_APK" nimzo/build/app/outputs/flutter-apk/app-release.apk'
+            bash tools/nimzo_android_startup_smoke.sh
+            python3 tools/nimzo_auth_runtime_qa.py "$NIMZO_QA_APK"
+      - name: Preserve Android smoke evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: NIMZO-1.0.37-real-store-runtime-${{ github.run_id }}
+          path: |
+            nimzo/build/startup-evidence/
+            nimzo/build/auth-runtime-evidence/
+            nimzo/build/premium-store-runtime/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Publish prerelease only after successful package and runtime verification
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          out="${RUNNER_TEMP}/nimzo-real-store-release"
+          mkdir -p "$out"
+          cp "$RUNNER_TEMP/nimzo-real-store-verified/app-release.apk" "$out/NIMZO_1.0.37_REAL_STORE_TEST.apk"
+          cp nimzo/build/premium-store-apk-report.json "$out/premium-store-apk-report.json"
+          cp nimzo/build/auth-runtime-evidence/result.json "$out/auth-runtime-result.json"
+          printf '%s\n' "$SOURCE_SHA" > "$out/SOURCE_SHA.txt"
+          (cd "$out" && sha256sum NIMZO_1.0.37_REAL_STORE_TEST.apk > SHA256SUMS.txt)
+          cat > "$out/notes.md" <<'NOTES'
+          NIMZO 1.0.37+137 — Real Store and room gifts test APK.
+
+          This exact commit passed source QA, pinned packaging checks for all 32
+          Store products and five entrance thumbnails, and Android 35 startup
+          and auth-form runtime smoke before this prerelease was published.
+          A separate Android integration harness exercised bundled native media
+          renderers before installing and checking this exact release APK.
+          Store SQL claim/equip/visual projection/unequip behavior was verified
+          in a disposable database; this does not prove signed-in Store behavior
+          on a real device. No wallet charge is introduced by the free catalog.
+          Runtime auth smoke covers invalid email credential rejection and
+          external Google/Facebook browser handoff. A real-account OAuth callback
+          has not been tested. No real account credentials were used by smoke.
+
+          Native Vivox remains deferred under the existing authorization. The
+          SDK is not linked in this APK; live voice microphone features remain
+          unavailable. Vivox source is retained for a later build.
+          This is a test prerelease, not a production updater release. A different
+          signing certificate can prevent an in-place update; uninstalling may
+          delete device-local settings and data.
+          NOTES
+          tag="nimzo-1.0.37-real-store-test-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          gh release create "$tag" --repo "$GITHUB_REPOSITORY" \
+            --target "$SOURCE_SHA" --title "NIMZO 1.0.37 — Real Store Test APK" \
+            --notes-file "$out/notes.md" --prerelease --latest=false \
+            "$out/NIMZO_1.0.37_REAL_STORE_TEST.apk" "$out/SHA256SUMS.txt" \
+            "$out/SOURCE_SHA.txt" "$out/premium-store-apk-report.json" \
+            "$out/auth-runtime-result.json"

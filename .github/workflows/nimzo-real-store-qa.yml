@@ -36,3 +36,8 @@ jobs:
             full-test-output.txt
             nimzo/test/failures/
           if-no-files-found: ignore
+  android:
+    needs: verify
+    permissions:
+      contents: write
+    uses: ./.github/workflows/nimzo-real-store-android.yml
