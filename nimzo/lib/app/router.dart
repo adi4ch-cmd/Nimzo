@@ -33,6 +33,7 @@ import '../features/rooms/presentation/room_settings_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/events/events_screen.dart';
 import '../features/store/store_screen.dart';
+import '../features/premium/willchill_premium_screen.dart';
 import '../features/home/pk_battles_screen.dart';
 import '../features/messages/messages_screen.dart';
 import '../features/moments/moments_screen.dart';
@@ -153,7 +154,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
           path: '/settings/blocked',
           builder: (_, __) => const TingleBlockedUsersScreen()),
-      GoRoute(path: '/svip', redirect: (_, __) => Routes.profile),
+      GoRoute(path: '/svip', builder: (_, __) => const WillChillPremiumScreen(initialGroup: 'svip')),
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
@@ -212,7 +213,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.recharge,
         builder: (_, __) => const RechargeScreen(),
       ),
-      GoRoute(path: Routes.vip, redirect: (_, __) => Routes.profile),
+      GoRoute(path: Routes.vip, builder: (_, __) => const WillChillPremiumScreen(initialGroup: 'vip')),
       GoRoute(
         path: '/profile/:id',
         builder: (_, s) => ProfileScreen(userId: s.pathParameters['id']),
