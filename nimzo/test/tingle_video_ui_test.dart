@@ -359,8 +359,6 @@ void main() {
             'Monthly',
             'Daily',
             'Charm',
-            'Active',
-            'Gift',
             'Wealth',
             'Weekly'
           ]) {

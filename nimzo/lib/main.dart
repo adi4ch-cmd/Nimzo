@@ -22,6 +22,18 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
   ProviderContainer? _container;
   bool _starting = true;
   String? _startupError;
+  // Reuse the in-flight future after a startup timeout: repeated tapping
+  // Retry must not initialize the Supabase singleton concurrently.
+  Future<Supabase>? _supabaseInitialization;
+
+  String _safeStartupMessage(Object error) {
+    if (error is TimeoutException) {
+      return 'Startup is taking too long. Tap Retry after a moment.';
+    }
+    // Only a sanitized error TYPE is displayed; never show OAuth tokens,
+    // Supabase URLs, exception messages or local session contents.
+    return 'NIMZO initialization error (${error.runtimeType}). Tap Retry.';
+  }
 
   @override
   void initState() {
@@ -32,13 +44,13 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
   Future<void> _initializeApp() async {
     try {
       // Preserve PKCE, existing session storage and OAuth callback handling.
-      await Supabase.initialize(
+      await (_supabaseInitialization ??= Supabase.initialize(
         url: AppConstants.supabaseUrl,
         publishableKey: AppConstants.supabaseAnonKey,
         authOptions: const FlutterAuthClientOptions(
           authFlowType: AuthFlowType.pkce,
         ),
-      ).timeout(const Duration(seconds: 12));
+      )).timeout(const Duration(seconds: 12));
       if (!mounted) return;
       final container = ProviderContainer();
       _container = container;
@@ -53,7 +65,7 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
       if (!mounted) return;
       setState(() {
         _starting = false;
-        _startupError = 'NIMZO could not start. Check your connection and retry.';
+        _startupError = _safeStartupMessage(error);
       });
     }
   }

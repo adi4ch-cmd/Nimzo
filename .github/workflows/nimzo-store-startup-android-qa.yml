@@ -329,6 +329,17 @@ jobs:
             assert max(st.stddev)>12, 'Blank/uniform startup screen'
             print('Android startup nonblank frame: PASS', img.size, st.stddev)
             PY
+            # A responsive error screen is NOT a passed login/startup test.
+            if grep -Fq 'NIMZO startup failed:' nimzo/build/startup-evidence/logcat.txt; then
+              echo 'Flutter initialization failed despite drawing a frame'
+              exit 1
+            fi
+            adb shell uiautomator dump /sdcard/nimzo_window.xml >/dev/null 2>&1 || true
+            adb shell cat /sdcard/nimzo_window.xml > nimzo/build/startup-evidence/window.xml 2>/dev/null || true
+            if grep -Eiq 'could not start|initialization error|tap retry' nimzo/build/startup-evidence/window.xml; then
+              echo 'App is stuck on startup Retry/error screen'
+              exit 1
+            fi
             if grep -E 'FATAL EXCEPTION:|Fatal signal [0-9]+' nimzo/build/startup-evidence/logcat.txt | grep -E -i -q 'nimzo|flutter|vivox'; then
               echo 'Potential Android crash found in launch log'; exit 1
             fi
