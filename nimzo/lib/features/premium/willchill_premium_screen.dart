@@ -2,23 +2,21 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/providers/supabase_provider.dart';
 import 'willchill_membership_showcase.dart';
 import 'package:flutter/services.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_svga/flutter_svga.dart';
 import 'package:flutter_vap_player/flutter_vap_player.dart';
 
-/// On-device QA catalogue of verified media bundled from the user-provided source.
-/// No checkout, coin debits, fake ownership or auto-granted SVIP privileges.
-/// Catalogued media becomes saleable/equippable only once a server entitlement
-/// and its room/profile renderer are independently tested.
-class WillChillPremiumScreen extends StatefulWidget {
+/// Membership destination; source artwork is composed in the tier layout.
+class WillChillPremiumScreen extends ConsumerStatefulWidget {
   const WillChillPremiumScreen({super.key, this.initialGroup = 'svip'});
   final String initialGroup;
 
   @override
-  State<WillChillPremiumScreen> createState() => _WillChillPremiumScreenState();
+  ConsumerState<WillChillPremiumScreen> createState() =>
+      _WillChillPremiumScreenState();
 }
 
 class _PremiumAsset {
@@ -32,39 +30,59 @@ class _PremiumAsset {
   final int? tier;
   bool get isImage => mediaType == 'image';
   bool get canPlay => mediaType == 'vap' || mediaType == 'svga';
-  String get displayName => name
-      .replaceAll(RegExp(r'\.(png|webp|jpg|svga|mp4)$'), '')
-      .replaceAll('_', ' ');
+  String get displayName => group == 'entrances' &&
+          name.startsWith('voiceroom_crown_orb_')
+      ? 'SVIP ${RegExp(r'\d+').firstMatch(name)?.group(0) ?? ''} room entrance'
+      : name
+          .replaceAll(RegExp(r'\.(png|webp|jpg|svga|mp4)$'), '')
+          .replaceAll('_', ' ');
 }
 
-class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
-  static const groups = <String>[
-    'svip', 'vip', 'store', 'gifts', 'entrances', 'room_fx', 'games',
-  ];
-  static const title = <String, String>{
-    'svip': 'SVIP 1–8',
-    'vip': 'VIP',
-    'store': 'Open Store',
-    'gifts': 'Gift Previews',
-    'entrances': 'Entrance Previews',
-    'room_fx': 'Room FX Previews',
-    'games': 'Games Artwork',
-  };
+final _membershipProvider =
+    FutureProvider.autoDispose<Map<String, dynamic>?>((ref) async {
+  final session = ref.watch(sessionSupabaseProvider);
+  if (session.userId == null) return null;
+  return session.client
+      .from('profiles')
+      .select('svip_level,vip_level,vip_expires_at,svip_cycle_cents')
+      .eq('id', session.userId!)
+      .maybeSingle()
+      .timeout(const Duration(seconds: 6));
+});
+
+final _vipOffersProvider =
+    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+  final session = ref.watch(sessionSupabaseProvider);
+  if (session.userId == null) return [];
+  final rows = await session.client
+      .from('normal_vip_catalog')
+      .select('tier,coin_price,duration_days')
+      .order('tier');
+  return rows.map((row) => Map<String, dynamic>.from(row)).toList();
+});
+
+final _svipThresholdsProvider =
+    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+  final session = ref.watch(sessionSupabaseProvider);
+  if (session.userId == null) return [];
+  final rows = await session.client
+      .from('svip_thresholds')
+      .select('level,usd_cents')
+      .order('level');
+  return rows.map((row) => Map<String, dynamic>.from(row)).toList();
+});
+
+class _WillChillPremiumScreenState
+    extends ConsumerState<WillChillPremiumScreen> {
   List<_PremiumAsset>? _assets;
   Object? _error;
-  String _membershipStatus = 'Checking NIMZO membership status…';
-  int _ownedSvip = 0;
-  int _ownedVip = 0;
-  late String _group = groups.contains(widget.initialGroup)
-      ? widget.initialGroup
-      : 'svip';
+  late final String _group = widget.initialGroup == 'vip' ? 'vip' : 'svip';
   int _tier = 1;
 
   @override
   void initState() {
     super.initState();
     unawaited(_load());
-    unawaited(_readMembership());
   }
 
   Future<void> _load() async {
@@ -86,190 +104,177 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
     }
   }
 
-  Future<void> _readMembership() async {
-    try {
-      final client = Supabase.instance.client;
-      final user = client.auth.currentUser;
-      if (user == null) {
-        if (mounted) {
-          setState(() => _membershipStatus = 'Sign in to view your membership');
-        }
-        return;
-      }
-      final profile = await client
-          .from('profiles')
-          .select('svip_level,vip_level,vip_expires_at')
-          .eq('id', user.id)
-          .maybeSingle()
-          .timeout(const Duration(seconds: 6));
-      if (!mounted) return;
-      if (profile == null) {
-        setState(() => _membershipStatus = 'Membership details unavailable');
-        return;
-      }
-      final svip = (profile['svip_level'] as num?)?.toInt() ?? 0;
-      final vip = (profile['vip_level'] as num?)?.toInt() ?? 0;
-      final expiry = DateTime.tryParse(
-          (profile['vip_expires_at'] ?? '').toString());
-      final activeVip = vip > 0 && expiry != null &&
-          expiry.isAfter(DateTime.now());
-      final vipLabel = activeVip ? 'VIP $vip' : 'VIP inactive';
-      setState(() {
-        _ownedSvip = svip;
-        _ownedVip = activeVip ? vip : 0;
-        _membershipStatus = 'NIMZO account: SVIP $svip · $vipLabel';
-      });
-    } catch (_) {
-      if (mounted) {
-        setState(() => _membershipStatus =
-            'Membership status temporarily unavailable');
-      }
-    }
-  }
-
-  Widget _svipOverview() {
-    final possible = _assets?.where((item) =>
-      item.group == 'entrances' &&
-      item.name == 'voiceroom_crown_orb_$_tier.mp4').toList();
+  Widget _svipOverview(int owned, double? progress) {
+    final possible = _assets
+        ?.where((item) =>
+            item.group == 'entrances' &&
+            item.name == 'voiceroom_crown_orb_$_tier.mp4')
+        .toList();
     final crown = possible == null || possible.isEmpty ? null : possible.first;
     return WillChillMembershipShowcase(
       kind: 'svip',
+      growthProgress: progress,
       tier: _tier,
-      ownedLevel: _ownedSvip,
+      ownedLevel: owned,
       onTierChanged: (tier) => setState(() => _tier = tier),
-      onPreviewEntrance: crown == null ? null : () =>
-          Navigator.of(context).push<void>(MaterialPageRoute(
-            builder: (_) => _PremiumAssetPreview(asset: crown),
-          )),
+      onPreviewEntrance: crown == null
+          ? null
+          : () => showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => FractionallySizedBox(
+                  heightFactor: .85,
+                  child: _PremiumAssetPreview(asset: crown))),
     );
   }
 
-  Widget _vipOverview() => WillChillMembershipShowcase(
-    kind: 'vip',
-    tier: _tier > 7 ? 7 : _tier,
-    ownedLevel: _ownedVip,
-    onTierChanged: (tier) => setState(() => _tier = tier),
-  );
+  Widget _vipOverview(int owned) => WillChillMembershipShowcase(
+        kind: 'vip',
+        tier: _tier > 7 ? 7 : _tier,
+        ownedLevel: owned,
+        onTierChanged: (tier) => setState(() => _tier = tier),
+      );
 
   @override
   Widget build(BuildContext context) {
-    final items = (_assets ?? []).where((a) => a.group == _group &&
-      (_group != 'svip' && _group != 'vip' || a.tier == null || a.tier == _tier)).toList();
+    final membership = ref.watch(_membershipProvider);
+    final profile = membership.valueOrNull;
+    final svip = (profile?['svip_level'] as num?)?.toInt() ?? 0;
+    final vip = (profile?['vip_level'] as num?)?.toInt() ?? 0;
+    final expiry = DateTime.tryParse('${profile?['vip_expires_at'] ?? ''}');
+    final activeVip =
+        expiry != null && expiry.isAfter(DateTime.now()) ? vip : 0;
+    final status = membership.isLoading
+        ? 'Checking membership…'
+        : membership.hasError
+            ? 'Membership unavailable · tap to retry'
+            : profile == null
+                ? 'Sign in to view your membership'
+                : 'Your account · SVIP $svip · ${activeVip > 0 ? 'VIP $activeVip' : 'VIP inactive'}';
+    final offers = ref.watch(_vipOffersProvider).valueOrNull ?? const [];
+    final thresholds =
+        ref.watch(_svipThresholdsProvider).valueOrNull ?? const [];
+    final selectedOffers = offers.where((row) => row['tier'] == _tier);
+    final offer = selectedOffers.isEmpty ? null : selectedOffers.first;
+    final selectedThresholds = thresholds.where((row) => row['level'] == _tier);
+    final threshold = selectedThresholds.isEmpty
+        ? null
+        : (selectedThresholds.first['usd_cents'] as num?)?.toDouble();
+    final cents = (profile?['svip_cycle_cents'] as num?)?.toDouble();
+    final progress = threshold != null && threshold > 0 && cents != null
+        ? (cents / threshold).clamp(0.0, 1.0)
+        : null;
     return Scaffold(
-      backgroundColor: const Color(0xfff5f9f7),
+      backgroundColor: const Color(0xff090a10),
       appBar: AppBar(
-        title: Text(_group == 'svip' ? 'NIMZO SVIP' : _group == 'vip' ? 'NIMZO VIP' : 'NIMZO Premium Previews'),
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xff174632),
-      ),
-      body: _error != null
-          ? Center(child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text('Premium assets are not installed. '
-                  'Run the verified import package before building.\n$_error',
-                  textAlign: TextAlign.center),
-            ))
-          : _assets == null
-              ? const Center(child: CircularProgressIndicator())
-              : Column(children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 2),
-                    child: Text(_membershipStatus,
-                        key: const ValueKey('willchill-membership-status'),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Color(0xff4a6458),
-                            fontSize: 12, fontWeight: FontWeight.w600)),
-                  ),
-                  SizedBox(
-                    height: 48,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      itemCount: groups.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 6),
-                      itemBuilder: (context, i) => ChoiceChip(
-                        selected: groups[i] == _group,
-                        label: Text(title[groups[i]] ?? groups[i]),
-                        onSelected: (_) {
-                          if (groups[i] == 'store') {
-                            context.push('/store');
-                          } else {
-                            setState(() { _group = groups[i]; _tier = 1; });
-                          }
-                        },
-                        selectedColor: const Color(0xff9dddc7),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.fromLTRB(13, 10, 13, 30),
-                      children: [
-                        if (_group == 'svip') _svipOverview(),
-                        if (_group == 'vip') _vipOverview(),
-                        if (_group != 'svip' && _group != 'vip') Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Text('${title[_group]} · ${items.length} files',
+        title: Text(_group == 'svip' ? 'NIMZO SVIP' : 'NIMZO VIP'),
+        centerTitle: true,
+        backgroundColor: const Color(0xff100e12),
+        foregroundColor: const Color(0xffead8a1),
+        actions: [
+          IconButton(
+            tooltip: 'Membership information',
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => showModalBottomSheet<void>(
+                context: context,
+                backgroundColor: const Color(0xff17131c),
+                showDragHandle: true,
+                builder: (_) => SafeArea(
+                    child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                            '$status\n\nPreview each tier’s appearance. Membership purchases are currently unavailable.',
                             style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w800)),
-                        ),
-                        if (_group != 'svip' && _group != 'vip') GridView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            mainAxisExtent: 166,
-                          ),
-                          itemCount: items.length,
-                          itemBuilder: (context, i) {
-                            final item = items[i];
-                            return Card(
-                              clipBehavior: Clip.antiAlias,
-                              child: InkWell(
-                                key: ValueKey('willchill-asset-${item.name}'),
-                                onTap: item.mediaType == 'audio' ? null : () =>
-                                    Navigator.of(context).push<void>(
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            _PremiumAssetPreview(asset: item),
-                                      )),
-                                child: Column(children: [
-                                  Expanded(child: Container(
-                                    width: double.infinity,
-                                    color: const Color(0xffedf4f0),
-                                    child: item.isImage
-                                        ? Image.asset(item.asset,
-                                            fit: BoxFit.contain,
-                                            errorBuilder: (_, __, ___) =>
-                                                const Icon(Icons.broken_image))
-                                        : Center(child: Icon(
-                                            item.canPlay
-                                                ? Icons.play_circle_fill
-                                                : Icons.movie_creation_outlined,
-                                            size: 42,
-                                            color: const Color(0xff0b8964),
-                                          )),
-                                  )),
-                                  Padding(
-                                    padding: const EdgeInsets.all(7),
-                                    child: Text(item.displayName,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontSize: 11,
-                                          fontWeight: FontWeight.w700)),
-                                  ),
-                                ]),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ]),
+                                color: Color(0xffead8a1), height: 1.5))))),
+          )
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+          top: false,
+          child: Container(
+            key: const ValueKey('membership-fixed-status'),
+            constraints: const BoxConstraints(minHeight: 72),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xff100e12),
+              border: const Border(top: BorderSide(color: Color(0xff806943))),
+              image: _group == 'svip'
+                  ? DecorationImage(
+                      image: AssetImage(
+                          'assets/willchill_premium/svip/svip${_tier}_expiration_container.webp'),
+                      fit: BoxFit.fill)
+                  : null,
+            ),
+            child: _group == 'svip'
+                ? Row(children: [
+                    const Icon(Icons.workspace_premium_outlined,
+                        color: Color(0xffead8a1)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                        child: Text(
+                            membership.isLoading ||
+                                    membership.hasError ||
+                                    profile == null
+                                ? status
+                                : svip > 0
+                                    ? 'SVIP $svip active'
+                                    : 'SVIP Not Unlocked Yet',
+                            style: const TextStyle(
+                                color: Color(0xffead8a1),
+                                fontWeight: FontWeight.w700))),
+                  ])
+                : Row(children: [
+                    Expanded(
+                        child: Text(
+                            offer == null
+                                ? 'Price unavailable'
+                                : '${offer['coin_price']} coins / ${offer['duration_days']} days',
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 12))),
+                    const SizedBox(width: 12),
+                    Tooltip(
+                        message: 'VIP purchases are currently unavailable',
+                        child: FilledButton(
+                          onPressed: null,
+                          style: FilledButton.styleFrom(
+                              disabledBackgroundColor: const Color(0xff988352),
+                              disabledForegroundColor: const Color(0xff292018)),
+                          child: const Text('Unavailable'),
+                        )),
+                  ]),
+          )),
+      body: SafeArea(
+          top: false,
+          child: _error != null
+              ? Center(
+                  child: TextButton(
+                      onPressed: _load,
+                      child: const Text('Unable to load membership · Retry')))
+              : _assets == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : RefreshIndicator(
+                      onRefresh: () async {
+                        ref.invalidate(_membershipProvider);
+                        ref.invalidate(_vipOffersProvider);
+                        ref.invalidate(_svipThresholdsProvider);
+                        await ref.read(_membershipProvider.future);
+                      },
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.zero,
+                        children: [
+                          if (membership.hasError)
+                            TextButton(
+                                key: const ValueKey(
+                                    'willchill-membership-status'),
+                                onPressed: () =>
+                                    ref.invalidate(_membershipProvider),
+                                child: Text(status)),
+                          if (_group == 'svip') _svipOverview(svip, progress),
+                          if (_group == 'vip') _vipOverview(activeVip),
+                        ],
+                      ),
+                    )),
     );
   }
 }
@@ -317,7 +322,8 @@ class _PremiumAssetPreviewState extends State<_PremiumAssetPreview> {
       setState(() => _initialized = true);
       await controller.play();
     } catch (_) {
-      if (mounted) setState(() => _error = 'Unable to initialize native player');
+      if (mounted)
+        setState(() => _error = 'Unable to initialize native player');
     }
   }
 
@@ -341,28 +347,34 @@ class _PremiumAssetPreviewState extends State<_PremiumAssetPreview> {
         body: SafeArea(
           child: Stack(fit: StackFit.expand, children: [
             if (_error != null)
-              Center(child: Text(_error!,
-                  style: const TextStyle(color: Colors.white)))
+              Center(
+                  child: Text(_error!,
+                      style: const TextStyle(color: Colors.white)))
             else if (widget.asset.isImage)
-              InteractiveViewer(child: Center(child:
-                  Image.asset(widget.asset.asset, fit: BoxFit.contain)))
+              InteractiveViewer(
+                  child: Center(
+                      child:
+                          Image.asset(widget.asset.asset, fit: BoxFit.contain)))
             else if (widget.asset.mediaType == 'svga')
-              SVGAEasyPlayer(assetsName: widget.asset.asset,
-                  fit: BoxFit.contain)
+              SVGAEasyPlayer(
+                  assetsName: widget.asset.asset, fit: BoxFit.contain)
             else if (widget.asset.mediaType == 'vap' &&
-                _initialized && _vap != null)
+                _initialized &&
+                _vap != null)
               VapPlayer(_vap!)
             else if (widget.asset.mediaType == 'vap')
               const Center(child: CircularProgressIndicator())
             else
-              const Center(child: Text('Preview not available for this format',
-                  style: TextStyle(color: Colors.white))),
+              const Center(
+                  child: Text('Preview not available for this format',
+                      style: TextStyle(color: Colors.white))),
             Positioned(
-              bottom: 20, left: 14, right: 14,
-              child: Text('SOURCE ASSET PREVIEW · No coin charge or '
-                  'membership grant',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white70, fontSize: 11)),
+              bottom: 20,
+              left: 14,
+              right: 14,
+              child: Text('Room entrance preview',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white70, fontSize: 11)),
             ),
           ]),
         ),

@@ -1,12 +1,13 @@
+import 'store_visual_equipment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../premium/willchill_premium_screen.dart';
+import 'premium_cosmetics.dart';
+import 'cosmetic_media_view.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/art/nimzo_identity_art.dart';
 
-/// The live Store uses ORIGINAL NIMZO vector art. The third-party APK
-/// animations are for research/preview only and are not distributed here.
+/// Account catalog with pinned media for imported items and original vector art.
 class NimzoCosmeticItem {
   const NimzoCosmeticItem({
     required this.id,
@@ -71,8 +72,15 @@ final nimzoStoreProvider = FutureProvider.autoDispose<NimzoStoreSnapshot>(
         .map((e) => NimzoCosmeticItem.fromJson(e as Map<String, dynamic>))
         .toList();
     const order = <String>[
-      'Avatar Frame', 'Rides', 'Party Theme',
-      'Chat Bubble', 'Live Frame', 'Royal Badge',
+      'Avatar Frame',
+      'Rides',
+      'Party Theme',
+      'Chat Bubble',
+      'Live Frame',
+      'Royal Badge',
+      'ID Frame',
+      'Profile Card',
+      'Mic Wave',
     ];
     items.sort((a, b) {
       final byVariant = a.variant.compareTo(b.variant);
@@ -115,6 +123,9 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
     'Chat Bubble',
     'Live Frame',
     'Royal Badge',
+    'ID Frame',
+    'Profile Card',
+    'Mic Wave',
   ];
 
   static const colors = <Color>[
@@ -147,13 +158,17 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
         _ => Icons.storefront_rounded,
       };
 
-  Future<void> doAction(NimzoCosmeticItem item, bool isOwned) async {
+  Future<void> doAction(
+      NimzoCosmeticItem item, bool isOwned, bool equipped) async {
     if (pending != null) return;
     setState(() => pending = item.id);
     try {
       final session = ref.read(sessionSupabaseProvider);
       if (session.userId == null) throw StateError('Sign in required');
-      if (isOwned) {
+      if (equipped) {
+        await session.client
+            .rpc('nimzo_store_unequip', params: {'p_category': item.category});
+      } else if (isOwned) {
         await session.client.rpc(
           'nimzo_store_equip_free',
           params: {'p_item_id': item.id},
@@ -168,11 +183,14 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
         );
       }
       ref.invalidate(nimzoStoreProvider);
+      ref.invalidate(storeVisualEquipmentProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(isOwned
-              ? '${item.name} equipped'
-              : '${item.name} added to Backpack'),
+          content: Text(equipped
+              ? '${item.name} removed'
+              : isOwned
+                  ? '${item.name} equipped'
+                  : '${item.name} added to Backpack'),
         ));
       }
     } catch (error) {
@@ -206,82 +224,96 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
       ),
       child: Container(
         key: ValueKey('nimzo-store-item-${item.id}'),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(17),
-        border: Border.all(
-          color: equipped ? const Color(0xff0a9d73) : const Color(0xffe8edea),
-          width: equipped ? 2 : 1,
+        decoration: BoxDecoration(
+          color: const Color(0xff2b2031),
+          borderRadius: BorderRadius.circular(17),
+          border: Border.all(
+            color: equipped ? const Color(0xffefc983) : const Color(0xff493650),
+            width: equipped ? 2 : 1,
+          ),
         ),
-      ),
-      padding: const EdgeInsets.all(9),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(13),
-              child: ColoredBox(
-                color: const Color(0xfff5f7f4),
-                child: Center(
-                  child: NimzoIdentityArt(
-                    kind: artFor(item.category),
-                    variant: item.variant,
-                    color: accent,
-                    size: 102,
+        padding: const EdgeInsets.all(9),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(13),
+                child: ColoredBox(
+                  color: const Color(0xff241a2b),
+                  child: Center(
+                    child: premiumCosmetics[item.id] != null
+                        ? CosmeticMediaView(
+                            key: ValueKey(item.id),
+                            media: premiumCosmetics[item.id]!,
+                            animate: false)
+                        : item.id.startsWith('nimzo-media-')
+                            ? const Icon(Icons.image_not_supported_outlined,
+                                semanticLabel: 'Item media unavailable')
+                            : NimzoIdentityArt(
+                                kind: artFor(item.category),
+                                variant: item.variant,
+                                color: accent,
+                                size: 102,
+                              ),
                   ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 7),
-          Text(
-            item.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
-          ),
-          Text(
-            item.category,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 10, color: Color(0xff728179)),
-          ),
-          const SizedBox(height: 7),
-          SizedBox(
-            height: 35,
-            child: FilledButton(
-              key: ValueKey('nimzo-store-action-${item.id}'),
-              onPressed: busy || pending != null || equipped ||
-                      (item.coinPrice != 0 && !isOwned)
-                  ? null
-                  : () => doAction(item, isOwned),
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xff078e69),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-              ),
-              child: busy
-                  ? const SizedBox(
-                      height: 16, width: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2,
-                        color: Colors.white))
-                  : Text(
-                      equipped
-                          ? 'Equipped'
-                          : isOwned
-                              ? 'Equip'
-                              : item.coinPrice == 0
-                                  ? 'Collect free'
-                                  : 'Not for sale',
-                      style: const TextStyle(fontSize: 11),
-                    ),
+            const SizedBox(height: 7),
+            Text(
+              item.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                  color: Color(0xffefc983)),
             ),
-          ),
-        ],
-      ),
+            Text(
+              item.category,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 10, color: Color(0xffc5b5cd)),
+            ),
+            const SizedBox(height: 7),
+            SizedBox(
+              height: 35,
+              child: FilledButton(
+                key: ValueKey('nimzo-store-action-${item.id}'),
+                onPressed:
+                    busy || pending != null || (item.coinPrice != 0 && !isOwned)
+                        ? null
+                        : () => doAction(item, isOwned, equipped),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xffefc983),
+                  foregroundColor: const Color(0xff28182c),
+                  disabledBackgroundColor: const Color(0xff493650),
+                  disabledForegroundColor: const Color(0xffc5b5cd),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                ),
+                child: busy
+                    ? const SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                    : Text(
+                        equipped
+                            ? 'Remove'
+                            : isOwned
+                                ? 'Equip'
+                                : item.coinPrice == 0
+                                    ? 'Collect free'
+                                    : 'Not for sale',
+                        style: const TextStyle(fontSize: 11),
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -290,22 +322,13 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
   Widget build(BuildContext context) {
     final state = ref.watch(nimzoStoreProvider);
     return Scaffold(
-      backgroundColor: const Color(0xfff7f9f7),
+      backgroundColor: const Color(0xff17121e),
       appBar: AppBar(
         title: const Text('NIMZO Store',
             style: TextStyle(fontWeight: FontWeight.w800)),
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xff153d32),
+        backgroundColor: const Color(0xff17121e),
+        foregroundColor: const Color(0xffefc983),
         actions: [
-          IconButton(
-            tooltip: 'Preview premium media',
-            icon: const Icon(Icons.auto_awesome_rounded),
-            onPressed: () => Navigator.of(context).push<void>(
-              MaterialPageRoute(
-                builder: (_) => const WillChillPremiumScreen(initialGroup: 'store'),
-              ),
-            ),
-          ),
           IconButton(
             tooltip: 'Refresh Store',
             icon: const Icon(Icons.refresh_rounded),
@@ -316,114 +339,132 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
       body: SafeArea(
         top: false,
         child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(15, 12, 15, 8),
-          child: Row(children: [
-            Expanded(child: _tabButton(
-              label: 'Store', selected: !bag, icon: Icons.storefront_rounded,
-              onTap: () => setState(() => bag = false),
-            )),
-            const SizedBox(width: 10),
-            Expanded(child: _tabButton(
-              label: 'Backpack', selected: bag, icon: Icons.backpack_rounded,
-              onTap: () => setState(() => bag = true),
-            )),
-          ]),
-        ),
-        if (!bag)
-          SizedBox(
-            height: 46,
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              scrollDirection: Axis.horizontal,
-              itemCount: categories.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 6),
-              itemBuilder: (_, i) {
-                final selected = category == categories[i];
-                return ChoiceChip(
-                  selected: selected,
-                  label: Text(categories[i]),
-                  labelStyle: TextStyle(
-                    color: selected ? Colors.white : const Color(0xff385548),
-                    fontSize: 11,
-                  ),
-                  selectedColor: const Color(0xff078e69),
-                  backgroundColor: Colors.white,
-                  onSelected: (_) => setState(() => category = categories[i]),
-                );
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 12, 15, 8),
+            child: Row(children: [
+              Expanded(
+                  child: _tabButton(
+                label: 'Store',
+                selected: !bag,
+                icon: Icons.storefront_rounded,
+                onTap: () => setState(() => bag = false),
+              )),
+              const SizedBox(width: 10),
+              Expanded(
+                  child: _tabButton(
+                label: 'Backpack',
+                selected: bag,
+                icon: Icons.backpack_rounded,
+                onTap: () => setState(() => bag = true),
+              )),
+            ]),
+          ),
+          if (!bag)
+            SizedBox(
+              height: 46,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                scrollDirection: Axis.horizontal,
+                itemCount: categories.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 6),
+                itemBuilder: (_, i) {
+                  final selected = category == categories[i];
+                  return ChoiceChip(
+                    selected: selected,
+                    label: Text(categories[i]),
+                    labelStyle: TextStyle(
+                      color: selected
+                          ? const Color(0xff28182c)
+                          : const Color(0xffdbc9e2),
+                      fontSize: 11,
+                    ),
+                    selectedColor: const Color(0xffefc983),
+                    backgroundColor: const Color(0xff17121e),
+                    onSelected: (_) => setState(() => category = categories[i]),
+                  );
+                },
+              ),
+            ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 9),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Choose your look. Collected items save to your '
+                'Backpack; equipped designs sync with your account.',
+                style: TextStyle(color: Color(0xffc5b5cd), fontSize: 11),
+              ),
+            ),
+          ),
+          Expanded(
+            child: state.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(22),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.store_mall_directory_outlined,
+                        color: Color(0xff869b8f), size: 42),
+                    const SizedBox(height: 12),
+                    const Text('Store catalog unavailable',
+                        style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xffefc983))),
+                    const SizedBox(height: 6),
+                    const Text('Please retry. No coins have been charged.',
+                        style: TextStyle(color: Color(0xffc5b5cd)),
+                        textAlign: TextAlign.center),
+                    TextButton(
+                      onPressed: () => ref.invalidate(nimzoStoreProvider),
+                      child: const Text('Retry'),
+                    ),
+                  ]),
+                ),
+              ),
+              data: (snap) {
+                final filtered = snap.items
+                    .where((item) =>
+                        (!bag || snap.owned.contains(item.id)) &&
+                        (bag || category == 'All' || item.category == category))
+                    .toList(growable: false);
+
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Text(
+                      bag
+                          ? 'Your Backpack is empty. Collect a free item first.'
+                          : 'No designs available in this category.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Color(0xffc5b5cd)),
+                    ),
+                  );
+                }
+                return LayoutBuilder(builder: (context, constraints) {
+                  final cols = constraints.maxWidth >= 680
+                      ? 4
+                      : constraints.maxWidth >= 460
+                          ? 3
+                          : 2;
+                  return GridView.builder(
+                    key: ValueKey(
+                        bag ? 'store-backpack-grid' : 'store-catalog-grid'),
+                    padding: const EdgeInsets.fromLTRB(15, 6, 15, 60),
+                    itemCount: filtered.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: cols,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      mainAxisExtent: 225 +
+                          (MediaQuery.textScalerOf(context).scale(48) - 48),
+                    ),
+                    itemBuilder: (_, i) => itemTile(filtered[i], snap),
+                  );
+                });
               },
             ),
           ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 9),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Original NIMZO cosmetic collection. Free items save to your '
-              'Backpack; equipped designs sync with your account.',
-              style: TextStyle(color: Color(0xff64766a), fontSize: 11),
-            ),
-          ),
-        ),
-        Expanded(
-          child: state.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(22),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  const Icon(Icons.store_mall_directory_outlined,
-                    color: Color(0xff869b8f), size: 42),
-                  const SizedBox(height: 12),
-                  const Text('Store catalog unavailable',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 6),
-                  const Text('Please retry. No coins have been charged.',
-                    textAlign: TextAlign.center),
-                  TextButton(
-                    onPressed: () => ref.invalidate(nimzoStoreProvider),
-                    child: const Text('Retry'),
-                  ),
-                ]),
-              ),
-            ),
-            data: (snap) {
-              final filtered = snap.items.where((item) =>
-                  (!bag || snap.owned.contains(item.id)) &&
-                  (bag || category == 'All' || item.category == category))
-                .toList(growable: false);
-
-              if (filtered.isEmpty) {
-                return Center(
-                  child: Text(
-                    bag
-                      ? 'Your Backpack is empty. Collect a free item first.'
-                      : 'No designs available in this category.',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Color(0xff64766a)),
-                  ),
-                );
-              }
-              return LayoutBuilder(builder: (context, constraints) {
-                final cols = constraints.maxWidth >= 680 ? 4
-                    : constraints.maxWidth >= 460 ? 3 : 2;
-                return GridView.builder(
-                  key: ValueKey(bag ? 'store-backpack-grid' : 'store-catalog-grid'),
-                  padding: const EdgeInsets.fromLTRB(15, 6, 15, 60),
-                  itemCount: filtered.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: cols,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    mainAxisExtent: 225,
-                  ),
-                  itemBuilder: (_, i) => itemTile(filtered[i], snap),
-                );
-              });
-            },
-          ),
-        ),
-      ]),
+        ]),
       ),
     );
   }
@@ -433,33 +474,36 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
     required bool selected,
     required IconData icon,
     required VoidCallback onTap,
-  }) => Material(
-    color: selected ? const Color(0xff078e69) : Colors.white,
-    borderRadius: BorderRadius.circular(14),
-    child: InkWell(
-      borderRadius: BorderRadius.circular(14),
-      onTap: onTap,
-      child: SizedBox(
-        height: 46,
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(icon, size: 20,
-              color: selected ? Colors.white : const Color(0xff42665b)),
-          const SizedBox(width: 7),
-          Text(label,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              color: selected ? Colors.white : const Color(0xff42665b),
-            )),
-        ]),
-      ),
-    ),
-  );
+  }) =>
+      Material(
+        color: selected ? const Color(0xffefc983) : const Color(0xff2b2031),
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: SizedBox(
+            height: 46,
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Icon(icon,
+                  size: 20,
+                  color: selected
+                      ? const Color(0xff28182c)
+                      : const Color(0xffdbc9e2)),
+              const SizedBox(width: 7),
+              Text(label,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: selected
+                        ? const Color(0xff28182c)
+                        : const Color(0xffdbc9e2),
+                  )),
+            ]),
+          ),
+        ),
+      );
 }
 
-
-/// Full-screen, zoomable, replayable preview of the actual original NIMZO
-/// vector item. This is a preview, NOT a purchase or ownership grant.
-/// No third-party APK media is loaded or distributed by this screen.
+/// Full preview uses the same pinned item media as the Store card.
 class NimzoStoreFullPreview extends StatefulWidget {
   const NimzoStoreFullPreview({
     super.key,
@@ -503,6 +547,8 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
     Color(0xffd4a467),
   ];
 
+  int replay = 0;
+
   @override
   void dispose() {
     controller.dispose();
@@ -513,17 +559,16 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
   Widget build(BuildContext context) {
     final item = widget.item;
     final color = accents[item.variant % accents.length];
-    final canvas = (MediaQuery.sizeOf(context).width * .84)
-        .clamp(180.0, 390.0)
-        .toDouble();
+    final canvas =
+        (MediaQuery.sizeOf(context).width * .84).clamp(180.0, 390.0).toDouble();
     return Scaffold(
       key: const ValueKey('nimzo-store-full-preview'),
-      backgroundColor: const Color(0xfff7f9f7),
+      backgroundColor: const Color(0xff17121e),
       appBar: AppBar(
         title: Text(item.name),
         centerTitle: true,
-        foregroundColor: const Color(0xff153d32),
-        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xffefc983),
+        backgroundColor: const Color(0xff17121e),
       ),
       body: SafeArea(
         child: Column(
@@ -533,18 +578,31 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                 child: InteractiveViewer(
                   minScale: .7,
                   maxScale: 3,
-                  child: AnimatedBuilder(
-                    animation: controller,
-                    builder: (_, __) => NimzoIdentityArt(
-                      kind: art,
-                      variant: item.variant,
-                      color: color,
-                      size: canvas,
-                      progress: MediaQuery.disableAnimationsOf(context)
-                          ? 1
-                          : controller.value,
-                    ),
-                  ),
+                  child: premiumCosmetics[item.id] != null
+                      ? SizedBox(
+                          width: canvas,
+                          height: canvas,
+                          child: CosmeticMediaView(
+                              key: ValueKey('${item.id}-$replay'),
+                              media: premiumCosmetics[item.id]!,
+                              animate:
+                                  !MediaQuery.disableAnimationsOf(context)))
+                      : item.id.startsWith('nimzo-media-')
+                          ? const Icon(Icons.image_not_supported_outlined,
+                              semanticLabel: 'Item media unavailable')
+                          : AnimatedBuilder(
+                              animation: controller,
+                              builder: (_, __) => NimzoIdentityArt(
+                                kind: art,
+                                variant: item.variant,
+                                color: color,
+                                size: canvas,
+                                progress:
+                                    MediaQuery.disableAnimationsOf(context)
+                                        ? 1
+                                        : controller.value,
+                              ),
+                            ),
                 ),
               ),
             ),
@@ -553,11 +611,13 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
               child: Column(
                 children: [
                   Text(item.name,
-                    style: const TextStyle(fontWeight: FontWeight.w800,
-                      fontSize: 22)),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 22,
+                          color: Color(0xffefc983))),
                   const SizedBox(height: 5),
                   Text(item.category,
-                    style: const TextStyle(color: Color(0xff64766a))),
+                      style: const TextStyle(color: Color(0xffc5b5cd))),
                   const SizedBox(height: 12),
                   Text(
                     widget.equipped
@@ -566,7 +626,7 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                             ? 'In your Backpack'
                             : 'Preview only — not yet owned',
                     key: const ValueKey('nimzo-preview-ownership-status'),
-                    style: const TextStyle(color: Color(0xff587666)),
+                    style: const TextStyle(color: Color(0xffc5b5cd)),
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
@@ -574,6 +634,7 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                     child: FilledButton.icon(
                       key: const ValueKey('nimzo-preview-replay'),
                       onPressed: () {
+                        setState(() => replay++);
                         if (MediaQuery.disableAnimationsOf(context)) {
                           controller.value = 1;
                         } else {
@@ -583,15 +644,15 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                       icon: const Icon(Icons.replay_rounded),
                       label: const Text('Replay full preview'),
                       style: FilledButton.styleFrom(
-                        backgroundColor: const Color(0xff078e69)),
+                          backgroundColor: const Color(0xffefc983),
+                          foregroundColor: const Color(0xff28182c)),
                     ),
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Original NIMZO design. Preview does not charge coins.',
+                    'Item preview · No coins charged.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 11,
-                      color: Color(0xff64766a)),
+                    style: TextStyle(fontSize: 11, color: Color(0xffc5b5cd)),
                   ),
                 ],
               ),

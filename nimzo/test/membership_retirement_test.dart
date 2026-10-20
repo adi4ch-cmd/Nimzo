@@ -11,7 +11,8 @@ import 'package:nimzo/features/profile/profile_repository.dart';
 import 'package:nimzo/features/premium/willchill_premium_screen.dart';
 
 void main() {
-  test('server membership levels are real but expired VIP remains inactive', () {
+  test('server membership levels are real but expired VIP remains inactive',
+      () {
     final p = Profile.fromJson({
       'id': 'u',
       'nimzo_id': 100001,
@@ -42,9 +43,13 @@ void main() {
       addTearDown(() => tester.runAsync(db.dispose));
       final container = ProviderContainer(overrides: [
         supabaseProvider.overrideWithValue(db),
-        profileProvider('u').overrideWith((_) async => const Profile(
-              id: 'u', nimzoId: 100001, displayName: 'Nimzo User',
+        profileProvider('u').overrideWith((_) async => Profile(
+              id: 'u',
+              nimzoId: 100001,
+              displayName: 'Nimzo User',
               countryCode: 'PK',
+              gender: 'male',
+              dateOfBirth: DateTime(2000, 1, 1),
             )),
         authStateProvider.overrideWith((_) => Stream.value(
               const AuthUser(id: 'u', emailVerified: true),
@@ -62,8 +67,8 @@ void main() {
       // require every player animation to settle to validate routing.
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 300));
-      final screen = tester.widget<WillChillPremiumScreen>(
-          find.byType(WillChillPremiumScreen));
+      final screen = tester
+          .widget<WillChillPremiumScreen>(find.byType(WillChillPremiumScreen));
       expect(screen.initialGroup, path == '/vip' ? 'vip' : 'svip');
       expect(router.routeInformationProvider.value.uri.path, path);
       expect(tester.takeException(), isNull);

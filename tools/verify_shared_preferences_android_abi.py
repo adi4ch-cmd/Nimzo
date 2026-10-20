@@ -1,25 +1,44 @@
 #!/usr/bin/env python3
-"""Fail-closed check for the specific Kotlin coroutine ABI broken in NIMZO.
+"""Verify the compiled preferences ABI for the reviewed lockfile generation.
 
-The release-mode R8 output must preserve the signature invoked by the
-shared_preferences Android JNI bridge during Supabase.initialize. This checks
-the COMPILED classes.dex, not just ProGuard text or a debug build.
+Pigeon 2.4.28 and JNI 2.5.1 have different native entrypoints. Both must retain
+exact compiled signatures and Kotlin classes, with emulator startup checked
+separately by the build. Unknown plugin versions fail closed.
 
 Usage: python3 tools/verify_shared_preferences_android_abi.py path/to/app.apk
 """
+import re
 import struct
 import sys
 import zipfile
 from pathlib import Path
 
-EXPECTED_CLASS = "Lio/flutter/plugins/sharedpreferences/SharedPreferencesApiRegistrar;"
-EXPECTED_METHOD = "getAll"
-EXPECTED_RETURN = "Ljava/lang/Object;"
-EXPECTED_PARAMS = [
-    "Ljava/lang/String;",
-    "Ljava/util/List;",
-    "Lkotlin/coroutines/Continuation;",
-]
+PREFIX = "Lio/flutter/plugins/sharedpreferences/"
+
+
+def required_signatures(version):
+    # 2.4.28 uses Pigeon platform channels; it has no JNI Registrar class.
+    # The 2.5.1 JNI generation instead needs the Kotlin suspend signature.
+    if version == "2.4.28":
+        return [
+            (PREFIX + "LegacySharedPreferencesPlugin;", "Ljava/util/Map;",
+             ("Ljava/lang/String;", "Ljava/util/List;")),
+            (PREFIX + "SharedPreferencesPlugin;", "Ljava/util/Map;",
+             ("Ljava/util/List;", PREFIX + "SharedPreferencesPigeonOptions;")),
+        ]
+    if version == "2.5.1":
+        return [(PREFIX + "SharedPreferencesApiRegistrar;", "Ljava/lang/Object;",
+                 ("Ljava/lang/String;", "Ljava/util/List;",
+                  "Lkotlin/coroutines/Continuation;"))]
+    raise ValueError("Unreviewed shared_preferences_android version: " + version)
+
+
+def validate_signatures(version, signatures):
+    missing = set(required_signatures(version)) - set(signatures)
+    if missing:
+        raise ValueError("shared_preferences_android " + version +
+                         " compiled ABI mismatch; missing " + repr(sorted(missing)))
+
 
 
 def dex_methods(data):
@@ -69,11 +88,18 @@ def dex_methods(data):
     for i in range(number):
         class_idx, proto_idx, name_idx = struct.unpack_from(
             "<HHI", data, offset + i * 8)
-        if types[class_idx] == EXPECTED_CLASS and strings[name_idx] == EXPECTED_METHOD:
-            yield protos[proto_idx]
+        if types[class_idx].startswith(PREFIX) and strings[name_idx] == "getAll":
+            return_type, parameters = protos[proto_idx]
+            yield (types[class_idx], return_type, tuple(parameters))
 
 
 def verify(path: Path):
+    lock = (Path(__file__).resolve().parents[1] / "nimzo/pubspec.lock").read_text()
+    match = re.search(r'(?ms)^  shared_preferences_android:\n(?:(?!^  \w).)*?^    version: "([^"]+)"', lock)
+    if not match:
+        raise ValueError("Cannot determine reviewed Android preferences plugin version")
+    version = match.group(1)
+    required_signatures(version)
     with zipfile.ZipFile(path) as apk:
         if apk.testzip() is not None:
             raise ValueError("APK ZIP CRC verification failed")
@@ -92,14 +118,9 @@ def verify(path: Path):
         if not any(kotlin_result_descriptor in apk.read(name)
                    for name in files):
             raise ValueError("kotlin.Result missing from compiled APK DEX")
-        if (EXPECTED_RETURN, EXPECTED_PARAMS) not in signatures:
-            raise ValueError(
-                "shared_preferences JNI ABI mismatch: expected "
-                "SharedPreferencesApiRegistrar.getAll(String,List,"
-                "kotlin.coroutines.Continuation)Object, found "
-                + repr(signatures)
-            )
-    print("PASS: shared_preferences Kotlin Continuation ABI preserved in APK")
+        validate_signatures(version, signatures)
+    print("PASS: compiled shared_preferences_android " + version + " ABI matches lockfile")
+
 
 
 if __name__ == "__main__":

@@ -1,0 +1,15 @@
+{
+  "drive_file_id": "17XKAYV4FSQJ7b7WpUs1HYXUKLAqp3_Zf",
+  "apks_sha256": "6bb4f02977ec1453895c986ec0ca3a507cb60296fb97baedbd49af16b940d6f8",
+  "media_files": 2208,
+  "formats": {
+    ".svga": 19,
+    ".mp4": 27,
+    ".png": 1896,
+    ".webp": 243,
+    ".jpg": 15,
+    ".gif": 6,
+    ".m4a": 1,
+    ".mp3": 1
+  }
+}

@@ -1,3 +1,4 @@
+import 'package:nimzo/features/store/store_visual_equipment.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -110,6 +111,9 @@ void main() {
       ProviderScope(
         overrides: [
           currentUserIdProvider.overrideWithValue('viewer'),
+          storeVisualEquipmentProvider.overrideWith((_, id) async => {}),
+          roomMemberIdsProvider('room')
+              .overrideWith((_) => const Stream.empty()),
           roomRepositoryProvider.overrideWithValue(repo),
           roomChatRepositoryProvider.overrideWithValue(chat),
           roomProvider('room').overrideWith((_) async => room),
@@ -217,6 +221,9 @@ void main() {
       ProviderScope(
         overrides: [
           currentUserIdProvider.overrideWithValue('viewer'),
+          storeVisualEquipmentProvider.overrideWith((_, id) async => {}),
+          roomMemberIdsProvider('room')
+              .overrideWith((_) => const Stream.empty()),
           roomRepositoryProvider.overrideWithValue(repo),
           roomProvider('room').overrideWith((_) async => room),
           seatsProvider('room').overrideWith((_) =>

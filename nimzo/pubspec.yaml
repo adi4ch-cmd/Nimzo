@@ -1,7 +1,7 @@
 name: nimzo
 description: Nimzo social voice-room app
 publish_to: none
-version: 1.0.36+136
+version: 1.0.37+137
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:
@@ -73,3 +73,5 @@ flutter:
     - assets/willchill_premium/entrances/
     - assets/willchill_premium/audio/
     - assets/willchill_premium/catalog.json
+    - assets/premium_store/danglive/
+    - assets/premium_store/willchill/

@@ -1,3 +1,4 @@
+import '../store/store_visual_equipment.dart';
 import '../../core/widgets/master_ui.dart';
 
 import 'package:flutter/material.dart';
@@ -120,96 +121,106 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           final cover = image('covers', p.coverPath);
           return ListView(
             children: [
-              SizedBox(
-                height: 170,
-                child: Stack(
-                  children: [
-                    Container(
-                      key: const ValueKey('profile-cover'),
-                      height: 130,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: NimzoStyle.heroGradient,
-                        image: cover == null
-                            ? null
-                            : DecorationImage(
-                                image: NetworkImage(cover),
-                                fit: BoxFit.cover,
+              EquippedCosmetic(
+                  userId: id,
+                  category: 'Profile Card',
+                  child: SizedBox(
+                    height: 170,
+                    child: Stack(
+                      children: [
+                        Container(
+                          key: const ValueKey('profile-cover'),
+                          height: 130,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            gradient: NimzoStyle.heroGradient,
+                            image: cover == null
+                                ? null
+                                : DecorationImage(
+                                    image: NetworkImage(cover),
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: SafeArea(
+                              bottom: false,
+                              child: IconButton(
+                                onPressed: () {
+                                  if (Navigator.of(context).canPop())
+                                    Navigator.of(context).pop();
+                                },
+                                icon: const ReferenceIcon(
+                                  'back',
+                                  color: Colors.white,
+                                ),
                               ),
-                      ),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: SafeArea(
-                          bottom: false,
-                          child: IconButton(
-                            onPressed: () {
-                              if (Navigator.of(context).canPop())
-                                Navigator.of(context).pop();
-                            },
-                            icon: const ReferenceIcon(
-                              'back',
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 6,
+                          top: 6,
+                          child: SafeArea(
+                            bottom: false,
+                            child: PopupMenuButton<String>(
+                              icon: const Icon(
+                                Icons.more_vert,
+                                color: Colors.white,
+                              ),
+                              onSelected: (value) {
+                                if (value == 'chat') context.push('/chat/$id');
+                                if (value == 'visitors')
+                                  context.push('/social/visitors/$id');
+                              },
+                              itemBuilder: (_) => [
+                                const PopupMenuItem(
+                                  value: 'visitors',
+                                  child: Text('Visitors'),
+                                ),
+                                if (id != me)
+                                  const PopupMenuItem(
+                                    value: 'chat',
+                                    child: Text('Chat'),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 90,
+                          left: 16,
+                          child: Container(
+                            key: const ValueKey('profile-avatar'),
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
                               color: Colors.white,
+                              shape: BoxShape.circle,
                             ),
+                            child: EquippedAvatar(
+                                userId: id,
+                                size: 70,
+                                child: NimzoEquippedAvatarFrame(
+                                  mediaId: null,
+                                  variant: id == me &&
+                                          ref.watch(
+                                                  nimzoOwnAvatarMediaProvider) ==
+                                              null
+                                      ? ref.watch(nimzoOwnAvatarFrameProvider)
+                                      : null,
+                                  avatar: NimzoAvatar(
+                                    name: p.displayName ?? p.username ?? 'N',
+                                    url: image('avatars', p.avatarPath),
+                                    size: 70,
+                                    backgroundColor: NimzoStyle.ink,
+                                    online: id == me,
+                                  ),
+                                )),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                    Positioned(
-                      right: 6,
-                      top: 6,
-                      child: SafeArea(
-                        bottom: false,
-                        child: PopupMenuButton<String>(
-                          icon: const Icon(
-                            Icons.more_vert,
-                            color: Colors.white,
-                          ),
-                          onSelected: (value) {
-                            if (value == 'chat') context.push('/chat/$id');
-                            if (value == 'visitors')
-                              context.push('/social/visitors/$id');
-                          },
-                          itemBuilder: (_) => [
-                            const PopupMenuItem(
-                              value: 'visitors',
-                              child: Text('Visitors'),
-                            ),
-                            if (id != me)
-                              const PopupMenuItem(
-                                value: 'chat',
-                                child: Text('Chat'),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 90,
-                      left: 16,
-                      child: Container(
-                        key: const ValueKey('profile-avatar'),
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: NimzoEquippedAvatarFrame(
-                          variant: id == me
-                              ? ref.watch(nimzoOwnAvatarFrameProvider)
-                              : null,
-                          avatar: NimzoAvatar(
-                            name: p.displayName ?? p.username ?? 'N',
-                            url: image('avatars', p.avatarPath),
-                            size: 70,
-                            backgroundColor: NimzoStyle.ink,
-                            online: id == me,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  )),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
                 child: Column(
@@ -224,14 +235,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child:
-                              Text(p.displayName ?? p.username ?? 'Nimzo user',
+                          child: EquippedIdentity(
+                              userId: id,
+                              child: Text(
+                                  p.displayName ?? p.username ?? 'Nimzo user',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.w700,
-                                  )),
+                                  ))),
                         ),
                         if (p.dateOfBirth != null)
                           Container(
@@ -271,24 +284,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         for (var kind = 0; kind < 3; kind++) ...[
                           if (kind > 0) const SizedBox(width: 6),
                           InkWell(
-                              key: ValueKey('profile-level-$kind'),
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => LevelsScreen(
-                                    initialKind: kind,
-                                    userId: id,
-                                  ),
+                            key: ValueKey('profile-level-$kind'),
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => LevelsScreen(
+                                  initialKind: kind,
+                                  userId: id,
                                 ),
                               ),
-                              child: ProfileLevelPill(
-                                kind: kind,
-                                level: [
-                                  p.wealthLevel,
-                                  p.charmLevel,
-                                  p.activeLevel,
-                                ][kind],
-                                compact: true,
-                              ),
+                            ),
+                            child: ProfileLevelPill(
+                              kind: kind,
+                              level: [
+                                p.wealthLevel,
+                                p.charmLevel,
+                                p.activeLevel,
+                              ][kind],
+                              compact: true,
+                            ),
                           ),
                         ],
                       ],

@@ -167,15 +167,16 @@ class TingleMeScreen extends ConsumerWidget {
                       children: [
                         NimzoEquippedAvatarFrame(
                           variant: ref.watch(nimzoOwnAvatarFrameProvider),
+                          mediaId: ref.watch(nimzoOwnAvatarMediaProvider),
                           avatar: CircleAvatar(
-                          radius: 27,
-                          backgroundColor: NimzoStyle.primary,
-                          backgroundImage:
-                              avatar == null ? null : NetworkImage(avatar),
-                          child: avatar == null
-                              ? const Icon(Icons.person_rounded,
-                                  color: Colors.white, size: 28)
-                              : null,
+                            radius: 27,
+                            backgroundColor: NimzoStyle.primary,
+                            backgroundImage:
+                                avatar == null ? null : NetworkImage(avatar),
+                            child: avatar == null
+                                ? const Icon(Icons.person_rounded,
+                                    color: Colors.white, size: 28)
+                                : null,
                           ),
                         ),
                         const SizedBox(width: 12),
