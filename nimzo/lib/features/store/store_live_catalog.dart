@@ -200,6 +200,7 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
             item: item,
             owned: isOwned,
             equipped: equipped,
+            onAction: equipped ? null : () => doAction(item, isOwned),
           ),
         ),
       ),
@@ -456,8 +457,10 @@ class NimzoStoreFullPreview extends StatefulWidget {
     required this.item,
     required this.owned,
     required this.equipped,
+    this.onAction,
   });
 
+  final VoidCallback? onAction;
   final NimzoCosmeticItem item;
   final bool owned;
   final bool equipped;
@@ -559,6 +562,25 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                     style: const TextStyle(color: Color(0xff587666)),
                   ),
                   const SizedBox(height: 16),
+                  if (widget.onAction != null && !widget.equipped) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        key: const ValueKey('nimzo-preview-apply'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          widget.onAction?.call();
+                        },
+                        icon: Icon(widget.owned ? Icons.check_circle_outline_rounded : Icons.backpack_outlined),
+                        label: Text(widget.owned ? 'Equip this item' : 'Collect to Backpack'),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xff078e69),
+                          minimumSize: const Size.fromHeight(48),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 9),
+                  ],
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
