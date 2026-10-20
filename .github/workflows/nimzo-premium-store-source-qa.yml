@@ -1,0 +1,30 @@
+name: NIMZO Premium Store Source QA
+on:
+  push:
+    branches: [feature/real-premium-store-assets-integration]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - run: python3 tools/verify_nimzo_feature_lock.py
+      - run: flutter pub get
+        working-directory: nimzo
+      - run: flutter analyze --no-fatal-infos
+        working-directory: nimzo
+      - run: flutter test --reporter expanded
+        working-directory: nimzo
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: premium-store-test-evidence
+          path: nimzo/test-evidence/
+          if-no-files-found: ignore
