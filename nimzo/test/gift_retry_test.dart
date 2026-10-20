@@ -10,6 +10,9 @@ import 'package:nimzo/features/wallet/wallet_screen.dart';
 class UncertainGiftRepository extends GiftRepository {
   UncertainGiftRepository(super.db);
   final requests = <({String giftId, int qty, String key})>[];
+  int availabilityChecks = 0;
+  @override
+  Future<bool> animationReady(Gift gift) async => ++availabilityChecks == 1;
   @override
   Future<void> sendProfile({
     required String receiverId,
@@ -41,7 +44,16 @@ void main() {
           currentUserIdProvider.overrideWithValue(null),
           giftRepositoryProvider.overrideWithValue(repo),
           giftCatalogProvider.overrideWith(
-            (_) async => [const Gift('g', 'Coffee', 'Classic', 500, null)],
+            (_) async => [
+              const Gift(
+                'g',
+                'Coffee',
+                'Classic',
+                500,
+                null,
+                hasApprovedAnimation: true,
+              ),
+            ],
           ),
           walletProvider.overrideWith((_) async => (coins: 10000, diamonds: 0)),
         ],
@@ -75,6 +87,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Send').last);
     await tester.pumpAndSettle();
+    expect(repo.availabilityChecks, 1);
     expect(repo.requests.length, 2);
     expect(repo.requests[1], repo.requests[0]);
     expect(tester.takeException(), isNull);

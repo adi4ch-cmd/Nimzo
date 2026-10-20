@@ -18,13 +18,15 @@ jobs:
       - run: python3 tools/verify_nimzo_feature_lock.py
       - run: flutter pub get
         working-directory: nimzo
-      - name: Store and gift behavior regressions
-        run: flutter test --reporter expanded test/store_original_media_render_test.dart test/gift_animation_availability_test.dart test/verified_gift_broadcast_test.dart
-        working-directory: nimzo
       - run: flutter analyze --no-fatal-infos
         working-directory: nimzo
+      - name: Store and gift behavior regressions
+        timeout-minutes: 10
+        run: flutter test --timeout 2m --reporter expanded test/store_original_media_render_test.dart test/store_visual_equipment_test.dart test/gift_animation_availability_test.dart test/verified_gift_broadcast_test.dart test/gift_media_catalog_test.dart test/gift_retry_test.dart test/gift_rejection_test.dart test/gift_room_recipient_test.dart test/profile_gift_refresh_test.dart test/private_gift_readiness_test.dart test/private_animal_gifts_test.dart test/gift_video_overlay_test.dart test/fullscreen_vap_gifts_contract_test.dart test/car_only_gift_contract_test.dart
+        working-directory: nimzo
       - name: Full regression suite
-        run: flutter test --reporter expanded > ../full-test-output.txt 2>&1
+        timeout-minutes: 20
+        run: flutter test --timeout 2m --reporter expanded > ../full-test-output.txt 2>&1
         working-directory: nimzo
       - uses: actions/upload-artifact@v4
         if: always()

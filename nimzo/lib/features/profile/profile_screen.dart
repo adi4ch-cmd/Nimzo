@@ -8,7 +8,7 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../gifts/gift_sheet.dart';
-import '../store/store_equipped_frame.dart';
+import '../store/store_visual_equipment.dart';
 import '../social/social_repositories.dart';
 import '../social/friend_button.dart';
 import 'profile_repository.dart';
@@ -192,11 +192,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        child: NimzoEquippedAvatarFrame(
-                          variant: id == me
-                              ? ref.watch(nimzoOwnAvatarFrameProvider)
-                              : null,
-                          avatar: NimzoAvatar(
+                        child: EquippedAvatar(
+                          userId: id,
+                          size: 70,
+                          child: NimzoAvatar(
                             name: p.displayName ?? p.username ?? 'N',
                             url: image('avatars', p.avatarPath),
                             size: 70,
@@ -209,62 +208,69 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const ReferenceIcon(
-                          'crown_filled',
-                          color: Color(0xfff59e0b),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child:
-                              Text(p.displayName ?? p.username ?? 'Nimzo user',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.w700,
-                                  )),
-                        ),
-                        if (p.dateOfBirth != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 9,
-                              vertical: 1,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xff2563eb),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${p.gender == "Female" ? "♀" : "♂"} ${profileAge(p.dateOfBirth!)}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
+              EquippedCosmetic(
+                userId: id,
+                category: 'Profile Card',
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const ReferenceIcon(
+                            'crown_filled',
+                            color: Color(0xfff59e0b),
+                            size: 22,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: EquippedIdentity(
+                              userId: id,
+                              child: Text(
+                                p.displayName ?? p.username ?? 'Nimzo user',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
                           ),
-                      ],
-                    ),
-                    Text(
-                      'ID:${p.nimzoId} · ${p.countryName ?? p.countryCode ?? ''}',
-                      style: const TextStyle(color: NimzoStyle.muted),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      key: const ValueKey('profile-level-badges'),
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (var kind = 0; kind < 3; kind++) ...[
-                          if (kind > 0) const SizedBox(width: 6),
-                          InkWell(
+                          if (p.dateOfBirth != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 9,
+                                vertical: 1,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xff2563eb),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                '${p.gender == "Female" ? "♀" : "♂"} ${profileAge(p.dateOfBirth!)}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      Text(
+                        'ID:${p.nimzoId} · ${p.countryName ?? p.countryCode ?? ''}',
+                        style: const TextStyle(color: NimzoStyle.muted),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        key: const ValueKey('profile-level-badges'),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (var kind = 0; kind < 3; kind++) ...[
+                            if (kind > 0) const SizedBox(width: 6),
+                            InkWell(
                               key: ValueKey('profile-level-$kind'),
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -283,254 +289,262 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 ][kind],
                                 compact: true,
                               ),
-                          ),
+                            ),
+                          ],
                         ],
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(p.bio?.isNotEmpty == true ? p.bio! : 'No bio yet'),
-                    AsyncContent(
-                      value: ref.watch(profileStatsProvider(id)),
-                      onRetry: () => ref.invalidate(profileStatsProvider(id)),
-                      builder: (stats) => Wrap(
-                        spacing: 10,
-                        children: [
-                          for (final key in ['following', 'followers'])
-                            InkWell(
-                              onTap: () => context.push('/social/$key/$id'),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 6,
-                                ),
-                                child: Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: '${stats[key] ?? 0} ',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            '${key[0].toUpperCase()}${key.substring(1)}',
-                                        style: const TextStyle(
-                                          color: NimzoStyle.muted,
-                                        ),
-                                      ),
-                                    ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(p.bio?.isNotEmpty == true ? p.bio! : 'No bio yet'),
+                      AsyncContent(
+                        value: ref.watch(profileStatsProvider(id)),
+                        onRetry: () => ref.invalidate(profileStatsProvider(id)),
+                        builder: (stats) => Wrap(
+                          spacing: 10,
+                          children: [
+                            for (final key in ['following', 'followers'])
+                              InkWell(
+                                onTap: () => context.push('/social/$key/$id'),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 6,
                                   ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    AsyncContent(
-                      value: ref.watch(profileTagsProvider(id)),
-                      onRetry: () => ref.invalidate(profileTagsProvider(id)),
-                      builder: (tags) => Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (var i = 0; i < tags.length; i++)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 5,
-                              ),
-                              decoration: BoxDecoration(
-                                color: [
-                                  const Color(0xffdcfce7),
-                                  const Color(0xffede9fe),
-                                  const Color(0xfffce7f3),
-                                  const Color(0xffe0f2fe),
-                                ][i % 4],
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Text(
-                                tags[i],
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: [
-                                    const Color(0xff16a34a),
-                                    const Color(0xff7c3aed),
-                                    const Color(0xffdb2777),
-                                    const Color(0xff0284c7),
-                                  ][i % 4],
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    const Text(
-                      'CP relationship',
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                    AsyncContent(
-                      value: ref.watch(profileCoupleProvider(id)),
-                      onRetry: () => ref.invalidate(profileCoupleProvider(id)),
-                      builder: (cp) {
-                        if (cp == null)
-                          return CouplePanel(
-                            name: p.displayName ?? 'N',
-                            avatarUrl: image('avatars', p.avatarPath),
-                            onAdd: me == id ? () => context.push('/cp') : null,
-                          );
-                        final partner =
-                            cp['user_a'] == id ? cp['user_b'] : cp['user_a'];
-                        return AsyncContent(
-                          value: ref.watch(profileProvider(partner)),
-                          onRetry: () =>
-                              ref.invalidate(profileProvider(partner)),
-                          builder: (other) => CouplePanel(
-                            name: p.displayName ?? 'N',
-                            avatarUrl: image('avatars', p.avatarPath),
-                            partnerAvatarUrl: image(
-                              'avatars',
-                              other.avatarPath,
-                            ),
-                            partner: other.displayName ??
-                                other.username ??
-                                'Nimzo user',
-                            days: DateTime.tryParse(
-                                      cp['created_at']?.toString() ?? '',
-                                    ) ==
-                                    null
-                                ? 0
-                                : DateTime.now()
-                                    .difference(
-                                      DateTime.parse(
-                                        cp['created_at'].toString(),
-                                      ),
-                                    )
-                                    .inDays,
-                          ),
-                        );
-                      },
-                    ),
-                    if (me == id)
-                      TextButton(
-                        onPressed: () => context.push('/cp'),
-                        child: const Text('CP invitations'),
-                      ),
-                    for (final kind in ProfileCollection.values) ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              {
-                                'frame': 'Frame',
-                                'car': 'Car',
-                              }[kind.name]!,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () => showReferenceSheet(
-                              context,
-                              Consumer(
-                                builder: (context, ref, _) => Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: AsyncContent(
-                                    value: ref.watch(
-                                      profileCollectionProvider((id, kind)),
-                                    ),
-                                    onRetry: () => ref.invalidate(
-                                      profileCollectionProvider((id, kind)),
-                                    ),
-                                    builder: (items) => items.isEmpty
-                                        ? const EmptyContent('No items yet')
-                                        : SingleChildScrollView(
-                                            child: Wrap(
-                                              spacing: 10,
-                                              runSpacing: 10,
-                                              children: [
-                                                for (final item in items)
-                                                  CollectibleArtwork(
-                                                    item: item,
-                                                  ),
-                                              ],
-                                            ),
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: '${stats[key] ?? 0} ',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w700,
                                           ),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                              '${key[0].toUpperCase()}${key.substring(1)}',
+                                          style: const TextStyle(
+                                            color: NimzoStyle.muted,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
+                          ],
+                        ),
+                      ),
+                      AsyncContent(
+                        value: ref.watch(profileTagsProvider(id)),
+                        onRetry: () => ref.invalidate(profileTagsProvider(id)),
+                        builder: (tags) => Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (var i = 0; i < tags.length; i++)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: [
+                                    const Color(0xffdcfce7),
+                                    const Color(0xffede9fe),
+                                    const Color(0xfffce7f3),
+                                    const Color(0xffe0f2fe),
+                                  ][i % 4],
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Text(
+                                  tags[i],
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: [
+                                      const Color(0xff16a34a),
+                                      const Color(0xff7c3aed),
+                                      const Color(0xffdb2777),
+                                      const Color(0xff0284c7),
+                                    ][i % 4],
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const Text(
+                        'CP relationship',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      AsyncContent(
+                        value: ref.watch(profileCoupleProvider(id)),
+                        onRetry: () =>
+                            ref.invalidate(profileCoupleProvider(id)),
+                        builder: (cp) {
+                          if (cp == null)
+                            return CouplePanel(
+                              name: p.displayName ?? 'N',
+                              avatarUrl: image('avatars', p.avatarPath),
+                              onAdd: me == id
+                                  ? () => context.push('/cp')
+                                  : null,
+                            );
+                          final partner = cp['user_a'] == id
+                              ? cp['user_b']
+                              : cp['user_a'];
+                          return AsyncContent(
+                            value: ref.watch(profileProvider(partner)),
+                            onRetry: () =>
+                                ref.invalidate(profileProvider(partner)),
+                            builder: (other) => CouplePanel(
+                              name: p.displayName ?? 'N',
+                              avatarUrl: image('avatars', p.avatarPath),
+                              partnerAvatarUrl: image(
+                                'avatars',
+                                other.avatarPath,
+                              ),
+                              partner:
+                                  other.displayName ??
+                                  other.username ??
+                                  'Nimzo user',
+                              days:
+                                  DateTime.tryParse(
+                                        cp['created_at']?.toString() ?? '',
+                                      ) ==
+                                      null
+                                  ? 0
+                                  : DateTime.now()
+                                        .difference(
+                                          DateTime.parse(
+                                            cp['created_at'].toString(),
+                                          ),
+                                        )
+                                        .inDays,
                             ),
-                            child: const Text(
-                              'View All',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: NimzoStyle.muted,
+                          );
+                        },
+                      ),
+                      if (me == id)
+                        TextButton(
+                          onPressed: () => context.push('/cp'),
+                          child: const Text('CP invitations'),
+                        ),
+                      for (final kind in ProfileCollection.values) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                {'frame': 'Frame', 'car': 'Car'}[kind.name]!,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
+                            TextButton(
+                              onPressed: () => showReferenceSheet(
+                                context,
+                                Consumer(
+                                  builder: (context, ref, _) => Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: AsyncContent(
+                                      value: ref.watch(
+                                        profileCollectionProvider((id, kind)),
+                                      ),
+                                      onRetry: () => ref.invalidate(
+                                        profileCollectionProvider((id, kind)),
+                                      ),
+                                      builder: (items) => items.isEmpty
+                                          ? const EmptyContent('No items yet')
+                                          : SingleChildScrollView(
+                                              child: Wrap(
+                                                spacing: 10,
+                                                runSpacing: 10,
+                                                children: [
+                                                  for (final item in items)
+                                                    CollectibleArtwork(
+                                                      item: item,
+                                                    ),
+                                                ],
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              child: const Text(
+                                'View All',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: NimzoStyle.muted,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        AsyncContent(
+                          value: ref.watch(
+                            profileCollectionProvider((id, kind)),
                           ),
+                          onRetry: () => ref.invalidate(
+                            profileCollectionProvider((id, kind)),
+                          ),
+                          builder: (items) => items.isEmpty
+                              ? const EmptyContent('No items yet')
+                              : Wrap(
+                                  children: [
+                                    for (final item in items)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 10,
+                                        ),
+                                        child: CollectibleArtwork(item: item),
+                                      ),
+                                  ],
+                                ),
+                        ),
+                      ],
+                      Wrap(
+                        spacing: 12,
+                        children: [
+                          for (var i = 0; i < 2; i++)
+                            TextButton(
+                              onPressed: () => setState(() => section = i),
+                              child: Text(['Achievements', 'Moments'][i]),
+                            ),
                         ],
                       ),
-                      AsyncContent(
-                        value: ref.watch(profileCollectionProvider((id, kind))),
-                        onRetry: () => ref.invalidate(
-                          profileCollectionProvider((id, kind)),
+                      if (section == 0)
+                        AsyncContent(
+                          value: ref.watch(profileAchievementsProvider(id)),
+                          onRetry: () =>
+                              ref.invalidate(profileAchievementsProvider(id)),
+                          builder: (a) => a.isEmpty
+                              ? const EmptyContent('No achievements yet')
+                              : Column(
+                                  children: [
+                                    for (final name in a)
+                                      ListTile(title: Text(name)),
+                                  ],
+                                ),
                         ),
-                        builder: (items) => items.isEmpty
-                            ? const EmptyContent('No items yet')
-                            : Wrap(
-                                children: [
-                                  for (final item in items)
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 10),
-                                      child: CollectibleArtwork(item: item),
-                                    ),
-                                ],
-                              ),
-                      ),
+                      if (section == 1)
+                        AsyncContent(
+                          value: ref.watch(profileMomentsProvider(id)),
+                          onRetry: () =>
+                              ref.invalidate(profileMomentsProvider(id)),
+                          builder: (a) => a.isEmpty
+                              ? const EmptyContent('No Moments yet')
+                              : Column(
+                                  children: [
+                                    for (final post in a)
+                                      ListTile(
+                                        title: Text(post.text ?? ''),
+                                        onTap: () =>
+                                            context.push('/moments/${post.id}'),
+                                      ),
+                                  ],
+                                ),
+                        ),
                     ],
-                    Wrap(
-                      spacing: 12,
-                      children: [
-                        for (var i = 0; i < 2; i++)
-                          TextButton(
-                            onPressed: () => setState(() => section = i),
-                            child: Text(['Achievements', 'Moments'][i]),
-                          ),
-                      ],
-                    ),
-                    if (section == 0)
-                      AsyncContent(
-                        value: ref.watch(profileAchievementsProvider(id)),
-                        onRetry: () =>
-                            ref.invalidate(profileAchievementsProvider(id)),
-                        builder: (a) => a.isEmpty
-                            ? const EmptyContent('No achievements yet')
-                            : Column(
-                                children: [
-                                  for (final name in a)
-                                    ListTile(title: Text(name)),
-                                ],
-                              ),
-                      ),
-                    if (section == 1)
-                      AsyncContent(
-                        value: ref.watch(profileMomentsProvider(id)),
-                        onRetry: () =>
-                            ref.invalidate(profileMomentsProvider(id)),
-                        builder: (a) => a.isEmpty
-                            ? const EmptyContent('No Moments yet')
-                            : Column(
-                                children: [
-                                  for (final post in a)
-                                    ListTile(
-                                      title: Text(post.text ?? ''),
-                                      onTap: () =>
-                                          context.push('/moments/${post.id}'),
-                                    ),
-                                ],
-                              ),
-                      ),
-                  ],
+                  ),
                 ),
               ),
             ],
@@ -559,9 +573,9 @@ class ProfileProgressBadge extends StatelessWidget {
     final amount = total;
     final unit = const ['coins', 'diamonds', 'points'][kind];
     final totalString = amount?.toString().replaceAllMapped(
-          RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-          (match) => '${match[1]},',
-        );
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]},',
+    );
     final fraction = amount == null || level < 1
         ? 0.0
         : ProfileLevelScale.fraction(kind, level, amount);
@@ -577,33 +591,43 @@ class ProfileProgressBadge extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(children: [
-            Icon(
+          Row(
+            children: [
+              Icon(
                 kind == 0
                     ? Icons.diamond_outlined
                     : kind == 1
-                        ? Icons.favorite_border
-                        : Icons.bolt_outlined,
+                    ? Icons.favorite_border
+                    : Icons.bolt_outlined,
                 color: accent,
-                size: 15),
-            const SizedBox(width: 4),
-            Expanded(
-                child: Text(ProfileLevelScale.labels[kind],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        color: accent,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700))),
-          ]),
+                size: 15,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  ProfileLevelScale.labels[kind],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: accent,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 3),
-          Text(level > 0 ? 'Lv $level' : 'Level unavailable',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  color: accent,
-                  fontSize: level > 0 ? 16 : 9,
-                  fontWeight: FontWeight.w800)),
+          Text(
+            level > 0 ? 'Lv $level' : 'Level unavailable',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: accent,
+              fontSize: level > 0 ? 16 : 9,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
           const SizedBox(height: 3),
           Text(
             amount == null ? 'Total unavailable' : '$totalString $unit',
@@ -639,40 +663,35 @@ class LevelBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding:
-            EdgeInsets.symmetric(horizontal: showLabel ? 5 : 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: color(kind, level),
-          borderRadius: BorderRadius.circular(14),
+    padding: EdgeInsets.symmetric(horizontal: showLabel ? 5 : 10, vertical: 4),
+    decoration: BoxDecoration(
+      color: color(kind, level),
+      borderRadius: BorderRadius.circular(14),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ReferenceIcon(
+          kind == 0 ? 'crown' : 'star',
+          size: showLabel ? 12 : 14,
+          color: Colors.white,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ReferenceIcon(
-              kind == 0 ? 'crown' : 'star',
-              size: showLabel ? 12 : 14,
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            showLabel
+                ? '${const ['Wealth', 'Charm', 'Active'][kind]} ${level > 0 ? level : '—'}'
+                : (level > 0 ? '$level' : '—'),
+            style: TextStyle(
               color: Colors.white,
+              fontSize: showLabel ? 9 : 12,
+              fontWeight: FontWeight.w700,
             ),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                showLabel
-                    ? '${const [
-                        'Wealth',
-                        'Charm',
-                        'Active'
-                      ][kind]} ${level > 0 ? level : '—'}'
-                    : (level > 0 ? '$level' : '—'),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: showLabel ? 9 : 12,
-                  fontWeight: FontWeight.w700,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }

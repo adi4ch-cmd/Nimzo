@@ -1,4 +1,9 @@
 import 'private_animal_gifts.dart';
+import 'gift_media.dart';
+import 'gift_svga_overlay.dart';
+
+import 'package:flutter/services.dart';
+
 import '../../core/providers/supabase_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +16,16 @@ class Gift {
   final String id, name, category;
   final int price;
   final String? assetPath;
-  const Gift(this.id, this.name, this.category, this.price, this.assetPath);
+  final bool hasApprovedAnimation;
+  const Gift(
+    this.id,
+    this.name,
+    this.category,
+    this.price,
+    this.assetPath, {
+    this.hasApprovedAnimation = false,
+  });
+  bool get requiresAnimation => hasApprovedAnimation || hasGiftAnimation(id);
 }
 
 class GiftRepository {
@@ -99,11 +113,30 @@ class GiftRepository {
         : null;
   }
 
+  /// Resolve promised playback before requesting settlement. Private media
+  /// readiness never issues a URL or weakens its authenticated access gate.
+  Future<bool> animationReady(Gift gift) async {
+    if (!gift.requiresAnimation) return true;
+    final bundled = freeGiftAnimationForId(gift.id);
+    if (bundled != null) {
+      try {
+        return (await rootBundle.load(bundled)).lengthInBytes > 0;
+      } catch (_) {
+        return false;
+      }
+    }
+    if (privateAnimalVapGiftIds.contains(gift.id)) {
+      return privateMediaReady(gift.id);
+    }
+    return await approvedAnimationUrl(gift.id) != null;
+  }
+
   /// Checks private media availability before a debit without issuing a URL.
   Future<bool> privateMediaReady(String giftId) async {
     if (!privateAnimalVapGiftIds.contains(giftId)) return false;
     final response = await _db.functions.invoke(
-      'gift-media', body: {'gift_id': giftId, 'kind': 'ready'},
+      'gift-media',
+      body: {'gift_id': giftId, 'kind': 'ready'},
     );
     final body = response.data;
     return body is Map && body['ready'] == true;
@@ -115,7 +148,8 @@ class GiftRepository {
   Future<String?> qaGiftAnimationUrl(String giftId) async {
     if (!privateAnimalVapGiftIds.contains(giftId)) return null;
     final response = await _db.functions.invoke(
-      'gift-media', body: {'gift_id': giftId, 'kind': 'qa_animation'},
+      'gift-media',
+      body: {'gift_id': giftId, 'kind': 'qa_animation'},
     );
     final body = response.data;
     final url = body is Map ? body['url'] as String? : null;
@@ -196,6 +230,19 @@ class GiftRepository {
           .select()
           .eq('active', true)
           .order('coin_price');
+      // Approved public media metadata is readable under existing RLS. Never
+      // request private signed URLs while browsing the catalog.
+      final media = await _db
+          .from('gift_animation_media')
+          .select('gift_id,video_url')
+          .eq('approved', true);
+      final animatedIds = media
+          .where((row) {
+            final uri = Uri.tryParse('${row['video_url'] ?? ''}');
+            return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty;
+          })
+          .map((row) => row['gift_id']?.toString())
+          .toSet();
       return r
           .map(
             (j) => Gift(
@@ -204,6 +251,7 @@ class GiftRepository {
               j['category'],
               (j['coin_price'] as num).toInt(),
               j['asset_path'] as String?,
+              hasApprovedAnimation: animatedIds.contains(j['id']),
             ),
           )
           .toList();

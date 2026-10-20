@@ -11,6 +11,7 @@ import '../../profile/profile_repository.dart';
 import '../../social/social_repositories.dart';
 import '../../voice/voice_controller.dart';
 import 'room_controller.dart';
+import '../../store/store_visual_equipment.dart';
 
 /// Compact in-room profile card. Its badges and social state are read from the
 /// same authoritative providers as the public profile; the screenshot is
@@ -69,18 +70,18 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
   }
 
   Future<void> changeFollow(AsyncValue<bool>? following) => run(() async {
-        if (following?.hasValue != true) {
-          ref.invalidate(isFollowingProvider(widget.userId));
-          return;
-        }
-        final repo = ref.read(followRepositoryProvider);
-        if (following!.valueOrNull == true) {
-          await repo.unfollow(widget.userId);
-        } else {
-          await repo.follow(widget.userId);
-        }
-        ref.invalidate(isFollowingProvider(widget.userId));
-      });
+    if (following?.hasValue != true) {
+      ref.invalidate(isFollowingProvider(widget.userId));
+      return;
+    }
+    final repo = ref.read(followRepositoryProvider);
+    if (following!.valueOrNull == true) {
+      await repo.unfollow(widget.userId);
+    } else {
+      await repo.follow(widget.userId);
+    }
+    ref.invalidate(isFollowingProvider(widget.userId));
+  });
 
   Future<void> changeFriend(AsyncValue<FriendState>? friendship) =>
       run(() async {
@@ -104,102 +105,127 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
       });
 
   Future<void> moderate({required bool ban}) => run(() async {
-        final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (c) => AlertDialog(
-            title: Text(ban
-                ? 'Permanently ban this user from the room?'
-                : 'Remove this user from the room?'),
-            content: Text(ban
-                ? 'This user will not be able to rejoin this room.'
-                : 'This user can rejoin the room.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(c, false),
-                child: const Text('Cancel'),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(c, true),
-                child: Text(ban ? 'Ban' : 'Remove'),
-              ),
-            ],
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: Text(
+          ban
+              ? 'Permanently ban this user from the room?'
+              : 'Remove this user from the room?',
+        ),
+        content: Text(
+          ban
+              ? 'This user will not be able to rejoin this room.'
+              : 'This user can rejoin the room.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('Cancel'),
           ),
-        );
-        if (confirmed != true || !mounted) return;
-        await ref.read(roomRepositoryProvider).moderateMember(
-              widget.roomId,
-              widget.userId,
-              ban: ban,
-            );
-        if (mounted) Navigator.of(context).pop();
-      });
+          FilledButton(
+            onPressed: () => Navigator.pop(c, true),
+            child: Text(ban ? 'Ban' : 'Remove'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    await ref
+        .read(roomRepositoryProvider)
+        .moderateMember(widget.roomId, widget.userId, ban: ban);
+    if (mounted) Navigator.of(context).pop();
+  });
 
   @override
   Widget build(BuildContext context) {
     final me = ref.watch(currentUserIdProvider);
     final self = widget.userId == me;
-    final roomOwner =
-        ref.watch(roomProvider(widget.roomId)).valueOrNull?.ownerId;
-    final canModerate = me != null &&
+    final roomOwner = ref
+        .watch(roomProvider(widget.roomId))
+        .valueOrNull
+        ?.ownerId;
+    final canModerate =
+        me != null &&
         (roomOwner == me ||
             ref.watch(roomModerationProvider(widget.roomId)).valueOrNull ==
                 true);
     final removable = canModerate && !self && widget.userId != roomOwner;
-    final following =
-        self ? null : ref.watch(isFollowingProvider(widget.userId));
-    final friendship =
-        self ? null : ref.watch(friendStateProvider(widget.userId));
+    final following = self
+        ? null
+        : ref.watch(isFollowingProvider(widget.userId));
+    final friendship = self
+        ? null
+        : ref.watch(friendStateProvider(widget.userId));
 
     return SafeArea(
       child: SingleChildScrollView(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 390),
-            child: Container(
-              key: const ValueKey('room-mini-profile-card'),
-              margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
-              padding: const EdgeInsets.fromLTRB(18, 20, 18, 14),
-              decoration: BoxDecoration(
-                color: const Color(0xfffcf8ff),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xffede4f5)),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x50000000),
-                    blurRadius: 24,
-                    offset: Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AsyncContent(
-                    value: ref.watch(profileProvider(widget.userId)),
-                    onRetry: () =>
-                        ref.invalidate(profileProvider(widget.userId)),
-                    builder: (p) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Stack(children: [
-                          ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: SizedBox(
+            child: EquippedCosmetic(
+              userId: widget.userId,
+              category: 'Profile Card',
+              child: Container(
+                key: const ValueKey('room-mini-profile-card'),
+                margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
+                padding: const EdgeInsets.fromLTRB(18, 20, 18, 14),
+                decoration: BoxDecoration(
+                  color:
+                      ref
+                              .watch(
+                                storeVisualEquipmentProvider(widget.userId),
+                              )
+                              .valueOrNull?['Profile Card'] ==
+                          null
+                      ? const Color(0xfffcf8ff)
+                      : Colors.white.withValues(alpha: .78),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0xffede4f5)),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x50000000),
+                      blurRadius: 24,
+                      offset: Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AsyncContent(
+                      value: ref.watch(profileProvider(widget.userId)),
+                      onRetry: () =>
+                          ref.invalidate(profileProvider(widget.userId)),
+                      builder: (p) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: SizedBox(
                                   height: 180,
                                   width: double.infinity,
                                   child: p.coverPath == null
                                       ? const DecoratedBox(
                                           decoration: BoxDecoration(
-                                              gradient: LinearGradient(colors: [
-                                            Color(0xff9580b4),
-                                            Color(0xffd4b9eb),
-                                            Color(0xff4d386e)
-                                          ])),
-                                          child: Icon(Icons.person_outline,
-                                              size: 70,
-                                              color: Color(0x66ffffff)))
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                Color(0xff9580b4),
+                                                Color(0xffd4b9eb),
+                                                Color(0xff4d386e),
+                                              ],
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            Icons.person_outline,
+                                            size: 70,
+                                            color: Color(0x66ffffff),
+                                          ),
+                                        )
                                       : Image.network(
                                           ref
                                               .read(supabaseProvider)
@@ -209,206 +235,235 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                           fit: BoxFit.cover,
                                           errorBuilder: (_, __, ___) =>
                                               const ColoredBox(
-                                                  color: Color(0xffd4b9eb))))),
-                          Positioned(
-                              top: 0,
-                              right: 0,
-                              child: IconButton(
+                                                color: Color(0xffd4b9eb),
+                                              ),
+                                        ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: IconButton(
                                   tooltip: 'Close profile',
                                   onPressed: () => Navigator.pop(context),
-                                  icon: const Icon(Icons.cancel_rounded,
-                                      color: Colors.white))),
-                        ]),
-                        const SizedBox(height: 12),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            InkWell(
-                              onTap: openProfile,
-                              child: NimzoAvatar(
-                                name: p.displayName ?? 'N',
-                                size: 66,
-                                url: p.avatarPath == null
-                                    ? null
-                                    : ref
-                                        .read(supabaseProvider)
-                                        .storage
-                                        .from('avatars')
-                                        .getPublicUrl(p.avatarPath!),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  InkWell(
-                                    onTap: openProfile,
-                                    child: Text(
-                                        p.displayName ??
-                                            p.username ??
-                                            'Nimzo user',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          color: Color(0xff30213d),
-                                          fontSize: 19,
-                                          fontWeight: FontWeight.w800,
-                                        )),
+                                  icon: const Icon(
+                                    Icons.cancel_rounded,
+                                    color: Colors.white,
                                   ),
-                                  const SizedBox(height: 3),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'ID:${p.nimzoId}',
-                                        style: const TextStyle(
-                                          color: Color(0xff9684aa),
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 5),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 7),
-                                  Row(
-                                    key: const ValueKey(
-                                        'room-user-level-badges'),
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      for (var kind = 0; kind < 3; kind++) ...[
-                                        if (kind > 0) const SizedBox(width: 4),
-                                        Flexible(
-                                          child: InkWell(
-                                            key: ValueKey(
-                                                'room-user-level-$kind'),
-                                            onTap: busy
-                                                ? null
-                                                : () =>
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            LevelsScreen(
-                                                          initialKind: kind,
-                                                          userId: widget.userId,
-                                                        ),
-                                                      ),
-                                                    ),
-                                            child: ProfileLevelPill(
-                                              kind: kind,
-                                              level: [
-                                                p.wealthLevel,
-                                                p.charmLevel,
-                                                p.activeLevel,
-                                              ][kind],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        const SizedBox(height: 18),
-                        Row(
-                          children: [
-                            if (!self) ...[
-                              Expanded(
-                                child: _MiniAction(
-                                  icon: Icons.favorite_border,
-                                  color: const Color(0xfffa70ab),
-                                  label: following?.valueOrNull == true
-                                      ? 'Unfollow'
-                                      : 'Follow',
-                                  onTap: busy
-                                      ? null
-                                      : () => changeFollow(following),
-                                ),
-                              ),
-                              Expanded(
-                                child: _MiniAction(
-                                  icon: Icons.person_add_alt_1,
-                                  color: const Color(0xff4bd9c7),
-                                  label: switch (friendship?.valueOrNull) {
-                                    FriendState.friends => 'Message',
-                                    FriendState.sent => 'Request sent',
-                                    FriendState.received => 'Accept friend',
-                                    _ => 'Add friend',
-                                  },
-                                  onTap: busy ||
-                                          friendship?.hasValue != true ||
-                                          friendship?.valueOrNull ==
-                                              FriendState.sent
-                                      ? null
-                                      : () => changeFriend(friendship),
-                                ),
-                              ),
-                              Expanded(
-                                child: _MiniAction(
-                                  icon: Icons.alternate_email,
-                                  color: const Color(0xffff9754),
-                                  label: 'Mention',
-                                  onTap: busy || widget.onMention == null
-                                      ? null
-                                      : () {
-                                          widget.onMention!.call(
-                                            p.displayName ??
-                                                p.username ??
-                                                p.nimzoId.toString(),
-                                          );
-                                          Navigator.of(context).pop();
-                                        },
                                 ),
                               ),
                             ],
-                            Expanded(
-                              child: _MiniAction(
-                                icon: Icons.card_giftcard_rounded,
-                                color: const Color(0xffdfd94a),
-                                label: 'Send Gifts',
-                                onTap: busy || me == null ? null : gift,
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              InkWell(
+                                onTap: openProfile,
+                                child: NimzoAvatar(
+                                  userId: widget.userId,
+                                  name: p.displayName ?? 'N',
+                                  size: 66,
+                                  url: p.avatarPath == null
+                                      ? null
+                                      : ref
+                                            .read(supabaseProvider)
+                                            .storage
+                                            .from('avatars')
+                                            .getPublicUrl(p.avatarPath!),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    InkWell(
+                                      onTap: openProfile,
+                                      child: EquippedIdentity(
+                                        userId: widget.userId,
+                                        child: Text(
+                                          p.displayName ??
+                                              p.username ??
+                                              'Nimzo user',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: Color(0xff30213d),
+                                            fontSize: 19,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'ID:${p.nimzoId}',
+                                          style: const TextStyle(
+                                            color: Color(0xff9684aa),
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 7),
+                                    Row(
+                                      key: const ValueKey(
+                                        'room-user-level-badges',
+                                      ),
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        for (
+                                          var kind = 0;
+                                          kind < 3;
+                                          kind++
+                                        ) ...[
+                                          if (kind > 0)
+                                            const SizedBox(width: 4),
+                                          Flexible(
+                                            child: InkWell(
+                                              key: ValueKey(
+                                                'room-user-level-$kind',
+                                              ),
+                                              onTap: busy
+                                                  ? null
+                                                  : () => Navigator.of(context)
+                                                        .push(
+                                                          MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                LevelsScreen(
+                                                                  initialKind:
+                                                                      kind,
+                                                                  userId: widget
+                                                                      .userId,
+                                                                ),
+                                                          ),
+                                                        ),
+                                              child: ProfileLevelPill(
+                                                kind: kind,
+                                                level: [
+                                                  p.wealthLevel,
+                                                  p.charmLevel,
+                                                  p.activeLevel,
+                                                ][kind],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          const SizedBox(height: 18),
+                          Row(
+                            children: [
+                              if (!self) ...[
+                                Expanded(
+                                  child: _MiniAction(
+                                    icon: Icons.favorite_border,
+                                    color: const Color(0xfffa70ab),
+                                    label: following?.valueOrNull == true
+                                        ? 'Unfollow'
+                                        : 'Follow',
+                                    onTap: busy
+                                        ? null
+                                        : () => changeFollow(following),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: _MiniAction(
+                                    icon: Icons.person_add_alt_1,
+                                    color: const Color(0xff4bd9c7),
+                                    label: switch (friendship?.valueOrNull) {
+                                      FriendState.friends => 'Message',
+                                      FriendState.sent => 'Request sent',
+                                      FriendState.received => 'Accept friend',
+                                      _ => 'Add friend',
+                                    },
+                                    onTap:
+                                        busy ||
+                                            friendship?.hasValue != true ||
+                                            friendship?.valueOrNull ==
+                                                FriendState.sent
+                                        ? null
+                                        : () => changeFriend(friendship),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: _MiniAction(
+                                    icon: Icons.alternate_email,
+                                    color: const Color(0xffff9754),
+                                    label: 'Mention',
+                                    onTap: busy || widget.onMention == null
+                                        ? null
+                                        : () {
+                                            widget.onMention!.call(
+                                              p.displayName ??
+                                                  p.username ??
+                                                  p.nimzoId.toString(),
+                                            );
+                                            Navigator.of(context).pop();
+                                          },
+                                  ),
+                                ),
+                              ],
+                              Expanded(
+                                child: _MiniAction(
+                                  icon: Icons.card_giftcard_rounded,
+                                  color: const Color(0xffdfd94a),
+                                  label: 'Send Gifts',
+                                  onTap: busy || me == null ? null : gift,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  if (busy) ...[
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Working…',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Color(0xff9684aa), fontSize: 11),
-                    ),
-                  ],
-                  const SizedBox(height: 10),
-                  if (self)
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
-                      children: [
-                        TextButton(
-                          onPressed: busy
-                              ? null
-                              : () {
-                                  final router = GoRouter.of(context);
-                                  Navigator.pop(context);
-                                  router.push('/profile');
-                                },
-                          child: const Text('Edit Profile'),
+                    if (busy) ...[
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Working…',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xff9684aa),
+                          fontSize: 11,
                         ),
-                        TextButton(
-                          onPressed: busy
-                              ? null
-                              : () => run(() async {
-                                    final repository =
-                                        ref.read(roomRepositoryProvider);
-                                    final voice =
-                                        ref.read(voiceServiceProvider);
+                      ),
+                    ],
+                    const SizedBox(height: 10),
+                    if (self)
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        children: [
+                          TextButton(
+                            onPressed: busy
+                                ? null
+                                : () {
+                                    final router = GoRouter.of(context);
+                                    Navigator.pop(context);
+                                    router.push('/profile');
+                                  },
+                            child: const Text('Edit Profile'),
+                          ),
+                          TextButton(
+                            onPressed: busy
+                                ? null
+                                : () => run(() async {
+                                    final repository = ref.read(
+                                      roomRepositoryProvider,
+                                    );
+                                    final voice = ref.read(
+                                      voiceServiceProvider,
+                                    );
                                     await repository.leaveSeat(widget.roomId);
                                     try {
                                       await voice.setMicEnabled(false);
@@ -417,20 +472,20 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                     }
                                     if (context.mounted) Navigator.pop(context);
                                   }),
-                          child: const Text('Leave seat'),
-                        ),
-                      ],
-                    ),
-                  if (removable) ...[
-                    const Divider(color: Color(0xff4d494d)),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
-                      children: [
-                        TextButton(
-                          onPressed: busy
-                              ? null
-                              : () => run(() async {
+                            child: const Text('Leave seat'),
+                          ),
+                        ],
+                      ),
+                    if (removable) ...[
+                      const Divider(color: Color(0xff4d494d)),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        children: [
+                          TextButton(
+                            onPressed: busy
+                                ? null
+                                : () => run(() async {
                                     await ref
                                         .read(roomRepositoryProvider)
                                         .modMuteSeat(
@@ -440,24 +495,26 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                         );
                                     if (context.mounted) Navigator.pop(context);
                                   }),
-                          child:
-                              Text(widget.muted ? 'Unmute seat' : 'Mute seat'),
-                        ),
-                        TextButton(
-                          onPressed: busy ? null : () => moderate(ban: false),
-                          child: const Text('Kick from room'),
-                        ),
-                        TextButton(
-                          onPressed: busy ? null : () => moderate(ban: true),
-                          child: const Text(
-                            'Ban from room',
-                            style: TextStyle(color: Color(0xffff7777)),
+                            child: Text(
+                              widget.muted ? 'Unmute seat' : 'Mute seat',
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                          TextButton(
+                            onPressed: busy ? null : () => moderate(ban: false),
+                            child: const Text('Kick from room'),
+                          ),
+                          TextButton(
+                            onPressed: busy ? null : () => moderate(ban: true),
+                            child: const Text(
+                              'Ban from room',
+                              style: TextStyle(color: Color(0xffff7777)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
@@ -482,32 +539,32 @@ class _MiniAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Opacity(
-          opacity: onTap == null ? .46 : 1,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, size: 27, color: color),
-                const SizedBox(height: 8),
-                Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Color(0xff30213d),
-                    fontSize: 11,
-                    height: 1.1,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(14),
+    child: Opacity(
+      opacity: onTap == null ? .46 : 1,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 27, color: color),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xff30213d),
+                fontSize: 11,
+                height: 1.1,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }

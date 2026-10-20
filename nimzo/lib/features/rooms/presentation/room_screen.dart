@@ -1,3 +1,6 @@
+import '../../store/store_visual_equipment.dart';
+import '../../store/cosmetic_media_view.dart';
+import '../../store/room_cosmetic_entrance.dart';
 // ignore_for_file: prefer_interpolation_to_compose_strings
 import '../../profile/profile_repository.dart';
 import '../../gifts/verified_gift_broadcast.dart';
@@ -5,7 +8,9 @@ import '../../gifts/verified_gift_broadcast.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import '../../../core/widgets/art/nimzo_navigation_art.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
@@ -92,8 +97,8 @@ class _State extends ConsumerState<RoomScreen> {
       joined = session.joined;
       failure = joined
           ? error is VoiceConnectionFailure
-              ? error.message.toString()
-              : 'Voice connection failed (${error.runtimeType}). Retry voice.'
+                ? error.message.toString()
+                : 'Voice connection failed (${error.runtimeType}). Retry voice.'
           : 'Unable to enter this room. Please retry.';
     } finally {
       if (mounted) setState(() => joining = false);
@@ -105,8 +110,9 @@ class _State extends ConsumerState<RoomScreen> {
     _activityTimer = Timer.periodic(const Duration(seconds: 70), (_) async {
       if (!mounted || !joined || leaving) return;
       try {
-        final gained =
-            await ref.read(roomRepositoryProvider).touchActivity(widget.roomId);
+        final gained = await ref
+            .read(roomRepositoryProvider)
+            .touchActivity(widget.roomId);
         if (!mounted || gained <= 0) return;
         final user = ref.read(currentUserIdProvider);
         if (user != null) ref.invalidate(profileProvider(user));
@@ -150,24 +156,31 @@ class _State extends ConsumerState<RoomScreen> {
         builder: (dialog) => Dialog(
           backgroundColor: Colors.white,
           insetPadding: const EdgeInsets.symmetric(horizontal: 46),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(36)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(36),
+          ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(23, 27, 23, 30),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.exit_to_app_rounded,
-                    color: Color(0xffff1515), size: 86),
+                const Icon(
+                  Icons.exit_to_app_rounded,
+                  color: Color(0xffff1515),
+                  size: 86,
+                ),
                 const SizedBox(height: 15),
-                const Text('Are you sure you want to leave the audio room?',
-                    key: ValueKey('confirm-audio-room-exit-question'),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 18,
-                        color: Color(0xff111111),
-                        fontWeight: FontWeight.w800,
-                        height: 1.35)),
+                const Text(
+                  'Are you sure you want to leave the audio room?',
+                  key: ValueKey('confirm-audio-room-exit-question'),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0xff111111),
+                    fontWeight: FontWeight.w800,
+                    height: 1.35,
+                  ),
+                ),
                 const SizedBox(height: 27),
                 SizedBox(
                   width: double.infinity,
@@ -180,9 +193,13 @@ class _State extends ConsumerState<RoomScreen> {
                       foregroundColor: const Color(0xffaa49ed),
                       shape: const StadiumBorder(),
                     ),
-                    child: const Text('Keep',
-                        style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.w800)),
+                    child: const Text(
+                      'Keep',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 11),
@@ -197,9 +214,13 @@ class _State extends ConsumerState<RoomScreen> {
                       foregroundColor: const Color(0xffe31414),
                       shape: const StadiumBorder(),
                     ),
-                    child: const Text('Exit',
-                        style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.w800)),
+                    child: const Text(
+                      'Exit',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -224,10 +245,13 @@ class _State extends ConsumerState<RoomScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              const Text('Room exit not confirmed. Retry to leave safely.'),
+          content: const Text(
+            'Room exit not confirmed. Retry to leave safely.',
+          ),
           action: SnackBarAction(
-              label: 'Retry', onPressed: () => unawaited(_exitRoom())),
+            label: 'Retry',
+            onPressed: () => unawaited(_exitRoom()),
+          ),
         ),
       );
     }
@@ -276,9 +300,11 @@ class _State extends ConsumerState<RoomScreen> {
               key: const ValueKey('room-seat-here'),
               minTileHeight: 58,
               title: const Center(
-                  child: Text('Seat Here',
-                      style: TextStyle(
-                          fontSize: 17, fontWeight: FontWeight.w700))),
+                child: Text(
+                  'Seat Here',
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                ),
+              ),
               onTap: () => Navigator.of(sheet).pop(true),
             ),
             const Divider(height: 1, color: Color(0xfff2f2f2)),
@@ -311,8 +337,10 @@ class _State extends ConsumerState<RoomScreen> {
                 foregroundColor: Colors.red,
               ),
               onPressed: () => Navigator.of(sheet).pop(false),
-              child: const Text('Cancel',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+              ),
             ),
           ],
         ),
@@ -335,49 +363,65 @@ class _State extends ConsumerState<RoomScreen> {
         top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(15, 18, 15, 18),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Row(children: [
-              const Expanded(
-                  child: Text('Reaction',
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Reaction',
                       style: TextStyle(
-                          fontSize: 19, fontWeight: FontWeight.w800))),
-              IconButton(
-                tooltip: 'Close reactions',
-                onPressed: () => Navigator.of(sheet).pop(),
-                icon: const Icon(Icons.close_rounded),
+                        fontSize: 19,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Close reactions',
+                    onPressed: () => Navigator.of(sheet).pop(),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
               ),
-            ]),
-            const SizedBox(height: 12),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 4,
-              childAspectRatio: .95,
-              children: [
-                for (final (index, item) in const [
-                  ('😆', 'Cool'),
-                  ('🤗', 'Hug'),
-                  ('🥱', 'Sleepy'),
-                  ('😱', 'Wow'),
-                  ('😘', 'Kiss'),
-                  ('😂', 'Laugh'),
-                ].indexed)
-                  InkWell(
+              const SizedBox(height: 12),
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 4,
+                childAspectRatio: .95,
+                children: [
+                  for (final (index, item) in const [
+                    ('😆', 'Cool'),
+                    ('🤗', 'Hug'),
+                    ('🥱', 'Sleepy'),
+                    ('😱', 'Wow'),
+                    ('😘', 'Kiss'),
+                    ('😂', 'Laugh'),
+                  ].indexed)
+                    InkWell(
                       key: ValueKey('room-reaction-$index'),
                       onTap: () => Navigator.of(sheet).pop(item.$1),
                       borderRadius: BorderRadius.circular(12),
                       child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(item.$1, style: const TextStyle(fontSize: 34)),
-                            const SizedBox(height: 4),
-                            Text(item.$2,
-                                style: const TextStyle(
-                                    fontSize: 10, color: Color(0xffaaa0bb))),
-                          ])),
-              ],
-            ),
-          ]),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(item.$1, style: const TextStyle(fontSize: 34)),
+                          const SizedBox(height: 4),
+                          Text(
+                            item.$2,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Color(0xffaaa0bb),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -386,54 +430,55 @@ class _State extends ConsumerState<RoomScreen> {
       // Do not fabricate a broadcast or write an unverified server event.
       text.value = TextEditingValue(
         text: text.text + chosen,
-        selection:
-            TextSelection.collapsed(offset: text.text.length + chosen.length),
+        selection: TextSelection.collapsed(
+          offset: text.text.length + chosen.length,
+        ),
       );
     }
   }
 
   Widget _artButton(String group, VoidCallback onTap) => InkWell(
-        onTap: onTap,
-        child: Container(
-          width: 46,
-          height: 46,
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: const Color(0xfffff2db),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: ReferenceArtwork(group, 0, size: 38),
-        ),
-      );
+    onTap: onTap,
+    child: Container(
+      width: 46,
+      height: 46,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: const Color(0xfffff2db),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: ReferenceArtwork(group, 0, size: 38),
+    ),
+  );
 
   Future<void> toggleMic() => action(() async {
-        if (micBusy) return;
-        final enabled = !mic;
-        final voice = ref.read(voiceServiceProvider);
-        setState(() => micBusy = true);
-        try {
-          await voice.setMicEnabled(enabled);
-          if (mounted && ref.read(voiceConnectedProvider).valueOrNull == true) {
-            setState(() => mic = enabled);
-          }
-        } finally {
-          if (mounted) setState(() => micBusy = false);
-        }
-      });
+    if (micBusy) return;
+    final enabled = !mic;
+    final voice = ref.read(voiceServiceProvider);
+    setState(() => micBusy = true);
+    try {
+      await voice.setMicEnabled(enabled);
+      if (mounted && ref.read(voiceConnectedProvider).valueOrNull == true) {
+        setState(() => mic = enabled);
+      }
+    } finally {
+      if (mounted) setState(() => micBusy = false);
+    }
+  });
 
   Future<void> sendMessage() => action(() async {
-        if (chatBusy) return;
-        final submitted = text.text;
-        if (submitted.trim().isEmpty) return;
-        final repository = ref.read(roomChatRepositoryProvider);
-        setState(() => chatBusy = true);
-        try {
-          await repository.send(widget.roomId, submitted.trim());
-          if (mounted && text.text == submitted) text.clear();
-        } finally {
-          if (mounted) setState(() => chatBusy = false);
-        }
-      });
+    if (chatBusy) return;
+    final submitted = text.text;
+    if (submitted.trim().isEmpty) return;
+    final repository = ref.read(roomChatRepositoryProvider);
+    setState(() => chatBusy = true);
+    try {
+      await repository.send(widget.roomId, submitted.trim());
+      if (mounted && text.text == submitted) text.clear();
+    } finally {
+      if (mounted) setState(() => chatBusy = false);
+    }
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -441,11 +486,18 @@ class _State extends ConsumerState<RoomScreen> {
         seats = ref.watch(seatsProvider(widget.roomId)),
         profiles =
             ref.watch(roomSeatProfilesProvider(widget.roomId)).valueOrNull ??
-                {};
+            {};
     final me = ref.watch(currentUserIdProvider),
         speaking = ref.watch(speakingProvider).valueOrNull ?? <String>{};
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
-    final palette = RoomTheme.byId(room.valueOrNull?.theme ?? 'nimzo_white');
+    final ownerId = room.valueOrNull?.ownerId;
+    final ownerStyle = ownerId == null
+        ? null
+        : ref.watch(storeVisualEquipmentProvider(ownerId)).valueOrNull;
+    final roomBackdrop = ownerStyle?['Party Theme'];
+    final palette = RoomTheme.byId(
+      roomBackdrop == null ? room.valueOrNull?.theme ?? 'nimzo_white' : 'sage',
+    );
     ref.listen(voiceConnectedProvider, (previous, next) {
       if (next.valueOrNull == true) {
         // The SDK may restore media automatically after a short network drop.
@@ -471,7 +523,8 @@ class _State extends ConsumerState<RoomScreen> {
               session.closed ||
               leaving ||
               joining ||
-              ref.read(voiceConnectedProvider).valueOrNull == true) return;
+              ref.read(voiceConnectedProvider).valueOrNull == true)
+            return;
           setState(() => failure = 'Voice disconnected. Retry voice.');
         });
       }
@@ -483,9 +536,12 @@ class _State extends ConsumerState<RoomScreen> {
         mic = false;
         final voice = ref.read(voiceServiceProvider);
         unawaited(
-          voice.setMicEnabled(false).catchError((Object _) async {
-            await voice.leave();
-          }).catchError((Object _) {}),
+          voice
+              .setMicEnabled(false)
+              .catchError((Object _) async {
+                await voice.leave();
+              })
+              .catchError((Object _) {}),
         );
       }
     });
@@ -505,17 +561,17 @@ class _State extends ConsumerState<RoomScreen> {
           },
           child: Stack(
             children: [
+              if (roomBackdrop != null)
+                Positioned.fill(
+                  child: Image.asset(roomBackdrop.asset, fit: BoxFit.cover),
+                ),
               Scaffold(
-                backgroundColor: RoomTheme.byId(
-                  room.valueOrNull?.theme ?? 'nimzo_white',
-                ).gradient.last,
+                backgroundColor: roomBackdrop == null
+                    ? palette.gradient.last
+                    : Colors.transparent,
                 appBar: AppBar(
-                  backgroundColor: RoomTheme.byId(
-                    room.valueOrNull?.theme ?? 'nimzo_white',
-                  ).gradient.first,
-                  foregroundColor: RoomTheme.byId(
-                    room.valueOrNull?.theme ?? 'nimzo_white',
-                  ).text,
+                  backgroundColor: palette.gradient.first,
+                  foregroundColor: palette.text,
                   toolbarHeight: 50,
                   titleSpacing: 0,
                   actions: [
@@ -524,13 +580,16 @@ class _State extends ConsumerState<RoomScreen> {
                       tooltip: 'Room PK Battle',
                       onPressed: joined
                           ? () => Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) => const PkBattlesScreen(),
-                                ),
-                              )
+                              MaterialPageRoute<void>(
+                                builder: (_) => const PkBattlesScreen(),
+                              ),
+                            )
                           : null,
-                      icon: const Icon(Icons.bolt_rounded,
-                          size: 25, color: Color(0xffa84bdc)),
+                      icon: const Icon(
+                        Icons.bolt_rounded,
+                        size: 25,
+                        color: Color(0xffa84bdc),
+                      ),
                     ),
                     IconButton(
                       key: const ValueKey('room-confirm-exit'),
@@ -543,11 +602,11 @@ class _State extends ConsumerState<RoomScreen> {
                     onTap: room.valueOrNull == null
                         ? null
                         : () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    RoomProfilePage(room: room.valueOrNull!),
-                              ),
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  RoomProfilePage(room: room.valueOrNull!),
                             ),
+                          ),
                     child: Row(
                       children: [
                         ReferenceRoomAvatar(
@@ -556,12 +615,12 @@ class _State extends ConsumerState<RoomScreen> {
                           url: room.valueOrNull?.avatarPath == null
                               ? null
                               : ref
-                                  .read(supabaseProvider)
-                                  .storage
-                                  .from('room-images')
-                                  .getPublicUrl(
-                                    room.valueOrNull!.avatarPath!,
-                                  ),
+                                    .read(supabaseProvider)
+                                    .storage
+                                    .from('room-images')
+                                    .getPublicUrl(
+                                      room.valueOrNull!.avatarPath!,
+                                    ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -582,9 +641,7 @@ class _State extends ConsumerState<RoomScreen> {
                                 'ID:${room.valueOrNull?.roomNo ?? '—'} · ${ref.watch(onlineCountProvider(widget.roomId)).valueOrNull?.toString() ?? '—'} online',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: RoomTheme.byId(
-                                    room.valueOrNull?.theme ?? 'nimzo_white',
-                                  ).text.withValues(alpha: .8),
+                                  color: palette.text.withValues(alpha: .8),
                                 ),
                               ),
                             ],
@@ -634,7 +691,8 @@ class _State extends ConsumerState<RoomScreen> {
                                         child: Builder(
                                           builder: (c) {
                                             final n = row * 5 + col + 1,
-                                                s = seats.valueOrNull
+                                                s =
+                                                    seats.valueOrNull
                                                         ?.where(
                                                           (s) => s.seatNo == n,
                                                         )
@@ -642,202 +700,218 @@ class _State extends ConsumerState<RoomScreen> {
                                                     MicSeat(seatNo: n),
                                                 p = profiles[s.userId];
                                             return InkWell(
-                                              onTap: !joined ||
+                                              onTap:
+                                                  !joined ||
                                                       !seats.hasValue ||
                                                       (s.locked &&
                                                           s.userId == null)
                                                   ? null
                                                   : () => action(() async {
-                                                        if (s.userId == null) {
-                                                          await _showOpenSeatActions(
-                                                              n);
-                                                        } else {
-                                                          await showDialog<
-                                                              void>(
-                                                            context: context,
-                                                            builder: (_) =>
-                                                                Dialog(
-                                                              backgroundColor:
-                                                                  Colors
-                                                                      .transparent,
-                                                              insetPadding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                horizontal: 18,
-                                                                vertical: 24,
-                                                              ),
-                                                              child:
-                                                                  RoomUserSheet(
-                                                                roomId: widget
-                                                                    .roomId,
-                                                                userId:
-                                                                    s.userId!,
-                                                                seatNo: n,
-                                                                muted: s.muted,
-                                                                onMention:
-                                                                    (name) {
-                                                                  final mention =
-                                                                      '@$name ';
-                                                                  text.value =
-                                                                      TextEditingValue(
-                                                                    text: mention +
-                                                                        text.text,
-                                                                    selection:
-                                                                        TextSelection
-                                                                            .collapsed(
-                                                                      offset: mention
-                                                                          .length,
-                                                                    ),
-                                                                  );
-                                                                },
-                                                              ),
+                                                      if (s.userId == null) {
+                                                        await _showOpenSeatActions(
+                                                          n,
+                                                        );
+                                                      } else {
+                                                        await showDialog<void>(
+                                                          context: context,
+                                                          builder: (_) => Dialog(
+                                                            backgroundColor:
+                                                                Colors
+                                                                    .transparent,
+                                                            insetPadding:
+                                                                const EdgeInsets.symmetric(
+                                                                  horizontal:
+                                                                      18,
+                                                                  vertical: 24,
+                                                                ),
+                                                            child: RoomUserSheet(
+                                                              roomId:
+                                                                  widget.roomId,
+                                                              userId: s.userId!,
+                                                              seatNo: n,
+                                                              muted: s.muted,
+                                                              onMention: (name) {
+                                                                final mention =
+                                                                    '@$name ';
+                                                                text.value = TextEditingValue(
+                                                                  text:
+                                                                      mention +
+                                                                      text.text,
+                                                                  selection: TextSelection.collapsed(
+                                                                    offset: mention
+                                                                        .length,
+                                                                  ),
+                                                                );
+                                                              },
                                                             ),
-                                                          );
-                                                        }
-                                                      }),
+                                                          ),
+                                                        );
+                                                      }
+                                                    }),
                                               child: Container(
                                                 key: ValueKey(
-                                                    'room-mic-seat-$n'),
+                                                  'room-mic-seat-$n',
+                                                ),
                                                 height: 88,
                                                 margin:
                                                     const EdgeInsets.symmetric(
-                                                        horizontal: 1.5),
+                                                      horizontal: 1.5,
+                                                    ),
                                                 decoration: BoxDecoration(
-                                                  color:
-                                                      const Color(0x665e337e),
+                                                  color: const Color(
+                                                    0x665e337e,
+                                                  ),
                                                   border: Border.all(
-                                                      color: const Color(
-                                                          0x667c548d),
-                                                      width: .8),
+                                                    color: const Color(
+                                                      0x667c548d,
+                                                    ),
+                                                    width: .8,
+                                                  ),
                                                   borderRadius:
                                                       BorderRadius.circular(5),
                                                 ),
-                                                child: Stack(children: [
-                                                  Positioned(
-                                                    left: 3,
-                                                    top: 3,
-                                                    child: Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 4,
-                                                          vertical: 1),
-                                                      decoration: BoxDecoration(
+                                                child: Stack(
+                                                  children: [
+                                                    Positioned(
+                                                      left: 3,
+                                                      top: 3,
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 4,
+                                                              vertical: 1,
+                                                            ),
+                                                        decoration: BoxDecoration(
                                                           color: const Color(
-                                                              0x666e4e86),
+                                                            0x666e4e86,
+                                                          ),
                                                           borderRadius:
-                                                              BorderRadius
-                                                                  .circular(6)),
-                                                      child: Text('$n',
-                                                          style: const TextStyle(
-                                                              fontSize: 10,
-                                                              color: Color(
-                                                                  0xfff0d9ff))),
-                                                    ),
-                                                  ),
-                                                  Center(
-                                                      child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      if (s.userId == null)
-                                                        SizedBox(
-                                                          width: 46,
-                                                          height: 48,
-                                                          child: s.locked
-                                                              ? const Icon(
-                                                                  Icons
-                                                                      .lock_outline_rounded,
-                                                                  size: 30,
-                                                                  color: Color(
-                                                                      0xffd8b9e8))
-                                                              : const NimzoNavigationArt(
-                                                                  index: 5,
-                                                                  size: 43,
-                                                                  color: Color(
-                                                                      0xffd8b9e8)),
-                                                        )
-                                                      else
-                                                        Stack(
-                                                          clipBehavior:
-                                                              Clip.none,
-                                                          children: [
-                                                            Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                2,
+                                                              BorderRadius.circular(
+                                                                6,
                                                               ),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                                border:
-                                                                    Border.all(
-                                                                  color: speaking
-                                                                          .contains(
-                                                                    s.userId,
-                                                                  )
-                                                                      ? NimzoStyle
-                                                                          .primary
-                                                                      : Colors
-                                                                          .transparent,
-                                                                  width: 2,
+                                                        ),
+                                                        child: Text(
+                                                          '$n',
+                                                          style:
+                                                              const TextStyle(
+                                                                fontSize: 10,
+                                                                color: Color(
+                                                                  0xfff0d9ff,
                                                                 ),
                                                               ),
-                                                              child:
-                                                                  NimzoAvatar(
-                                                                name:
-                                                                    p?.displayName ??
-                                                                        'N',
-                                                                size: 48,
-                                                                url: p?.avatarPath ==
-                                                                        null
-                                                                    ? null
-                                                                    : ref
-                                                                        .read(
-                                                                          supabaseProvider,
-                                                                        )
-                                                                        .storage
-                                                                        .from(
-                                                                          'avatars',
-                                                                        )
-                                                                        .getPublicUrl(
-                                                                          p!.avatarPath!,
-                                                                        ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      const SizedBox(height: 3),
-                                                      Text(
-                                                        p?.displayName ?? '$n',
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: RoomTheme.byId(
-                                                            room.valueOrNull
-                                                                    ?.theme ??
-                                                                'nimzo_white',
-                                                          ).text.withValues(
-                                                              alpha: .88),
                                                         ),
                                                       ),
-                                                      if (s.muted)
-                                                        Icon(
-                                                          LucideIcons.micOff,
-                                                          size: 12,
-                                                          color: RoomTheme.byId(
-                                                            room.valueOrNull
-                                                                    ?.theme ??
-                                                                'nimzo_white',
-                                                          ).text,
-                                                        ),
-                                                    ],
-                                                  )),
-                                                ]),
+                                                    ),
+                                                    Center(
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          if (s.userId == null)
+                                                            SizedBox(
+                                                              width: 46,
+                                                              height: 48,
+                                                              child: s.locked
+                                                                  ? const Icon(
+                                                                      Icons
+                                                                          .lock_outline_rounded,
+                                                                      size: 30,
+                                                                      color: Color(
+                                                                        0xffd8b9e8,
+                                                                      ),
+                                                                    )
+                                                                  : const NimzoNavigationArt(
+                                                                      index: 5,
+                                                                      size: 43,
+                                                                      color: Color(
+                                                                        0xffd8b9e8,
+                                                                      ),
+                                                                    ),
+                                                            )
+                                                          else
+                                                            Stack(
+                                                              clipBehavior:
+                                                                  Clip.none,
+                                                              children: [
+                                                                Container(
+                                                                  padding:
+                                                                      const EdgeInsets.all(
+                                                                        2,
+                                                                      ),
+                                                                  decoration: BoxDecoration(
+                                                                    shape: BoxShape
+                                                                        .circle,
+                                                                    border: Border.all(
+                                                                      color:
+                                                                          speaking.contains(
+                                                                            s.userId,
+                                                                          )
+                                                                          ? NimzoStyle.primary
+                                                                          : Colors.transparent,
+                                                                      width: 2,
+                                                                    ),
+                                                                  ),
+                                                                  child: NimzoAvatar(
+                                                                    userId: s
+                                                                        .userId,
+                                                                    speaking: speaking
+                                                                        .contains(
+                                                                          s.userId,
+                                                                        ),
+                                                                    name:
+                                                                        p?.displayName ??
+                                                                        'N',
+                                                                    size: 48,
+                                                                    url:
+                                                                        p?.avatarPath ==
+                                                                            null
+                                                                        ? null
+                                                                        : ref
+                                                                              .read(supabaseProvider)
+                                                                              .storage
+                                                                              .from(
+                                                                                'avatars',
+                                                                              )
+                                                                              .getPublicUrl(
+                                                                                p!.avatarPath!,
+                                                                              ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          const SizedBox(
+                                                            height: 3,
+                                                          ),
+                                                          Text(
+                                                            p?.displayName ??
+                                                                '$n',
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: palette
+                                                                  .text
+                                                                  .withValues(
+                                                                    alpha: .88,
+                                                                  ),
+                                                            ),
+                                                          ),
+                                                          if (s.muted)
+                                                            Icon(
+                                                              LucideIcons
+                                                                  .micOff,
+                                                              size: 12,
+                                                              color:
+                                                                  palette.text,
+                                                            ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             );
                                           },
@@ -893,29 +967,45 @@ class _State extends ConsumerState<RoomScreen> {
                                     for (final msg in messages)
                                       Align(
                                         alignment: Alignment.centerLeft,
-                                        child: Container(
-                                          constraints: BoxConstraints(
-                                            maxWidth: MediaQuery.sizeOf(context)
-                                                    .width *
-                                                .85,
-                                          ),
-                                          margin: const EdgeInsets.only(
-                                            bottom: 6,
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 11,
-                                            vertical: 7,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: NimzoStyle.surface,
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
+                                        child: EquippedCosmetic(
+                                          userId: msg.userId,
+                                          category: 'Chat Bubble',
+                                          child: Container(
+                                            constraints: BoxConstraints(
+                                              maxWidth:
+                                                  MediaQuery.sizeOf(context)
+                                                      .width *
+                                                  .85,
+                                            ),
+                                            margin: const EdgeInsets.only(
+                                              bottom: 6,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 11,
+                                              vertical: 7,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  ref
+                                                          .watch(
+                                                            storeVisualEquipmentProvider(
+                                                              msg.userId,
+                                                            ),
+                                                          )
+                                                          .valueOrNull?['Chat Bubble'] !=
+                                                      null
+                                                  ? Colors.transparent
+                                                  : Colors.white.withValues(
+                                                      alpha: .8,
+                                                    ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
                                                   profiles[msg.userId]
                                                           ?.displayName ??
                                                       'Nimzo user',
@@ -926,14 +1016,16 @@ class _State extends ConsumerState<RoomScreen> {
                                                     color: NimzoStyle.primary,
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.w700,
-                                                  )),
-                                              Text(
-                                                msg.body,
-                                                style: const TextStyle(
-                                                  color: NimzoStyle.ink,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                                Text(
+                                                  msg.body,
+                                                  style: const TextStyle(
+                                                    color: NimzoStyle.ink,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -958,29 +1050,34 @@ class _State extends ConsumerState<RoomScreen> {
                                     onTap: !joined
                                         ? null
                                         : () => showModalBottomSheet<void>(
-                                              context: context,
-                                              isScrollControlled: true,
-                                              backgroundColor:
-                                                  const Color(0xff0c1728),
-                                              barrierColor: Colors.black
-                                                  .withValues(alpha: .72),
-                                              shape:
-                                                  const RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.vertical(
-                                                  top: Radius.circular(24),
-                                                ),
-                                              ),
-                                              builder: (_) => SafeArea(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          17, 18, 17, 12),
-                                                  child: RoomRocketSheet(
-                                                      roomId: widget.roomId),
+                                            context: context,
+                                            isScrollControlled: true,
+                                            backgroundColor: const Color(
+                                              0xff0c1728,
+                                            ),
+                                            barrierColor: Colors.black
+                                                .withValues(alpha: .72),
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.vertical(
+                                                    top: Radius.circular(24),
+                                                  ),
+                                            ),
+                                            builder: (_) => SafeArea(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                      17,
+                                                      18,
+                                                      17,
+                                                      12,
+                                                    ),
+                                                child: RoomRocketSheet(
+                                                  roomId: widget.roomId,
                                                 ),
                                               ),
                                             ),
+                                          ),
                                     child: Container(
                                       width: 46,
                                       height: 46,
@@ -1003,14 +1100,15 @@ class _State extends ConsumerState<RoomScreen> {
                                             'L' +
                                                 ((joined
                                                             ? ref
-                                                                    .watch(
-                                                                      roomDiamondStatusProvider(
+                                                                      .watch(
+                                                                        roomDiamondStatusProvider(
                                                                           widget
-                                                                              .roomId),
-                                                                    )
-                                                                    .valueOrNull
-                                                                    ?.activeStage ??
-                                                                0
+                                                                              .roomId,
+                                                                        ),
+                                                                      )
+                                                                      .valueOrNull
+                                                                      ?.activeStage ??
+                                                                  0
                                                             : 0) +
                                                         1)
                                                     .toString(),
@@ -1046,8 +1144,9 @@ class _State extends ConsumerState<RoomScreen> {
                           data: IconButtonThemeData(
                             style: IconButton.styleFrom(
                               foregroundColor: palette.text,
-                              disabledForegroundColor:
-                                  palette.text.withValues(alpha: .35),
+                              disabledForegroundColor: palette.text.withValues(
+                                alpha: .35,
+                              ),
                               padding: EdgeInsets.zero,
                               minimumSize: const Size(30, 34),
                               maximumSize: const Size(30, 34),
@@ -1088,9 +1187,9 @@ class _State extends ConsumerState<RoomScreen> {
                                   decoration: InputDecoration(
                                     suffixIconConstraints:
                                         const BoxConstraints.tightFor(
-                                      width: 30,
-                                      height: 34,
-                                    ),
+                                          width: 30,
+                                          height: 34,
+                                        ),
                                     suffixIcon: IconButton(
                                       tooltip: 'Send',
                                       onPressed: !joined || chatBusy
@@ -1113,8 +1212,9 @@ class _State extends ConsumerState<RoomScreen> {
                               ),
                               IconButton(
                                 tooltip: 'Microphone',
-                                onPressed:
-                                    !connected || micBusy ? null : toggleMic,
+                                onPressed: !connected || micBusy
+                                    ? null
+                                    : toggleMic,
                                 icon: Icon(
                                   mic ? LucideIcons.mic : LucideIcons.micOff,
                                 ),
@@ -1133,8 +1233,10 @@ class _State extends ConsumerState<RoomScreen> {
                                 key: const ValueKey('room-reactions-button'),
                                 tooltip: 'Reactions',
                                 onPressed: joined ? _showRoomReactions : null,
-                                icon: const Icon(Icons.emoji_emotions_rounded,
-                                    color: Color(0xffa74be7)),
+                                icon: const Icon(
+                                  Icons.emoji_emotions_rounded,
+                                  color: Color(0xffa74be7),
+                                ),
                               ),
                               IconButton(
                                 tooltip: 'Gift',
@@ -1149,29 +1251,30 @@ class _State extends ConsumerState<RoomScreen> {
                                         ];
                                         final id =
                                             await showModalBottomSheet<String>(
-                                          context: context,
-                                          builder: (c) => SafeArea(
-                                            child: ListView(
-                                              shrinkWrap: true,
-                                              children: [
-                                                for (final id in recipients)
-                                                  ListTile(
-                                                    title: Text(
-                                                      id == me
-                                                          ? 'Myself'
-                                                          : profiles[id]
-                                                                  ?.displayName ??
-                                                              'Nimzo user',
-                                                    ),
-                                                    onTap: () => Navigator.pop(
-                                                      c,
-                                                      id,
-                                                    ),
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
-                                        );
+                                              context: context,
+                                              builder: (c) => SafeArea(
+                                                child: ListView(
+                                                  shrinkWrap: true,
+                                                  children: [
+                                                    for (final id in recipients)
+                                                      ListTile(
+                                                        title: Text(
+                                                          id == me
+                                                              ? 'Myself'
+                                                              : profiles[id]
+                                                                        ?.displayName ??
+                                                                    'Nimzo user',
+                                                        ),
+                                                        onTap: () =>
+                                                            Navigator.pop(
+                                                              c,
+                                                              id,
+                                                            ),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
                                         if (id != null && context.mounted)
                                           showRoomGiftSheet(
                                             context,
@@ -1179,7 +1282,10 @@ class _State extends ConsumerState<RoomScreen> {
                                             id,
                                           );
                                       },
-                                icon: const Icon(Icons.card_giftcard_rounded, color: NimzoStyle.pink),
+                                icon: const Icon(
+                                  Icons.card_giftcard_rounded,
+                                  color: NimzoStyle.pink,
+                                ),
                               ),
                             ],
                           ),
@@ -1189,6 +1295,23 @@ class _State extends ConsumerState<RoomScreen> {
                   ),
                 ),
               ),
+              if (ownerStyle?['Live Frame'] case final media?)
+                Positioned(
+                  top: 55,
+                  left: 80,
+                  right: 80,
+                  height: 55,
+                  child: IgnorePointer(
+                    child: CosmeticMediaView(
+                      key: ValueKey(media.id),
+                      media: media,
+                    ),
+                  ),
+                ),
+              if (joined)
+                Positioned.fill(
+                  child: RoomCosmeticEntrance(roomId: widget.roomId),
+                ),
               if (joined)
                 Positioned.fill(
                   child: VerifiedGiftBroadcast(
@@ -1219,17 +1342,17 @@ class _PasswordState extends State<_PasswordDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Room password'),
-        content: TextField(controller: password, obscureText: true),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, password.text),
-            child: const Text('Join'),
-          ),
-        ],
-      );
+    title: const Text('Room password'),
+    content: TextField(controller: password, obscureText: true),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Cancel'),
+      ),
+      FilledButton(
+        onPressed: () => Navigator.pop(context, password.text),
+        child: const Text('Join'),
+      ),
+    ],
+  );
 }

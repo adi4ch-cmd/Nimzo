@@ -1,4 +1,5 @@
-import 'private_animal_gifts.dart';
+import 'gift_media.dart';
+import 'gift_receipt.dart';
 import 'hall_of_fame_vap_overlay.dart';
 
 import 'dart:math' as math;
@@ -301,6 +302,7 @@ class _GiftSparkles extends CustomPainter {
 /// settlement RPC returns success. Removes itself after playback completes.
 void showSettledPersonalGiftCelebration(
   BuildContext context, {
+  required String giftId,
   required String giftName,
   required int quantity,
   required int unitPrice,
@@ -308,7 +310,7 @@ void showSettledPersonalGiftCelebration(
   String? recipientName,
   String? videoUrl,
 }) {
-  final protectedGift = privateAnimalGiftIdForName(giftName) != null;
+  final protectedGift = isVapGift(giftId);
   if (protectedGift && videoUrl == null) return;
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return;
@@ -325,7 +327,7 @@ void showSettledPersonalGiftCelebration(
   final recipient = verifiedRecipient != null && verifiedRecipient.isNotEmpty
       ? verifiedRecipient
       : 'a member';
-  final originalSvga = freeGiftAnimationForName(giftName);
+  final originalSvga = freeGiftAnimationForId(giftId);
   entry = OverlayEntry(
     builder: (_) => protectedGift && videoUrl != null
         ? HallOfFameVapOverlay(
@@ -354,12 +356,11 @@ void showSettledPersonalGiftCelebration(
             quantity: quantity,
             onFinished: dismiss,
           )
-        : NimzoGiftCelebration(
+        : GiftArtworkReceipt(
             giftName: giftName,
             sender: 'You',
             recipient: recipient,
             quantity: quantity,
-            unitPrice: unitPrice,
             assetPath: assetPath,
             onFinished: dismiss,
           ),

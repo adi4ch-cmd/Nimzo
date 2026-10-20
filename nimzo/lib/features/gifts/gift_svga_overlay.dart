@@ -3,10 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svga/flutter_svga.dart';
 
-/// Sports Car is the sole retained animated gift. Legacy IDs do not play.
+/// Sports Car is the retained bundled animated gift. Legacy IDs do not play.
 const freeGiftAnimationsById = <String, String>{
-  '35e4c570-cb02-4466-ae86-d670b3fb05ab':
-      'assets/gifts/free/sports_car.svga',
+  '35e4c570-cb02-4466-ae86-d670b3fb05ab': 'assets/gifts/free/sports_car.svga',
 };
 
 const freeGiftAnimationsByName = <String, String>{

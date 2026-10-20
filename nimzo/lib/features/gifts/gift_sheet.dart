@@ -10,6 +10,7 @@ import '../../core/widgets/reference_widgets.dart';
 import '../profile/profile_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'gift_repository.dart';
+import 'gift_media.dart';
 import 'private_animal_gifts.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
@@ -76,6 +77,8 @@ class _State extends ConsumerState<GiftSheet> {
   int quantity = 1;
   String activeGiftCategory = 'All';
   String? key;
+  bool _settlementAttempted = false;
+
   /// No-charge decoder test for the verified owner of test ID 100005.
   /// The backend independently authorizes each signed QA media URL.
   /// Never call send_gift, create gift events, or change wallet balances here.
@@ -87,14 +90,17 @@ class _State extends ConsumerState<GiftSheet> {
     if (bundled == null) {
       if (!privateAnimalVapGiftIds.contains(gift.id)) return;
       try {
-        mediaUrl = await ref.read(giftRepositoryProvider)
+        mediaUrl = await ref
+            .read(giftRepositoryProvider)
             .qaGiftAnimationUrl(gift.id)
             .timeout(const Duration(seconds: 12));
       } catch (_) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Gift test video unavailable; 0 coins charged.'),
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Gift test video unavailable; 0 coins charged.'),
+            ),
+          );
         }
         return;
       }
@@ -135,19 +141,25 @@ class _State extends ConsumerState<GiftSheet> {
             const Positioned(
               top: 38,
               left: 12,
-              child: SafeArea(child: Text(
-                'FREE PLAYBACK TEST · 0 COINS',
-                style: TextStyle(color: Colors.white,
-                    fontWeight: FontWeight.bold),
-              )),
+              child: SafeArea(
+                child: Text(
+                  'FREE PLAYBACK TEST · 0 COINS',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
             Positioned(
               top: 38,
               right: 12,
-              child: SafeArea(child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white),
-                onPressed: () => Navigator.of(dialogContext).pop(),
-              )),
+              child: SafeArea(
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                ),
+              ),
             ),
           ],
         ),
@@ -164,8 +176,16 @@ class _State extends ConsumerState<GiftSheet> {
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('Send gift?'),
-        content: Text(
-          '${gift.name} × $requestQuantity · ${gift.price * requestQuantity} coins',
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${gift.name} × $requestQuantity · ${gift.price * requestQuantity} coins',
+            ),
+            if (!gift.requiresAnimation)
+              const Text('Artwork gift · static image'),
+          ],
         ),
         actions: [
           TextButton(
@@ -191,12 +211,24 @@ class _State extends ConsumerState<GiftSheet> {
     setState(() => busy = true);
     try {
       final r = ref.read(giftRepositoryProvider), g = gift;
-      if (privateAnimalVapGiftIds.contains(g.id) &&
-          !await r.privateMediaReady(g.id)) {
+      // An uncertain settlement must reach the server with the same key even
+      // if media goes offline before retry. Never turn it into a new purchase.
+      var animationReady = _settlementAttempted;
+      try {
+        if (!_settlementAttempted) {
+          animationReady = await r
+              .animationReady(g)
+              .timeout(const Duration(seconds: 8));
+        }
+      } catch (_) {
+        // An unavailable promised animation must never initiate a debit.
+      }
+      if (!animationReady) {
         throw const GiftRejectedException(
           'Gift animation is unavailable. No coins were charged. Please retry later.',
         );
       }
+      _settlementAttempted = true;
       if (widget.momentId != null) {
         await ref
             .read(momentRepositoryProvider)
@@ -261,7 +293,7 @@ class _State extends ConsumerState<GiftSheet> {
       // are animated for all listeners by VerifiedGiftBroadcast instead.
       if (mounted && widget.roomId == null) {
         String? personalVideo;
-        if (privateAnimalVapGiftIds.contains(g.id)) {
+        if (g.requiresAnimation && freeGiftAnimationForId(g.id) == null) {
           try {
             personalVideo = await r.approvedAnimationUrl(g.id);
           } catch (_) {}
@@ -269,6 +301,7 @@ class _State extends ConsumerState<GiftSheet> {
         if (!mounted) return;
         showSettledPersonalGiftCelebration(
           context,
+          giftId: g.id,
           giftName: g.name,
           quantity: requestQuantity,
           unitPrice: g.price,
@@ -284,7 +317,10 @@ class _State extends ConsumerState<GiftSheet> {
       // Known RPC rejections roll back settlement, so a new selection is safe.
       // Uncertain responses keep the original key and payload for retry.
       if (mounted && error is GiftRejectedException) {
-        setState(() => key = null);
+        setState(() {
+          key = null;
+          _settlementAttempted = false;
+        });
       }
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
@@ -482,17 +518,20 @@ class _State extends ConsumerState<GiftSheet> {
                               delegate: SliverChildBuilderDelegate(
                                 (context, index) {
                                   final active = gifts
-                                      .where((g) => giftMatchesCategory(
-                                        g.category,
-                                        activeGiftCategory,
-                                        giftName: g.name,
-                                      ))
+                                      .where(
+                                        (g) => giftMatchesCategory(
+                                          g.category,
+                                          activeGiftCategory,
+                                          giftName: g.name,
+                                        ),
+                                      )
                                       .toList();
                                   if (index < active.length) {
                                     final gift = active[index];
                                     return _giftCard(
                                       gift,
-                                      legendary: gift.price == 35000000 ||
+                                      legendary:
+                                          gift.price == 35000000 ||
                                           gift.price == 50000000,
                                     );
                                   }
@@ -503,13 +542,16 @@ class _State extends ConsumerState<GiftSheet> {
                                     previews[index - active.length],
                                   );
                                 },
-                                childCount: gifts
-                                    .where((g) => giftMatchesCategory(
-                                      g.category,
-                                      activeGiftCategory,
-                                      giftName: g.name,
-                                    ))
-                                    .length +
+                                childCount:
+                                    gifts
+                                        .where(
+                                          (g) => giftMatchesCategory(
+                                            g.category,
+                                            activeGiftCategory,
+                                            giftName: g.name,
+                                          ),
+                                        )
+                                        .length +
                                     (activeGiftCategory == 'Cars'
                                         ? 0
                                         : stagedGiftPreviews.length),
@@ -575,7 +617,7 @@ class _State extends ConsumerState<GiftSheet> {
                 me == '15e10a70-e8fe-4a1f-afd0-1292ffde3978' &&
                 selected != null &&
                 (privateAnimalVapGiftIds.contains(selected!.id) ||
-                  freeGiftAnimationForId(selected!.id) != null))
+                    freeGiftAnimationForId(selected!.id) != null))
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton.icon(
@@ -637,10 +679,13 @@ class _State extends ConsumerState<GiftSheet> {
 
   Widget _stagedGiftCard(StagedGiftPreview gift) {
     return Semantics(
-      label: '${gift.name}, ${gift.proposedCoins} coins proposed, preview only, sending disabled',
+      label:
+          '${gift.name}, ${gift.proposedCoins} coins proposed, preview only, sending disabled',
       button: true,
       child: InkWell(
-        key: ValueKey('gift-preview-${gift.name.toLowerCase().replaceAll(' ', '-')}'),
+        key: ValueKey(
+          'gift-preview-${gift.name.toLowerCase().replaceAll(' ', '-')}',
+        ),
         borderRadius: BorderRadius.circular(15),
         onTap: busy || confirming || key != null
             ? null
@@ -688,12 +733,18 @@ class _State extends ConsumerState<GiftSheet> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                            child: Text('PREVIEW', style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 8,
-                              fontWeight: FontWeight.w700,
-                            )),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 2,
+                            ),
+                            child: Text(
+                              'PREVIEW',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -705,8 +756,11 @@ class _State extends ConsumerState<GiftSheet> {
                   gift.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white,
-                    fontSize: 12, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -725,14 +779,10 @@ class _State extends ConsumerState<GiftSheet> {
     );
   }
 
-  /// Premium, accurately labelled artwork for the 20 real server catalog
-  /// gifts. Only Rocket and Sports Car have verified original SVGA playback.
-  /// All other icons are illustrations, never pretend video stills.
+  /// Playback labels are pinned to catalog identities and approved media.
   Widget _giftCard(Gift gift, {bool legendary = false}) {
     final highlighted = selected?.id == gift.id;
-    final realAnimation =
-        freeGiftAnimationForName(gift.name) != null ||
-        privateAnimalVapGiftIds.contains(gift.id);
+    final realAnimation = gift.requiresAnimation;
     final accent = gift.category.toLowerCase() == 'dragon'
         ? NimzoStyle.orange
         : gift.price >= 1000000
@@ -740,7 +790,7 @@ class _State extends ConsumerState<GiftSheet> {
         : const Color(0xffffaad7);
     return Semantics(
       label:
-          '${gift.name}, ${gift.price} coins${realAnimation ? ', original animated gift' : ''}',
+          '${gift.name}, ${gift.price} coins${realAnimation ? ', animated gift' : ', static artwork gift'}',
       button: true,
       child: InkWell(
         key: ValueKey('gift-card-${gift.id}'),
@@ -791,31 +841,36 @@ class _State extends ConsumerState<GiftSheet> {
                         ),
                       ),
                     ),
-                    if (realAnimation)
-                      Positioned(
-                        top: 2,
-                        right: 2,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: NimzoStyle.royal,
-                            borderRadius: BorderRadius.circular(6),
+                    Positioned(
+                      top: 2,
+                      right: 2,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: NimzoStyle.royal,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 2,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 2,
-                            ),
-                            child: Text(
-                              privateAnimalVapGiftIds.contains(gift.id) ? 'VAP' : 'SVGA',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 8,
-                                fontWeight: FontWeight.w800,
-                              ),
+                          child: Text(
+                            !realAnimation
+                                ? 'ARTWORK'
+                                : freeGiftAnimationForId(gift.id) != null
+                                ? 'SVGA'
+                                : isVapGift(gift.id)
+                                ? 'VAP'
+                                : 'VIDEO',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                         ),
                       ),
+                    ),
                     if (highlighted)
                       const Positioned(
                         bottom: 3,

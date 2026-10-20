@@ -37,6 +37,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/premium_store/
+    - assets/premium_store/willchill/
+    - assets/premium_store/danglive/
     - assets/events/
     - assets/brand/
     - assets/games/

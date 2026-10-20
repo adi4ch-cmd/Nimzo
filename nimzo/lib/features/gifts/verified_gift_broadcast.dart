@@ -10,7 +10,7 @@ import 'private_animal_gifts.dart';
 import 'hall_of_fame_vap_overlay.dart';
 import 'gift_video_overlay.dart';
 import 'gift_svga_overlay.dart';
-import 'gift_celebration_overlay.dart';
+import 'gift_receipt.dart';
 import 'nimzo_gift_control_art.dart';
 
 /// Server-settled gift announcements. Initial history is never replayed.
@@ -58,13 +58,17 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final generation = _recoveryGeneration;
     final room = widget.roomId;
     try {
-      final rows = await ref.read(giftRepositoryProvider)
+      final rows = await ref
+          .read(giftRepositoryProvider)
           .recentVerifiedRoomAnimations(
             room,
             since: _listeningSince.subtract(const Duration(seconds: 2)),
           );
-      if (!mounted || !_foreground || widget.roomId != room ||
-          generation != _recoveryGeneration) return;
+      if (!mounted ||
+          !_foreground ||
+          widget.roomId != room ||
+          generation != _recoveryGeneration)
+        return;
       _receive(rows);
     } catch (_) {
       // RLS/network failures retry without re-sending or charging for gifts.
@@ -72,7 +76,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       _recovering = false;
     }
   }
-
 
   void _cancelMediaLookup() {
     _mediaTimer?.cancel();
@@ -173,27 +176,17 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     // Ignore history from before joining this room, but do not discard
     // a real gift that settles during initial Realtime subscription.
     final fresh =
-        rows
-            .where(
-              (r) {
-                final date = DateTime.tryParse('${r['created_at'] ?? ''}');
-                if (date == null || date.toUtc().isBefore(_listeningSince)) {
-                  return false;
-                }
-                return (r['gift_id']?.toString() ==
-                          '35e4c570-cb02-4466-ae86-d670b3fb05ab' ||
-                      r['gift_id']?.toString() == hallOfFameGiftId ||
-                      zodiacVapGiftIds.contains(r['gift_id']?.toString()) ||
-                      privateAnimalVapGiftIds.contains(
-                        r['gift_id']?.toString(),
-                      )) &&
-                    _seen.add('${r['id']}');
-              },
-            )
-            .toList()
-          ..sort(
-            (a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'),
-          );
+        rows.where((r) {
+          final date = DateTime.tryParse('${r['created_at'] ?? ''}');
+          if (date == null || date.toUtc().isBefore(_listeningSince)) {
+            return false;
+          }
+          return r['gift_id'] is String &&
+              r['id'] != null &&
+              _seen.add('${r['id']}');
+        }).toList()..sort(
+          (a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'),
+        );
     // The server stream retains 100 events. Bound deduplication memory too.
     if (_seen.length > 200) {
       _seen.retainAll(rows.map((r) => '${r['id']}'));
@@ -255,9 +248,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       _cancelMediaLookup();
       setState(() => _loading = false);
     }
-    // The branded fallback animation owns its completion callback. No
-    // synthetic timer can cut off its last frames. _next still guards
-    // widget disposal, lifecycle changes and room rejoin.
+    // Each real player or plain artwork receipt owns its completion callback.
   }
 
   @override
@@ -357,15 +348,13 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       );
     }
     if (!_loading) {
-      return NimzoGiftCelebration(
+      return GiftArtworkReceipt(
         key: ValueKey(event['id']),
         giftName: giftName,
         sender: sender,
         recipient: recipient,
         quantity: quantity,
-        unitPrice: price,
         assetPath: catalogArtwork,
-        scope: event['scope'] == 'country' ? 'country' : 'room',
         onFinished: () {
           if (mounted && identical(_active, event)) _next();
         },
