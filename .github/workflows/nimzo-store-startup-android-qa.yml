@@ -238,7 +238,7 @@ jobs:
         run: flutter analyze --no-fatal-infos
       - name: Store, Backpack and preservation regression tests
         working-directory: nimzo
-        run: flutter test --reporter expanded test/store_live_contract_test.dart test/startup_bootstrap_contract_test.dart test/store_full_preview_test.dart test/pending_gifts_preview_contract_test.dart test/coming_soon_navigation_test.dart test/membership_retirement_test.dart
+        run: flutter test --reporter expanded test/store_live_contract_test.dart test/startup_bootstrap_contract_test.dart test/store_full_preview_test.dart test/pending_gifts_preview_contract_test.dart test/coming_soon_navigation_test.dart test/membership_retirement_test.dart test/licensed_media_gallery_test.dart
 
       - name: Verify gift rendering, staged cards and Rocket VAP packaging
         working-directory: nimzo
@@ -296,7 +296,13 @@ jobs:
           assert len(manifest)==26, 'Original source media inventory incomplete'
           with ZipFile(p) as package:
               for asset in manifest:
-                  possible=[x for x in package.namelist() if x.endswith(asset['asset_path'])]
+                  logical=asset['asset_path']
+                  expected='assets/flutter_assets/' + logical
+                  possible=[x for x in package.namelist() if x == expected]
+                  if len(possible)!=1:
+                      similar=[x for x in package.namelist() if 'licensed_tana_vani/' in x][:12]
+                      print('SAMPLED_COMPILED_LICENSED_ASSET_PATHS', similar)
+                  assert len(possible)==1, f"Media missing or duplicated: {expected}"
                   assert len(possible)==1, f"Media missing or duplicated: {asset['asset_path']}"
                   original=package.read(possible[0])
                   assert len(original)==asset['bytes'], f"Media size mismatch: {asset['asset_path']}"

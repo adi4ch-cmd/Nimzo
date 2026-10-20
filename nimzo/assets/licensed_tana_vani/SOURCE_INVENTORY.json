@@ -1,7 +1,7 @@
 [
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_store_top.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/bg_store_top.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/bg_store_top.webp",
     "bytes": 47808,
     "sha256": "18061b6b85e2c708c546f517b505f2b5cdc0e1244fbfc028a8f6e57b2818a9a1",
     "width": 1125,
@@ -12,7 +12,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_store_wallet.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/bg_store_wallet.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/bg_store_wallet.webp",
     "bytes": 44328,
     "sha256": "b2ad29ae4a30d31693b9cc4e3ce31981013019761ba5f46f091952d8418cea6a",
     "width": 1059,
@@ -23,7 +23,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_store_room_capacity_9.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/bg_store_room_capacity_9.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/bg_store_room_capacity_9.webp",
     "bytes": 57450,
     "sha256": "5f712d3a31a795ffabc4a6a9fc49b616fe0b95103953550790702255c92988cc",
     "width": 993,
@@ -34,7 +34,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_store_to_backpack.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/bg_store_to_backpack.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/bg_store_to_backpack.webp",
     "bytes": 1954,
     "sha256": "4647b057346408299bc853ba6206f1c634f6e48c079da253bd61f3fc2f0b518a",
     "width": 171,
@@ -45,7 +45,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_avatar_frame.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/ic_avatar_frame.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/ic_avatar_frame.webp",
     "bytes": 16190,
     "sha256": "b4780cf351c3fa06bb27637ea96fa86bb7abf4d6b5669cce56acddb2c5b213ee",
     "width": 375,
@@ -56,7 +56,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_store_avatar_frame.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/ic_store_avatar_frame.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/ic_store_avatar_frame.webp",
     "bytes": 10578,
     "sha256": "be10b321eadd74a111b594c073340dc37b6140c062061b6a52657abeb048eb71",
     "width": 173,
@@ -67,7 +67,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_room_theme_love.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/ic_room_theme_love.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/ic_room_theme_love.webp",
     "bytes": 267982,
     "sha256": "1001aa5b336241cc0f35d7f39fa7c52913665b706b40fef29fce1d8e2d491d26",
     "width": 1125,
@@ -78,7 +78,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_room_theme_supreme.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/ic_room_theme_supreme.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/ic_room_theme_supreme.webp",
     "bytes": 178486,
     "sha256": "fe4e43338d704561207496586b9597a462bfd13300b788e22fe743111fa8467d",
     "width": 1125,
@@ -89,7 +89,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/room_rank_avatar_frame1.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/room_rank_avatar_frame1.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/room_rank_avatar_frame1.webp",
     "bytes": 63844,
     "sha256": "67215319649406c000d103e1f7fe33306d99bbb80c795565dcfa3714d65f84da",
     "width": 972,
@@ -100,7 +100,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/room_rank_avatar_frame2.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/room_rank_avatar_frame2.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/room_rank_avatar_frame2.webp",
     "bytes": 30230,
     "sha256": "414f13a54d0adade692d1cca06a31f17d596ea87e6bcbd0ff9a2e1092db0e5b6",
     "width": 477,
@@ -111,7 +111,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/room_rank_avatar_frame3.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/room_rank_avatar_frame3.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/room_rank_avatar_frame3.webp",
     "bytes": 30642,
     "sha256": "7ba5ec644a3781af0b176d091760e24a117b65e2d9af4fafec6c8c408d78b90c",
     "width": 477,
@@ -122,7 +122,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_mic_theme_dialog.png",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/bg_mic_theme_dialog.png",
+    "asset_path": "assets/licensed_tana_vani/tana/bg_mic_theme_dialog.png",
     "bytes": 16491,
     "sha256": "be5ad183ab671102265c716b4e0629d7200b36ac82ba591fd17877f4982a0d16",
     "width": 1125,
@@ -133,7 +133,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_cars_true.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/props_store_tab_cars_true.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/props_store_tab_cars_true.webp",
     "bytes": 9944,
     "sha256": "83e70b0d82912571ca11d6ba312e109ac5765068fbf04026cb3454bfe8013ba2",
     "width": 216,
@@ -144,7 +144,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_frames_true.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/props_store_tab_frames_true.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/props_store_tab_frames_true.webp",
     "bytes": 11460,
     "sha256": "d2a19ada9141559a3eed07e357e1b201606947c9863478da68d0b5f198d1bcf5",
     "width": 216,
@@ -155,7 +155,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_theme_true.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/props_store_tab_theme_true.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/props_store_tab_theme_true.webp",
     "bytes": 10308,
     "sha256": "27e53ae0e49f5ae1fb6bf9ebd801da486cf94449e8ae2f2f2aa9950fdec7a52c",
     "width": 216,
@@ -166,7 +166,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_entryefect_true.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/props_store_tab_entryefect_true.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/props_store_tab_entryefect_true.webp",
     "bytes": 11932,
     "sha256": "385418772f8bc3a1592cbd7e6c3823e79d0a0bd741cbcc415fb494f151190e25",
     "width": 216,
@@ -177,7 +177,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_bubble_true.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/props_store_tab_bubble_true.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/props_store_tab_bubble_true.webp",
     "bytes": 10228,
     "sha256": "a8637b68ea478b83f7b1b9f47f8b4cd086c880acb09d2d308258e9beb748704a",
     "width": 216,
@@ -188,7 +188,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_mine_store.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/ic_mine_store.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/ic_mine_store.webp",
     "bytes": 11066,
     "sha256": "8e6105d6cbca635c89100f2dd7fb47d1787877c67df58d7c689138955e063058",
     "width": 162,
@@ -199,7 +199,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_mine_backpack.webp",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/ic_mine_backpack.webp",
+    "asset_path": "assets/licensed_tana_vani/tana/ic_mine_backpack.webp",
     "bytes": 11428,
     "sha256": "dad788faecc4dadfab2312216d24778a1f1266b7f911bd2d613533155232eb84",
     "width": 162,
@@ -210,7 +210,7 @@
   },
   {
     "source_path": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_bottle_entry.png",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/ic_bottle_entry.png",
+    "asset_path": "assets/licensed_tana_vani/tana/ic_bottle_entry.png",
     "bytes": 16529,
     "sha256": "0e302ceee0a12a34e484e204838c062d43d58a2f07a982ec09a97caec7e1cb1d",
     "width": 369,
@@ -221,7 +221,7 @@
   },
   {
     "source_path": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/cat_action_entry.png",
-    "asset_path": "nimzo/assets/licensed_tana_vani/vani/cat_action_entry.png",
+    "asset_path": "assets/licensed_tana_vani/vani/cat_action_entry.png",
     "bytes": 76144,
     "sha256": "f281eefe5f5cd5d36ed486e1d41f90c6aecf2c68e9199cb70439cf4f054f4806",
     "width": 1024,
@@ -232,7 +232,7 @@
   },
   {
     "source_path": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/cat_chat_bubbles.png",
-    "asset_path": "nimzo/assets/licensed_tana_vani/vani/cat_chat_bubbles.png",
+    "asset_path": "assets/licensed_tana_vani/vani/cat_chat_bubbles.png",
     "bytes": 47615,
     "sha256": "ef253a80c167816f7df63de3a6e7d28aa4233300ea61cbed97ceec9d22f39366",
     "width": 1024,
@@ -243,7 +243,7 @@
   },
   {
     "source_path": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/cat_entry.png",
-    "asset_path": "nimzo/assets/licensed_tana_vani/vani/cat_entry.png",
+    "asset_path": "assets/licensed_tana_vani/vani/cat_entry.png",
     "bytes": 87135,
     "sha256": "a0ca129e922cdccfa2a2590001d7ce891695d010eecbb1f52c7de07372614608",
     "width": 1024,
@@ -254,7 +254,7 @@
   },
   {
     "source_path": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/cat_frames.jpg",
-    "asset_path": "nimzo/assets/licensed_tana_vani/vani/cat_frames.jpg",
+    "asset_path": "assets/licensed_tana_vani/vani/cat_frames.jpg",
     "bytes": 105612,
     "sha256": "19371e57a1b62ae5626844baa9660237c182571da57c5039626033c6217f61c2",
     "width": 1024,
@@ -265,7 +265,7 @@
   },
   {
     "source_path": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/cat_themes.jpg",
-    "asset_path": "nimzo/assets/licensed_tana_vani/vani/cat_themes.jpg",
+    "asset_path": "assets/licensed_tana_vani/vani/cat_themes.jpg",
     "bytes": 84293,
     "sha256": "772ba8016f372096f71e7d58ab209aa0f400379afac4536341cb54f5f0b2fd54",
     "width": 1000,
@@ -276,7 +276,7 @@
   },
   {
     "source_path": "Tana/Gifts_Effects/base.apk/assets/birthdayanimation.svga",
-    "asset_path": "nimzo/assets/licensed_tana_vani/tana/birthdayanimation.svga",
+    "asset_path": "assets/licensed_tana_vani/tana/birthdayanimation.svga",
     "bytes": 1016029,
     "sha256": "1ccf2cad74a0d1fa6abee434a8d569814bb6c035225a515e53aaa2a045361f75",
     "format": "SVGA",
