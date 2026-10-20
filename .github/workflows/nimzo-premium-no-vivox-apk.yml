@@ -185,6 +185,22 @@ jobs:
               coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
           }
           GRADLE
+      - name: Protect native shared_preferences Kotlin coroutine ABI in release
+        working-directory: nimzo
+        run: |
+          set -euo pipefail
+          cp native/voice_disabled/android/sharedpreferences-r8-rules.pro android/app/sharedpreferences-r8-rules.pro
+          cat >> android/app/build.gradle.kts <<'GRADLE'
+          // R8 must preserve JNI-reflected Kotlin coroutine signatures.
+          android {
+              buildTypes {
+                  getByName("release") {
+                      proguardFiles("sharedpreferences-r8-rules.pro")
+                  }
+              }
+          }
+          GRADLE
+
       - name: Flutter dependencies
         working-directory: nimzo
         run: |
@@ -205,6 +221,9 @@ jobs:
       - name: Build premium APK without Vivox
         working-directory: nimzo
         run: flutter build apk --release
+
+      - name: Verify compiled shared_preferences native startup ABI
+        run: python3 tools/verify_shared_preferences_android_abi.py nimzo/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Verify every original WillChill asset in compiled APK
         run: |
