@@ -91,6 +91,10 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
     final frosted = _tierArt('bg_svip');
     final progress = _tierArt('level_progress_container');
     final expires = _tierArt('expiration_container');
+    final crowns = _assets?.where((asset) =>
+        asset.group == 'entrances' &&
+        asset.name == 'voiceroom_crown_orb_$_tier.mp4').toList();
+    final crown = crowns == null || crowns.isEmpty ? null : crowns.first;
     Widget illustration(_PremiumAsset? art, {double height = 130}) =>
         SizedBox(
           height: height,
@@ -130,6 +134,20 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
           illustration(frosted, height: 95),
           illustration(progress, height: 75),
           illustration(expires, height: 55),
+          if (crown != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: OutlinedButton.icon(
+                key: ValueKey('willchill-svip-crown-$_tier'),
+                icon: const Icon(Icons.play_circle_outline),
+                label: Text('Preview SVIP $_tier crown animation'),
+                onPressed: () => Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => _PremiumAssetPreview(asset: crown),
+                  ),
+                ),
+              ),
+            ),
           const Padding(
             padding: EdgeInsets.all(8),
             child: Text(
@@ -144,10 +162,62 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
     ]);
   }
 
+  Widget _vipOverview() {
+    _PremiumAsset? byName(String wanted) {
+      final results = _assets?.where((asset) =>
+          asset.group == 'vip' && asset.name == wanted).toList();
+      return results == null || results.isEmpty ? null : results.first;
+    }
+
+    Widget picture(String name, double height) {
+      final file = byName(name);
+      return SizedBox(
+        height: height,
+        child: file == null
+            ? const Center(child: Icon(Icons.image_not_supported_outlined))
+            : Image.asset(file.asset, fit: BoxFit.contain),
+      );
+    }
+
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      SizedBox(
+        height: 46,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: 7,
+          separatorBuilder: (_, __) => const SizedBox(width: 7),
+          itemBuilder: (_, i) => ChoiceChip(
+            selected: _tier == i + 1,
+            onSelected: (_) => setState(() => _tier = i + 1),
+            label: Text('VIP ${i + 1}'),
+            selectedColor: const Color(0xff9dddc7),
+          ),
+        ),
+      ),
+      const SizedBox(height: 10),
+      Card(
+        clipBehavior: Clip.antiAlias,
+        child: Column(children: [
+          picture('bg_vip${_tier}_top_bg_res.webp', 210),
+          picture('bg_privil_item_vip$_tier.webp', 95),
+          picture('bg_vip${_tier}_bottom.webp', 95),
+          const Padding(
+            padding: EdgeInsets.all(12),
+            child: Text(
+              'Visual preview only. VIP purchase, duration, and privileges '
+              'remain controlled by existing NIMZO server rules.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ]),
+      ),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final items = (_assets ?? []).where((a) => a.group == _group &&
-      (_group != 'svip' || a.tier == null || a.tier == _tier)).toList();
+      (_group != 'svip' && _group != 'vip' || a.tier == null || a.tier == _tier)).toList();
     return Scaffold(
       backgroundColor: const Color(0xfff5f9f7),
       appBar: AppBar(
@@ -175,7 +245,7 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
                       itemBuilder: (context, i) => ChoiceChip(
                         selected: groups[i] == _group,
                         label: Text(title[groups[i]] ?? groups[i]),
-                        onSelected: (_) => setState(() => _group = groups[i]),
+                        onSelected: (_) => setState(() { _group = groups[i]; _tier = 1; }),
                         selectedColor: const Color(0xff9dddc7),
                       ),
                     ),
@@ -185,6 +255,7 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
                       padding: const EdgeInsets.fromLTRB(13, 10, 13, 30),
                       children: [
                         if (_group == 'svip') _svipOverview(),
+                        if (_group == 'vip') _vipOverview(),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           child: Text('${title[_group]} · ${items.length} files',
