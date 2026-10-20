@@ -22,7 +22,8 @@ public final class MainActivity extends FlutterActivity {
       String key = call.argument("key");
       if (key == null || key.length() > 220 ||
           !key.matches("[a-zA-Z0-9_.:-]+") ||
-          !(key.startsWith("sb-") || key.equals("SUPABASE_PERSIST_SESSION_KEY"))) {
+          !(key.startsWith("sb-") || key.equals("SUPABASE_PERSIST_SESSION_KEY") ||
+            key.equals("supabase.auth.token-code-verifier"))) {
         result.error("STORAGE_KEY_INVALID", "Invalid auth storage key", null);
         return;
       }

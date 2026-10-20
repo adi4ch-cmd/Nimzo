@@ -26,6 +26,9 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Verify native auth key policy against SDK PKCE key
+        run: python3 tools/test_native_auth_storage_key_policy.py
+
       - name: Flutter stable
         uses: subosito/flutter-action@v2
         with:

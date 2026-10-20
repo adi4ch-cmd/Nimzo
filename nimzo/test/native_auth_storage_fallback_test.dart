@@ -41,7 +41,7 @@ void main() {
     expect(await storage.accessToken(), 'refreshed-session');
 
     final pkce = NimzoNativePkceStorage();
-    const verifierKey = 'sb-kvqvlpozqokwarovwmwv-auth-token-code-verifier';
+    const verifierKey = 'supabase.auth.token-code-verifier';
     await pkce.setItem(key: verifierKey, value: 'pending-oauth-verifier');
     expect(await pkce.getItem(key: verifierKey), 'pending-oauth-verifier');
     await pkce.removeItem(key: verifierKey);
