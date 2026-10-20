@@ -1,0 +1,68 @@
+name: NIMZO 1.0.36 Existing APK Fast Startup Diagnosis
+on:
+  push:
+    branches: [tools/nimzo-tana-vani-audit-20261020]
+    paths: ['.github/workflows/nimzo-quick-apk-startup-diagnosis.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  smoke-existing-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download already built 1.0.36 APK from immutable workflow artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p fast-apk fast-evidence
+          gh run download 39361612752 -n NIMZO-1.0.36-store-startup-smoke-8 -D fast-apk
+          find fast-apk -type f -maxdepth 4 -printf '%p %s bytes\n'
+          apk="$(find fast-apk -type f -name 'app-release.apk' -print -quit)"
+          test -n "$apk" && test -s "$apk"
+          sha256sum "$apk" > fast-evidence/apk.sha256
+          echo "$apk" > fast-evidence/apk.path
+      - name: Boot emulator and install previously compiled APK
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          ram-size: 2048M
+          heap-size: 256M
+          disable-animations: true
+          emulator-boot-timeout: 900
+          script: |
+            set -eu
+            mkdir -p fast-evidence
+            apk="$(cat fast-evidence/apk.path)"
+            adb install -r "$apk"
+            adb logcat -c
+            adb shell monkey -p io.nimzo.app -c android.intent.category.LAUNCHER 1
+            sleep 27
+            adb logcat -d -v time > fast-evidence/launch.log
+            adb exec-out screencap -p > fast-evidence/screen.png
+            adb shell dumpsys activity activities > fast-evidence/activities.txt
+            adb shell pidof io.nimzo.app > fast-evidence/pid.txt || true
+            adb shell uiautomator dump /sdcard/uidump.xml >/dev/null 2>&1 || true
+            adb shell cat /sdcard/uidump.xml > fast-evidence/window.xml 2>/dev/null || true
+            echo 'APP PID:'
+            cat fast-evidence/pid.txt
+            echo 'NIMZO LOG ENTRIES:'
+            grep -E 'NIMZO startup|initializ|FlutterJNI|FATAL EXCEPTION|UnsatisfiedLink|AndroidRuntime|Supabase|io.nimzo' fast-evidence/launch.log | tail -100 || true
+            test -s fast-evidence/pid.txt || { echo 'APP PROCESS NOT RUNNING'; exit 1; }
+            if grep -Eiq 'NIMZO startup failed:|FATAL EXCEPTION:|could not start|initialization error|tap retry' fast-evidence/launch.log fast-evidence/window.xml; then
+              echo 'STARTUP FAILED, captured launch evidence'
+              exit 1
+            fi
+            echo 'PROCESS RUNNING AND NO KNOWN STARTUP ERROR DETECTED'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: NIMZO-1.0.36-existing-apk-startup-diagnostics
+          path: fast-evidence/
+          if-no-files-found: warn
