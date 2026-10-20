@@ -184,6 +184,9 @@ jobs:
         run: |
           rm -f test/widget_test.dart
           flutter pub get
+      - name: Auth error regression tests
+        working-directory: nimzo
+        run: flutter test --reporter expanded test/auth_error_diagnostics_test.dart
       - name: Analyzer
         working-directory: nimzo
         run: flutter analyze --no-fatal-infos
