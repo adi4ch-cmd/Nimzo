@@ -1,0 +1,1675 @@
+{
+  "drive_file_id": "1FVlAPdeZy7bGilWgHRwJayKNj9-Sfk1O",
+  "files": [
+    {
+      "source": "Tana/Gifts_Effects/base.apk/assets/anim_music_wave.svga",
+      "bytes": 57926,
+      "sha256": "ee78a78d071864307cba44b4b5215879a8467c64d2fda85910c5412f3dd5af87"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/assets/birthdayanimation.svga",
+      "bytes": 1016029,
+      "sha256": "1ccf2cad74a0d1fa6abee434a8d569814bb6c035225a515e53aaa2a045361f75"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/assets/familyredenvelopebroadcast.svga",
+      "bytes": 157744,
+      "sha256": "e63e0912b685b38a4d47439004ef93ad116c37b9d2dbd8873bdfc2bf3c9c9f5b"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/assets/room_rocket1.mp4",
+      "bytes": 496482,
+      "sha256": "1253334268a6076f28275e8ecea621800e9d3b4a8f2de1384c5ee9240c998efc"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/assets/room_rocket2.mp4",
+      "bytes": 700220,
+      "sha256": "72f540e6cc74eac781e9290de8fbec8ff94faca5719a09157b135fff11861592"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/assets/room_rocket3.mp4",
+      "bytes": 536109,
+      "sha256": "06fd2ae081682f201b5a723a29ba4fefc5d8f44a35a2b22acc1115b77f1ac415"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/assets/room_rocket4.mp4",
+      "bytes": 548131,
+      "sha256": "4395bb6be64e7479d318af97780382c56c6fadda6f3a95b65946c271121b46d6"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/assets/room_rocket5.mp4",
+      "bytes": 542683,
+      "sha256": "9bd87f9cdf23bb6fd79031de0efb05358a7dda5e5e6afee818f1ecd88c601f11"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/assets/vip/emoji_lose.svga",
+      "bytes": 15355,
+      "sha256": "cb49d3e0c17c465754fbbdc264fcabaa8c9ab6cdc22ff8e12fec76efb9e6930a"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/assets/voice_wave.svga",
+      "bytes": 3519,
+      "sha256": "a748fa6277f4b7e85fcf9a377f1bc36ffa319183e693fe78a3116cc9eb76d40c"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/color/color_gift_dialog_price.xml",
+      "bytes": 712,
+      "sha256": "d906fa97b13a1c732815d9e36262e3c9951502eaa89c2f887cf802dc7810fded"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/color/vector_tint_theme_color.xml",
+      "bytes": 340,
+      "sha256": "cf34dc5bdb4a6d1568143e115ac4e34448383ac772862ef0fdbb7fe8936c6dd3"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/bg_gift_dialog.xml",
+      "bytes": 792,
+      "sha256": "b81992492825833982041abc0e5741b5820a67f7abd1b0fcb5aa462b570a456b"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/bg_shape_gift_receiver_rank.xml",
+      "bytes": 840,
+      "sha256": "614ef0d99a485d9c5f8d0db95fce497f56c82b92dfe53a903f273b26cc39c9bf"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/bg_shape_gift_receiver_type.xml",
+      "bytes": 448,
+      "sha256": "be5bec88f679052235100b7b373b1a5aaddc5f596c071394522773163b3ba777"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/bottle_chat_left_bubble.xml",
+      "bytes": 448,
+      "sha256": "06affed2026b307c72b87483fd91e46d76f5150044a1f1b3fc864e5222078941"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/chat_bubble_other_bg_light.xml",
+      "bytes": 744,
+      "sha256": "d8713ca74e5d8bc65d5560ba139d926b9958d8c64ebcf79b44f54941ed7e3b6d"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/chat_bubble_other_cavity_bg.xml",
+      "bytes": 780,
+      "sha256": "eb6581d93dff22b7701f692e878a3b298eab272a4a5c339b312d0ed313be39cc"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/chat_bubble_self_bg_light.xml",
+      "bytes": 828,
+      "sha256": "abc4843f7c4b9795abbb227b022eb76b1daacec5b88925e8fda1b3637dc384ea"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/chat_bubble_self_cavity_bg.xml",
+      "bytes": 780,
+      "sha256": "9303400913066270d5cafe748f79dcf13dfa7246e6444a237c5072858b238319"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/ic_family_red_envelope_background.webp",
+      "bytes": 24498,
+      "sha256": "f5dcf1c1980ba3f1b38a87c78d7294bfb86828d2fde095d049dd3771c78c0a62"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/select_room_send_red_envelope_gold.xml",
+      "bytes": 1180,
+      "sha256": "31e0f75187aaccd9364b1a62fd5850da9e2055b6d94a23d5b7905e6a045c9292"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable/selector_button_mic_vip6.xml",
+      "bytes": 652,
+      "sha256": "d98e4aab0fdd7cca51d43474bb87a0c574d589ab9ae937c754baa33e942cbbbf"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/shape8_props_store.xml",
+      "bytes": 600,
+      "sha256": "511071155b6197721217a81c8e882e4012f0fd8c90dcc884e60376696452f519"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/shape_admin_gift_pack.xml",
+      "bytes": 712,
+      "sha256": "52f0c2bca1d2004ff30d889da96bf6cde54b271be59662f69443af4e77dc6c2e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/shape_bg_gift_number_item.xml",
+      "bytes": 600,
+      "sha256": "6ed4570c6c5162af447bf5e9927209a236c7c58186e73858704fc569ed1f4e24"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/shape_progress_rocket.xml",
+      "bytes": 1448,
+      "sha256": "d247fcb060a1aba70175c6454056ba7d7325f1bc19eb79a36e761cfd344af436"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/shape_props_backpack_remove.xml",
+      "bytes": 676,
+      "sha256": "03574337c605be935ad9f71e2418266770aa668ad091293d198030935299b859"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/shape_props_store_bottom_buy.xml",
+      "bytes": 1232,
+      "sha256": "002e97ef0b1f57b922f65154498b77c75a236e80ae469141c3f086cfc2b33183"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/shape_props_store_bottom_send.xml",
+      "bytes": 344,
+      "sha256": "e0fd27b13ac82456302fba1fbb00ebbb8bd2792d601b2f556d2b113d30d72888"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/shape_r10_backpack.xml",
+      "bytes": 792,
+      "sha256": "c6735b36a3cf6c5bc007bb19c3a3420fb844d4b0d837bc9c4b499be8fcc3520c"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/shape_r10_gift_expire.xml",
+      "bytes": 604,
+      "sha256": "58f1e185fbcef4d174a9fa304452918db30122349a92ba31909d2118b4ebe1db"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/shape_red_envelope_default.xml",
+      "bytes": 484,
+      "sha256": "9692a547ab13952740a06bb2f11f8ee7b4129e89323cf944375086ae74a71e0b"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/shape_send_gift_num_bg.xml",
+      "bytes": 484,
+      "sha256": "a6c6e3725c6fcd959da740da32778decfcbb5c783c2e895d91a0570e3a0e83ca"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/shape_store_tab_indicator.xml",
+      "bytes": 812,
+      "sha256": "3d186bad81c42ed780b2c623ac575a5a3cf0fa5b66545f7abed278b1495c505c"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable/shape_vip6_mode_tip.xml",
+      "bytes": 568,
+      "sha256": "a1d96501d9fac9533e8ac2762ae421984cd842ab0abcc48d298091031500ef2a"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/shape_voice_room_send_gift_num_bg.xml",
+      "bytes": 576,
+      "sha256": "aaa8bc326696d1d0eb98995c66470242f69a5e59c613e5d910d94e59c52a4ef2"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable/svg_arrow_right_small.xml",
+      "bytes": 828,
+      "sha256": "55c0d1c2e49ee04dba956efa09ee9dee1870797b7d253d90946f15b747bb6f53"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable/tab_indicator_gift.xml",
+      "bytes": 852,
+      "sha256": "7a8819206cb733a12a8b52c567ece91b85a1c8e72a35b3fe73b4ce73ebced364"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/anim_lucky_gold.webp",
+      "bytes": 18686,
+      "sha256": "b8fd9ae16122bde1c95e3e645cabf3c819b3eab73e8a47e65a3cd64cab31f788"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_danmuk_enter_effect.webp",
+      "bytes": 17772,
+      "sha256": "4f1093e1dc93a52ef23ab202bfc40eec0a6c0ec1c4751e3124483c533dd38ff9"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_danmuk_gift.webp",
+      "bytes": 8148,
+      "sha256": "79b836c6fb9095da69b0e2d83a6e5bf508c8e4d4f5bf55a487dd2ce7010a5c78"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_danmuk_lucky_gift.webp",
+      "bytes": 116308,
+      "sha256": "e74cc62850c234bd6f2df1ba4b1b8cd9de8d2c12cc478d992e866138ad8a589e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_lucky_gift_balance.png",
+      "bytes": 597770,
+      "sha256": "ed1d09b3c289ea4b873c011c03a9565a920d6db86566562871c81a8979f33b9b"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_lucky_rule.webp",
+      "bytes": 125546,
+      "sha256": "d2838622188e3b6976029adc3234fa5454715b0c9476db19f599580984dc0ed3"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/bg_main_mine_vip.webp",
+      "bytes": 24930,
+      "sha256": "82a53746863323f94770749f6ac77d926232b3acc8438b11e4255a504f458fdc"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_mic_theme_dialog.png",
+      "bytes": 16491,
+      "sha256": "be5ad183ab671102265c716b4e0629d7200b36ac82ba591fd17877f4982a0d16"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_props_store_bottom_bar.webp",
+      "bytes": 6036,
+      "sha256": "09ef34e1f3edae706ed893220b1fdfe60f9c4c15fabf59e3b451f2144cce3578"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_props_store_item_selected.webp",
+      "bytes": 3596,
+      "sha256": "fd7ace66e1ece1a441daef94fa06c852bdee4c085c91da49d1bb498da71c3f2e"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_props_store_item_unselect.webp",
+      "bytes": 2848,
+      "sha256": "0a23a715ac4ae1824abdf51a02d6ec35383f6f806b3467993b5073d4aa1f146e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_rocket_dialog_price.webp",
+      "bytes": 41502,
+      "sha256": "acc32634b45e53143db5a44b97b1093d7023505564bf120323cea8737ba517ad"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_rocket_prize_vertical.webp",
+      "bytes": 10288,
+      "sha256": "7bfbaf8b771d93984b73335c02eab3084782c1164adcb5811fe654de9cef82cf"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_rocket_random_rules.webp",
+      "bytes": 42178,
+      "sha256": "c303164cebd5d19f757ef0cc6ffb53f4e714b1addec39c962f800fa2330fab12"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_rocket_reward.webp",
+      "bytes": 40686,
+      "sha256": "5bc1122c504ce3f739297decbadfc1d3093188d7d773fa8a58daae541cc155b2"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_rocket_rules.webp",
+      "bytes": 45750,
+      "sha256": "dd73ef5d7b206e65259f5cb856a62b3f22b34d3f0a751e1344b76d7bc3e81bff"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_room_rocket_confirm.webp",
+      "bytes": 6178,
+      "sha256": "5009657ce57e4e4e17444a989fa6c7cfa2db44d93c16ccc623f69d3ac8d92b07"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bg_room_rocket_random_item.webp",
+      "bytes": 2678,
+      "sha256": "ed7203f739be93f351bac1287d9942cd5d68cda521677c4823946558ff51ba19"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_store_room_capacity_9.webp",
+      "bytes": 57450,
+      "sha256": "5f712d3a31a795ffabc4a6a9fc49b616fe0b95103953550790702255c92988cc"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_store_to_backpack.webp",
+      "bytes": 1954,
+      "sha256": "4647b057346408299bc853ba6206f1c634f6e48c079da253bd61f3fc2f0b518a"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_store_top.webp",
+      "bytes": 47808,
+      "sha256": "18061b6b85e2c708c546f517b505f2b5cdc0e1244fbfc028a8f6e57b2818a9a1"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_store_wallet.webp",
+      "bytes": 44328,
+      "sha256": "b2ad29ae4a30d31693b9cc4e3ce31981013019761ba5f46f091952d8418cea6a"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/bg_svip_pinned_msg.png",
+      "bytes": 39837,
+      "sha256": "5572bb3d3b7e78cd4fe5db70d7dcdbaede6aa4acb9a7377e6a1eefb90fd6adde"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_user_center_props.webp",
+      "bytes": 52352,
+      "sha256": "4e5271ff18fb9e8fc38e6c2bc4c2337488e86331a0648eb2573c31cc21e26fa7"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_user_center_props2.webp",
+      "bytes": 38268,
+      "sha256": "fc93588208102b6916ce35acb3edfca70365c1b927cfae45b4d4076143b2ddfd"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/bg_user_center_props_title.webp",
+      "bytes": 5320,
+      "sha256": "acdf0e9c4d74ab4152792c5a6fd9efb08610b14561b619f002ac72cd34836f7d"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/bg_vip_store_1.webp",
+      "bytes": 114258,
+      "sha256": "0806c9ece1467a91a60b6f772f5a43ede3debc91e0e79422b9b1a60b13a51607"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/bg_vip_store_2.webp",
+      "bytes": 122268,
+      "sha256": "daddbc0bdde11aa782e516a9ba47fa611dd210839801097cd0b39c13c835bf76"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/bg_vip_store_3.webp",
+      "bytes": 144214,
+      "sha256": "c7f03aecd2aaf6d0e69faf03f6584dd00eb4a8e86d3f0f99cd4a5484a662cfdb"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/bg_vip_store_4.webp",
+      "bytes": 130978,
+      "sha256": "4eec226fe45ff74cf450a78a687eb525cb4e572134a05f05b3c13e87df46ab81"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/bg_vip_store_5.webp",
+      "bytes": 154446,
+      "sha256": "656289eaca7ba2cfe94005cb8178eac9b83f43689c166618a5844d51ca785e31"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/bg_voice_room_vip6_mode.webp",
+      "bytes": 114058,
+      "sha256": "853fd173261a4f4b5c17156e3eba652dc4a2bbd7534570567c3629286bacc661"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/bt_receive_gift_package.png",
+      "bytes": 10473,
+      "sha256": "7a9e0e5a4008341b2900a5373efab920f474817e15b57d616868ea6408107bca"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_avatar_frame.webp",
+      "bytes": 16190,
+      "sha256": "b4780cf351c3fa06bb27637ea96fa86bb7abf4d6b5669cce56acddb2c5b213ee"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_avatar_frame_locked.webp",
+      "bytes": 1012,
+      "sha256": "acfc17b91353ba43bb5c2238f2f0cfcd13e6be9170da28930f7e8e1633b867dc"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_backpack_time.png",
+      "bytes": 895,
+      "sha256": "6f782e5568e5bc5d7b44cf8db8e879f011e6307904f2df729ab6e23d772a7ccb"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_bottle_entry.png",
+      "bytes": 16529,
+      "sha256": "0e302ceee0a12a34e484e204838c062d43d58a2f07a982ec09a97caec7e1cb1d"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_chat_more_red_envelope.webp",
+      "bytes": 1054,
+      "sha256": "af490ed26ee12ef4226a270fd4b8ed4095f8071f8e7d00b8cd756d09346e5b8d"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_custom_room_theme_placeholder.png",
+      "bytes": 1780,
+      "sha256": "ad95ce021de54c3b2ae9bbac794dbb480ac40632cfb3fffd93f4618ee233ec38"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_custom_theme_empty.webp",
+      "bytes": 1440,
+      "sha256": "7dc681d6402b3b88b5b170a6abba50e64359f3fce97803c2c48cea9a1dcfb636"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_dialog_bg_gift_package.webp",
+      "bytes": 188554,
+      "sha256": "0ab1705e754eccd930e868432bde814d28fbb09bcd4f0940da4834ac65538d92"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_family_red_envelope_title.png",
+      "bytes": 5912,
+      "sha256": "9d1aba5ed95cca51402d4f4c1be59afb74d96ec88ea738e07f089e6efc5614a3"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_effect_activity.png",
+      "bytes": 1679,
+      "sha256": "c182452edb14b4384b71ba73869e4eb3659c93f0b8d49d4d3700cd66fa5c7521"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_effect_animation.png",
+      "bytes": 1760,
+      "sha256": "1fe0259fe986304481cdfd12dd1f47c6736683e0495855703bd5c893c7992847"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_effect_float.png",
+      "bytes": 1791,
+      "sha256": "f85d5a00908728e7af59525789adda9a86537e63e21c498362bfb2930f775fbb"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_effect_medal.png",
+      "bytes": 1759,
+      "sha256": "f7ec8ff0fcfc4957a9cb48e2f29772ab44855c1606d3aeccab5fbe8e9cbfdbd9"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_expiration_date.png",
+      "bytes": 662,
+      "sha256": "25c6eaf62cf58d786e9515b09258913cd391384a4e7b98c742f577e08736f5cc"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_0.webp",
+      "bytes": 1436,
+      "sha256": "b0ca949cc11fcfaa1bbba470a24bf454fd72a1886310d689936b01dc30879c21"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_1.webp",
+      "bytes": 1078,
+      "sha256": "890b54307676df91d16905f54818e2e0ea82b1e6313b7663ed4e138d6acec9a9"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_2.webp",
+      "bytes": 1380,
+      "sha256": "143403ee64211f3e42478054018018c194f7accfe5e034a3453bb9bdd5969d15"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_3.webp",
+      "bytes": 1534,
+      "sha256": "7ab8ce75d36b056feb6f3aff5bf357e7b54d4f3e632b17f1d29daf4387c58437"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_4.webp",
+      "bytes": 1152,
+      "sha256": "0e5fc6f498728723bc8219ac9924d6139bdfec90ca5b5899d8d0798ab8945b16"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_5.webp",
+      "bytes": 1356,
+      "sha256": "ab8b56aa0c92a4168924f247d2aa69c4182d1b96824f54c06051398cb5167b3a"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_6.webp",
+      "bytes": 1442,
+      "sha256": "81df0b91d024586f2acf159f158a03769a610fc9ecaec226bc8bdafc072f397e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_7.webp",
+      "bytes": 1104,
+      "sha256": "b16420fe3128193a7d62ab6216f799de57a4ce8ee62224191af1e3cde5234fff"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_8.webp",
+      "bytes": 1488,
+      "sha256": "d2c638d1adb049dd279c46b355f82658c2762d8ffacca4dc85ee3d03908717e5"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_9.webp",
+      "bytes": 1440,
+      "sha256": "634c512a8aa1e7e3f9aac49652c5251c71d9b3bcca60e0822c23472823817080"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_chose.webp",
+      "bytes": 554,
+      "sha256": "8487ad55e15744893e369b4c3f828db2af54f7f84ea3b765d1c405c0f8e2deb9"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_num_x.webp",
+      "bytes": 1652,
+      "sha256": "4f86abbb7003026920d6a422f42848f4595871d4392f3b0f58770f6cf002c00b"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_panel_open.webp",
+      "bytes": 6732,
+      "sha256": "46a3859561b3df525cfda0e9dc516b1f4f428a0df8e89ddd48146f08ea4cd857"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_panel_recharge.webp",
+      "bytes": 9134,
+      "sha256": "062dbc0edcab5befa6aa9d522a62876c3a08d8d519a1b67d093c114f29548b53"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_right.png",
+      "bytes": 1692,
+      "sha256": "cb79db33d643209b9df50bb0cea749ad29f7f240ac66d9c67e1b3caa56418c31"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_gift_tips.png",
+      "bytes": 649,
+      "sha256": "4a31d6c36ebf4200b56e3729255335a63804b0ed9c2b60fda2bf0af30b98e30d"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_gold_small.png",
+      "bytes": 2619,
+      "sha256": "32175fbc55dbe06044139a36df2b19931002fce9f19c338fee449bba7c63ab03"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_locked_seat_vip6.png",
+      "bytes": 3178,
+      "sha256": "92ef460b4a091b4579f33744b7f54297d9844ab4f35fbf5b0e98dcedf487f5c7"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_bg.webp",
+      "bytes": 129550,
+      "sha256": "9cda4a9eb371aa7a25175ad40fec2f32e77ea2873e42a185005e34a50160d2a7"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_combo.webp",
+      "bytes": 27600,
+      "sha256": "5246048a8711187230256e7aba1abee799e9e387de1022d5f8d1bb82e7330bf4"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_0.webp",
+      "bytes": 9210,
+      "sha256": "ffe11f6530281ce412d881710fddd8a025a007deb6065b2b5baaf029f162bcaa"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_1.webp",
+      "bytes": 5704,
+      "sha256": "4668dd17579ccf8e03dc65db4d9d27081963dfb8f633f8088358ed177e92a037"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_2.webp",
+      "bytes": 9348,
+      "sha256": "9d3555f4cb46bce1930970f82c47c511d07f5cae94c95248b5096b4aa6b48176"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_3.webp",
+      "bytes": 9308,
+      "sha256": "e49f93db39330d5d089fa051d1ffba4759a64da37eed9d08e9ac240adfbc374f"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_4.webp",
+      "bytes": 8378,
+      "sha256": "184684bd807bf37b528abc9b25f6050f20b43b98e01a7da5e218a3a50d6c0aad"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_5.webp",
+      "bytes": 8440,
+      "sha256": "4e7c97023c1fc41dc52045bbc9de47c3306f9906ed97bf549cf8b755bb46734d"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_6.webp",
+      "bytes": 8852,
+      "sha256": "152801b8d076ad81ac2f14be06afdf4b5e030e962594df3febf07c782a262d58"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_7.webp",
+      "bytes": 7592,
+      "sha256": "6f52afcb53b0c4e7a44b1efb59bd17339050a5348d456e3982dc27045cf3bbf2"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_8.webp",
+      "bytes": 8798,
+      "sha256": "b32c2825bb0e16ab6d79a90e103a7349c7dec26748673855c9d2b9480e434941"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_9.webp",
+      "bytes": 8880,
+      "sha256": "a71c16a5404e036a06e70e1ccd1fda06cf09b5b046123c1463f893ff0896f00e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_num_x.webp",
+      "bytes": 8714,
+      "sha256": "766e3abadd7712a7864b2cfa4c5f85a16d6aaf038e9b470a0c7eb81c1f33e84a"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_effect_plus.webp",
+      "bytes": 6876,
+      "sha256": "46e9b81b4c29525479b7316bd927e852e923f502caa43a07e8cc2e11070a92d7"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_help.webp",
+      "bytes": 2208,
+      "sha256": "de07e59fe53c22d7d8827dbbe8d58c411931278797ffa786ed0141f8012ac056"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_option_1.png",
+      "bytes": 650,
+      "sha256": "f49a6505ecd8b710dd9682ed20ce5ec5b25fa2b69f8536471e4eb41d1a91a5eb"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_option_bg.png",
+      "bytes": 5238,
+      "sha256": "858f479848f60f9427e74dd5b3d03cc8e3d683e530c48fdaf8c5cf95c06a8d95"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_lucky_gift_option_selected.png",
+      "bytes": 17202,
+      "sha256": "52cbf00be2335b6c161eae782b1dc0bed16f38f77cbcf444c972cb7f0bb001a3"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_luckybox_entrance.png",
+      "bytes": 15337,
+      "sha256": "1531b6ecbd2a69b2b0079651916c8de0bc3f84b7d70fc935c7727ad771d0b08f"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_medal_small.webp",
+      "bytes": 2400,
+      "sha256": "2fe20220fb05344ef474366184ab02e0cf253aab57183128392e9bd3c48c4dda"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_member_privilege_follower.webp",
+      "bytes": 2426,
+      "sha256": "7d7f48bb0ce56d1edb3b7461b3f78ff4122f40bbb59c3bf8f59f92199d55e5b1"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_member_privilege_freemic.webp",
+      "bytes": 2332,
+      "sha256": "25df623661116d640bf78680727f961cdb584f1d40c6371f07ca65ae97cd60c4"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_member_privilege_ownlogo.webp",
+      "bytes": 2358,
+      "sha256": "238f69a8f49b3cee4fafb06277953453a3b63263fc0a029aff6ca0c4de08b0ba"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_mic_theme_expire.png",
+      "bytes": 529,
+      "sha256": "0e3af4e806e31e07741f009a46f29c32365ee71a8f88720bcc3642454cf56e20"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_mic_theme_select.png",
+      "bytes": 2409,
+      "sha256": "03d7109a281926359dcbefef38588f03c7481ec83b2956dd0a40bf3f641227fd"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_mine_backpack.webp",
+      "bytes": 11428,
+      "sha256": "dad788faecc4dadfab2312216d24778a1f1266b7f911bd2d613533155232eb84"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_mine_store.webp",
+      "bytes": 11066,
+      "sha256": "8e6105d6cbca635c89100f2dd7fb47d1787877c67df58d7c689138955e063058"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_mini_animation.webp",
+      "bytes": 398,
+      "sha256": "59c2ba5d6ab323f4ec926fa0ffde82a23bb77e907f35d673dbbd31dfd733c231"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_more_red_envelope.webp",
+      "bytes": 6606,
+      "sha256": "ca61f2a179468d047fcf630ece78e9a8717773b0f3e51d4ef687184a142cb5a2"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_more_red_envelope_open.webp",
+      "bytes": 5006,
+      "sha256": "f718d4dc0030be162c54ab2075021a522003a67b5974783a8dfffef0186c988b"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_my_gift.webp",
+      "bytes": 1360,
+      "sha256": "e86eada7bc4233de7888d4497f86a1360146cbf93d35943b19fc0547618a3b78"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_my_giftbag.webp",
+      "bytes": 3618,
+      "sha256": "b1b62b1b356a674b131ee4945c4938c796af6d4379eb6a3dfaff4eb7fb28ee5e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_newbie_gift_dialog.webp",
+      "bytes": 67942,
+      "sha256": "a00f4b1921aa1289920b21d939c6f55b318cf6d131f2add8be282b55b6785ce0"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_newbie_gift_frame.png",
+      "bytes": 7065,
+      "sha256": "41627cad5ef88b4c2003d5ae78271245a0ed2631da4f7229ece0fd6df1e0ef68"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_props_backpack_to_store.webp",
+      "bytes": 1524,
+      "sha256": "028d20747967f13068de28a307dd13faee54bd8f02bff7596b3c58c350c72238"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_props_store_item_preview.webp",
+      "bytes": 990,
+      "sha256": "126d560f6ef911ce905ac22b26f4c9ac7fa8cb46ec001299ba4a81a9915f2b7f"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_props_store_item_time.webp",
+      "bytes": 820,
+      "sha256": "72a5c08712ed411b2f284919853c7088c9e0486327e1a744fe5220056da9cc23"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_props_store_to_backpack.webp",
+      "bytes": 1370,
+      "sha256": "6331e4ea7ce360562c6e220df618d8bd2cd822a901435513aa9fa5c7c0d0d540"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelope_room_coin.webp",
+      "bytes": 4802,
+      "sha256": "9edd6483c932180f717af5fdc9b05dedb4f9f7d84d7211439ee1ee772fe385e4"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelope_room_coin2.webp",
+      "bytes": 5860,
+      "sha256": "4a45e8caabfaa7fc0fcc6c1d0f5b00ae7929b9a0104eb90f0ec16317eee16d53"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelope_room_coin3.webp",
+      "bytes": 6130,
+      "sha256": "031090398e55c0b083dc0b00655f5454f0d49123ae04c2249af3b591134c42fc"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelope_room_coin4.webp",
+      "bytes": 6908,
+      "sha256": "edf2c5910fc2406c9f446f7097c72eea7f3147ceab1e98ec5168d46231619b8c"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelope_room_coin5.webp",
+      "bytes": 7766,
+      "sha256": "f59ce39afaa2de1a3b91fff8bff2346c3a8b240d85755effd1168ddf871a9c1e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelope_room_coin6.webp",
+      "bytes": 10182,
+      "sha256": "9ebe20bd8bf2ef2a5e9b18c243885557f255f29914fcb07927eb3601049f296c"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelope_room_num.webp",
+      "bytes": 2728,
+      "sha256": "f318edd637a1ee127c09b5578fb4a920e5186e1f8814ef85f893cd7f965ab046"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelopes_broadcast_num_0.webp",
+      "bytes": 2198,
+      "sha256": "4afacff72563a6a7427b27acd5a77f55befb103871197fa69d410425f5ae824f"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelopes_broadcast_num_1.webp",
+      "bytes": 1808,
+      "sha256": "320c79878402e5ecb214ae39c6852fa7b39752e676be229afc92f95f095038e4"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelopes_broadcast_num_2.webp",
+      "bytes": 2350,
+      "sha256": "424f6e9032ab17dee39b700afd64ca9bc22a704cd88cf217b26655122763f6ac"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelopes_broadcast_num_3.webp",
+      "bytes": 2448,
+      "sha256": "6d2a5f3d46f52ecda338716668ebc5a383fbc4a277e7730944ef5ad347c5515e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelopes_broadcast_num_4.webp",
+      "bytes": 2256,
+      "sha256": "347e861e0579b642fe995a2cf4def9a74c1c194511e21772556dcf6359c7f49a"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelopes_broadcast_num_5.webp",
+      "bytes": 2336,
+      "sha256": "8cbb0e2867864c9792b43a4cfe347711f3ba61be25745a7bd1e5ef9e964264ca"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelopes_broadcast_num_6.webp",
+      "bytes": 2166,
+      "sha256": "b914e94abae5291c77eac094de8d3a52025d4913c160fb8600cd089b6df256bf"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelopes_broadcast_num_7.webp",
+      "bytes": 2172,
+      "sha256": "513d160690c5baef9f294753c53def29b3d004bc8da690761912e7feeb73f655"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelopes_broadcast_num_8.webp",
+      "bytes": 2042,
+      "sha256": "c0448731173ee0efbcf238ab807906f80c1fd97c0ac54a44f13ef0ce0b6f0b8e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_red_envelopes_broadcast_num_9.webp",
+      "bytes": 2112,
+      "sha256": "ffe3099855039abc48eeb41ec12e33ea70907023050a9836a82a74baf73f4393"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_close.webp",
+      "bytes": 3206,
+      "sha256": "0cbb3d15efdd03ba7c88c0db79c950e538ff48d264e9691be88396004fd886f7"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_contribute_top1.webp",
+      "bytes": 28924,
+      "sha256": "a567c734d88bab63520d347904ee3ae04e522b337fae58d6990e1c6667f106a3"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_contribute_top2.webp",
+      "bytes": 25102,
+      "sha256": "192527cac3e2e81871ce4c3f6558dddf20278dc1958557ff7d42fe5263c3d71e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_contribute_top3.webp",
+      "bytes": 26566,
+      "sha256": "3403af7031a03e358f1a3eea383f11b419a84805ee30519f0d964c94e67e8e98"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_empty.webp",
+      "bytes": 11238,
+      "sha256": "40e51c322981dd1ff23470bac0641595f664e5486778c1de8fe0250275fcecb7"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_gift_count_0.webp",
+      "bytes": 8894,
+      "sha256": "c64eadcf21583a84493f87440258fb93aea4ff894cc9784db519186233a0c9d1"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_gift_count_1.webp",
+      "bytes": 9074,
+      "sha256": "5d622c057bb10d0202574c8e4e2f35967240c416dd78d08e2d2ea001c848e0c5"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_gift_count_2.webp",
+      "bytes": 11052,
+      "sha256": "b3e3033b8928c0cdc996281beabf27167703ae57157ca3c13944f8ae2a073f34"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_gift_count_3.webp",
+      "bytes": 10390,
+      "sha256": "9c0839ab2eb3d209e6ef472fdb0bbc19e7c6df48d3338b8364452eebd5e3d230"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_gift_count_4.webp",
+      "bytes": 9432,
+      "sha256": "237e7146b45b6438af88b1f741a218d27dafe62cfc5ba4ab64aa007d4649ec21"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_gift_count_5.webp",
+      "bytes": 9616,
+      "sha256": "acc76e9170df7ecb64dc16ce849c81936731e4d756b3aa9ab78b0a0eddb087d1"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_gift_count_6.webp",
+      "bytes": 8920,
+      "sha256": "63a2181ce93b1add883ccc41ca6e5732c51556592a0fcdc820e2493f10dab64b"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_gift_count_7.webp",
+      "bytes": 9152,
+      "sha256": "5557d795d70ba5a5d8bd9d287af582d540900a1c55a620d3ba9ee8eb4acf0c6f"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_gift_count_8.webp",
+      "bytes": 8652,
+      "sha256": "0a34ecb5510013d4d68822a38fb1c2cf2c1e098be9089c41b095834c9867ebb4"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_gift_count_9.webp",
+      "bytes": 8672,
+      "sha256": "1d12490671215cbbb443d28b12e1f235438a1fb9916339a6dc9bc5efb1a218a0"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_help.webp",
+      "bytes": 3026,
+      "sha256": "287aa58dea982b3f5ade4c00bda370472799153f1b9285b6a0aaaf29cf3a80de"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_level_1_normal.webp",
+      "bytes": 6508,
+      "sha256": "b62f329b77aaff0a2dff30e283f7b19c863af9fa85dd92d85d46f98598805405"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_level_2_normal.webp",
+      "bytes": 6998,
+      "sha256": "92319515f804c82f3f37afda164f19fcd5cbe97601de259598e860c9d849481b"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_level_3_normal.webp",
+      "bytes": 8020,
+      "sha256": "ce37fbf0cf09cf2fad0d0b8bf6db7ce4e355b8683e0011bfda079baac4498ddb"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_level_4_normal.webp",
+      "bytes": 8020,
+      "sha256": "5988b2f5f344068a7aa4115e3b67642e2af0bd4e88b5394d2a41721666a1002c"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_level_5_normal.webp",
+      "bytes": 9864,
+      "sha256": "ce90e68f931a9314b4150b05a27daf3c068e5e22434bc8f0e21301fe35200a69"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_level_normal.webp",
+      "bytes": 3316,
+      "sha256": "cf28fb44ea509236d7fb17d532b81d734e5a036c007a0841c93cdf046603b8dd"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_level_selected.webp",
+      "bytes": 3994,
+      "sha256": "93b27b692ca9e27871c10636c87e7e943a7fcd87be5feccf38ec34bc66f83d85"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_rocket_level_selected_light.png",
+      "bytes": 23356,
+      "sha256": "a45f793173c8990da4a827ee278385fbee848af3c1ef98aa910429d6988b67eb"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_room_gift.webp",
+      "bytes": 12742,
+      "sha256": "1324683dc29d71e80ae7b9aa5b96d0e5161cc2aa53fb72e013b72d5cc7053cea"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_room_more_effect.webp",
+      "bytes": 9266,
+      "sha256": "49757edf162514e6c9211404d1e546aba639b4ebf64301f63b3e2ef029a59af3"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_room_more_store.webp",
+      "bytes": 7644,
+      "sha256": "523c179070928c867f1ac0c45d8d29465cded5992ebcc35de98ae525a043512c"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_room_more_theme.webp",
+      "bytes": 8156,
+      "sha256": "d70f5f014cd8fec149eb58b3d6acfa9fe96539df23fe07c5531723076fcffc3d"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_room_rank_avatar_frame1.png",
+      "bytes": 6463,
+      "sha256": "05dd19b68cf34074688ee0398b2cd7e28d66bad90900808cb5e2597aedca276d"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_room_rank_avatar_frame2.png",
+      "bytes": 3797,
+      "sha256": "86bb9e30f55e5ce93ad3f6a3e754056192649cf2acba01242c7168ed6cbee874"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_room_rank_avatar_frame3.png",
+      "bytes": 3732,
+      "sha256": "f359420b77db884243e4ff78a46aa1c20a2d43e2a93448bcff374c35e2637b90"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_room_rocket_linght.png",
+      "bytes": 14880,
+      "sha256": "d24e17d1804ef79255e7aec46909a1daf6d44963354f6ce2df9c4b4b9f386d7e"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_room_theme_love.webp",
+      "bytes": 267982,
+      "sha256": "1001aa5b336241cc0f35d7f39fa7c52913665b706b40fef29fce1d8e2d491d26"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_room_theme_supreme.webp",
+      "bytes": 178486,
+      "sha256": "fe4e43338d704561207496586b9597a462bfd13300b788e22fe743111fa8467d"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_seat_unlocked_vip6.png",
+      "bytes": 2524,
+      "sha256": "27df08e38125e63fd8ec0e2f9197021e3e519d85770d627e23aa02978eef8c00"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_store_avatar_frame.webp",
+      "bytes": 10578,
+      "sha256": "be10b321eadd74a111b594c073340dc37b6140c062061b6a52657abeb048eb71"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_store_day_up.png",
+      "bytes": 391,
+      "sha256": "d29a93e7642a1075b6f62ac100bafe082dc2804327617745a0187ead848d4611"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_store_recharge.webp",
+      "bytes": 5114,
+      "sha256": "83ea2386285dc885ef4103594712e636ce35443259b05d52d4ab73bfe4e95541"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/ic_user_center_props3.webp",
+      "bytes": 4432,
+      "sha256": "c500750a71814eb51530d2f09a800e3c16d4bbd04cb9b539f6f9d4e17d8746dd"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip1_bubble.png",
+      "bytes": 31287,
+      "sha256": "c5edb5b8bb704f3ae28b7be2f92a66b4725a2d1bfa7971ccf3e2e51f1a934600"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_flag_privileges_title_left.png",
+      "bytes": 843,
+      "sha256": "9e838f91bbc91e26e7aa3337d41e948ab1da0a859db7d508a2ae282aff92d1af"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_flag_privileges_title_right.png",
+      "bytes": 848,
+      "sha256": "4c592a87b5000a135702862b268599b28ff5bd19abd7914532d5c9b65beee8c4"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_1.png",
+      "bytes": 3455,
+      "sha256": "fbbac8a4d8c1f5341d043c8027ca31291e789e580d76cc224baf1db76a41de3d"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_2.png",
+      "bytes": 4403,
+      "sha256": "f8e8cf22a076171d236b24d42e5ddd9b4b2327dfb3cdfd20032f9a03a130434a"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_3.png",
+      "bytes": 4447,
+      "sha256": "bc6ba84cf3e0aac663392412d0019d3d164818e7691231a62908a33008d637f8"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_4.png",
+      "bytes": 3546,
+      "sha256": "16b24b2e69684864b2c813f33cd741dc6391133cca4a59d34c7648b39876000c"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_4_gray.png",
+      "bytes": 2540,
+      "sha256": "0be1e1ca5f18d581e457ac085c76c15e4d2fb88bb313402ec8cf266c8c99ce38"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_5.png",
+      "bytes": 5997,
+      "sha256": "75b8862ff618b5a87b94bd1480cafcd28a290fb22e4cb8c7ee1456bee769f359"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_5_gray.png",
+      "bytes": 4342,
+      "sha256": "6c031acece765389b9d759d7270ae42b7db1e974669febb3cde90c34f9c6476e"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_6.png",
+      "bytes": 4827,
+      "sha256": "360b58abdd31445cd45a3f3407e2ea727746d08df177db4492224bfe20e5833b"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_6_gray.png",
+      "bytes": 5444,
+      "sha256": "31e45c9e6c907a7c051c938b81016b76496ec3e685a3f22f92d459bd286dce78"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_7.png",
+      "bytes": 4492,
+      "sha256": "5c28207bc84255a2a18aeb1d80410b7c8c8dde1e5bc972980c75fceb9b94949d"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_7_gray.png",
+      "bytes": 3310,
+      "sha256": "7282e1c2fec44557ce26266cab167570b3a17409f6bb6433a5d3cc582ac4d971"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_8.png",
+      "bytes": 4930,
+      "sha256": "fb25e7a2f07d09e8c11dcf5991479e824ce449d2136d6ac73f5179e0b247755d"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_vip_privileges_8_gray.png",
+      "bytes": 3437,
+      "sha256": "a0c1773ecb07975f2fcebf6c1f2fffc70123f989cb1ba4515046bf0d8c70b563"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_voice_room_close_mic_vip6.webp",
+      "bytes": 2964,
+      "sha256": "22bfafa38af945e2ff30f904523ccf7501feac90bef52c4a79b75ba821b7818a"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_voice_room_close_volume_vip6.webp",
+      "bytes": 3176,
+      "sha256": "9e3e909b942f1737b766a1f0743bff8ca90cd02a677eab8c734a08e9d2e91145"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_voice_room_face_vip6.webp",
+      "bytes": 2952,
+      "sha256": "803f2986f79014d364ac07d8d3b84b538a8a236f4291b566e9dcf0bb4984e107"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_voice_room_more_vip6.webp",
+      "bytes": 2882,
+      "sha256": "f78ceb50276270fa03adb34b5dc764fa65b72155b247bccd639591bf9b40fff6"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_voice_room_open_mic_vip6.webp",
+      "bytes": 3006,
+      "sha256": "bebbf7709dae5f8bbf8a205c3082c352d0be2dc5b76f8a20102199412db95cde"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_voice_room_open_volume_vip6.webp",
+      "bytes": 3052,
+      "sha256": "dbd74d8e708d5480bdcc1c820d20b01574055d759f9073c4d9f864e8278983d1"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/ic_voice_room_send_msg_vip6.webp",
+      "bytes": 2860,
+      "sha256": "8eeac93464f9ba6eda9d75768036448ebe0711470a8130e239576106106cd5a6"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/ic_vr_gift.webp",
+      "bytes": 3494,
+      "sha256": "a593053c28e62f9e4fa3737e6de37c2e3045141e323e1c006e83dc7994c24bf3"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/icon_special_gift_bag.png",
+      "bytes": 9856,
+      "sha256": "242b54788a4729071bb4a7c07a4474d02eb14c3b7bec4d730f2467116ea359e9"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/main_hot_cp_avatar_frame.png",
+      "bytes": 6141,
+      "sha256": "4842f5b178e52f29e97be51347e2efe7072c120c82267a1533e34a3783f6e8b8"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/receive_chat_red_envelope_dialog_background.webp",
+      "bytes": 29404,
+      "sha256": "77f6de964715e04c3a8fe037485ef19562b2d6ea1bd1c066cfe989414784074a"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/drawable-xxhdpi-v4/red_envelope_open_icon.webp",
+      "bytes": 5544,
+      "sha256": "d4313918c4e4919e129e3d6d1c00e4b67b03f6ff41be3d51e68f72624fe56958"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/drawable-xxhdpi-v4/room_placeholder_vip1.png",
+      "bytes": 20389,
+      "sha256": "e3d7a0cfb797c47c750991e6d8cb12adc72e7eced7588070fd51587691e231a0"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/room_rank_avatar_frame1.webp",
+      "bytes": 63844,
+      "sha256": "67215319649406c000d103e1f7fe33306d99bbb80c795565dcfa3714d65f84da"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/room_rank_avatar_frame2.webp",
+      "bytes": 30230,
+      "sha256": "414f13a54d0adade692d1cca06a31f17d596ea87e6bcbd0ff9a2e1092db0e5b6"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/room_rank_avatar_frame3.webp",
+      "bytes": 30642,
+      "sha256": "7ba5ec644a3781af0b176d091760e24a117b65e2d9af4fafec6c8c408d78b90c"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/shape_props_store_bottom_send_border.9.png",
+      "bytes": 4549,
+      "sha256": "6ea3bc19b3826dffdfde68528ebf381cb98f945cc4f66cbf414be6d99005ef33"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/user_center_avatar_frame_placeholder.png",
+      "bytes": 1098,
+      "sha256": "174525c17a840f1d90e3f4b1148d10a181ff86b35be6adb6647a38013fb1dec4"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/layout/activity_props_backpack.xml",
+      "bytes": 5836,
+      "sha256": "c7fee431ff8212b82d00475c6952334924436fbe1effe1725270b8734ac545bd"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/layout/activity_props_store.xml",
+      "bytes": 10444,
+      "sha256": "9cc322cf413e3121163e046b05ca47b8db08c2c85e0160f9b0894734d8850172"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/adapter_chat_red_envelope_message.xml",
+      "bytes": 628,
+      "sha256": "04f093841c4af052f3ff7cd6b79d645825c3e000e7123ad005435a73442f91e2"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/adapter_family_red_envelope.xml",
+      "bytes": 828,
+      "sha256": "a07a147ca404d4405a595b53658154dcfeb0c230ab3d05db9467dd79bd1de0df"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/adapter_gift_package.xml",
+      "bytes": 1392,
+      "sha256": "8c8f0649cf7ad64080b1e0e479f4ece9540e68aa740347c4c13cb9f80f1f1c09"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/adapter_lucky_gift_item.xml",
+      "bytes": 1808,
+      "sha256": "bf7f4160e93649aad652d8918aef1b3a4fdd0027ba0caf81e9fabd96edde67ad"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/layout/adapter_props_backpack.xml",
+      "bytes": 4276,
+      "sha256": "4020bd7d2acfc63392b27fc1d02fc18c756548f78a51d1999d6afcf8aed77bd0"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/layout/adapter_props_popup.xml",
+      "bytes": 768,
+      "sha256": "8d4f3e9d5a61ef26174062d3974e56fd0d8e2f59e2243588fae0ae17d9b7aed8"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/layout/adapter_props_store.xml",
+      "bytes": 3172,
+      "sha256": "09d0ddd6d08dd11d645ca6be99896e3813116796b8f223bf66edd7c739ec4a28"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/layout/adapter_props_store_title.xml",
+      "bytes": 1196,
+      "sha256": "d1dc9ee7c9969c07a332d763a8dbd42e95818e2c87aa47aefce8ee5efc5013c2"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/adapter_rocket_level_room.xml",
+      "bytes": 1520,
+      "sha256": "9f88b82c6584cbdc94d395ad8ac0948984cdb63c34811abfb9b3b03a3d02746b"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/layout/adapter_vip_privileges.xml",
+      "bytes": 1116,
+      "sha256": "b903d4f9971193289110f2d178653624b01bb1ee9e46bf2d050cb0f4dd311d43"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_broadcast_family_red_envelope.xml",
+      "bytes": 1328,
+      "sha256": "df490f4fc19cfc03941254228279c9b75584c5e76e179f1c3ee38e83710a19a6"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_chat_send_red_envelope.xml",
+      "bytes": 5568,
+      "sha256": "4aae6778320897af64f818ca6df73dc28948fc9764379ac64f899c1cf475324e"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_family_redenvelope_panel.xml",
+      "bytes": 3724,
+      "sha256": "c28dd8d3b72498dced06fbe0fd81714c0af297ca73a9f6afec7e486c834bc56d"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_luckygift_tips.xml",
+      "bytes": 2184,
+      "sha256": "b2840ee3d6f5fdcf30d2f091bb079e81535a710282bbc52e9714e8a73154b943"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_receive_chat_red_envelope.xml",
+      "bytes": 4428,
+      "sha256": "d9c1b8e5bb0f555d36da590aca931e63a30040724bc490add3b64318cef2eeca"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_receive_gift_pack.xml",
+      "bytes": 3892,
+      "sha256": "e6c71752af6ac35c270dde5fad17c3ae7bfe05aaead6d0a24ae7c20c8d9d1f62"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_rocket_center.xml",
+      "bytes": 16044,
+      "sha256": "e6fa033f88ff133bc7627e65638545f0b3b8fba5b598a9e1a5be9c1607b2bab2"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_rocket_center_help.xml",
+      "bytes": 2372,
+      "sha256": "6148913362b162fedfe6ad9d9f3c5d4375094c6a9c020e0a7e5c7e7d6add7e64"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_rocket_random.xml",
+      "bytes": 2804,
+      "sha256": "315ff085d2cb143edb1a2d41cccd24bb4fdebcc37ae512702a8d61d96db5e444"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_rocket_random_rules.xml",
+      "bytes": 2476,
+      "sha256": "73455574a9d5a4391909d99f8c7b7a3f00100fe5a505e8f3f47bcd3d3d820a73"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_room_effect_switch.xml",
+      "bytes": 3936,
+      "sha256": "9184c9111425ae8b402ecaa263c61ad9a36655fb4f766770d970a02b5161613d"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/dialog_room_gift_panel.xml",
+      "bytes": 12720,
+      "sha256": "94e980492e2d735e079bcc5a7785186f6d32c245ad125e47e313d2c23855f1ab"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/layout/dialog_room_mic_theme.xml",
+      "bytes": 4164,
+      "sha256": "dd9a99c8bd10e2d01bbf4548b7d2b941265b141fe201ddd8d87fb4df18caad8c"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/fd_redenvelope_claim.xml",
+      "bytes": 5648,
+      "sha256": "d64a2a4712e89077f4b57e4f5980598ed3c8257d0fab1bee266055d4105179fe"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/fd_rocket_reward.xml",
+      "bytes": 4152,
+      "sha256": "c63289ca048001287090580fcfd6d33757136b600f07b3412449e89a3ba419ca"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/fragment_gift_activity.xml",
+      "bytes": 856,
+      "sha256": "f9e099583ca1ca6204fa0886644004884925b192db582a1ce8e8a02b129a1a3a"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/fragment_gift_list.xml",
+      "bytes": 1080,
+      "sha256": "907bed16a849f4fe46b1da4e774241a950d05a925de98a96c411f71c9a731221"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/layout/fragment_vip_store.xml",
+      "bytes": 2704,
+      "sha256": "c3d287c0c86e87c74713c39650f92a5c063ba8f3388bdd212652a6d0dd818909"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_activity_gift_grid.xml",
+      "bytes": 428,
+      "sha256": "2022a4653091db8656b04f3e67dded5a61d6cddaada57d0bf7a54aaa8a059b15"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/layout/item_gift_backpack_detail.xml",
+      "bytes": 4032,
+      "sha256": "680f96fe1ede1248f4343b7adeb25fd9bbd46e6fe019f34ecbf9d2be8ad34037"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_gift_count_popup_view.xml",
+      "bytes": 1060,
+      "sha256": "8fcce5cb0f2f6180ffb6ad09555b2a86e60bcd60535bace0100b3287e8b9cc72"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_gift_detail.xml",
+      "bytes": 5168,
+      "sha256": "2fb1c783a6ea5ba600c8e3f1eda3dd42f6c386a6216e3214cd2ae9c5155c82bf"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_gift_option_popup.xml",
+      "bytes": 1028,
+      "sha256": "e834aa58498094ce4afb830f32b24476349dd3122a4c6803a0c3049e332184f8"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_gift_voice_room_select_member.xml",
+      "bytes": 1572,
+      "sha256": "6d306b913163b6da4dd708bed9fe2fe8014a971df44215f801a633b64beeaa8c"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/layout/item_mic_theme.xml",
+      "bytes": 1804,
+      "sha256": "70a099249a5d2a7330db5079251a3069fd6ab2e71d727b28c538dcac37a362ae"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_redenvelope_list.xml",
+      "bytes": 2800,
+      "sha256": "7422bf8d3887d1cdd056f21e22e1a2539e554da868e8c7577e53f3d487848f12"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_rocket_random.xml",
+      "bytes": 1448,
+      "sha256": "eacce967defa78f9b30002873acb8eba89282bae31a59fa693c606816866d2be"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_room_chat_gift.xml",
+      "bytes": 2200,
+      "sha256": "02a580a398d1b5b1ecae90c3f1a5587199534eb5ca1f7621bc8a4da06f012681"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_room_chat_redenvelope.xml",
+      "bytes": 1112,
+      "sha256": "1b98f356073a3867d55e85822ca78cbd40e6a5f347dbf8304db334bb0660fec1"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_room_luckygift_msg.xml",
+      "bytes": 1608,
+      "sha256": "3f3ab4eda35a634475b3ec12917d031d6122f0e56e40a6ab662ba18cad4819dd"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_room_redenvelope_coin.xml",
+      "bytes": 980,
+      "sha256": "9d43d23d6d9ee96628ca9ffc586bb60c5d04db322118266b70e86b993fa99232"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/item_room_redenvelope_num.xml",
+      "bytes": 980,
+      "sha256": "9d43d23d6d9ee96628ca9ffc586bb60c5d04db322118266b70e86b993fa99232"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/layout_custom_svga_fallback.xml",
+      "bytes": 760,
+      "sha256": "d85bb491b39e1196ddb8b5cd5b72882dfd88bf3de8a6a7c4ce83496a62e22f42"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/layout_custom_svga_view.xml",
+      "bytes": 348,
+      "sha256": "3462629b5ef7d80dbf69cb0031953f109e627b638c6454801a925f667bb3f8ec"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/layout/popup_props_price.xml",
+      "bytes": 948,
+      "sha256": "650b4ebbc1bc75c713e5fa9514814703387f9cffae408e24fde093427280070f"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/view_broadcast_redenvelope.xml",
+      "bytes": 3152,
+      "sha256": "c18e322ef6f52d9917e480a43e01f3635e7cedec899fc7ae7803c079837bd7ad"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/view_danmuk_gift.xml",
+      "bytes": 3176,
+      "sha256": "76145474b085d0038bf7931a2711f6ee623d2bf055b51df76d8fc132fa625449"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/view_danmuk_lucky_gift.xml",
+      "bytes": 4664,
+      "sha256": "7587712f5c8998225e54d9ea6d9bc4664b857424dd3bcfe23b63ab17b3d7b166"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/layout/view_danmuk_svip_enter_voice_welcome.xml",
+      "bytes": 1632,
+      "sha256": "ac8be5911cbbe021d7398ef7daf3fe8920f9278482d81b5ef2ea5431258ef4ea"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/layout/view_danmuk_vip_enter_voice_welcome.xml",
+      "bytes": 2420,
+      "sha256": "419de1dbd3c25c0219c7b9dba7a81b6ddd6ca54dd4cf3f6bf45dc5928e52b4d7"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/view_gift_broadcast.xml",
+      "bytes": 4260,
+      "sha256": "c94c85f2bbf74eac194d38cfa6d60eb8fee6df3ac38e1b13421cf99491bdf645"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/view_lucky_gift_broadcast.xml",
+      "bytes": 5556,
+      "sha256": "b0242df73c2e833f2cee898bbac0c0976cf479c62fe24a3901d220c4840e14f2"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/view_lucky_gift_new_combo.xml",
+      "bytes": 3608,
+      "sha256": "c4716adefe6aa7106de737828781bcb0b5baf0420d9c5c9c49ff60210c4a26fb"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/view_lucky_option_item.xml",
+      "bytes": 1196,
+      "sha256": "2a132b04eee07577c15ccedf19c0ead9ef3d428eb5c4df8fd9c0ae772900b2ac"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/view_room_rocket_broadcast.xml",
+      "bytes": 3656,
+      "sha256": "6327c7660b3b033a8bc6a75d4fefe9486f2b822d586336b1cc0e115dce053b00"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/layout/view_voice_room_animations.xml",
+      "bytes": 5660,
+      "sha256": "a96d99fc4de19921e3f852508e014b52cad934eb35ec9bd229ab3085da90f046"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/ic_entry_moment_message.webp",
+      "bytes": 9150,
+      "sha256": "68c974304741e1fa11d5d7d87856ae26e9b1e537f1c7a3a029be7764ffc1ffc8"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/ic_entry_moment_publish.webp",
+      "bytes": 8752,
+      "sha256": "45743959e28871b05a5559b7009776c6074d22e8e916b8323cf9cd91a1fa6241"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_bubble_true.webp",
+      "bytes": 10228,
+      "sha256": "a8637b68ea478b83f7b1b9f47f8b4cd086c880acb09d2d308258e9beb748704a"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_bubble_unselect.webp",
+      "bytes": 10078,
+      "sha256": "d746ec310fd488b36a05b61fcfa9b04c26b5920f50184de68c950b53ab558a08"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_cars_true.webp",
+      "bytes": 9944,
+      "sha256": "83e70b0d82912571ca11d6ba312e109ac5765068fbf04026cb3454bfe8013ba2"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_cars_unselect.webp",
+      "bytes": 9336,
+      "sha256": "c9ce4fa60be7c27d349c9d210319b745db31d526d92552133bcca545170eb4a2"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_entryefect_true.webp",
+      "bytes": 11932,
+      "sha256": "385418772f8bc3a1592cbd7e6c3823e79d0a0bd741cbcc415fb494f151190e25"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_entryefect_unselect.webp",
+      "bytes": 13234,
+      "sha256": "eafc11024dfe99f4284721a350eae7ab169d5de392e42c4a59b72963724868f4"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_frames_true.webp",
+      "bytes": 11460,
+      "sha256": "d2a19ada9141559a3eed07e357e1b201606947c9863478da68d0b5f198d1bcf5"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_frames_unselect.webp",
+      "bytes": 11734,
+      "sha256": "b177872cb3e9ae2a090e611852818143db1d84130e5fc10a126f99699865ca34"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_theme_true.webp",
+      "bytes": 10308,
+      "sha256": "27e53ae0e49f5ae1fb6bf9ebd801da486cf94449e8ae2f2f2aa9950fdec7a52c"
+    },
+    {
+      "source": "Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_theme_unselect.webp",
+      "bytes": 9656,
+      "sha256": "7b907e354504ad603ded4e40487efb0caf0fb98a48d251ad8de1aabb9df1bf2e"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_vip_true.webp",
+      "bytes": 15446,
+      "sha256": "ada452f39729037e3cb0393885765ba0b922f899482852ade5b4178fd8b72c8a"
+    },
+    {
+      "source": "Tana/VIP_SVIP/base.apk/res/mipmap-xxhdpi-v4/props_store_tab_vip_unselect.webp",
+      "bytes": 15628,
+      "sha256": "7b1e2e99a99db4a07c458ba91b2f2edf3ecd0dc3ff720ec4b75ce34649cdf0bf"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/mipmap-xxhdpi-v4/room_user_card_gift.webp",
+      "bytes": 9014,
+      "sha256": "97e342c332702b97e5d2f2d296aedd9a6e0dbd82e674dbbfdeb9461431c8b9a0"
+    },
+    {
+      "source": "Tana/Gifts_Effects/base.apk/res/raw/lucky_gift_send.mp3",
+      "bytes": 21061,
+      "sha256": "c5eec6fe1f4e76ac9e6ce8afa56ca68b0c591c7ad47dbc61d8eb8cdc93099135"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/animation/Heart%20Forever.json",
+      "bytes": 18545,
+      "sha256": "1138cfd3e48413cac43c15fa0d7e9242ee0180210d1cbb607c217633db2aaff2"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/animation/crown.json",
+      "bytes": 37138,
+      "sha256": "be4974217375b2b5f1b23d49e9f15ad4f5ec530c2c1f62b62da7c004535ed5a9"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/animation/empty.json",
+      "bytes": 27204,
+      "sha256": "5cf8463ef5672b35573486a5038693a6de6ba98a5ff878ee60574f55a97d97d7"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/animation/loading.json",
+      "bytes": 5594,
+      "sha256": "7e0bbf50cdba4c00726c09652b3f3187f8118585de734265deda3bbd87d6cb40"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/animation/lock.json",
+      "bytes": 11697,
+      "sha256": "027f898f5926a639f11c2988a7dbd767dd6cf7d0fed4e5ff7feaf4a33addc16d"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/animation/success.json",
+      "bytes": 14572,
+      "sha256": "c676f750ea9c301ff6575b3813b896a1557097fb01ea358214d921e824ba75e0"
+    },
+    {
+      "source": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/icons/backpack.png",
+      "bytes": 33327,
+      "sha256": "e92ef5a7cc4ef3bb52d089996d0df687656a71a3cf2bc15fd5e55bd7665c9bfd"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/icons/bottomsheet_effect.webp",
+      "bytes": 8044,
+      "sha256": "39977eed05eb86ffc5360a16960b713b7fec67f71be4c996aeac7daa02879110"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/icons/bottomsheet_red_envelope.webp",
+      "bytes": 3976,
+      "sha256": "406a6fae60fa9cc8e18a1c842883f74d1b6130698d46891ee1344c8bc292f156"
+    },
+    {
+      "source": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/icons/bottomsheet_theme.webp",
+      "bytes": 7464,
+      "sha256": "fed6bb0256b3523f4c16bd88bb8bbe1af75af74b5549980be07db1a8cacf7b58"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/icons/giftbox.png",
+      "bytes": 4465,
+      "sha256": "329e22e7fff4b3e0dd2a4512edec48ed3d52afde4f2f90b5f2dfebbfd4b21cce"
+    },
+    {
+      "source": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/icons/me_tab_store.webp",
+      "bytes": 669898,
+      "sha256": "3e99ad45726f17cd3f84e12f35ffefe93a6bf4adb73e6bcb74139d94b318d3c3"
+    },
+    {
+      "source": "Vani/VIP_SVIP/base.apk/assets/flutter_assets/assets/icons/me_tab_vip.webp",
+      "bytes": 239770,
+      "sha256": "018616a8f11d4d170c9f1905f432af9eb1df52baee2d763e0979b71d4abd4e41"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/icons/red_envelope_close_icon.webp",
+      "bytes": 13336,
+      "sha256": "1b7e13fcf4c7c4f17e8baeb88a0a1973df13a4cdf6a82877104e95b54c48af93"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/icons/red_envelope_info_icon.webp",
+      "bytes": 13064,
+      "sha256": "a6fbc1795bd1dc6ac739c68f46b1f8a403ca8c57bfc15630d623048beead4810"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/icons/room_gift_icon.svg",
+      "bytes": 6392386,
+      "sha256": "a0407b4a11a8b93041616f0ce2577f1a2a3b3e62a88a562d0cfa2465f35037ad"
+    },
+    {
+      "source": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/icons/store.png",
+      "bytes": 21379,
+      "sha256": "f2ce475cfb921506d56e6ca1c9f7e9f034d0ae5d1d26cf1fb3b1475fbaa1dc8f"
+    },
+    {
+      "source": "Vani/VIP_SVIP/base.apk/assets/flutter_assets/assets/icons/svip.png",
+      "bytes": 183024,
+      "sha256": "a3d35eb8687dd4193ce3b4688e0e06b432ee51dd023eb4e5cff0c7bfd629f6bd"
+    },
+    {
+      "source": "Vani/VIP_SVIP/base.apk/assets/flutter_assets/assets/icons/svipavtar.png",
+      "bytes": 81141,
+      "sha256": "cf05964d954f703ae8cd313deb53b9c82b3c0b075c840e63e7aee8a17fbea911"
+    },
+    {
+      "source": "Vani/VIP_SVIP/base.apk/assets/flutter_assets/assets/icons/vip.png",
+      "bytes": 13814,
+      "sha256": "1760115820f4ed7aef948923fbda8c39c920a84327e1f3e20d119e71e2eedd73"
+    },
+    {
+      "source": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/cat_action_entry.png",
+      "bytes": 76144,
+      "sha256": "f281eefe5f5cd5d36ed486e1d41f90c6aecf2c68e9199cb70439cf4f054f4806"
+    },
+    {
+      "source": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/cat_chat_bubbles.png",
+      "bytes": 47615,
+      "sha256": "ef253a80c167816f7df63de3a6e7d28aa4233300ea61cbed97ceec9d22f39366"
+    },
+    {
+      "source": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/cat_entry.png",
+      "bytes": 87135,
+      "sha256": "a0ca129e922cdccfa2a2590001d7ce891695d010eecbb1f52c7de07372614608"
+    },
+    {
+      "source": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/cat_frames.jpg",
+      "bytes": 105612,
+      "sha256": "19371e57a1b62ae5626844baa9660237c182571da57c5039626033c6217f61c2"
+    },
+    {
+      "source": "Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/cat_themes.jpg",
+      "bytes": 84293,
+      "sha256": "772ba8016f372096f71e7d58ab209aa0f400379afac4536341cb54f5f0b2fd54"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/assets/images/red_envelope_screen_image.png",
+      "bytes": 2544415,
+      "sha256": "7e860209a69f99a3302c8cca529ed5998de6f150f8554f0a8cefc8114ba9e585"
+    },
+    {
+      "source": "Vani/VIP_SVIP/base.apk/assets/flutter_assets/assets/images/svip_banner.png",
+      "bytes": 518169,
+      "sha256": "e850d6efe6eecd1819ade121a1af2b6f48f94601792a3454c016111d7cb68e09"
+    },
+    {
+      "source": "Vani/Gifts_Effects/base.apk/assets/flutter_assets/shaders/stretch_effect.frag",
+      "bytes": 17368,
+      "sha256": "3707b8a75ae51668d7bcf4fe72a7b6ac95055555a8afc1723da74ff5eded1378"
+    }
+  ]
+}

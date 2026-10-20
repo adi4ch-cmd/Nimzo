@@ -1,0 +1,290 @@
+[
+  {
+    "id": "nimzo-media-frame-gold-circle",
+    "category": "Avatar Frame",
+    "name": "Gold Circle",
+    "asset": "assets/premium_store/willchill/ic_avatar_frame_gold_circle.png",
+    "kind": "image",
+    "thumbnail": null,
+    "sha256": "c9ea041cb0901af664c1b554d54b56311d75be8b40a02f26a07af49674ee55b4"
+  },
+  {
+    "id": "nimzo-media-frame-gold-cp",
+    "category": "Avatar Frame",
+    "name": "Gold Halo",
+    "asset": "assets/premium_store/willchill/icon_user_info_cp_avatar_frame.png",
+    "kind": "image",
+    "thumbnail": null,
+    "sha256": "190420c6b2a21416326bb4e5e09f8d57008952e261456c74a3bf414ba0f7175c"
+  },
+  {
+    "id": "nimzo-media-frame-family",
+    "category": "Avatar Frame",
+    "name": "Family Frame",
+    "asset": "assets/premium_store/danglive/frame-family.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "da20c84ef5b39333a53b17d3d16640b5e3b92e86e15a4265575993c555278c70"
+  },
+  {
+    "id": "nimzo-media-frame-cp",
+    "category": "Avatar Frame",
+    "name": "Cp Frame",
+    "asset": "assets/premium_store/danglive/frame-cp.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "f1a3eaf116a1017fecb006c43f7162f40fb9cf9b3ebc2fd3a3d0cf70ae8669bc"
+  },
+  {
+    "id": "nimzo-media-frame-room",
+    "category": "Avatar Frame",
+    "name": "Room Frame",
+    "asset": "assets/premium_store/danglive/frame-room.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "841b8d76ebb552b84195c1cd88a0a361e5f0d59a9cb150bfde3633bd2131b6d2"
+  },
+  {
+    "id": "nimzo-media-portrait-1",
+    "category": "Avatar Frame",
+    "name": "Portrait 1",
+    "asset": "assets/premium_store/danglive/top1.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "2d31abd6da610471767ebb64ac56d462054b9ea4236250266a9ed06adce3c7b1"
+  },
+  {
+    "id": "nimzo-media-portrait-2",
+    "category": "Avatar Frame",
+    "name": "Portrait 2",
+    "asset": "assets/premium_store/danglive/top2.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "98059625544424cc2bee6ee22676c849458e59e77907d98ba0364725e30a2c24"
+  },
+  {
+    "id": "nimzo-media-portrait-3",
+    "category": "Avatar Frame",
+    "name": "Portrait 3",
+    "asset": "assets/premium_store/danglive/top3.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "98795e51ce598bd900f12580a216b4d0fac893f8f08faef600729cb6f75f0b4b"
+  },
+  {
+    "id": "nimzo-media-badge-agency-leader",
+    "category": "Royal Badge",
+    "name": "Agency Leader",
+    "asset": "assets/premium_store/danglive/agency-leader.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "776c694bf7605be0415489a3386f7daf71bf7806455ec0161c92ceda86aaf771"
+  },
+  {
+    "id": "nimzo-media-badge-exclusive-identity",
+    "category": "Royal Badge",
+    "name": "Exclusive Identity",
+    "asset": "assets/premium_store/danglive/exclusive-identity.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "018f1e7594f61c674d8f28e87bf12546cebc241543775bd1b388fc5a855e8957"
+  },
+  {
+    "id": "nimzo-media-badge-golden-royalty",
+    "category": "Royal Badge",
+    "name": "Golden Royalty",
+    "asset": "assets/premium_store/danglive/golden-royalty.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "b66787888746e5dbbc17c7bc782cd247c3fbb627c7c049c04ad845ee2f0d9208"
+  },
+  {
+    "id": "nimzo-media-badge-grand-millionaire",
+    "category": "Royal Badge",
+    "name": "Grand Millionaire",
+    "asset": "assets/premium_store/danglive/grand-millionaire.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "3ee5f746e609f751e0119141633e8a3e2695f5206317b1ab9916549283de1353"
+  },
+  {
+    "id": "nimzo-media-badge-imperial-crown",
+    "category": "Royal Badge",
+    "name": "Imperial Crown",
+    "asset": "assets/premium_store/danglive/imperial-crown.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "6fbf4e7f7b4192a44221d80c6ba24174d5261ab6852c9d6e2ddb42c5afe1a43f"
+  },
+  {
+    "id": "nimzo-media-badge-loyal-heart",
+    "category": "Royal Badge",
+    "name": "Loyal Heart",
+    "asset": "assets/premium_store/danglive/loyal-heart.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "71cd5dd3a19aa77e396a81069f7015bdf318b3c5cd057b6e48354c897916b0d1"
+  },
+  {
+    "id": "nimzo-media-badge-millionaire",
+    "category": "Royal Badge",
+    "name": "Millionaire",
+    "asset": "assets/premium_store/danglive/millionaire.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "010ad7bc9d81aed45e1b57381aeb236e3ec29e72743d65129a30845f02047d02"
+  },
+  {
+    "id": "nimzo-media-badge-room-guardian",
+    "category": "Royal Badge",
+    "name": "Room Guardian",
+    "asset": "assets/premium_store/danglive/room-guardian.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "b83b3fd380f65969dc0a5c8d6e2d2843fe85ccf6cf4355722b4b95c2e019d5c1"
+  },
+  {
+    "id": "nimzo-media-badge-ruby-legend",
+    "category": "Royal Badge",
+    "name": "Ruby Legend",
+    "asset": "assets/premium_store/danglive/ruby-legend.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "e21f6581ca735649ef12210c2043a6446fc698e290843e752131119b81f631b9"
+  },
+  {
+    "id": "nimzo-media-badge-supreme-champion",
+    "category": "Royal Badge",
+    "name": "Supreme Champion",
+    "asset": "assets/premium_store/danglive/supreme-champion.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "c4bd3e3263409486146dd3a9a9105ba127ea64448b145b6ac9ce057043c85bd2"
+  },
+  {
+    "id": "nimzo-media-badge-ultimate-supporter",
+    "category": "Royal Badge",
+    "name": "Ultimate Supporter",
+    "asset": "assets/premium_store/danglive/ultimate-supporter.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "eb4ff285496eb336375c5271635bdf4a548aa246adb5f10df2bec39afa8a5f5e"
+  },
+  {
+    "id": "nimzo-media-theme-gold",
+    "category": "Party Theme",
+    "name": "Golden Room",
+    "asset": "assets/premium_store/danglive/chatroom-bg.png",
+    "kind": "image",
+    "thumbnail": null,
+    "sha256": "69dc477d2638be268da4167a83d9b39b2097d5cc12aad32d63a885d44a213437"
+  },
+  {
+    "id": "nimzo-media-theme-citadel",
+    "category": "Party Theme",
+    "name": "Citadel Room",
+    "asset": "assets/premium_store/danglive/erbil-bg.png",
+    "kind": "image",
+    "thumbnail": null,
+    "sha256": "7d18aad845ab25f10175138e5fed8cc4cca097a33d214c400c6e83bbc9508b8c"
+  },
+  {
+    "id": "nimzo-media-chat-white",
+    "category": "Chat Bubble",
+    "name": "White Bubble",
+    "asset": "assets/premium_store/willchill/bg_copy_bubble2.png",
+    "kind": "image",
+    "thumbnail": null,
+    "sha256": "0a4bd152b3b9ad51f43793543714dd422f91220448b802ac53082440bb16c6c9"
+  },
+  {
+    "id": "nimzo-media-profile-blue",
+    "category": "Profile Card",
+    "name": "Blue Gold Card",
+    "asset": "assets/premium_store/willchill/chat_send_id_card_bg.png",
+    "kind": "image",
+    "thumbnail": null,
+    "sha256": "e6fc911de81e3b0627eb853b8b4ea5cae7dd6234a83f716b85fe82fe61638ac7"
+  },
+  {
+    "id": "nimzo-media-id-gold",
+    "category": "ID Frame",
+    "name": "Gold Nameplate",
+    "asset": "assets/premium_store/danglive/profile-id-frame.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "c31ea4ffe51837a09416ab21f4cd8a51e60da3efcdeea78d9d1aaa39f903b4c6"
+  },
+  {
+    "id": "nimzo-media-live-gold",
+    "category": "Live Frame",
+    "name": "Golden Room Banner",
+    "asset": "assets/premium_store/danglive/cp-nest-frame-new.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "4ec6357d9531276015c11bf91946b4baa1a7f063f7bbf8fc818bd26ba4c78f99"
+  },
+  {
+    "id": "nimzo-media-mic-voiceroom_mic_wave_default",
+    "category": "Mic Wave",
+    "name": "Pulse",
+    "asset": "assets/premium_store/willchill/voiceroom_mic_wave_default.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "c781000b89c29179e93e8d5c53767afaa1f454f696984290257aa41a6adb337d"
+  },
+  {
+    "id": "nimzo-media-mic-cp_mic_seat_anim",
+    "category": "Mic Wave",
+    "name": "Heart Pulse",
+    "asset": "assets/premium_store/willchill/cp_mic_seat_anim.svga",
+    "kind": "svga",
+    "thumbnail": null,
+    "sha256": "27d6b03f6d8192362771d9f7f79553f35e843232b7f8656c7c29bba982de4f63"
+  },
+  {
+    "id": "nimzo-media-entrance-1",
+    "category": "Rides",
+    "name": "Flight 1",
+    "asset": "assets/premium_store/willchill/voiceroom_act_lv1_anim.mp4",
+    "kind": "vap",
+    "thumbnail": "assets/premium_store/willchill/voiceroom_rocket1.png",
+    "sha256": "c529afe1f115c229c98556c463e0856d4dce66063a7848dc3e66b299a85a429b"
+  },
+  {
+    "id": "nimzo-media-entrance-2",
+    "category": "Rides",
+    "name": "Flight 2",
+    "asset": "assets/premium_store/willchill/voiceroom_act_lv2_anim.mp4",
+    "kind": "vap",
+    "thumbnail": "assets/premium_store/willchill/voiceroom_rocket2.png",
+    "sha256": "8141e736174eee313de1a2019765f4273eaeee6f82bc9196f522653be5ae2fa2"
+  },
+  {
+    "id": "nimzo-media-entrance-3",
+    "category": "Rides",
+    "name": "Flight 3",
+    "asset": "assets/premium_store/willchill/voiceroom_act_lv3_anim.mp4",
+    "kind": "vap",
+    "thumbnail": "assets/premium_store/willchill/voiceroom_rocket3.png",
+    "sha256": "f3fe6aae4a499b2f7ac2aa9418e0ec286d0b18f947be04dc6603c212d5760952"
+  },
+  {
+    "id": "nimzo-media-entrance-4",
+    "category": "Rides",
+    "name": "Flight 4",
+    "asset": "assets/premium_store/willchill/voiceroom_act_lv4_anim.mp4",
+    "kind": "vap",
+    "thumbnail": "assets/premium_store/willchill/voiceroom_rocket4.png",
+    "sha256": "f8a8c2cd829debc91e9cb9f9f33ceee47dc79589258337192631aed276fa72cc"
+  },
+  {
+    "id": "nimzo-media-entrance-5",
+    "category": "Rides",
+    "name": "Flight 5",
+    "asset": "assets/premium_store/willchill/voiceroom_act_lv5_anim.mp4",
+    "kind": "vap",
+    "thumbnail": "assets/premium_store/willchill/voiceroom_rocket5.png",
+    "sha256": "a19f32079ffcdf29af8b79ce6f86e3d067f2e2218bd31316839caa06031ab0f0"
+  }
+]

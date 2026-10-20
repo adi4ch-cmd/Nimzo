@@ -1,3 +1,4 @@
+import 'package:nimzo/features/store/store_visual_equipment.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,6 +59,9 @@ void main() {
             roomDiamondEventsProvider('room')
                 .overrideWith((_) => const Stream.empty()),
             currentUserIdProvider.overrideWithValue('viewer'),
+            storeVisualEquipmentProvider.overrideWith((_, id) async => {}),
+            roomMemberIdsProvider('room')
+                .overrideWith((_) => const Stream.empty()),
             roomRepositoryProvider.overrideWithValue(ReconnectRepository(db)),
             roomProvider('room').overrideWith((_) async => room),
             seatsProvider('room').overrideWith((_) =>

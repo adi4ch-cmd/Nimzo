@@ -73,3 +73,5 @@ flutter:
     - assets/willchill_premium/entrances/
     - assets/willchill_premium/audio/
     - assets/willchill_premium/catalog.json
+    - assets/premium_store/danglive/
+    - assets/premium_store/willchill/
