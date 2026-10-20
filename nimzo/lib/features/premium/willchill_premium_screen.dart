@@ -240,7 +240,7 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
         clipBehavior: Clip.antiAlias,
         child: Column(children: [
           picture('bg_vip${_tier}_top_bg_res.webp', 210),
-          picture('bg_privil_item_vip$_tier.webp', 95),
+          picture('bg_privil_item_vip$_tier.${_tier >= 6 ? 'png' : 'webp'}', 95),
           picture('bg_vip${_tier}_bottom.webp', 95),
           const Padding(
             padding: EdgeInsets.all(12),
