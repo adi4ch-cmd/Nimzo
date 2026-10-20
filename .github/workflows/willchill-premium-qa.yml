@@ -1,0 +1,33 @@
+name: NIMZO WillChill Premium QA
+
+on:
+  push:
+    branches:
+      - feature/willchill-premium-assets-20261020
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  premium-static-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Validate local importer syntax
+        run: python3 -m py_compile tools/import_willchill_package.py tools/install_willchill_premium.py tools/verify_willchill_premium.py
+      - name: Resolve Flutter packages
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Analyze Flutter code
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Check startup and existing Store/gift contract tests
+        working-directory: nimzo
+        run: flutter test test/startup_bootstrap_contract_test.dart test/store_full_preview_test.dart test/gift_qa_diagnostics_test.dart
