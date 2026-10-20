@@ -1,0 +1,18 @@
+name: NIMZO Premium APK Bundle Integrity
+
+on:
+  push:
+    branches:
+      - feature/willchill-premium-assets-20261020
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  asset-integrity-logic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify 441-media APK contract
+        run: python3 -m unittest tools/test_verify_willchill_apk_bundle.py -v
