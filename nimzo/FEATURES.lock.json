@@ -54,7 +54,10 @@
     "nimzo/test/licensed_media_gallery_test.dart",
     "nimzo/assets/licensed_tana_vani/tana/birthdayanimation.svga",
     "nimzo/assets/licensed_tana_vani/tana/ic_room_theme_love.webp",
-    "nimzo/assets/licensed_tana_vani/vani/cat_frames.jpg"
+    "nimzo/assets/licensed_tana_vani/vani/cat_frames.jpg",
+    "nimzo/lib/core/services/nimzo_native_session_storage.dart",
+    "nimzo/native/voice_disabled/android/MainActivity.java",
+    "nimzo/test/native_auth_storage_fallback_test.dart"
   ],
   "required_flutter_assets": [
     "assets/events/",
