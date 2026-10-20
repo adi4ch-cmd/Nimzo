@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/real-premium-store-assets-integration
+      - integration/nimzo-audit-20261020
   workflow_dispatch: {}
 
 permissions:
