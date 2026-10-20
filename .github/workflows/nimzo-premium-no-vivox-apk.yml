@@ -196,6 +196,11 @@ jobs:
               buildTypes {
                   getByName("release") {
                       proguardFiles("sharedpreferences-r8-rules.pro")
+                      // Temporary TEST build: disable R8 until all Flutter
+                      // JNI-reflected Kotlin classes survive release builds.
+                      // Vivox stays deferred; user data/signing stays untouched.
+                      isMinifyEnabled = false
+                      isShrinkResources = false
                   }
               }
           }
