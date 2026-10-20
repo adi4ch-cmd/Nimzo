@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/errors/error_handler.dart';
 import '../../../core/widgets/nimzo_logo.dart';
 import '../../support/legal_content.dart';
 import 'auth_controller.dart';
@@ -56,7 +57,9 @@ class _TingleLoginScreenState extends ConsumerState<TingleLoginScreen> {
   Widget build(BuildContext context) {
     final loading = ref.watch(authControllerProvider).isLoading;
     ref.listen(authControllerProvider, (_, next) {
-      if (next.hasError) _notice('Login failed. Check your details and retry.');
+      if (next.hasError) {
+        _notice(mapError(next.error!).message);
+      }
     });
 
     return Scaffold(
