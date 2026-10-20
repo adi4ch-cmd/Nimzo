@@ -51,14 +51,14 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
     if (error is PlatformException) {
       // Keep this token-free, but allow adb logcat to identify a missing
       // SharedPreferences / app_links Pigeon MethodChannel in the field.
-      final channel = RegExp(r'dev\\.flutter\\.pigeon\\.[a-zA-Z0-9_.]+')
+      final channel = RegExp(r'dev\.flutter\.pigeon\.[a-zA-Z0-9_.]+')
           .firstMatch(error.message ?? '')
           ?.group(0);
       final code = error.code.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '');
       debugPrint('NIMZO startup failed: PlatformException '
           'code=$code channel=${channel ?? 'not-reported'}');
     } else {
-      _logStartupFailure(error);
+      debugPrint('NIMZO startup failed: ${error.runtimeType}');
     }
   }
 
