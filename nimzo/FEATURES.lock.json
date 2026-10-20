@@ -49,7 +49,12 @@
     "nimzo/assets/room_rocket/vap_rocket_reward_5.mp4",
     "nimzo/assets/room_rocket/vap_rocket_fly_6.mp4",
     "nimzo/assets/room_rocket/vap_rocket_reward_6.mp4",
-    "nimzo/test/startup_bootstrap_contract_test.dart"
+    "nimzo/test/startup_bootstrap_contract_test.dart",
+    "nimzo/lib/features/store/licensed_media_gallery.dart",
+    "nimzo/test/licensed_media_gallery_test.dart",
+    "nimzo/assets/licensed_tana_vani/tana/birthdayanimation.svga",
+    "nimzo/assets/licensed_tana_vani/tana/ic_room_theme_love.webp",
+    "nimzo/assets/licensed_tana_vani/vani/cat_frames.jpg"
   ],
   "required_flutter_assets": [
     "assets/events/",
@@ -57,7 +62,9 @@
     "assets/room_rocket/",
     "assets/room_rocket/posters/",
     "assets/games/",
-    "assets/gifts/free/"
+    "assets/gifts/free/",
+    "assets/licensed_tana_vani/tana/",
+    "assets/licensed_tana_vani/vani/"
   ],
   "required_source_tokens": {
     "nimzo/lib/app/router.dart": [

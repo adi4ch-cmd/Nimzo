@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/art/nimzo_identity_art.dart';
+import 'licensed_media_gallery.dart';
 
 /// The live Store uses ORIGINAL NIMZO vector art. The third-party APK
 /// animations are for research/preview only and are not distributed here.
@@ -319,6 +320,49 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
               onTap: () => setState(() => bag = true),
             )),
           ]),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15, 3, 15, 9),
+          child: InkWell(
+            key: const ValueKey('original-licensed-store-media'),
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => Navigator.of(context).push<void>(
+              MaterialPageRoute(
+                builder: (_) => const LicensedStoreGallery(),
+              ),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xfff4faf7),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xffcce4d8)),
+              ),
+              child: Row(children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/licensed_tana_vani/vani/cat_frames.jpg',
+                    width: 70,
+                    height: 55,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Expanded(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Original Tana / Vani Media',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+                    Text('26 verified source files · tap for real full previews',
+                      maxLines: 2,
+                      style: TextStyle(fontSize: 10)),
+                  ],
+                )),
+                const Icon(Icons.chevron_right, size: 22),
+              ]),
+            ),
+          ),
         ),
         if (!bag)
           SizedBox(
