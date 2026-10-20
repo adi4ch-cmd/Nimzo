@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 import '../../profile/profile_repository.dart';
 import '../../gifts/verified_gift_broadcast.dart';
+import '../../premium/willchill_own_svip_entrance.dart';
 
 import 'dart:async';
 
@@ -445,6 +446,9 @@ class _State extends ConsumerState<RoomScreen> {
     final me = ref.watch(currentUserIdProvider),
         speaking = ref.watch(speakingProvider).valueOrNull ?? <String>{};
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
+    final ownSvipLevel = me == null
+        ? 0
+        : ref.watch(profileProvider(me)).valueOrNull?.svipLevel ?? 0;
     final palette = RoomTheme.byId(room.valueOrNull?.theme ?? 'nimzo_white');
     ref.listen(voiceConnectedProvider, (previous, next) {
       if (next.valueOrNull == true) {
@@ -1189,6 +1193,13 @@ class _State extends ConsumerState<RoomScreen> {
                   ),
                 ),
               ),
+              if (joined && ownSvipLevel >= 1 && ownSvipLevel <= 8)
+                Positioned.fill(
+                  child: WillChillOwnSvipEntrance(
+                    key: ValueKey(ownSvipLevel),
+                    svipLevel: ownSvipLevel,
+                  ),
+                ),
               if (joined)
                 Positioned.fill(
                   child: VerifiedGiftBroadcast(

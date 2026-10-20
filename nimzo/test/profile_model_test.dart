@@ -2,14 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/profile/profile.dart';
 
 void main() {
-  test(
-    'missing earned level records do not create fictional profile badges',
-    () {
-      final p = Profile.fromJson({'id': 'u', 'nimzo_id': 100001});
-      expect([p.wealthLevel, p.charmLevel, p.activeLevel], [0, 0, 0]);
-    },
-  );
-  test('expired VIP and SVIP records do not appear as active membership', () {
+  test('missing earned level records do not create fictional badges', () {
+    final p = Profile.fromJson({'id': 'u', 'nimzo_id': 100001});
+    expect([p.wealthLevel, p.charmLevel, p.activeLevel], [0, 0, 0]);
+  });
+
+  test('expired VIP stays inactive; server SVIP level remains authoritative', () {
     final p = Profile.fromJson({
       'id': 'u',
       'nimzo_id': 100001,
@@ -19,9 +17,10 @@ void main() {
       'svip_cycle_start': '2020-01-01T00:00:00Z',
     });
     expect(p.vipLevel, 0);
-    expect(p.svipLevel, 0);
+    expect(p.svipLevel, 3);
   });
-  test('retired memberships stay inactive even with future expiry', () {
+
+  test('an active VIP and server-assigned SVIP level are displayed', () {
     final p = Profile.fromJson({
       'id': 'u',
       'nimzo_id': 100001,
@@ -31,6 +30,12 @@ void main() {
       'svip_level': 3,
       'svip_cycle_start': DateTime.now().toIso8601String(),
     });
+    expect(p.vipLevel, 5);
+    expect(p.svipLevel, 3);
+  });
+
+  test('missing member fields do not invent any VIP/SVIP tier', () {
+    final p = Profile.fromJson({'id': 'u', 'nimzo_id': 100001});
     expect(p.vipLevel, 0);
     expect(p.svipLevel, 0);
   });

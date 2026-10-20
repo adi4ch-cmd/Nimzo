@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../premium/willchill_premium_screen.dart';
 
 import '../../core/providers/supabase_provider.dart';
 import '../../core/widgets/art/nimzo_identity_art.dart';
@@ -296,6 +297,15 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
         backgroundColor: Colors.white,
         foregroundColor: const Color(0xff153d32),
         actions: [
+          IconButton(
+            tooltip: 'Preview premium media',
+            icon: const Icon(Icons.auto_awesome_rounded),
+            onPressed: () => Navigator.of(context).push<void>(
+              MaterialPageRoute(
+                builder: (_) => const WillChillPremiumScreen(initialGroup: 'store'),
+              ),
+            ),
+          ),
           IconButton(
             tooltip: 'Refresh Store',
             icon: const Icon(Icons.refresh_rounded),

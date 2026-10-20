@@ -13,3 +13,7 @@ nimzo/test/failures/
 # Firebase administrative keys stay in Supabase secrets, never in source.
 **/*service-account*.json
 **/firebase-adminsdk*.json
+
+# Imported third-party media: keep local until commercial redistribution permission is verified.
+/nimzo/assets/willchill_premium/
+/WillChill_NIMZO_Premium_Integration_*.zip

@@ -8,24 +8,31 @@ import 'package:nimzo/features/auth/domain/auth_user.dart';
 import 'package:nimzo/features/auth/presentation/auth_controller.dart';
 import 'package:nimzo/features/profile/profile.dart';
 import 'package:nimzo/features/profile/profile_repository.dart';
-import 'package:nimzo/features/profile/tingle_membership_screen.dart';
-import 'package:nimzo/features/profile/tingle_me_screen.dart';
+import 'package:nimzo/features/premium/willchill_premium_screen.dart';
 
 void main() {
-  test('stale server membership cannot restore retired identity', () {
+  test('server membership levels are real but expired VIP remains inactive', () {
     final p = Profile.fromJson({
       'id': 'u',
       'nimzo_id': 100001,
       'vip_level': 10,
       'vip_expires_at': '2099-01-01T00:00:00Z',
       'svip_level': 10,
-      'svip_cycle_start': DateTime.now().toIso8601String()
+      'svip_cycle_start': DateTime.now().toIso8601String(),
     });
-    expect(p.vipLevel, 0);
-    expect(p.svipLevel, 0);
+    expect(p.vipLevel, 10);
+    expect(p.svipLevel, 10);
+    final expired = Profile.fromJson({
+      'id': 'u',
+      'nimzo_id': 100001,
+      'vip_level': 7,
+      'vip_expires_at': '2020-01-01T00:00:00Z',
+    });
+    expect(expired.vipLevel, 0);
   });
+
   for (final path in ['/vip', '/svip']) {
-    testWidgets('$path direct link cannot reopen a retired membership page',
+    testWidgets('$path opens a preview without granting any membership',
         (tester) async {
       final db = (await tester.runAsync(() async => SupabaseClient(
             'https://example.supabase.co',
@@ -35,12 +42,8 @@ void main() {
       addTearDown(() => tester.runAsync(db.dispose));
       final container = ProviderContainer(overrides: [
         supabaseProvider.overrideWithValue(db),
-        profileProvider('u').overrideWith((_) async => Profile(
-              id: 'u',
-              nimzoId: 100001,
-              displayName: 'Nimzo User',
-              gender: 'female',
-              dateOfBirth: DateTime(2000),
+        profileProvider('u').overrideWith((_) async => const Profile(
+              id: 'u', nimzoId: 100001, displayName: 'Nimzo User',
               countryCode: 'PK',
             )),
         authStateProvider.overrideWith((_) => Stream.value(
@@ -55,10 +58,14 @@ void main() {
         container: container,
         child: MaterialApp.router(routerConfig: router),
       ));
-      await tester.pumpAndSettle();
-      expect(find.byType(TingleMembershipScreen), findsNothing);
-      expect(find.byType(TingleMeScreen), findsOneWidget);
-      expect(router.routeInformationProvider.value.uri.path, '/profile');
+      // The premium gallery may run endlessly animated previews; never
+      // require every player animation to settle to validate routing.
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 300));
+      final screen = tester.widget<WillChillPremiumScreen>(
+          find.byType(WillChillPremiumScreen));
+      expect(screen.initialGroup, path == '/vip' ? 'vip' : 'svip');
+      expect(router.routeInformationProvider.value.uri.path, path);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     });

@@ -64,3 +64,12 @@ flutter:
     - assets/nimzo/gift_controls/
     - assets/room_rocket/
     - assets/room_rocket/posters/
+    - assets/willchill_premium/vip/
+    - assets/willchill_premium/svip/
+    - assets/willchill_premium/store/
+    - assets/willchill_premium/room_fx/
+    - assets/willchill_premium/gifts/
+    - assets/willchill_premium/games/
+    - assets/willchill_premium/entrances/
+    - assets/willchill_premium/audio/
+    - assets/willchill_premium/catalog.json

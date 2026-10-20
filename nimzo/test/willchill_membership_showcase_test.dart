@@ -1,0 +1,59 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:nimzo/features/premium/willchill_membership_showcase.dart';
+
+void main() {
+  testWidgets('SVIP8 shows original artwork as a page, not raw asset inventory',
+      (tester) async {
+    tester.view.physicalSize = const Size(320, 720);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: WillChillMembershipShowcase(
+            kind: 'svip',
+            tier: 8,
+            ownedLevel: 0,
+            onTierChanged: (_) {},
+            onPreviewEntrance: () {},
+          ),
+        ),
+      ),
+    ));
+    await tester.pump();
+    expect(find.text('SVIP 8'), findsWidgets);
+    expect(find.text('Tier preview'), findsOneWidget);
+    expect(find.text('No active SVIP tier on your NIMZO account'),
+        findsOneWidget);
+    expect(find.byKey(const ValueKey('willchill-svip-crown-8')),
+        findsOneWidget);
+    expect(find.textContaining('files'), findsNothing);
+    expect(find.textContaining('bg_svip8'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('VIP 7 preview cannot claim membership for unsigned user',
+      (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: WillChillMembershipShowcase(
+            kind: 'vip',
+            tier: 7,
+            ownedLevel: 0,
+            onTierChanged: (_) {},
+          ),
+        ),
+      ),
+    ));
+    await tester.pump();
+    expect(find.text('VIP 7'), findsWidgets);
+    expect(find.text('No active VIP tier on your NIMZO account'),
+        findsOneWidget);
+    expect(find.textContaining('files'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+}
