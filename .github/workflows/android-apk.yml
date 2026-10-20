@@ -241,7 +241,8 @@ jobs:
           flutter pub get --enforce-lockfile
       - name: Verify requested 1.0.34 version
         working-directory: nimzo
-        run: grep -qx 'version: 1.0.34+134' pubspec.yaml
+        run: |
+          grep -qx 'version: 1.0.34+134' pubspec.yaml
       - name: Analyzer
         working-directory: nimzo
         run: flutter analyze --no-fatal-infos
