@@ -1,0 +1,48 @@
+name: NIMZO DangLive Available Preview Asset Inventory
+on:
+  push:
+    branches: [tools/nimzo-tana-vani-audit-20261020]
+    paths: ['.github/workflows/nimzo-danglive-previews-audit.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download original available pre-extracted DangLive archives
+        run: |
+          python3 -m pip install --quiet gdown==5.2.0
+          mkdir -p /tmp/dang-files
+          gdown --fuzzy 'https://drive.google.com/file/d/1XCOV3chK3oXjB7wunIybdyfipxtIMMw8/view' -O /tmp/dang-files/offline.zip
+          gdown --fuzzy 'https://drive.google.com/file/d/1UWWef35AaCWI2Ia4fD54BMDshqU1A_NP/view' -O /tmp/dang-files/references.zip
+          test "$(stat -c '%s' /tmp/dang-files/offline.zip)" = 5238258
+          test "$(stat -c '%s' /tmp/dang-files/references.zip)" = 5189694
+      - name: Enumerate formats, media, catalogs and original vs derived source flags
+        run: |
+          python3 - <<'PY'
+          import zipfile, pathlib, collections, json, hashlib, os
+          os.makedirs('nimzo/test-evidence',exist_ok=True)
+          for name in ('offline','references'):
+              p=pathlib.Path('/tmp/dang-files')/(name+'.zip')
+              with zipfile.ZipFile(p) as z:
+                  assert z.testzip() is None, 'Corrupt archive'
+                  entries=[]
+                  for f in z.infolist():
+                      if f.is_dir(): continue
+                      path=pathlib.PurePosixPath(f.filename)
+                      assert not path.is_absolute() and '..' not in path.parts
+                      assert f.file_size<30*1024*1024
+                      entries.append(dict(path=f.filename,size=f.file_size,extension=path.suffix.lower(),
+                          sha256=hashlib.sha256(z.read(f)).hexdigest()))
+                  print(name.upper(),'FILES',len(entries),'EXTENSIONS',dict(collections.Counter(x['extension'] for x in entries)))
+                  for x in entries: print('FILE',name,x['size'],x['extension'],x['path'])
+                  pathlib.Path('nimzo/test-evidence/dang-'+name+'-files.json').write_text(json.dumps(entries,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: DangLive-previews-originality-inventory
+          path: nimzo/test-evidence/
