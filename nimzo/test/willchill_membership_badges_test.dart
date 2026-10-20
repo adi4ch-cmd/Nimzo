@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/premium/willchill_membership_badges.dart';
 
 void main() {
-  testWidgets('real membership labels remain visible without media files',
+  testWidgets('original media badges keep accurate accessible membership labels',
       (tester) async {
     await tester.pumpWidget(const MaterialApp(
       home: Scaffold(
@@ -11,8 +11,18 @@ void main() {
       ),
     ));
     await tester.pumpAndSettle();
-    expect(find.text('SVIP 8'), findsOneWidget);
-    expect(find.text('VIP 7'), findsOneWidget);
+    // Original image assets are now bundled. Validate accessible level labels
+    // rather than expecting text-only artwork fallbacks.
+    expect(
+      find.byWidgetPredicate((widget) =>
+          widget is Semantics && widget.properties.label == 'SVIP 8'),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate((widget) =>
+          widget is Semantics && widget.properties.label == 'VIP 7'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('zero membership does not show premium badges',
