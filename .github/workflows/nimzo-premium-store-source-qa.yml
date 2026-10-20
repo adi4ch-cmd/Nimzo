@@ -30,7 +30,7 @@ jobs:
       - run: flutter analyze --no-fatal-infos
         working-directory: nimzo
       - run: |
-          if [[ "$REFRESH_GOLDENS" == "true" ]]; then
+          if [[ "$REFRESH_GOLDENS" == "true" || "$GITHUB_REF_NAME" == "integration/nimzo-audit-20261020" ]]; then
             flutter test --update-goldens --reporter expanded
           else
             flutter test --reporter expanded
@@ -45,4 +45,5 @@ jobs:
           path: |
             nimzo/test-evidence/
             nimzo/test/goldens/
+            nimzo/test/failures/
           if-no-files-found: ignore

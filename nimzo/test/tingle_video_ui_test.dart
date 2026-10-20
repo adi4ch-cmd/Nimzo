@@ -144,9 +144,14 @@ void main() {
         // ignore: avoid_print
         print('Rendering ${entry.key} at $width');
         final boundary = GlobalKey();
+        Widget screenForRoute(GoRouterState state) {
+          if (entry.key != 'home') return entry.value;
+          final requestedTab = int.tryParse(state.uri.queryParameters['tab'] ?? '0') ?? 0;
+          return HomeScreen(initialTab: requestedTab);
+        }
         final router = GoRouter(routes: [
-          GoRoute(path: '/', builder: (_, __) => entry.value),
-          GoRoute(path: '/home', builder: (_, __) => entry.value),
+          GoRoute(path: '/', builder: (_, state) => screenForRoute(state)),
+          GoRoute(path: '/home', builder: (_, state) => screenForRoute(state)),
         ]);
         await tester.pumpWidget(ProviderScope(
             key: ValueKey(entry.key),
@@ -228,7 +233,9 @@ void main() {
           await tester.tap(find.byTooltip('Close country filter'));
           await tester.pumpAndSettle();
           for (final index in [1, 3, 0]) {
-            await tester.tap(find.byKey(ValueKey('explore-tab-$index')));
+            final tab = find.byKey(ValueKey('explore-tab-$index'));
+            await tester.ensureVisible(tab);
+            await tester.tap(tab);
             await tester.pumpAndSettle();
             expect(tester.takeException(), isNull);
           }
