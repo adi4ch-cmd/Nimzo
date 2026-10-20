@@ -112,6 +112,12 @@ class TingleMeScreen extends ConsumerWidget {
         color: Color(0xff9e69e5),
         route: '/vip'
       ),
+      (
+        title: 'SVIP',
+        icon: Icons.diamond_rounded,
+        color: Color(0xffd4a046),
+        route: '/svip'
+      ),
     ];
 
     return Scaffold(
