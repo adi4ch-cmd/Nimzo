@@ -742,7 +742,7 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     premiumCosmetics.containsKey(item.id)
                         ? 'Preview does not charge coins. Badges are decorative cosmetics.'
                         : 'Original NIMZO design. Legacy artwork preview only.',
