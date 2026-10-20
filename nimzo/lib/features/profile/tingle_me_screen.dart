@@ -179,6 +179,9 @@ class TingleMeScreen extends ConsumerWidget {
                             Text(p?.displayName ?? 'My NIMZO account',
                                 style: const TextStyle(
                                     fontSize: 17, fontWeight: FontWeight.w800)),
+                            NimzoEquippedRoyalBadge(
+                              variant: ref.watch(nimzoOwnRoyalBadgeProvider),
+                            ),
                             Text('ID: ' + (p?.nimzoId.toString() ?? '…'),
                                 style: const TextStyle(
                                     color: Color(0xff6e638a), fontSize: 12)),
