@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "base_commit": "32f92ade54727a0f8aea3e1a926823212d2c16bc",
+  "min_app_version": "1.0.35+135",
+  "verification_scope": "Source-presence and connection guards; runtime behavior, asset licenses and RTP require separate validation",
+  "required_files": [
+    "nimzo/lib/app/router.dart",
+    "nimzo/lib/app/auth_redirect.dart",
+    "nimzo/lib/app/feature_availability.dart",
+    "nimzo/lib/features/events/events_screen.dart",
+    "nimzo/lib/features/home/home_header.dart",
+    "nimzo/lib/features/store/store_screen.dart",
+    "nimzo/lib/features/store/store_live_catalog.dart",
+    "nimzo/lib/features/store/store_equipped_frame.dart",
+    "nimzo/lib/features/gifts/gift_sheet.dart",
+    "nimzo/lib/features/gifts/gift_repository.dart",
+    "nimzo/lib/features/gifts/pending_gift_gallery.dart",
+    "nimzo/lib/features/gifts/staged_gift_previews.dart",
+    "nimzo/lib/features/gifts/verified_gift_broadcast.dart",
+    "nimzo/lib/features/gifts/hall_of_fame_vap_overlay.dart",
+    "nimzo/lib/features/rooms/rocket/room_rocket_playback.dart",
+    "nimzo/lib/features/rooms/rocket/room_rocket_widgets.dart",
+    "nimzo/lib/features/rooms/rocket/room_rocket_top_sender.dart",
+    "nimzo/lib/features/voice/vivox_voice_service.dart",
+    "nimzo/native/vivox/android/vivox_bridge.cpp",
+    "nimzo/native/vivox/android/MainActivity.java",
+    "nimzo/native/vivox/android/CMakeLists.txt",
+    "nimzo/assets/events/reference_banners.jpg",
+    "nimzo/assets/gifts/staged/ice_queen_magic.svg",
+    "nimzo/assets/gifts/staged/romantic_blossom.svg",
+    "nimzo/assets/gifts/staged/tiger_warrior.svg",
+    "nimzo/assets/games/jackpot_9lines_demo.html",
+    "nimzo/assets/games/lucky77_room_demo.html",
+    "nimzo/assets/games/grady_lion_auto.html",
+    "nimzo/test/store_full_preview_test.dart",
+    "nimzo/test/store_live_contract_test.dart",
+    "nimzo/test/pending_gifts_preview_contract_test.dart",
+    "nimzo/test/gift_qa_diagnostics_test.dart",
+    "supabase/migrations/20261020000500_activate_original_cosmetics_store.sql",
+    "nimzo/assets/room_rocket/vap_rocket_fly_1.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_reward_1.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_fly_2.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_reward_2.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_fly_3.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_reward_3.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_fly_4.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_reward_4.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_fly_5.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_reward_5.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_fly_6.mp4",
+    "nimzo/assets/room_rocket/vap_rocket_reward_6.mp4"
+  ],
+  "required_flutter_assets": [
+    "assets/events/",
+    "assets/gifts/staged/",
+    "assets/room_rocket/",
+    "assets/room_rocket/posters/",
+    "assets/games/",
+    "assets/gifts/free/"
+  ],
+  "required_source_tokens": {
+    "nimzo/lib/app/router.dart": [
+      "RoyalStoreScreen(",
+      "initialBag: state.uri.queryParameters['bag'] == '1'",
+      "path: Routes.events",
+      "path: Routes.games"
+    ],
+    "nimzo/lib/features/store/store_live_catalog.dart": [
+      "NimzoLiveStore",
+      "nimzo_cosmetic_catalog",
+      "nimzo_cosmetic_ownership",
+      "nimzo_cosmetic_equipped",
+      "nimzo_store_claim_free",
+      "nimzo_store_equip_free"
+    ],
+    "nimzo/lib/features/gifts/gift_sheet.dart": [
+      "_testGiftAnimation()",
+      "PendingGiftGallery()",
+      "_stagedGiftCard("
+    ],
+    "nimzo/lib/features/rooms/rocket/room_rocket_playback.dart": [
+      "mute: false",
+      "VapErrorEvent"
+    ],
+    "nimzo/lib/features/voice/vivox_voice_service.dart": [
+      "VivoxVoiceService"
+    ],
+    "supabase/migrations/20261020000500_activate_original_cosmetics_store.sql": [
+      "create table if not exists public.nimzo_cosmetic_catalog",
+      "public.nimzo_store_claim_free",
+      "public.nimzo_store_equip_free"
+    ]
+  }
+}
