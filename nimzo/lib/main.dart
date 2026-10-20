@@ -60,13 +60,14 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
       });
       // FCM can take arbitrarily long; it must never delay the login screen.
       unawaited(_initializePush(container));
-    } catch (error) {
+    } catch (error, stackTrace) {
       // A genuine failure must be retryable. Keep the same in-flight future
       // only while timeout has left initialization running in the background.
       if (error is! TimeoutException) {
         _supabaseInitialization = null;
       }
       debugPrint('NIMZO startup failed: ${error.runtimeType}');
+      debugPrintStack(stackTrace: stackTrace);
       if (!mounted) return;
       setState(() {
         _starting = false;

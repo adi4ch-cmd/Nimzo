@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/core/theme/app_theme.dart';
@@ -143,6 +144,10 @@ void main() {
         // ignore: avoid_print
         print('Rendering ${entry.key} at $width');
         final boundary = GlobalKey();
+        final router = GoRouter(routes: [
+          GoRoute(path: '/', builder: (_, __) => entry.value),
+          GoRoute(path: '/home', builder: (_, __) => entry.value),
+        ]);
         await tester.pumpWidget(ProviderScope(
             key: ValueKey(entry.key),
             overrides: [
@@ -190,13 +195,13 @@ void main() {
             ],
             child: RepaintBoundary(
                 key: boundary,
-                child: MaterialApp(
+                child: MaterialApp.router(
                     debugShowCheckedModeBanner: false,
                     theme: AppTheme.light().copyWith(
                         textTheme: AppTheme.light()
                             .textTheme
                             .apply(fontFamily: 'Roboto')),
-                    home: entry.value))));
+                  routerConfig: router))));
         await tester.pumpAndSettle();
         if (entry.key == 'login') {
           await tester.runAsync(() => precacheImage(
@@ -374,6 +379,7 @@ void main() {
           expect(find.byKey(const ValueKey('friends-search')), findsOneWidget);
         }
         await tester.pumpWidget(const SizedBox());
+        router.dispose();
       }
     });
   }

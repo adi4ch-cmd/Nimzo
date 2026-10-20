@@ -1,7 +1,16 @@
 name: NIMZO Premium Store Source QA
 on:
   push:
-    branches: [feature/real-premium-store-assets-integration]
+    branches:
+      - feature/real-premium-store-assets-integration
+      - integration/nimzo-audit-20261020
+  workflow_dispatch:
+    inputs:
+      refresh_goldens:
+        description: Regenerate Flutter goldens and upload them for visual review
+        required: false
+        default: false
+        type: boolean
 permissions:
   contents: read
 jobs:
@@ -20,11 +29,20 @@ jobs:
         working-directory: nimzo
       - run: flutter analyze --no-fatal-infos
         working-directory: nimzo
-      - run: flutter test --reporter expanded
+      - run: |
+          if [[ "$REFRESH_GOLDENS" == "true" ]]; then
+            flutter test --update-goldens --reporter expanded
+          else
+            flutter test --reporter expanded
+          fi
         working-directory: nimzo
+        env:
+          REFRESH_GOLDENS: ${{ inputs.refresh_goldens }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: premium-store-test-evidence
-          path: nimzo/test-evidence/
+          path: |
+            nimzo/test-evidence/
+            nimzo/test/goldens/
           if-no-files-found: ignore

@@ -12,6 +12,7 @@ void main() {
     expect(source, contains('Future<Supabase>? _supabaseInitialization;'));
     expect(source, contains('_supabaseInitialization = null;'));
     expect(source, contains('_safeStartupMessage(error)'));
+    expect(source, contains('debugPrintStack(stackTrace: stackTrace)'));
     expect(source, contains('timeout(const Duration(seconds: 8))'));
     expect(source, contains('UncontrolledProviderScope('));
     expect(source, contains('child: const NimzoApp()'));
