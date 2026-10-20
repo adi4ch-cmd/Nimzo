@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/app.dart';
 import 'core/services/firebase_push_service.dart';
 import 'core/constants/app_constants.dart';
+import 'core/services/nimzo_native_session_storage.dart';
 
 /// First Flutter frame must never wait for network or optional FCM plugins.
 void main() {
@@ -60,15 +62,32 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
       // Probe Android session storage first to identify plugin failures.
       // Reading preferences must not clear or replace existing login data.
       _startupStage = 'android-storage';
-      await SharedPreferences.getInstance()
-          .timeout(const Duration(seconds: 8));
+      LocalStorage? recoveredStorage;
+      GotrueAsyncStorage? recoveredPkceStorage;
+      try {
+        await SharedPreferences.getInstance()
+            .timeout(const Duration(seconds: 8));
+      } on PlatformException {
+        if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) rethrow;
+        // Flutter's Pigeon SharedPreferences channel failed. Preserve existing
+        // session/PKCE values by using the same Android preferences file.
+        _startupStage = 'android-native-storage';
+        final key = 'sb-${Uri.parse(AppConstants.supabaseUrl).host.split('.').first}-auth-token';
+        final native = NimzoNativeSessionStorage(persistSessionKey: key);
+        await native.initialize().timeout(const Duration(seconds: 8));
+        recoveredStorage = native;
+        recoveredPkceStorage = NimzoNativePkceStorage();
+        debugPrint('NIMZO recovered Android auth storage using native bridge');
+      }
       // Preserve PKCE, existing session storage and OAuth callback handling.
       _startupStage = 'supabase-auth';
       await (_supabaseInitialization ??= Supabase.initialize(
         url: AppConstants.supabaseUrl,
         publishableKey: AppConstants.supabaseAnonKey,
-        authOptions: const FlutterAuthClientOptions(
+        authOptions: FlutterAuthClientOptions(
           authFlowType: AuthFlowType.pkce,
+          localStorage: recoveredStorage,
+          pkceAsyncStorage: recoveredPkceStorage,
         ),
       )).timeout(const Duration(seconds: 12));
       if (!mounted) return;
