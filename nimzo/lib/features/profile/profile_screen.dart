@@ -253,6 +253,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                       ],
                     ),
+                    if (id == me)
+                      NimzoEquippedRoyalBadge(
+                        variant: ref.watch(nimzoOwnRoyalBadgeProvider),
+                      ),
                     Text(
                       'ID:${p.nimzoId} · ${p.countryName ?? p.countryCode ?? ''}',
                       style: const TextStyle(color: NimzoStyle.muted),
