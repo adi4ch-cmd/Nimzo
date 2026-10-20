@@ -30,4 +30,4 @@ jobs:
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
       - name: Check startup and existing Store/gift contract tests
         working-directory: nimzo
-        run: flutter test test/startup_bootstrap_contract_test.dart test/store_full_preview_test.dart test/gift_qa_diagnostics_test.dart test/willchill_gift_effect_test.dart test/profile_membership_levels_test.dart test/willchill_membership_badges_test.dart
+        run: flutter test test/startup_bootstrap_contract_test.dart test/store_full_preview_test.dart test/gift_qa_diagnostics_test.dart test/willchill_gift_effect_test.dart test/profile_membership_levels_test.dart test/willchill_membership_badges_test.dart test/premium_navigation_guard_test.dart
