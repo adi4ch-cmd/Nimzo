@@ -1,0 +1,52 @@
+name: NIMZO Premium Startup Crash Diagnosis
+
+on:
+  push:
+    branches:
+      - feature/willchill-premium-assets-20261020
+    paths:
+      - .github/workflows/nimzo-premium-crash-diagnosis.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download emulator launch evidence from exact APK run
+        uses: actions/download-artifact@v4
+        with:
+          name: nimzo-premium-no-vivox-launch-diagnostics
+          run-id: 39396936634
+          github-token: ${{ github.token }}
+          path: diagnostics
+
+      - name: Print sanitized Dart startup exception and stack only
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('diagnostics/launch-logcat.txt')
+          if not p.is_file():
+              raise SystemExit('Expected Android launch logcat missing')
+          lines=p.read_text(errors='replace').splitlines()
+          seen=[]
+          for i,line in enumerate(lines):
+              if ('Unhandled Exception:' in line or 'FATAL EXCEPTION:' in line or
+                  'E/flutter' in line and ('Exception' in line or 'Error' in line)):
+                  seen.append(i)
+          print('Startup exception markers:', len(seen))
+          for idx in seen[:5]:
+              for line in lines[max(0,idx-3):min(len(lines),idx+28)]:
+                  # Do not expose full logcat, tokens, query strings or personal IDs.
+                  line=re.sub(r'https?://\\S+', '[URL]',line)
+                  line=re.sub(r'(?i)(?:bearer\\s+)[A-Za-z0-9._~+/-]+', 'Bearer [REDACTED]',line)
+                  line=re.sub(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}', '[EMAIL]',line)
+                  line=re.sub(r'(?i)(?:apikey|access_token|refresh_token|authorization|password|secret)=\\S+', r'\\1=[REDACTED]',line)
+                  print(line[:250])
+              print('---')
+          if not seen: raise SystemExit('No startup exception marker found in log')
+          PY
