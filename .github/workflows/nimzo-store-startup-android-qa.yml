@@ -304,6 +304,17 @@ jobs:
           print('NIMZO 12 Rocket VAP, Vivox, events and 26 original Tana/Vani assets verified in APK')
           PY
           ls -lh "$apk"
+      - name: Upload installable test APK and checksum
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: NIMZO-1.0.36-store-startup-smoke-${{ github.run_number }}
+          path: |
+            nimzo/build/app/outputs/flutter-apk/app-release.apk
+            nimzo/build/app/outputs/flutter-apk/app-release.apk.sha256
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Verify Android 35 app startup on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -362,14 +373,3 @@ jobs:
           name: nimzo-1.0.36-startup-evidence-${{ github.run_number }}
           path: nimzo/build/startup-evidence/
           if-no-files-found: warn
-
-      - name: Upload installable test APK and checksum
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: NIMZO-1.0.36-store-startup-smoke-${{ github.run_number }}
-          path: |
-            nimzo/build/app/outputs/flutter-apk/app-release.apk
-            nimzo/build/app/outputs/flutter-apk/app-release.apk.sha256
-          if-no-files-found: error
-          retention-days: 14
