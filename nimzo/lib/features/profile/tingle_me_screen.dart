@@ -2,6 +2,7 @@ import '../../app/feature_availability.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/art/nimzo_identity_art.dart';
 import '../store/store_equipped_frame.dart';
+import '../premium/willchill_membership_badges.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/supabase_provider.dart';
@@ -195,6 +196,15 @@ class TingleMeScreen extends ConsumerWidget {
                                         color: NimzoStyle.primary,
                                         fontSize: 10,
                                         fontWeight: FontWeight.w700)),
+                              ),
+                            if (p != null &&
+                                (p.svipLevel > 0 || p.vipLevel > 0))
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5),
+                                child: WillChillMembershipBadges(
+                                  svipLevel: p.svipLevel,
+                                  vipLevel: p.vipLevel,
+                                ),
                               ),
                           ],
                         )),
