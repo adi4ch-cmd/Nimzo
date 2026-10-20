@@ -14,6 +14,7 @@ import 'private_animal_gifts.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
 import 'staged_gift_previews.dart';
+import 'pending_gift_gallery.dart';
 import 'gift_svga_overlay.dart';
 import 'hall_of_fame_vap_overlay.dart';
 import 'gift_celebration_overlay.dart';
@@ -515,6 +516,10 @@ class _State extends ConsumerState<GiftSheet> {
                               ),
                             ),
                           ),
+                          if (activeGiftCategory != 'Cars')
+                            const SliverToBoxAdapter(
+                              child: PendingGiftGallery(),
+                            ),
                           const SliverToBoxAdapter(
                             child: Padding(
                               padding: EdgeInsets.all(16),

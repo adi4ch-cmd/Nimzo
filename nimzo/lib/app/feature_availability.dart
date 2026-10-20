@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Owner paused these destinations, including Bag's Store deep link.
-bool isComingSoonLocation(String location) => const {'/vip', '/svip', '/store'}
+/// VIP and SVIP remain paused; Store and Backpack are available.
+bool isComingSoonLocation(String location) => const {'/vip', '/svip'}
     .contains(Uri.parse(location).path.replaceFirst(RegExp(r'/+$'), ''));
 
 void openAvailableDestination(BuildContext context, String location,

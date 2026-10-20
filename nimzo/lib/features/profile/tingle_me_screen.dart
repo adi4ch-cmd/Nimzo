@@ -1,6 +1,7 @@
 import '../../app/feature_availability.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/art/nimzo_identity_art.dart';
+import '../store/store_equipped_frame.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/supabase_provider.dart';
@@ -157,7 +158,9 @@ class TingleMeScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 9),
                     child: Row(
                       children: [
-                        CircleAvatar(
+                        NimzoEquippedAvatarFrame(
+                          variant: ref.watch(nimzoOwnAvatarFrameProvider),
+                          avatar: CircleAvatar(
                           radius: 27,
                           backgroundColor: NimzoStyle.primary,
                           backgroundImage:
@@ -166,6 +169,7 @@ class TingleMeScreen extends ConsumerWidget {
                               ? const Icon(Icons.person_rounded,
                                   color: Colors.white, size: 28)
                               : null,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(

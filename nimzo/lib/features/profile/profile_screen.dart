@@ -8,6 +8,7 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../gifts/gift_sheet.dart';
+import '../store/store_equipped_frame.dart';
 import '../social/social_repositories.dart';
 import '../social/friend_button.dart';
 import 'profile_repository.dart';
@@ -191,12 +192,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        child: NimzoAvatar(
-                          name: p.displayName ?? p.username ?? 'N',
-                          url: image('avatars', p.avatarPath),
-                          size: 70,
-                          backgroundColor: NimzoStyle.ink,
-                          online: id == me,
+                        child: NimzoEquippedAvatarFrame(
+                          variant: id == me
+                              ? ref.watch(nimzoOwnAvatarFrameProvider)
+                              : null,
+                          avatar: NimzoAvatar(
+                            name: p.displayName ?? p.username ?? 'N',
+                            url: image('avatars', p.avatarPath),
+                            size: 70,
+                            backgroundColor: NimzoStyle.ink,
+                            online: id == me,
+                          ),
                         ),
                       ),
                     ),
