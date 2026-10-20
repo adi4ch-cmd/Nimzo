@@ -12,7 +12,7 @@ void main() {
     expect(isWillChillGoldCoinGift('Coin Rain'), isTrue);
   });
 
-  testWidgets('verified gift effect preserves original fallback when media is absent',
+  testWidgets('verified gift falls back safely when native playback cannot finish',
       (tester) async {
     await tester.pumpWidget(MaterialApp(
       home: WillChillVerifiedGiftEffect(
@@ -27,14 +27,17 @@ void main() {
       ),
     ));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 200));
+    // Actual premium media now ships in CI. Native player may not initialize
+    // on a Flutter widget-test runner; the 15s watchdog must reveal fallback.
+    await tester.pump(const Duration(seconds: 16));
+    await tester.pump();
     expect(find.text('Original NIMZO gift celebration'), findsOneWidget);
   });
 
   testWidgets('premium effect does not start a transaction or modify balance',
       (tester) async {
     // The effect is a pure UI widget and has no wallet, Supabase, or gift RPC
-    // dependency. No media assets exist in normal CI checkouts.
+    // dependency. Media is bundled; playback may time out in widget-test CI.
     await tester.pumpWidget(MaterialApp(
       home: WillChillVerifiedGiftEffect(
         totalCoins: 5000000,
@@ -46,7 +49,8 @@ void main() {
       ),
     ));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump(const Duration(seconds: 16));
+    await tester.pump();
     expect(find.text('Safe gift fallback'), findsOneWidget);
   });
 }
