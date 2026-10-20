@@ -205,7 +205,7 @@ jobs:
         working-directory: nimzo
         run: |
           rm -f test/widget_test.dart
-          flutter pub get
+          flutter pub get --enforce-lockfile
       - name: Check original 441 premium assets and SVIP 1-8
         run: python3 tools/verify_willchill_premium.py
 
@@ -221,7 +221,9 @@ jobs:
         run: flutter build apk --release
 
       - name: Verify compiled shared_preferences native startup ABI
-        run: python3 tools/verify_shared_preferences_android_abi.py nimzo/build/app/outputs/flutter-apk/app-release.apk
+        run: |
+          python3 tools/test_shared_preferences_abi_policy.py
+          python3 tools/verify_shared_preferences_android_abi.py nimzo/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Verify every original WillChill asset in compiled APK
         run: |
