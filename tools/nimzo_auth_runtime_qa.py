@@ -74,7 +74,10 @@ try:
     adb("install", "-r", apk, timeout=180)
     adb("logcat", "-c")
     start_app()
-    find(lambda node: label(node) == "Google", timeout=45)
+    entry = find(lambda node: label(node) in ("Google", "Log In"), timeout=45)
+    if label(entry) == "Log In":
+        tap(entry)
+    find(lambda node: label(node) == "Google", timeout=30)
     capture("login")
     REPORT["startup_login_screen"] = True
 
