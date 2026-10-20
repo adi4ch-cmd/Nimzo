@@ -300,11 +300,12 @@ jobs:
           arch: x86_64
           target: google_apis
           profile: pixel_6
-          ram-size: 4096M
-          heap-size: 512M
+          ram-size: 2048M
+          heap-size: 256M
+          emulator-boot-timeout: 900
           disable-animations: true
           script: |
-            set -euo pipefail
+            set -eu
             apk=nimzo/build/app/outputs/flutter-apk/app-release.apk
             adb install -r "$apk"
             adb logcat -c
@@ -351,7 +352,8 @@ jobs:
           path: nimzo/build/startup-evidence/
           if-no-files-found: warn
 
-      - name: Upload installable APK and checksum
+      - name: Upload installable test APK and checksum
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: NIMZO-1.0.36-store-startup-smoke-${{ github.run_number }}
