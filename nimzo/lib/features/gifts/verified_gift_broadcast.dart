@@ -11,6 +11,7 @@ import 'hall_of_fame_vap_overlay.dart';
 import 'gift_video_overlay.dart';
 import 'gift_svga_overlay.dart';
 import 'gift_celebration_overlay.dart';
+import 'willchill_verified_gift_effect.dart';
 import 'nimzo_gift_control_art.dart';
 
 /// Server-settled gift announcements. Initial history is never replayed.
@@ -186,7 +187,13 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
                       zodiacVapGiftIds.contains(r['gift_id']?.toString()) ||
                       privateAnimalVapGiftIds.contains(
                         r['gift_id']?.toString(),
-                      )) &&
+                      ) ||
+                      // Generic premium visual effect applies only to actual
+                      // server-settled room events, never a local tap/preview.
+                      (r['scope'] == 'room' &&
+                       ((r['unit_price'] as num?)?.toInt() ?? 0) *
+                           ((r['quantity'] as num?)?.toInt() ?? 1) >=
+                           1000000)) &&
                     _seen.add('${r['id']}');
               },
             )
@@ -354,6 +361,30 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         onFinished: () {
           if (mounted && identical(_active, event)) _next();
         },
+      );
+    }
+    if (!_loading && price * quantity >= 1000000) {
+      return WillChillVerifiedGiftEffect(
+        key: ValueKey('premium-${event['id']}'),
+        totalCoins: price * quantity,
+        giftName: '$giftName × $quantity',
+        sender: sender,
+        recipient: recipient,
+        onFinished: () {
+          if (mounted && identical(_active, event)) _next();
+        },
+        fallback: NimzoGiftCelebration(
+          giftName: giftName,
+          sender: sender,
+          recipient: recipient,
+          quantity: quantity,
+          unitPrice: price,
+          assetPath: catalogArtwork,
+          scope: event['scope'] == 'country' ? 'country' : 'room',
+          onFinished: () {
+            if (mounted && identical(_active, event)) _next();
+          },
+        ),
       );
     }
     if (!_loading) {
