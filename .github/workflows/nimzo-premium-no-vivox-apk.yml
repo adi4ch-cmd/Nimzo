@@ -6,6 +6,7 @@ on:
       - feature/willchill-premium-assets-20261020
     paths:
       - .github/workflows/nimzo-premium-no-vivox-apk.yml
+      - tools/test_native_auth_storage_key_policy.py
   workflow_dispatch: {}
 
 permissions:
