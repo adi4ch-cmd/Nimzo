@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'willchill_membership_showcase.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_svga/flutter_svga.dart';
@@ -42,15 +44,17 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
   static const title = <String, String>{
     'svip': 'SVIP 1–8',
     'vip': 'VIP',
-    'store': 'Store / Backpack',
-    'gifts': 'Gifts / Effects',
-    'entrances': 'Entrance / Crown',
-    'room_fx': 'Room Effects',
-    'games': 'Games UI',
+    'store': 'Open Store',
+    'gifts': 'Gift Previews',
+    'entrances': 'Entrance Previews',
+    'room_fx': 'Room FX Previews',
+    'games': 'Games Artwork',
   };
   List<_PremiumAsset>? _assets;
   Object? _error;
   String _membershipStatus = 'Checking NIMZO membership status…';
+  int _ownedSvip = 0;
+  int _ownedVip = 0;
   late String _group = groups.contains(widget.initialGroup)
       ? widget.initialGroup
       : 'svip';
@@ -110,8 +114,11 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
       final activeVip = vip > 0 && expiry != null &&
           expiry.isAfter(DateTime.now());
       final vipLabel = activeVip ? 'VIP $vip' : 'VIP inactive';
-      setState(() => _membershipStatus =
-          'NIMZO account: SVIP $svip · $vipLabel');
+      setState(() {
+        _ownedSvip = svip;
+        _ownedVip = activeVip ? vip : 0;
+        _membershipStatus = 'NIMZO account: SVIP $svip · $vipLabel';
+      });
     } catch (_) {
       if (mounted) {
         setState(() => _membershipStatus =
@@ -120,140 +127,29 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
     }
   }
 
-  _PremiumAsset? _tierArt(String part) {
-    final matches = _assets?.where((item) =>
-      item.group == 'svip' && item.tier == _tier &&
-      item.name.toLowerCase().contains(part)).toList();
-    return matches == null || matches.isEmpty ? null : matches.first;
-  }
-
   Widget _svipOverview() {
-    final header = _tierArt('fixed_top_svip');
-    final frosted = _tierArt('bg_svip');
-    final progress = _tierArt('level_progress_container');
-    final expires = _tierArt('expiration_container');
-    final crowns = _assets?.where((asset) =>
-        asset.group == 'entrances' &&
-        asset.name == 'voiceroom_crown_orb_$_tier.mp4').toList();
-    final crown = crowns == null || crowns.isEmpty ? null : crowns.first;
-    Widget illustration(_PremiumAsset? art, {double height = 130}) =>
-        SizedBox(
-          height: height,
-          child: art == null
-              ? const Center(child: Icon(Icons.image_not_supported_outlined))
-              : Image.asset(art.asset,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Center(
-                      child: Icon(Icons.broken_image_outlined))),
-        );
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      SizedBox(
-        height: 45,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: 8,
-          separatorBuilder: (_, __) => const SizedBox(width: 7),
-          itemBuilder: (context, i) => ChoiceChip(
-            key: ValueKey('willchill-svip-level-${i + 1}'),
-            selected: _tier == i + 1,
-            onSelected: (_) => setState(() => _tier = i + 1),
-            label: Text('SVIP ${i + 1}'),
-            selectedColor: const Color(0xff9dddc7),
-          ),
-        ),
-      ),
-      const SizedBox(height: 10),
-      Card(
-        clipBehavior: Clip.antiAlias,
-        child: Column(children: [
-          illustration(header, height: 220),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Text('SVIP $_tier – Original source artwork',
-                style: const TextStyle(fontWeight: FontWeight.w800)),
-          ),
-          illustration(frosted, height: 95),
-          illustration(progress, height: 75),
-          illustration(expires, height: 55),
-          if (crown != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: OutlinedButton.icon(
-                key: ValueKey('willchill-svip-crown-$_tier'),
-                icon: const Icon(Icons.play_circle_outline),
-                label: Text('Preview SVIP $_tier crown animation'),
-                onPressed: () => Navigator.of(context).push<void>(
-                  MaterialPageRoute(
-                    builder: (_) => _PremiumAssetPreview(asset: crown),
-                  ),
-                ),
-              ),
-            ),
-          const Padding(
-            padding: EdgeInsets.all(8),
-            child: Text(
-              'Asset preview. Level unlocking, expiration and privileges '
-              'must be verified against NIMZO server rules.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Color(0xff556b61), fontSize: 11),
-            ),
-          ),
-        ]),
-      ),
-    ]);
+    final possible = _assets?.where((item) =>
+      item.group == 'entrances' &&
+      item.name == 'voiceroom_crown_orb_$_tier.mp4').toList();
+    final crown = possible == null || possible.isEmpty ? null : possible.first;
+    return WillChillMembershipShowcase(
+      kind: 'svip',
+      tier: _tier,
+      ownedLevel: _ownedSvip,
+      onTierChanged: (tier) => setState(() => _tier = tier),
+      onPreviewEntrance: crown == null ? null : () =>
+          Navigator.of(context).push<void>(MaterialPageRoute(
+            builder: (_) => _PremiumAssetPreview(asset: crown),
+          )),
+    );
   }
 
-  Widget _vipOverview() {
-    _PremiumAsset? byName(String wanted) {
-      final results = _assets?.where((asset) =>
-          asset.group == 'vip' && asset.name == wanted).toList();
-      return results == null || results.isEmpty ? null : results.first;
-    }
-
-    Widget picture(String name, double height) {
-      final file = byName(name);
-      return SizedBox(
-        height: height,
-        child: file == null
-            ? const Center(child: Icon(Icons.image_not_supported_outlined))
-            : Image.asset(file.asset, fit: BoxFit.contain),
-      );
-    }
-
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      SizedBox(
-        height: 46,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: 7,
-          separatorBuilder: (_, __) => const SizedBox(width: 7),
-          itemBuilder: (_, i) => ChoiceChip(
-            selected: _tier == i + 1,
-            onSelected: (_) => setState(() => _tier = i + 1),
-            label: Text('VIP ${i + 1}'),
-            selectedColor: const Color(0xff9dddc7),
-          ),
-        ),
-      ),
-      const SizedBox(height: 10),
-      Card(
-        clipBehavior: Clip.antiAlias,
-        child: Column(children: [
-          picture('bg_vip${_tier}_top_bg_res.webp', 210),
-          picture('bg_privil_item_vip$_tier.${_tier >= 6 ? 'png' : 'webp'}', 95),
-          picture('bg_vip${_tier}_bottom.webp', 95),
-          const Padding(
-            padding: EdgeInsets.all(12),
-            child: Text(
-              'Visual preview only. VIP purchase, duration, and privileges '
-              'remain controlled by existing NIMZO server rules.',
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ]),
-      ),
-    ]);
-  }
+  Widget _vipOverview() => WillChillMembershipShowcase(
+    kind: 'vip',
+    tier: _tier > 7 ? 7 : _tier,
+    ownedLevel: _ownedVip,
+    onTierChanged: (tier) => setState(() => _tier = tier),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -262,7 +158,7 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
     return Scaffold(
       backgroundColor: const Color(0xfff5f9f7),
       appBar: AppBar(
-        title: const Text('NIMZO Premium Collection'),
+        title: Text(_group == 'svip' ? 'NIMZO SVIP' : _group == 'vip' ? 'NIMZO VIP' : 'NIMZO Premium Previews'),
         backgroundColor: Colors.white,
         foregroundColor: const Color(0xff174632),
       ),
@@ -294,7 +190,13 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
                       itemBuilder: (context, i) => ChoiceChip(
                         selected: groups[i] == _group,
                         label: Text(title[groups[i]] ?? groups[i]),
-                        onSelected: (_) => setState(() { _group = groups[i]; _tier = 1; }),
+                        onSelected: (_) {
+                          if (groups[i] == 'store') {
+                            context.push('/store');
+                          } else {
+                            setState(() { _group = groups[i]; _tier = 1; });
+                          }
+                        },
                         selectedColor: const Color(0xff9dddc7),
                       ),
                     ),
@@ -305,13 +207,13 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
                       children: [
                         if (_group == 'svip') _svipOverview(),
                         if (_group == 'vip') _vipOverview(),
-                        Padding(
+                        if (_group != 'svip' && _group != 'vip') Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           child: Text('${title[_group]} · ${items.length} files',
                             style: const TextStyle(
                               fontSize: 15, fontWeight: FontWeight.w800)),
                         ),
-                        GridView.builder(
+                        if (_group != 'svip' && _group != 'vip') GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           gridDelegate:
