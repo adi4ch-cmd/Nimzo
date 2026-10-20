@@ -7,6 +7,8 @@ on:
     paths:
       - .github/workflows/nimzo-premium-no-vivox-apk.yml
       - tools/test_native_auth_storage_key_policy.py
+      - nimzo/lib/features/premium/willchill_membership_showcase.dart
+      - nimzo/lib/features/premium/willchill_premium_screen.dart
   workflow_dispatch: {}
 
 permissions:
@@ -221,7 +223,7 @@ jobs:
       - name: Test premium UI, Store, startup, gift playback and membership
         working-directory: nimzo
         run: |
-          flutter test test/startup_bootstrap_contract_test.dart test/store_full_preview_test.dart test/gift_qa_diagnostics_test.dart test/willchill_gift_effect_test.dart test/profile_membership_levels_test.dart test/willchill_membership_badges_test.dart test/premium_navigation_guard_test.dart test/willchill_room_entrance_test.dart
+          flutter test test/startup_bootstrap_contract_test.dart test/store_full_preview_test.dart test/gift_qa_diagnostics_test.dart test/willchill_gift_effect_test.dart test/profile_membership_levels_test.dart test/willchill_membership_badges_test.dart test/premium_navigation_guard_test.dart test/willchill_room_entrance_test.dart test/willchill_membership_showcase_test.dart
 
       - name: Build premium APK without Vivox
         working-directory: nimzo
