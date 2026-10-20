@@ -13,7 +13,7 @@ class NimzoNativeSessionStorage extends LocalStorage {
   @override
   Future<void> initialize() async {
     final ready = await channel.invokeMethod<bool>('probe');
-    if (ready != true) throw const PlatformException(code: 'NATIVE_STORAGE_UNAVAILABLE');
+    if (ready != true) throw PlatformException(code: 'NATIVE_STORAGE_UNAVAILABLE');
   }
 
   @override
@@ -29,7 +29,7 @@ class NimzoNativeSessionStorage extends LocalStorage {
     final stored = await channel.invokeMethod<bool>('write', {
       'key': persistSessionKey, 'value': persistSessionString,
     });
-    if (stored != true) throw const PlatformException(code: 'SESSION_WRITE_FAILED');
+    if (stored != true) throw PlatformException(code: 'SESSION_WRITE_FAILED');
   }
 
   @override
@@ -37,7 +37,7 @@ class NimzoNativeSessionStorage extends LocalStorage {
     final removed = await channel.invokeMethod<bool>('remove', {
       'key': persistSessionKey,
     });
-    if (removed != true) throw const PlatformException(code: 'SESSION_REMOVE_FAILED');
+    if (removed != true) throw PlatformException(code: 'SESSION_REMOVE_FAILED');
   }
 }
 
@@ -52,7 +52,7 @@ class NimzoNativePkceStorage extends GotrueAsyncStorage {
     final ok = await NimzoNativeSessionStorage.channel.invokeMethod<bool>(
       'write', {'key': key, 'value': value},
     );
-    if (ok != true) throw const PlatformException(code: 'PKCE_WRITE_FAILED');
+    if (ok != true) throw PlatformException(code: 'PKCE_WRITE_FAILED');
   }
 
   @override
@@ -60,6 +60,6 @@ class NimzoNativePkceStorage extends GotrueAsyncStorage {
     final ok = await NimzoNativeSessionStorage.channel.invokeMethod<bool>(
       'remove', {'key': key},
     );
-    if (ok != true) throw const PlatformException(code: 'PKCE_REMOVE_FAILED');
+    if (ok != true) throw PlatformException(code: 'PKCE_REMOVE_FAILED');
   }
 }
