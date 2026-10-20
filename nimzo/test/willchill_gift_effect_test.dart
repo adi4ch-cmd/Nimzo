@@ -3,6 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/gifts/willchill_verified_gift_effect.dart';
 
 void main() {
+  test('gold coin effect never substitutes for lion, tiger or other gifts', () {
+    expect(isWillChillGoldCoinGift('Dragon Throne'), isFalse);
+    expect(isWillChillGoldCoinGift('Ice Fire Phoenix'), isFalse);
+    expect(isWillChillGoldCoinGift('Holy Tiger'), isFalse);
+    expect(isWillChillGoldCoinGift('Sports Car'), isFalse);
+    expect(isWillChillGoldCoinGift('Gold Coin'), isTrue);
+    expect(isWillChillGoldCoinGift('Coin Rain'), isTrue);
+  });
+
   testWidgets('verified gift effect preserves original fallback when media is absent',
       (tester) async {
     await tester.pumpWidget(MaterialApp(
