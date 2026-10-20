@@ -1,0 +1,64 @@
+name: NIMZO Tana Vani Licensed Asset Audit
+on:
+  push:
+    branches: [tools/nimzo-tana-vani-audit-20261020]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download shared original Tana/Vani asset archive
+        run: |
+          python3 -m pip install --quiet gdown==5.2.0
+          mkdir -p /tmp/nimzo-source nimzo/test-evidence
+          gdown --fuzzy 'https://drive.google.com/file/d/1FVlAPdeZy7bGilWgHRwJayKNj9-Sfk1O/view' -O /tmp/nimzo-source/tana-vani.zip
+          test "$(stat -c '%s' /tmp/nimzo-source/tana-vani.zip)" = 65883596
+          sha256sum /tmp/nimzo-source/tana-vani.zip | tee nimzo/test-evidence/tana-vani-archive.sha256
+      - name: Inspect archive paths and animation metadata safely
+        run: |
+          python3 - <<'PY'
+          import collections, hashlib, json, os, pathlib, re, zipfile
+          archive='/tmp/nimzo-source/tana-vani.zip'
+          assert zipfile.is_zipfile(archive), 'Google Drive returned HTML instead of ZIP'
+          info=[]
+          sizes=collections.Counter()
+          buckets=collections.Counter()
+          candidates=[]
+          unsafe=[]
+          with zipfile.ZipFile(archive) as z:
+              for v in z.infolist():
+                  if v.is_dir(): continue
+                  pp=pathlib.PurePosixPath(v.filename)
+                  if pp.is_absolute() or '..' in pp.parts or '\\' in v.filename or len(v.filename)>400:
+                      unsafe.append(v.filename); continue
+                  ext=pp.suffix.lower() or '(none)'
+                  sizes[ext]+=1
+                  bucket='/'.join(pp.parts[:2])
+                  buckets[bucket]+=1
+                  entry={'path':v.filename,'bytes':v.file_size,'compressed':v.compress_size,'type':ext}
+                  info.append(entry)
+                  if re.search(r'frame|bubble|enter|ride|car|gift|rocket|vip|svip|pag|svga|room|theme|avatar|medal', v.filename, re.I):
+                      candidates.append(entry)
+          assert not unsafe, f'Unsafe ZIP entries: {unsafe[:5]}'
+          assert len(info)<3000, 'Archive has too many entries'
+          assert sum(x['bytes'] for x in info)<1200*1024*1024, 'Uncompressed archive unusually large'
+          os.makedirs('nimzo/test-evidence',exist_ok=True)
+          with open('nimzo/test-evidence/tana-vani-inventory.json','w') as f:
+              json.dump({'files':info,'extension_counts':dict(sizes),'top_folders':buckets.most_common(50),
+                'candidate_files':candidates}, f,indent=2)
+          print('NIMZO SOURCE AUDIT: total=',len(info),'total_bytes=',sum(x['bytes'] for x in info))
+          print('FILE EXTENSIONS:',json.dumps(sizes.most_common(35)))
+          print('SOURCE GROUPS:',json.dumps(buckets.most_common(30)))
+          print('CANDIDATES:',len(candidates))
+          for x in candidates[:105]: print('CANDIDATE',x['type'],x['bytes'],x['path'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nimzo-tana-vani-original-file-inventory
+          path: nimzo/test-evidence/
+          if-no-files-found: warn
