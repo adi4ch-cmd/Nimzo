@@ -571,7 +571,7 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                         }
                       },
                       icon: const Icon(Icons.replay_rounded),
-                      label: const Text('Replay full preview'),
+                      label: const Text('Replay artwork transition'),
                       style: FilledButton.styleFrom(
                         backgroundColor: const Color(0xff078e69)),
                     ),
