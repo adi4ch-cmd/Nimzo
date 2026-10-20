@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_svga/flutter_svga.dart';
 import 'package:flutter_vap_player/flutter_vap_player.dart';
 
@@ -49,6 +50,7 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
   };
   List<_PremiumAsset>? _assets;
   Object? _error;
+  String _membershipStatus = 'Checking NIMZO membership status…';
   late String _group = groups.contains(widget.initialGroup)
       ? widget.initialGroup
       : 'svip';
@@ -58,6 +60,7 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
   void initState() {
     super.initState();
     unawaited(_load());
+    unawaited(_readMembership());
   }
 
   Future<void> _load() async {
@@ -76,6 +79,44 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
       });
     } catch (error) {
       if (mounted) setState(() => _error = error);
+    }
+  }
+
+  Future<void> _readMembership() async {
+    try {
+      final client = Supabase.instance.client;
+      final user = client.auth.currentUser;
+      if (user == null) {
+        if (mounted) {
+          setState(() => _membershipStatus = 'Sign in to view your membership');
+        }
+        return;
+      }
+      final profile = await client
+          .from('profiles')
+          .select('svip_level,vip_level,vip_expires_at')
+          .eq('id', user.id)
+          .maybeSingle()
+          .timeout(const Duration(seconds: 6));
+      if (!mounted) return;
+      if (profile == null) {
+        setState(() => _membershipStatus = 'Membership details unavailable');
+        return;
+      }
+      final svip = (profile['svip_level'] as num?)?.toInt() ?? 0;
+      final vip = (profile['vip_level'] as num?)?.toInt() ?? 0;
+      final expiry = DateTime.tryParse(
+          (profile['vip_expires_at'] ?? '').toString());
+      final activeVip = vip > 0 && expiry != null &&
+          expiry.isAfter(DateTime.now());
+      final vipLabel = activeVip ? 'VIP $vip' : 'VIP inactive';
+      setState(() => _membershipStatus =
+          'NIMZO account: SVIP $svip · $vipLabel');
+    } catch (_) {
+      if (mounted) {
+        setState(() => _membershipStatus =
+            'Membership status temporarily unavailable');
+      }
     }
   }
 
@@ -235,6 +276,14 @@ class _WillChillPremiumScreenState extends State<WillChillPremiumScreen> {
           : _assets == null
               ? const Center(child: CircularProgressIndicator())
               : Column(children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 2),
+                    child: Text(_membershipStatus,
+                        key: const ValueKey('willchill-membership-status'),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Color(0xff4a6458),
+                            fontSize: 12, fontWeight: FontWeight.w600)),
+                  ),
                   SizedBox(
                     height: 48,
                     child: ListView.separated(
