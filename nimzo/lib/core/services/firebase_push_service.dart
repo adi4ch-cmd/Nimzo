@@ -82,7 +82,10 @@ Future<PushGateway?> initializeFirebasePush() async {
   }
 }
 
-final pushGatewayProvider = Provider<PushGateway?>((ref) => null);
+/// Late-bound so optional FCM cannot block the first screen.
+final pushGatewayStateProvider = StateProvider<PushGateway?>((ref) => null);
+final pushGatewayProvider = Provider<PushGateway?>(
+    (ref) => ref.watch(pushGatewayStateProvider));
 
 class _PushLifecycle with WidgetsBindingObserver {
   _PushLifecycle(this.resume) {

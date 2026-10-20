@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "base_commit": "32f92ade54727a0f8aea3e1a926823212d2c16bc",
-  "min_app_version": "1.0.35+135",
+  "min_app_version": "1.0.36+136",
   "verification_scope": "Source-presence and connection guards; runtime behavior, asset licenses and RTP require separate validation",
   "required_files": [
     "nimzo/lib/app/router.dart",
@@ -48,7 +48,8 @@
     "nimzo/assets/room_rocket/vap_rocket_fly_5.mp4",
     "nimzo/assets/room_rocket/vap_rocket_reward_5.mp4",
     "nimzo/assets/room_rocket/vap_rocket_fly_6.mp4",
-    "nimzo/assets/room_rocket/vap_rocket_reward_6.mp4"
+    "nimzo/assets/room_rocket/vap_rocket_reward_6.mp4",
+    "nimzo/test/startup_bootstrap_contract_test.dart"
   ],
   "required_flutter_assets": [
     "assets/events/",
@@ -63,7 +64,8 @@
       "RoyalStoreScreen(",
       "initialBag: state.uri.queryParameters['bag'] == '1'",
       "path: Routes.events",
-      "path: Routes.games"
+      "path: Routes.games",
+      "timeout(const Duration(seconds: 6))"
     ],
     "nimzo/lib/features/store/store_live_catalog.dart": [
       "NimzoLiveStore",
@@ -89,6 +91,16 @@
       "create table if not exists public.nimzo_cosmetic_catalog",
       "public.nimzo_store_claim_free",
       "public.nimzo_store_equip_free"
+    ],
+    "nimzo/lib/main.dart": [
+      "runApp(const NimzoBootstrapApp());",
+      "Supabase.initialize(",
+      "timeout(const Duration(seconds: 12))",
+      "unawaited(_initializePush(container));"
+    ],
+    "nimzo/lib/core/services/firebase_push_service.dart": [
+      "pushGatewayStateProvider",
+      "ref.watch(pushGatewayStateProvider)"
     ]
   }
 }

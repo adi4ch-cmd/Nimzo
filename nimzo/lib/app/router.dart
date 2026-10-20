@@ -76,13 +76,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           user.emailVerified &&
           !ref.read(passwordRecoveryProvider)) {
         try {
-          final profile = await ref.read(profileProvider(user.id).future);
+          final profile = await ref.read(profileProvider(user.id).future)
+              .timeout(const Duration(seconds: 6));
           profileReady = (profile.displayName?.trim().isNotEmpty ?? false) &&
               profile.gender != null &&
               profile.dateOfBirth != null &&
               profile.countryCode != null;
         } catch (_) {
-          profileReady = false;
+          // Failed or slow networks are not proof that a profile is incomplete.
+          profileReady = true;
         }
       }
       return authRedirect(
