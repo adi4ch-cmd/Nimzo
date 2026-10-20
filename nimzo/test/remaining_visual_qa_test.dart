@@ -618,7 +618,7 @@ void main() {
             'Gold',
           ]) {
             await tester.scrollUntilVisible(
-              find.text(label),
+              find.text(label).first,
               120,
               scrollable: find.byType(Scrollable).first,
             );
