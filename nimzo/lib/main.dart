@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/app.dart';
@@ -23,6 +24,7 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
   ProviderContainer? _container;
   bool _starting = true;
   String? _startupError;
+  String _startupStage = 'android-storage';
   // Reuse the in-flight future after a startup timeout: repeated tapping
   // Retry must not initialize the Supabase singleton concurrently.
   Future<Supabase>? _supabaseInitialization;
@@ -40,7 +42,7 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
       final safeCode = code.isEmpty
           ? 'unknown'
           : code.substring(0, code.length > 48 ? 48 : code.length);
-      return 'NIMZO Android startup error ($safeCode). '
+      return 'NIMZO Android startup error ($_startupStage/$safeCode). '
           'Try Retry. Screenshot this exact code if it continues.';
     }
     // Never display exception.message/details: they may contain session data.
@@ -55,7 +57,13 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
 
   Future<void> _initializeApp() async {
     try {
+      // Probe Android session storage first to identify plugin failures.
+      // Reading preferences must not clear or replace existing login data.
+      _startupStage = 'android-storage';
+      await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 8));
       // Preserve PKCE, existing session storage and OAuth callback handling.
+      _startupStage = 'supabase-auth';
       await (_supabaseInitialization ??= Supabase.initialize(
         url: AppConstants.supabaseUrl,
         publishableKey: AppConstants.supabaseAnonKey,
@@ -78,7 +86,10 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
       if (error is! TimeoutException) {
         _supabaseInitialization = null;
       }
-      debugPrint('NIMZO startup failed: ${error.runtimeType}');
+      final safeCode = error is PlatformException
+          ? error.code.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '')
+          : error.runtimeType.toString();
+      debugPrint('NIMZO startup failed stage=$_startupStage code=$safeCode');
       if (!mounted) return;
       setState(() {
         _starting = false;
