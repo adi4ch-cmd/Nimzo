@@ -58,7 +58,10 @@ void main() {
         container: container,
         child: MaterialApp.router(routerConfig: router),
       ));
-      await tester.pumpAndSettle();
+      // The premium gallery may run endlessly animated previews; never
+      // require every player animation to settle to validate routing.
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 300));
       final screen = tester.widget<WillChillPremiumScreen>(
           find.byType(WillChillPremiumScreen));
       expect(screen.initialGroup, path == '/vip' ? 'vip' : 'svip');
