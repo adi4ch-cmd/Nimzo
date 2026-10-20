@@ -1,0 +1,69 @@
+name: NIMZO 1.0.36 Startup Reproduction
+on:
+  push:
+    branches: [tools/nimzo-startup-repro-20261020]
+  workflow_dispatch: {}
+permissions:
+  actions: read
+  contents: read
+jobs:
+  cold-launch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 27
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch existing compiled 1.0.36 APK; do not rebuild
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 39361612752
+          repository: adi4ch-cmd/Nimzo
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: NIMZO-1.0.36-store-startup-smoke-8
+          path: /tmp/nimzo-apk
+      - name: Confirm artifact checksum
+        run: |
+          set -eu
+          find /tmp/nimzo-apk -maxdepth 2 -type f -printf '%p %s bytes\\n'
+          sha256sum -c /tmp/nimzo-apk/app-release.apk.sha256 || (
+            cd /tmp/nimzo-apk &&
+            sha256sum app-release.apk &&
+            echo 'Checksum is relative to different working dir. Manual comparison required.')
+      - name: Android 35 cold launch with captured diagnostic
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          profile: pixel_5
+          ram-size: 2048M
+          heap-size: 256M
+          emulator-boot-timeout: 900
+          disable-animations: true
+          script: |
+            set -eu
+            mkdir -p startup-evidence
+            adb install -r /tmp/nimzo-apk/app-release.apk
+            adb shell pm clear io.nimzo.app
+            adb logcat -c
+            adb shell am start -W -n io.nimzo.app/io.nimzo.app.MainActivity
+            sleep 27
+            adb exec-out screencap -p > startup-evidence/launch.png
+            adb shell uiautomator dump /sdcard/window.xml >/dev/null 2>&1 || true
+            adb shell cat /sdcard/window.xml > startup-evidence/window.xml || true
+            adb logcat -d -v time > /tmp/nimzo-logcat.txt
+            grep -E 'NIMZO startup failed|FATAL EXCEPTION:|io.nimzo.app|MissingPluginException|PlatformException|flutter|supabase' /tmp/nimzo-logcat.txt | grep -E 'NIMZO startup failed|FATAL EXCEPTION:|Exception|Error' | tail -45 > startup-evidence/errors.txt || true
+            cat startup-evidence/errors.txt
+            if grep -E 'NIMZO startup failed|initialization error|could not start' startup-evidence/errors.txt startup-evidence/window.xml; then
+              echo 'Startup error reproduced'; exit 1
+            fi
+            if ! adb shell pidof io.nimzo.app; then
+              echo 'NIMZO process is no longer running'; exit 1
+            fi
+            echo 'NIMZO launch process survived 27 seconds'
+      - name: Upload startup screenshot and sanitized logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nimzo-startup-reproduction-evidence
+          path: startup-evidence/
+          if-no-files-found: warn
