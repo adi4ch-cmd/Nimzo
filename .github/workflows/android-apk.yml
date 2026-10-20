@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/activate-store-from-verified-apk-20261020
+      - feature/nimzo-store-v1-0-34-20261020
   workflow_dispatch:
     inputs:
       publish_verified_run:
@@ -238,6 +239,9 @@ jobs:
         working-directory: nimzo
         run: |
           flutter pub get --enforce-lockfile
+      - name: Verify requested 1.0.34 version
+        working-directory: nimzo
+        run: grep -qx 'version: 1.0.34+134' pubspec.yaml
       - name: Analyzer
         working-directory: nimzo
         run: flutter analyze --no-fatal-infos
@@ -377,7 +381,7 @@ jobs:
 
   publish-store-test:
     name: Publish verified NIMZO Store test APK
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/activate-store-from-verified-apk-20261020' }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/nimzo-store-v1-0-34-20261020' }}
     needs: android-test
     runs-on: ubuntu-latest
     permissions:
@@ -400,12 +404,12 @@ jobs:
           expected="$(awk '{print $1}' app-release.apk.sha256)"
           actual="$(sha256sum app-release.apk | awk '{print $1}')"
           test "$expected" = "$actual"
-          cp app-release.apk NIMZO_Store_Test.apk
-          sha256sum NIMZO_Store_Test.apk > SHA256SUMS.txt
-          tag="nimzo-store-test-${GITHUB_RUN_ID}"
+          cp app-release.apk NIMZO_1.0.34.apk
+          sha256sum NIMZO_1.0.34.apk > SHA256SUMS.txt
+          tag="nimzo-1.0.34-store-${GITHUB_RUN_ID}"
           gh release create "$tag" \
-            NIMZO_Store_Test.apk SHA256SUMS.txt source-sha.txt \
+            NIMZO_1.0.34.apk SHA256SUMS.txt source-sha.txt \
             app-release.apk.signing.txt app-release.apk.fcm-verification.txt \
             --target "$GITHUB_SHA" --prerelease \
-            --title "NIMZO Store & Backpack Test APK" \
-            --notes "Original NIMZO cosmetic Store: 42 free designs, Store and Backpack enabled, cloud Collect/Equip and profile frame display. No third-party DangLive copyrighted media distributed. APK is a development-signed test, not a production release; payment checkout and other cosmetic renderers remain disabled. Verified Flutter tests, native APK checks and Android emulator smoke test passed in Actions run ${GITHUB_RUN_ID}."
+            --title "NIMZO 1.0.34 Store & Backpack Android Test" \
+            --notes "NIMZO 1.0.34 TEST: original NIMZO Store with 42 free designs across six categories. Cloud Collect/Equip, persistent Backpack, full-size item detail actions, applied avatar frames and Royal Badges on own profile. This is NOT a DangLive asset import: third-party gifts, animations, VIP and games are not included as functional Store items. Other cosmetic equipped records do not yet modify live rooms. Paid checkout disabled. Development-signed test APK; Android emulator and CI tests pass only if this release exists. Actions run ${GITHUB_RUN_ID}."
