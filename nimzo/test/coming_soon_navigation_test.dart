@@ -10,7 +10,7 @@ import 'package:nimzo/features/profile/tingle_me_screen.dart';
 
 void main() {
   for (final path in ['/vip', '/svip']) {
-    test('retired destination $path stays blocked by deep link', () {
+    test('active premium destination $path is reachable by deep link', () {
       expect(
         authRedirect(
           location: path,
@@ -18,7 +18,7 @@ void main() {
           loading: false,
           recovering: false,
         ),
-        Routes.profile,
+        isNull,
       );
     });
   }
@@ -38,12 +38,16 @@ void main() {
   }
 
   for (final label in ['My Store', 'Backpack', 'VIP', 'SVIP']) {
-    testWidgets('profile $label follows active/retired route policy',
+    testWidgets('profile $label opens its active destination',
         (tester) async {
       var opened = false;
       String? bagFromRoute;
       final router = GoRouter(initialLocation: '/profile', routes: [
         GoRoute(path: '/profile', builder: (_, __) => const TingleMeScreen()),
+        GoRoute(path: '/vip',
+            builder: (_, __) => const Scaffold(body: Text('VIP opened'))),
+        GoRoute(path: '/svip',
+            builder: (_, __) => const Scaffold(body: Text('SVIP opened'))),
         GoRoute(
           path: '/store',
           builder: (_, state) {
@@ -72,9 +76,9 @@ void main() {
       await tester.pumpAndSettle();
 
       if (label == 'VIP' || label == 'SVIP') {
-        expect(find.text('Coming soon'), findsOneWidget);
+        expect(find.text('$label opened'), findsOneWidget);
+        expect(find.text('Coming soon'), findsNothing);
         expect(opened, isFalse);
-        expect(router.routeInformationProvider.value.uri.path, '/profile');
       } else {
         expect(find.text('Store opened'), findsOneWidget);
         expect(find.text('Coming soon'), findsNothing);
