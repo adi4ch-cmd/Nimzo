@@ -188,12 +188,13 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
                       privateAnimalVapGiftIds.contains(
                         r['gift_id']?.toString(),
                       ) ||
-                      // Generic premium visual effect applies only to actual
-                      // server-settled room events, never a local tap/preview.
+                      // This only expands the verified event queue.
+                      // Media selection happens by a real matching gift name,
+                      // never by price or an unrelated generic image.
                       (r['scope'] == 'room' &&
-                       ((r['unit_price'] as num?)?.toInt() ?? 0) *
-                           ((r['quantity'] as num?)?.toInt() ?? 1) >=
-                           1000000)) &&
+                          isWillChillGoldCoinGift(
+                            (r['gift_name'] ?? '').toString(),
+                          ))) &&
                     _seen.add('${r['id']}');
               },
             )
@@ -363,7 +364,9 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         },
       );
     }
-    if (!_loading && price * quantity >= 1000000) {
+    if (!_loading &&
+        event['scope'] == 'room' &&
+        isWillChillGoldCoinGift(giftName)) {
       return WillChillVerifiedGiftEffect(
         key: ValueKey('premium-${event['id']}'),
         totalCoins: price * quantity,
