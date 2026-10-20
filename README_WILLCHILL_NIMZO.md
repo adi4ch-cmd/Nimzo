@@ -16,12 +16,15 @@ source filenames and SHA256 digests are recorded in
 
 ## Import into GitHub Codespaces
 
-1. Check out **`release/nimzo-unified`** at minimum version **`1.0.36+136`**.
-2. Unzip this archive at the **repository root** (`nimzo/` directory must be under current directory).
-3. Run `python3 tools/verify_willchill_premium.py`.
-4. Run `python3 tools/install_willchill_premium.py`.
-5. Run `cd nimzo && flutter pub get && dart format lib/features/premium/willchill_premium_screen.dart lib/app/router.dart lib/features/store/store_live_catalog.dart && flutter analyze && flutter test`.
-6. **Do not publish APK** until the full Store/Backpack operations, entitlements, VAP alpha, SVGA audio, Vivox coexistence and real-device splash/login tests pass. Pin build version on the release branch.
+1. Checkout branch `feature/willchill-premium-assets-20261020`.
+2. Upload the accompanying `WillChill_NIMZO_Assets_ONLY_v3.zip` to the repository root in Codespaces.
+3. From the repository root run:
+   `python3 tools/import_willchill_package.py WillChill_NIMZO_Assets_ONLY_v3.zip`
+4. From `nimzo/`, run `flutter pub get`, `flutter analyze`, and `flutter test`.
+5. Verify SVIP crown VAP alpha, SVGA effects, Store, backpack, splash/login, Android audio and Vivox coexistence on a physical device before release.
+
+The media remains local and is ignored by Git until redistribution rights are verified.
+The branch contains SVIP/VIP preview routes and a Store preview entry point. It is not a complete paid store or gifts settlement release.
 
 ## Important limits / not yet production ready
 
