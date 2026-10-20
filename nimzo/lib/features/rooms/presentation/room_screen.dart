@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 import '../../profile/profile_repository.dart';
 import '../../gifts/verified_gift_broadcast.dart';
+import '../../premium/willchill_own_svip_entrance.dart';
 
 import 'dart:async';
 
@@ -445,6 +446,9 @@ class _State extends ConsumerState<RoomScreen> {
     final me = ref.watch(currentUserIdProvider),
         speaking = ref.watch(speakingProvider).valueOrNull ?? <String>{};
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
+    final ownSvipLevel = me == null
+        ? 0
+        : ref.watch(profileProvider(me)).valueOrNull?.svipLevel ?? 0;
     final palette = RoomTheme.byId(room.valueOrNull?.theme ?? 'nimzo_white');
     ref.listen(voiceConnectedProvider, (previous, next) {
       if (next.valueOrNull == true) {
@@ -1189,6 +1193,55 @@ class _State extends ConsumerState<RoomScreen> {
                   ),
                 ),
               ),
+              if (joined && ownSvipLevel >= 1 && ownSvipLevel <= 8)
+                Positioned.fill(
+                  child: WillChillOwnSvipEntrance(
+                    key: ValueKey('own-svip-entrance-
+                    roomId: widget.roomId,
+                    countryCode: room.valueOrNull?.country ?? '',
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PasswordDialog extends StatefulWidget {
+  @override
+  State<_PasswordDialog> createState() => _PasswordState();
+}
+
+class _PasswordState extends State<_PasswordDialog> {
+  final password = TextEditingController();
+  @override
+  void dispose() {
+    password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('Room password'),
+        content: TextField(controller: password, obscureText: true),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, password.text),
+            child: const Text('Join'),
+          ),
+        ],
+      );
+}
+ + ownSvipLevel.toString()),
+                    svipLevel: ownSvipLevel,
+                  ),
+                ),
               if (joined)
                 Positioned.fill(
                   child: VerifiedGiftBroadcast(
