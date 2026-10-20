@@ -290,7 +290,18 @@ jobs:
                         'assets/gifts/staged/romantic_blossom.svg',
                         'assets/gifts/staged/ice_queen_magic.svg'):
               assert any(n.endswith(asset) for n in names), f'Missing APK Flutter asset: {asset}'
-          print('NIMZO 12 rocket VAP clips, Vivox SDK, Events and staged gift assets verified')
+          import hashlib, json
+          from pathlib import Path
+          manifest=json.loads(Path('nimzo/assets/licensed_tana_vani/SOURCE_INVENTORY.json').read_text())
+          assert len(manifest)==26, 'Original source media inventory incomplete'
+          with ZipFile(p) as package:
+              for asset in manifest:
+                  possible=[x for x in package.namelist() if x.endswith(asset['asset_path'])]
+                  assert len(possible)==1, f"Media missing or duplicated: {asset['asset_path']}"
+                  original=package.read(possible[0])
+                  assert len(original)==asset['bytes'], f"Media size mismatch: {asset['asset_path']}"
+                  assert hashlib.sha256(original).hexdigest()==asset['sha256'], f"Media hash mismatch: {asset['asset_path']}"
+          print('NIMZO 12 Rocket VAP, Vivox, events and 26 original Tana/Vani assets verified in APK')
           PY
           ls -lh "$apk"
       - name: Verify Android 35 app startup on emulator

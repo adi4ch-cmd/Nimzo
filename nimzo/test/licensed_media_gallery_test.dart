@@ -12,6 +12,11 @@ void main() {
   });
 
   testWidgets('original static media opens full preview without purchase controls', (tester) async {
+    // NIMZO is a phone-width app; a desktop-width grid has taller tiles.
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(const MaterialApp(home: LicensedStoreGallery()));
     await tester.pump();
     expect(find.byKey(const ValueKey('licensed-media-grid')), findsOneWidget);
