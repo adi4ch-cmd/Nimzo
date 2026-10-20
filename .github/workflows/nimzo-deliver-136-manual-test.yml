@@ -10,18 +10,26 @@ permissions:
 jobs:
   deliver:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: d12478f2f2d42c6ab71a415fbe3cab18f972ebfa
+          ref: e5c2d7381fca4db6c8cdb3d2417383c3e4740cd8
       - name: Download existing compiled 1.0.36 APK
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           mkdir -p /tmp/nimzo-release-136
-          gh run download 39363234065             -n NIMZO-1.0.36-store-startup-smoke-12             -D /tmp/nimzo-release-136
+          run=39366451303
+          for attempt in $(seq 1 70); do
+            count="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run/artifacts" --jq '[.artifacts[] | select(.name=="NIMZO-1.0.36-store-startup-smoke-19")] | length')"
+            if [ "$count" = 1 ]; then break; fi
+            status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" --jq .status)"
+            if [ "$status" = completed ]; then echo "APK not produced"; exit 1; fi
+            sleep 30
+          done
+          gh run download 39366451303             -n NIMZO-1.0.36-store-startup-smoke-19             -D /tmp/nimzo-release-136
           test -s /tmp/nimzo-release-136/app-release.apk
       - name: Independently verify APK original 26 media bytes, package and digest
         run: |
@@ -47,7 +55,7 @@ jobs:
                   assert len(data)==entry['bytes'] and hashlib.sha256(data).hexdigest()==entry['sha256'], f'Asset mismatch: {name}'
           assert len(apk.read_bytes())>100_000_000
           print('PASS: APK SHA256, 26 source media, Vivox bridge and APK structure')
-          (d/'SOURCE_SHA.txt').write_text('d12478f2f2d42c6ab71a415fbe3cab18f972ebfa\n')
+          (d/'SOURCE_SHA.txt').write_text('e5c2d7381fca4db6c8cdb3d2417383c3e4740cd8\n')
           (d/'SHA256SUMS.txt').write_text(f'{digest}  NIMZO_1.0.36_MANUAL_TEST.apk\n')
           PY
           mv /tmp/nimzo-release-136/app-release.apk /tmp/nimzo-release-136/NIMZO_1.0.36_MANUAL_TEST.apk
@@ -56,7 +64,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          tag=nimzo-1.0.36-manual-startup-test-39363234065
+          tag=nimzo-1.0.36-fresh-startup-test-39366451303
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "Already published: $tag"
             exit 0
@@ -75,4 +83,4 @@ jobs:
           uninstalling, back up local-only content; server-side Supabase
           data is not erased by uninstall.
           NOTES
-          gh release create "$tag"             /tmp/nimzo-release-136/NIMZO_1.0.36_MANUAL_TEST.apk             /tmp/nimzo-release-136/SHA256SUMS.txt             /tmp/nimzo-release-136/SOURCE_SHA.txt             --repo "$GITHUB_REPOSITORY"             --target d12478f2f2d42c6ab71a415fbe3cab18f972ebfa             --title 'NIMZO 1.0.36 — Manual Startup Device Test (Unverified)'             --notes-file /tmp/nimzo-release-136/notes.md             --prerelease --latest=false
+          gh release create "$tag"             /tmp/nimzo-release-136/NIMZO_1.0.36_MANUAL_TEST.apk             /tmp/nimzo-release-136/SHA256SUMS.txt             /tmp/nimzo-release-136/SOURCE_SHA.txt             --repo "$GITHUB_REPOSITORY"             --target e5c2d7381fca4db6c8cdb3d2417383c3e4740cd8             --title 'NIMZO 1.0.36 — Fresh Startup Diagnostic APK (Test)'             --notes-file /tmp/nimzo-release-136/notes.md             --prerelease --latest=false
