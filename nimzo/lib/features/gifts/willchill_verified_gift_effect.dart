@@ -4,6 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 import 'package:flutter_vap_player/flutter_vap_player.dart';
 
+/// Only explicitly matching, server-named coin gifts may use the coin VAP.
+/// Price alone is never evidence that gold-coin artwork belongs to the gift.
+bool isWillChillGoldCoinGift(String giftName) {
+  final name = giftName.toLowerCase().trim();
+  return name == 'gold coin' || name == 'gold coins' ||
+      name == 'coin rain' || name == 'goldcoin';
+}
+
 /// Optional visual-only effect for an already verified, settled room gift.
 /// Never initiates transactions or accepts an unverified client gift event.
 /// Missing/corrupt source media always falls back to the existing NIMZO
