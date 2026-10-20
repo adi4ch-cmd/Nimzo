@@ -1,11 +1,6 @@
-name: NIMZO Final Backend Release APK Artifact
-# Explicit owner-requested device test only. NOT a signed production release.
-# Owner-authorized release MODE artifact; development signing, no production publication.
+name: NIMZO Premium Store 1.0.37 APK
 on:
   workflow_dispatch: {}
-  push:
-    branches: [feature/tingle-ui-rebuild-20261017]
-    paths: [.github/workflows/nimzo-final-release-apk.yml]
 
 permissions:
   contents: write
@@ -13,7 +8,7 @@ permissions:
 jobs:
   android-release-apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 85
     defaults:
       run:
         working-directory: nimzo
@@ -25,10 +20,10 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Flutter 3.47.6
+      - name: Flutter 3.47.7
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.47.6'
+          flutter-version: '3.47.7'
           channel: stable
           cache: true
       - name: Generate Android host and configure package
@@ -250,13 +245,16 @@ jobs:
 
       - name: Configure owner Firebase and Android notification runtime
         run: python3 tool/configure_fcm_android.py --root . --config-file tool/firebase_android_client.json
-      - name: Preserve Vivox release callbacks
+      - name: Preserve native startup and Vivox release callbacks
         run: |
+          cp native/voice_disabled/android/sharedpreferences-r8-rules.pro android/app/sharedpreferences-r8-rules.pro
           cat >> android/app/build.gradle.kts <<'GRADLE'
           android {
             buildTypes {
               getByName("release") {
-                proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+                proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro", "sharedpreferences-r8-rules.pro")
+                isMinifyEnabled = false
+                isShrinkResources = false
               }
             }
           }
@@ -265,8 +263,13 @@ jobs:
         run: flutter pub get --enforce-lockfile
       - name: Analyzer
         run: flutter analyze --no-fatal-infos
-      - name: Backend regression checks
-        run: flutter test test/coming_soon_navigation_test.dart test/membership_retirement_test.dart test/family_backend_flow_test.dart test/family_repository_test.dart test/moment_media_test.dart test/moment_editor_retry_test.dart test/backend_targeted_integration_test.dart test/auth_redirect_test.dart test/logout_cleanup_test.dart test/push_notifications_test.dart test/local_push_presenter_test.dart test/notification_destination_test.dart test/voice/vivox_voice_service_test.dart
+      - name: Verify feature lock and all original membership assets
+        run: |
+          python3 ../tools/verify_nimzo_feature_lock.py
+          python3 ../tools/verify_willchill_premium.py
+          python3 ../tools/test_native_auth_storage_key_policy.py
+      - name: Store membership profile room gift and voice checks
+        run: flutter test test/store_equipment_surfaces_test.dart test/store_actual_media_test.dart test/store_live_contract_test.dart test/store_full_preview_test.dart test/store_category_preview_ui_test.dart test/membership_layout_test.dart test/membership_retirement_test.dart test/willchill_membership_showcase_test.dart test/willchill_membership_badges_test.dart test/room_reconnect_test.dart test/issue15_room_walkthrough_test.dart test/verified_gift_broadcast_test.dart test/car_only_gift_contract_test.dart test/private_gift_readiness_test.dart test/profile_content_test.dart test/profile_gift_refresh_test.dart test/profile_membership_levels_test.dart test/startup_bootstrap_contract_test.dart test/voice/vivox_voice_service_test.dart
       - name: Build release-mode APK for final device QA
         run: flutter build apk --release
       - name: Build smaller ARM64 APK for physical Android phones
@@ -298,6 +301,20 @@ jobs:
           test -s "$APK"
           python3 ../tools/verify_test_apk.py "$APK"
           python3 ../tools/verify_fcm_apk.py "$APK"
+          python3 ../tools/verify_shared_preferences_android_abi.py "$APK"
+          python3 ../tools/verify_willchill_apk_bundle.py "$APK"
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import re
+          root=Path('.')
+          registry=(root/'lib/features/store/premium_cosmetics.dart').read_text()
+          paths=set(re.findall(r"'(assets/premium_store/[^']+)'",registry))
+          with ZipFile('build/app/outputs/flutter-apk/app-release.apk') as z:
+              for path in paths:
+                  assert z.read('assets/flutter_assets/'+path)==(root/path).read_bytes(),path
+          print('Verified all pinned Store media in compiled APK:',len(paths))
+          PYCODE
           sha256sum "$APK" > build/app/outputs/flutter-apk/app-release.apk.sha256
           printf '%s\n' "$GITHUB_SHA" > build/app/outputs/flutter-apk/source-sha.txt
           ls -lh "$APK"
@@ -320,7 +337,7 @@ jobs:
       - name: Upload verified release-mode APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: nimzo-final-release-apk
+          name: nimzo-premium-store-1-0-37-apk
           path: |
             nimzo/build/app/outputs/flutter-apk/app-release.apk
             nimzo/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
@@ -331,27 +348,29 @@ jobs:
             nimzo/build/app/outputs/flutter-apk/app-release.apk.fcm-verification.txt
           retention-days: 14
           if-no-files-found: error
-      - name: Publish version 1.0.26 test APK release
+      - name: Publish APK download links
         env:
           GH_TOKEN: ${{ github.token }}
         working-directory: .
         run: |
           set -euo pipefail
-          TAG=nimzo-games-preview-1.0.26-126
-          mkdir -p /tmp/nimzo-release
-          cp nimzo/build/app/outputs/flutter-apk/app-release.apk /tmp/nimzo-release/nimzo-universal-1.0.26.apk
-          cp nimzo/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk /tmp/nimzo-release/nimzo-arm64-1.0.26.apk
+          TAG="nimzo-premium-store-1.0.37-${GITHUB_RUN_ID}"
+          mkdir -p /tmp/nimzo-premium-release
+          cp nimzo/build/app/outputs/flutter-apk/app-release.apk /tmp/nimzo-premium-release/NIMZO_1.0.37_Universal.apk
+          cp nimzo/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk /tmp/nimzo-premium-release/NIMZO_1.0.37_ARM64.apk
+          cp nimzo/build/app/outputs/flutter-apk/source-sha.txt /tmp/nimzo-premium-release/SOURCE_SHA.txt
           (
-            cd /tmp/nimzo-release
-            sha256sum nimzo-universal-1.0.26.apk nimzo-arm64-1.0.26.apk > SHA256SUMS.txt
+            cd /tmp/nimzo-premium-release
+            sha256sum NIMZO_1.0.37_Universal.apk NIMZO_1.0.37_ARM64.apk > SHA256SUMS.txt
           )
           gh release create "$TAG" \
-            /tmp/nimzo-release/nimzo-universal-1.0.26.apk \
-            /tmp/nimzo-release/nimzo-arm64-1.0.26.apk \
-            /tmp/nimzo-release/SHA256SUMS.txt \
+            /tmp/nimzo-premium-release/NIMZO_1.0.37_Universal.apk \
+            /tmp/nimzo-premium-release/NIMZO_1.0.37_ARM64.apk \
+            /tmp/nimzo-premium-release/SHA256SUMS.txt \
+            /tmp/nimzo-premium-release/SOURCE_SHA.txt \
             --target "$GITHUB_SHA" \
-            --title "NIMZO 1.0.26 - Grady / Lucky 77 demo testing" \
-            --notes "Prerelease for Android device testing. Grady Lion and Lucky 77 have interactive demo selections only; live wagering is NOT enabled. Romantic Blossom, Ice Queen Magic and Tiger Warrior appear as 500K Coming Soon gifts; video files are NOT in this APK because binary assets have not been uploaded. Existing Firebase, Supabase and Vivox integrations preserved. ARM64 build recommended for most modern phones. Not a production release." \
+            --title "NIMZO 1.0.37 - Store and VIP/SVIP layout fixes" \
+            --notes "Owner-requested Android test build. Includes original Store media, equipped cosmetics and composed VIP/SVIP pages. Vivox native integration retained. Compiled assets, package/signature and unauthenticated emulator startup checked by this build. Development signing; authenticated voice calls and physical-device behavior still require testing. Membership purchases remain disabled by the server; some remote-only SVIP artwork is unavailable." \
             --prerelease
       - name: Upload launch diagnostics
         if: always()
