@@ -29,4 +29,41 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
+  testWidgets('detail Collect action returns to live Store and invokes RPC path',
+      (tester) async {
+    final navigator = GlobalKey<NavigatorState>();
+    var collected = false;
+    await tester.pumpWidget(MaterialApp(
+      navigatorKey: navigator,
+      home: Scaffold(
+        body: TextButton(
+          onPressed: () => navigator.currentState!.push<void>(
+            MaterialPageRoute(
+              builder: (_) => NimzoStoreFullPreview(
+                item: const NimzoCosmeticItem(
+                  id: 'nimzo-original-rides-golden-stars',
+                  category: 'Rides',
+                  name: 'Golden Stars',
+                  variant: 0,
+                  coinPrice: 0,
+                ),
+                owned: false,
+                equipped: false,
+                onAction: () => collected = true,
+              ),
+            ),
+          ),
+          child: const Text('Open design'),
+        ),
+      ),
+    ));
+    await tester.tap(find.text('Open design'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('nimzo-preview-apply')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('nimzo-preview-apply')));
+    await tester.pumpAndSettle();
+    expect(collected, isTrue);
+    expect(find.text('Open design'), findsOneWidget);
+  });
+
 }
