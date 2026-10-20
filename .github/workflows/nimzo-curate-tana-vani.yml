@@ -1,0 +1,99 @@
+name: NIMZO Curate Approved Tana Vani Media
+on:
+  push:
+    branches: [tools/nimzo-tana-vani-audit-20261020]
+    paths: ['.github/workflows/nimzo-curate-tana-vani.yml']
+permissions:
+  contents: write
+jobs:
+  curate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Download user-shared source archive
+        run: |
+          python3 -m pip install --quiet gdown==5.2.0 Pillow
+          gdown --fuzzy 'https://drive.google.com/file/d/1FVlAPdeZy7bGilWgHRwJayKNj9-Sfk1O/view' -O /tmp/tana-vani-source.zip
+          test "$(stat -c '%s' /tmp/tana-vani-source.zip)" = 65883596
+      - name: Copy only verified original media without recompression
+        run: |
+          python3 - <<'PY'
+          import hashlib, io, json, pathlib, zipfile, zlib
+          from PIL import Image
+          # Explicit whitelist: never execute binaries, XML, code or scripts.
+          tana=[
+           'bg_store_top.webp','bg_store_wallet.webp','bg_store_room_capacity_9.webp',
+           'bg_store_to_backpack.webp','ic_avatar_frame.webp','ic_store_avatar_frame.webp',
+           'ic_room_theme_love.webp','ic_room_theme_supreme.webp',
+           'room_rank_avatar_frame1.webp','room_rank_avatar_frame2.webp',
+           'room_rank_avatar_frame3.webp','bg_mic_theme_dialog.png',
+           'props_store_tab_cars_true.webp','props_store_tab_frames_true.webp',
+           'props_store_tab_theme_true.webp','props_store_tab_entryefect_true.webp',
+           'props_store_tab_bubble_true.webp','ic_mine_store.webp',
+           'ic_mine_backpack.webp','ic_bottle_entry.png']
+          vani=['cat_action_entry.png','cat_chat_bubbles.png','cat_entry.png','cat_frames.jpg','cat_themes.jpg']
+          p='Tana/Store_Items/base.apk/res/drawable-xxhdpi-v4/'
+          pm='Tana/Store_Items/base.apk/res/mipmap-xxhdpi-v4/'
+          q='Vani/Store_Items/base.apk/assets/flutter_assets/assets/images/'
+          mapping={}
+          for name in tana:
+              d=pm if name.startswith('props_store_tab_') else p
+              mapping[d+name]='tana/'+name
+          for name in vani: mapping[q+name]='vani/'+name
+          mapping['Tana/Gifts_Effects/base.apk/assets/birthdayanimation.svga']='tana/birthdayanimation.svga'
+          dest=pathlib.Path('nimzo/assets/licensed_tana_vani')
+          manifest=[]
+          with zipfile.ZipFile('/tmp/tana-vani-source.zip') as z:
+              assert z.testzip() is None,'Invalid ZIP CRC'
+              for src,out in mapping.items():
+                  assert src in z.namelist(), f'Original source asset missing: {src}'
+                  data=z.read(src)
+                  assert 50<len(data)<8*1024*1024,(src,len(data))
+                  ext=pathlib.Path(out).suffix
+                  meta={}
+                  if ext=='.svga':
+                      decoded=zlib.decompress(data)
+                      assert len(decoded)>100,'Empty SVGA'
+                      meta={'format':'SVGA','decoded_bytes':len(decoded)}
+                  else:
+                      with Image.open(io.BytesIO(data)) as im:
+                          im.verify()
+                      with Image.open(io.BytesIO(data)) as im:
+                          assert 8<=im.width<=4096 and 8<=im.height<=4096
+                          meta={'width':im.width,'height':im.height,
+                           'frames':getattr(im,'n_frames',1),
+                           'alpha':'A' in im.getbands(),
+                           'format':im.format}
+                  final=dest/out
+                  final.parent.mkdir(parents=True,exist_ok=True)
+                  final.write_bytes(data)
+                  manifest.append({'source_path':src,'asset_path':str(final),
+                   'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),**meta})
+                  print('VERIFIED_MEDIA',out,json.dumps(meta),'bytes',len(data))
+          assert len(manifest)==26, len(manifest)
+          (dest/'SOURCE_INVENTORY.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          (dest/'SOURCE_AND_PERMISSION.md').write_text(
+            '# Tana/Vani asset source\n\n'
+            'Source: user-shared NIMZO_Tana_Vani_Extracted_Assets_COMPLETE.zip '
+            '(Google Drive file ID 1FVlAPdeZy7bGilWgHRwJayKNj9-Sfk1O).\n'
+            'User stated they obtained permission from the original app owners. '
+            'Independent license documentation was not supplied.\n'
+            'These are original binary media bytes extracted without modification. '
+            'A category icon or thumbnail is not evidence of a complete animated Store item.\n')
+          print('CURATION COMPLETE:',len(manifest),'original media,'
+           ,sum(x['bytes'] for x in manifest),'bytes')
+          PY
+      - name: Commit verified media to separate source branch
+        run: |
+          git config user.name "nimzo-media-ci"
+          git config user.email "nimzo-media-ci@users.noreply.github.com"
+          git add nimzo/assets/licensed_tana_vani/
+          if git diff --cached --quiet; then
+            echo 'No new curated media'
+          else
+            git commit -m "assets: preserve 26 verified original licensed Tana Vani media bytes"
+            git push origin HEAD:tools/nimzo-tana-vani-audit-20261020
+          fi
