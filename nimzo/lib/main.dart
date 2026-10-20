@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/app.dart';
@@ -30,9 +31,35 @@ class _NimzoBootstrapAppState extends State<NimzoBootstrapApp> {
     if (error is TimeoutException) {
       return 'Startup is taking too long. Tap Retry after a moment.';
     }
-    // Only a sanitized error TYPE is displayed; never show OAuth tokens,
-    // Supabase URLs, exception messages or local session contents.
+    if (error is PlatformException) {
+      // The exception CODE can distinguish missing Android plugin channels
+      // from bad/locked Android storage, without leaking private SDK messages.
+      final code = error.code
+          .replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '')
+          .toLowerCase();
+      final safeCode = code.isEmpty
+          ? 'unknown'
+          : code.substring(0, code.length > 48 ? 48 : code.length);
+      return 'NIMZO Android startup error ($safeCode). '
+          'Try Retry. Screenshot this exact code if it continues.';
+    }
+    // Never display exception.message/details: they may contain session data.
     return 'NIMZO initialization error (${error.runtimeType}). Tap Retry.';
+  }
+
+  void _logStartupFailure(Object error) {
+    if (error is PlatformException) {
+      // Keep this token-free, but allow adb logcat to identify a missing
+      // SharedPreferences / app_links Pigeon MethodChannel in the field.
+      final channel = RegExp(r'dev\\.flutter\\.pigeon\\.[a-zA-Z0-9_.]+')
+          .firstMatch(error.message ?? '')
+          ?.group(0);
+      final code = error.code.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '');
+      debugPrint('NIMZO startup failed: PlatformException '
+          'code=$code channel=${channel ?? 'not-reported'}');
+    } else {
+      _logStartupFailure(error);
+    }
   }
 
   @override
