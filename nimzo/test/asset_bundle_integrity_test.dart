@@ -14,8 +14,8 @@ void main() {
       'assets/reference/fruit/0.jpg',
       'assets/room_rocket/posters/rocket_stage_1.png',
       'assets/hilo/game_levels/level_0.webp',
-      'assets/gifts/free/rose.png',
-      'assets/nimzo_custom_gifts/kiss.svg',
+      'assets/gifts/free/sports_car.png',
+      'assets/gifts/hall_of_fame.svg',
     ];
     for (final path in samples) {
       final bytes = await rootBundle.load(path);
