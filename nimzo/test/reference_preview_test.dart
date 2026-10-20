@@ -23,6 +23,15 @@ void main() {
         ),
       );
     await font.load();
+    await (FontLoader('serif')
+          ..addFont(
+            Future.value(
+              ByteData.sublistView(
+                File('assets/reference/fonts/Cinzel.ttf').readAsBytesSync(),
+              ),
+            ),
+          ))
+        .load();
     final icons = FontLoader('packages/lucide_flutter/LucideIcons')
       ..addFont(rootBundle.load('packages/lucide_flutter/assets/lucide.ttf'));
     await icons.load();
