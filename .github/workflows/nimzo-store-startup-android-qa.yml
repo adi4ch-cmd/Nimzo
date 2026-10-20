@@ -7,7 +7,7 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   android-test:
@@ -379,3 +379,34 @@ jobs:
           name: nimzo-1.0.36-startup-evidence-${{ github.run_number }}
           path: nimzo/build/startup-evidence/
           if-no-files-found: warn
+      - name: Publish startup-verified 1.0.36 Android test prerelease
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          out=nimzo/build/app/outputs/flutter-apk
+          test -s "$out/app-release.apk"
+          mkdir -p /tmp/nimzo-136-delivery
+          cp "$out/app-release.apk" /tmp/nimzo-136-delivery/NIMZO_1.0.36_Store_DeviceTest.apk
+          (cd /tmp/nimzo-136-delivery && sha256sum NIMZO_1.0.36_Store_DeviceTest.apk > SHA256SUMS.txt)
+          printf '%s\n' "$GITHUB_SHA" > /tmp/nimzo-136-delivery/source-sha.txt
+          tag="nimzo-1.0.36-startup-test-${GITHUB_RUN_ID}"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Verified test prerelease already exists: $tag"
+            exit 0
+          fi
+          cat > /tmp/nimzo-136-delivery/RELEASE_NOTES.md <<'NOTES'
+          NIMZO Android test APK — 1.0.36+136.
+          Flutter release-mode build with original verified Tana/Vani media gallery
+          (26 items; category art and previews are NOT automatically equipable).
+          Only published after Vivox, Rocket, Store smoke tests, all 26 media SHA256
+          checks and Android 35 unauthenticated startup smoke pass.
+          This is a DEVICE TEST, not a production auto-update. Not a complete
+          DangLive Store implementation. Full golden reference regression suites
+          and physical-device voice/login, wallet, and media playback still
+          require separate validation. If you get a signing certificate conflict
+          with an older development APK, you might need to uninstall that APK;
+          your Supabase account persists, but device-local data does not.
+          NOTES
+          gh release create "$tag"             --repo "$GITHUB_REPOSITORY"             --target "$GITHUB_SHA"             --title "NIMZO 1.0.36 — Startup-Verified Store Test"             --prerelease --latest=false             --notes-file /tmp/nimzo-136-delivery/RELEASE_NOTES.md             /tmp/nimzo-136-delivery/NIMZO_1.0.36_Store_DeviceTest.apk             /tmp/nimzo-136-delivery/SHA256SUMS.txt             /tmp/nimzo-136-delivery/source-sha.txt
