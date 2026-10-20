@@ -86,6 +86,12 @@ def verify(path: Path):
             for name in files
             for signature in dex_methods(apk.read(name))
         ]
+        # The following class was absent in the previous APK after R8 and
+        # made the JNI bridge throw ClassNotFoundException at startup.
+        kotlin_result_descriptor = b"Lkotlin/Result;"
+        if not any(kotlin_result_descriptor in apk.read(name)
+                   for name in files):
+            raise ValueError("kotlin.Result missing from compiled APK DEX")
         if (EXPECTED_RETURN, EXPECTED_PARAMS) not in signatures:
             raise ValueError(
                 "shared_preferences JNI ABI mismatch: expected "
