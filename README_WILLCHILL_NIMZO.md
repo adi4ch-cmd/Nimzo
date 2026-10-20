@@ -47,3 +47,7 @@ logic is deliberately untouched. Before publishing third-party extracted media, 
    twice and do not autoplay on a mere UI tap.
 5. Verify all 8 tiers through a complete entitlement lifecycle and both
    Android/iOS hardware playback before releasing a production APK.
+
+## Current integration status
+
+GitHub branch contains the preview source and local import scripts, but not the extracted third-party media. Use the companion ZIP locally and run automated verification before any release.
