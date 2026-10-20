@@ -12,6 +12,6 @@ void main() {
     )));
     await tester.pumpAndSettle();
     expect(find.text('Replay full preview'), findsNothing);
-    expect(find.textContaining('Legacy original'), findsWidgets);
+    expect(find.textContaining('Original NIMZO design'), findsWidgets);
   });
 }
