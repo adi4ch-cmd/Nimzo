@@ -23,5 +23,8 @@ GitHub workflow https://github.com/adi4ch-cmd/Nimzo/actions/runs/39531365782 pas
 ## Remaining work
 - Do not remove gifts with any transaction references without full historical FK/ledger evidence.
 - No stale GitHub release artifacts, backend user data or owned equipment were deliberately removed.
-- Review obsolete workflows/scripts separately; removal was not verified.
+- On this cleanup branch, 12 outdated CI/import workflows and two inert premium import scripts were removed after auditing old branch triggers, missing membership tests and duplicate prototype jobs. Kept the main release APK, valid non-membership asset verification, Vivox, Room Rocket, Store/Gift cleanup QA and Android diagnostic workflows.
+- This removes files only from `feature/retire-unused-store-gifts-20261021`. Older branches and their Git history still contain past workflow versions; PR #38 must be integrated into its parent PR chain before it affects a final app release.
+- Live Supabase remains unchanged by workflow pruning. The 10 archived never-sent gifts are still inactive in `public.gifts` (not falsely described as deleted).
+
 - Future Codex implementation should use this branch plus PR #37 context, reconcile Supabase migrations, and build tested features before publishing.
