@@ -11,6 +11,8 @@ import '../core/services/firebase_push_service.dart';
 import '../core/services/nimzo_content_sync.dart';
 import '../features/gifts/gift_repository.dart';
 import '../features/store/store_live_catalog.dart';
+import '../features/events/dynamic_event_banners.dart';
+import '../features/games/dynamic_game_catalog.dart';
 
 /// Tingle-reference rebuild entry point.
 ///
@@ -33,6 +35,8 @@ class NimzoApp extends ConsumerWidget {
       if (changed.contains('gifts')) ref.invalidate(giftCatalogProvider);
       if (changed.contains('store')) ref.invalidate(nimzoStoreProvider);
       if (changed.contains('settings')) ref.invalidate(nimzoRemoteSettingsProvider);
+      if (changed.contains('banners')) ref.invalidate(nimzoEventBannersProvider);
+      if (changed.contains('games')) ref.invalidate(nimzoLiveGameFlagsProvider);
     });
     final id = ref.watch(currentUserIdProvider);
     if (id != null) {
