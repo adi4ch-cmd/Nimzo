@@ -1,0 +1,257 @@
+[
+  {
+    "package": "4FunLite-7.77.apks",
+    "source": "base.apk!/assets/custom_vehicle_frame.mp4",
+    "sha256": "da3a20ca08bf1a0e617633af8ef02ad7577e26193b053cef9dde1ab5763fbaf9",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "hevc",
+          "codec_type": "video",
+          "width": 1088,
+          "height": 1360
+        }
+      ],
+      "format": {
+        "duration": "9.000000"
+      }
+    },
+    "vap_metadata_present": true,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  },
+  {
+    "package": "4FunLite-7.77.apks",
+    "source": "base.apk!/assets/treasure_open_v1.mp4",
+    "sha256": "5945602a049ec91bb40aca077e7294f1753a1ace87ab6005f1d07dafa99c5e9a",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "hevc",
+          "codec_type": "video",
+          "width": 1088,
+          "height": 1568
+        }
+      ],
+      "format": {
+        "duration": "11.000000"
+      }
+    },
+    "vap_metadata_present": true,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  },
+  {
+    "package": "4FunLite-7.77.apks",
+    "source": "base.apk!/assets/treasure_open_v3.mp4",
+    "sha256": "b73572a5ddaeb16760a158b2f0a39a3b49783ad04b74a012eaa8aa5b2da98891",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "hevc",
+          "codec_type": "video",
+          "width": 1088,
+          "height": 1568
+        }
+      ],
+      "format": {
+        "duration": "11.000000"
+      }
+    },
+    "vap_metadata_present": true,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  },
+  {
+    "package": "LigaChat-1.4.0.apks",
+    "source": "base.apk!/assets/flutter_assets/packages/business_tabs/assets/videos/video_game.mp4",
+    "sha256": "fb4a3d34cecafb5432e61111b9ed3f5c7a1d19546c2d17a02cfac65e2a01befc",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 750,
+          "height": 980
+        },
+        {
+          "codec_type": "data"
+        }
+      ],
+      "format": {
+        "duration": "5.000000"
+      }
+    },
+    "vap_metadata_present": false,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  },
+  {
+    "package": "Voku-1.1.7.apks",
+    "source": "base.apk!/assets/flutter_assets/assets/images/banner/full_banner_box_game.mp4",
+    "sha256": "4442a869f6f174b8058b7779803561c8ca6507202a3b9216b05155696fd52101",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 752,
+          "height": 352
+        }
+      ],
+      "format": {
+        "duration": "4.000000"
+      }
+    },
+    "vap_metadata_present": true,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  },
+  {
+    "package": "Ahlan-6.1.0.4.apks",
+    "source": "base.apk!/assets/giftBoxOpen.mp4",
+    "sha256": "1c58c945a1c19def3c8f05ba1c845ee2081c76034912508ff121822a5fad464b",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1088,
+          "height": 1280
+        },
+        {
+          "codec_name": "aac",
+          "codec_type": "audio"
+        }
+      ],
+      "format": {
+        "duration": "10.057959"
+      }
+    },
+    "vap_metadata_present": true,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  },
+  {
+    "package": "Falla-V9.23.0.apks",
+    "source": "base.apk!/assets/gift_tray/tray_opener_mystery_rtl.mp4",
+    "sha256": "b09b3715621122c2cd1e7596981f6d78fed8ad24c393faadc9d1fbb14b042beb",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 464,
+          "height": 144
+        }
+      ],
+      "format": {
+        "duration": "3.000000"
+      }
+    },
+    "vap_metadata_present": true,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  },
+  {
+    "package": "StarChat-8.41.3.apks",
+    "source": "base.apk!/assets/vap_source/svip_detail_bg.mp4",
+    "sha256": "31deddde269e9bf328c8b880d16e51cb924ebf7aca8e3bf31ee3b4936753cff4",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 752,
+          "height": 1120
+        }
+      ],
+      "format": {
+        "duration": "6.000000"
+      }
+    },
+    "vap_metadata_present": true,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  },
+  {
+    "package": "Falla-V9.23.0.apks",
+    "source": "base.apk!/assets/gift_tray/tray_opener_svip11_rtl.mp4",
+    "sha256": "f95aed037697ad992e7ec7dff5711c3847f268b714f3a5d92c63aa550ed90afa",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 464,
+          "height": 144
+        }
+      ],
+      "format": {
+        "duration": "3.000000"
+      }
+    },
+    "vap_metadata_present": true,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  },
+  {
+    "package": "Hafla-1.7.2.apks",
+    "source": "base.apk!/assets/svga/rocket_level_5.mp4",
+    "sha256": "ce7dcf9d9bab925664fd8d4a18d5bd25b08d2182b555d4f06eba5cbd705fa597",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1440,
+          "height": 1280
+        },
+        {
+          "codec_type": "data"
+        }
+      ],
+      "format": {
+        "duration": "12.000000"
+      }
+    },
+    "vap_metadata_present": false,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  },
+  {
+    "package": "Hafla-1.7.2.apks",
+    "source": "base.apk!/assets/svga/rocket_level_4.mp4",
+    "sha256": "3950562b46d8a1f62395ab7e9fba5a49d4935102f2095d0b71d190ed52152345",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1440,
+          "height": 1280
+        },
+        {
+          "codec_type": "data"
+        }
+      ],
+      "format": {
+        "duration": "12.000000"
+      }
+    },
+    "vap_metadata_present": false,
+    "activation": "BLOCKED: candidate per-asset redistribution scope and device playback unverified"
+  }
+]
