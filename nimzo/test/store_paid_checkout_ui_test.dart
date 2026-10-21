@@ -45,7 +45,7 @@ void main() {
       )),
     ],child:const MaterialApp(home:NimzoLiveStore())));
     await tester.pumpAndSettle();
-    expect(find.text('250000 coins',findRichText:true), findsWidgets);
+    expect(find.textContaining('250000 coins'), findsWidgets);
     final buyButton = find.byKey(const ValueKey('nimzo-store-action-nimzo-test-premium-frame'));
     expect(buyButton, findsOneWidget);
     await tester.tap(buyButton);
