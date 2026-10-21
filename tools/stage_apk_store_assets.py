@@ -181,12 +181,54 @@ def discover_from_full_audit(path: Path) -> list[dict]:
 
 class ApkSources:
     """Read nested base.apk only, cache each opened member once per archive."""
-    def __init__(self, root: Path):
+    def __init__(self, root: Path, extracted: Path | None = None):
         self.root = root
+        self.extracted = extracted.resolve() if extracted else None
+        self.extracted_index: dict[str, list[Path]] | None = None
         self.stack = contextlib.ExitStack()
         self.apks: dict[tuple[str, str], zipfile.ZipFile] = {}
         self.temp_root = Path(self.stack.enter_context(
             tempfile.TemporaryDirectory(prefix="nimzo-apk-review-")))
+
+    def original_extracted_file(self, row: dict) -> bytes | None:
+        if self.extracted is None or not self.extracted.is_dir():
+            return None
+        if self.extracted_index is None:
+            self.extracted_index = {}
+            visited = 0
+            for directory, dirs, names in os.walk(self.extracted):
+                dirs[:] = [d for d in dirs if d not in {
+                    ".git", ".gradle", ".dart_tool", "node_modules",
+                    "build", ".pub-cache", ".venv", "__pycache__"}]
+                for name in names:
+                    visited += 1
+                    if visited > 300000:
+                        raise ValueError("Extracted media index scan capped")
+                    if Path(name).suffix.lower().lstrip(".") not in SUPPORTED:
+                        continue
+                    candidate = Path(directory) / name
+                    if candidate.is_symlink():
+                        continue
+                    self.extracted_index.setdefault(name, []).append(candidate)
+        parsed = source_parts(row["source"])
+        if parsed is None:
+            return None
+        basename = PurePosixPath(parsed[1]).name
+        for candidate in self.extracted_index.get(basename, []):
+            try:
+                if not candidate.resolve().is_relative_to(self.extracted):
+                    continue
+                size = candidate.stat().st_size
+                if size < 1 or size > MAX_ASSET_BYTES:
+                    continue
+                if row["bytes"] is not None and size != int(row["bytes"]):
+                    continue
+                payload = candidate.read_bytes()
+                if hashlib.sha256(payload).hexdigest() == row["sha256"]:
+                    return payload
+            except OSError:
+                continue
+        return None
 
     def __enter__(self):
         return self
@@ -215,8 +257,16 @@ class ApkSources:
     def payload(self, row: dict) -> bytes:
         archive_name = row["source_package"]
         parsed = source_parts(row["source"])
-        if not isinstance(archive_name, str) or parsed is None:
-            raise ValueError("Original package/path not specified")
+        if parsed is None:
+            raise ValueError("Original source member path not specified")
+        if not isinstance(archive_name, str) or not (
+                self.root / PurePosixPath(archive_name).name).is_file():
+            original = self.original_extracted_file(row)
+            if original is not None:
+                return original
+            raise FileNotFoundError(
+                f"Original APKS missing and no matching extracted SHA256: "
+                f"{archive_name} / {row['source']}")
         inner = self.inner(archive_name, parsed[0])
         member = inner.getinfo(parsed[1])
         if member.file_size < 1 or member.file_size > MAX_ASSET_BYTES:
@@ -283,6 +333,10 @@ def main() -> None:
         "nimzo/assets/premium_store/manifest.json"))
     parser.add_argument("--sources-dir", type=Path, default=Path(
         os.environ.get("NIMZO_APK_SOURCES", "/workspaces/nimzo-apk-sources")))
+    parser.add_argument("--extracted-dir", type=Path,
+                        default=Path(os.environ["NIMZO_EXTRACTED_DIR"])
+                        if os.environ.get("NIMZO_EXTRACTED_DIR") else None,
+                        help="Original Codex-extracted APK media tree (SHA checked)")
     parser.add_argument("--out", type=Path, default=Path(
         "nimzo/assets/staged_store_verified"))
     parser.add_argument("--report", type=Path, default=Path(
@@ -310,7 +364,7 @@ def main() -> None:
             distinct[digest] = candidate
 
     results = []
-    with ApkSources(args.sources_dir) as source:
+    with ApkSources(args.sources_dir, extracted=args.extracted_dir) as source:
         for row in sorted(distinct.values(), key=lambda r: (
                 r.get("proposed_store_category") or "~", r["source"])):
             review = dict(row)
