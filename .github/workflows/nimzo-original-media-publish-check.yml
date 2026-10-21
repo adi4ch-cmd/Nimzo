@@ -1,0 +1,49 @@
+name: Verify Public Original Store Media Before Publishing
+on:
+  push:
+    branches: [feature/store-apk-verified-assets-20261021]
+    paths: [.github/workflows/nimzo-original-media-publish-check.yml]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check pinned Github RAW URLs, hashes, PNG and SVGA structures
+        run: |
+          python3 - <<'PY'
+          import hashlib,io,struct,urllib.request,zlib,zipfile
+          base='https://raw.githubusercontent.com/adi4ch-cmd/Nimzo/942fbf97e1778d1cdb32b91716590219193102d6/'
+          sources=[
+           ('nimzo/assets/willchill_premium/store/bg_chat_id_card.png','fc4d7380ab6bba34052c733c9b81a0c3fdd9e6d35fd49eac2b6586d9799044ed','image'),
+           ('nimzo/assets/willchill_premium/store/icon_char_id_card_id_bg.png','7237cf7d090f00a9a7672dee375e5c528edbee22a4434d1483dfcd6cc17b1dce','image'),
+           ('nimzo/assets/willchill_premium/store/icon_char_id_card_title_bg.png','d6bee35a1da71beeb16ed632dc173726d593cb41f4f0b3769f4cbfb6f0991a36','image'),
+           ('nimzo/assets/willchill_premium/store/user_backpack_cute_id.png','039cd653e514d0fa62b0249e168c72e0cd23e386b4465c2f5d384ac8d149504b','image'),
+           ('nimzo/assets/willchill_premium/room_fx/voice_room_cp_love_avatar.svga','ca7688456fff2aec34f1c6ee4ac78a8ed58f18df8583d8cdb2578e21c2d0ab5f','svga'),
+          ]
+          for path,sha,kind in sources:
+              local=open(path,'rb').read()
+              assert hashlib.sha256(local).hexdigest()==sha,path
+              req=urllib.request.Request(base+path,headers={'User-Agent':'nimzo-verification/1.0'})
+              with urllib.request.urlopen(req,timeout=25) as res:
+                  assert res.status==200,(path,res.status)
+                  remote=res.read(4000000)
+              assert remote==local, 'URL asset differs from version-pinned local copy '+path
+              if kind=='image':
+                  assert local[:8]==b'\x89PNG\r\n\x1a\n',path
+                  assert local[-12:-8]==b'\x00\x00\x00\x00' or b'IEND' in local[-20:],path
+                  w,h=struct.unpack('>II',local[16:24]);assert w>=160 and h>=40,(path,w,h)
+                  print('PUBLISHABLE_PNG',path,w,h,len(local),sha)
+              else:
+                  try:
+                      with zipfile.ZipFile(io.BytesIO(local)) as z:
+                          assert z.testzip() is None and 'movie.binary' in z.namelist()
+                  except zipfile.BadZipFile:
+                      decoded=zlib.decompress(local)
+                      assert len(decoded)>1000,path
+                  print('STRUCTURALLY_VALID_SVGA',path,len(local),sha)
+          print('SUCCESS: immutable HTTPS, exact hash, complete PNG and SVGA structure')
+          PY

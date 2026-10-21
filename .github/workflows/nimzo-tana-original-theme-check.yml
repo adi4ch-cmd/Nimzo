@@ -1,0 +1,39 @@
+name: NIMZO Tana Original Room Themes Format Verification
+on:
+  push:
+    branches: [feature/store-apk-verified-assets-20261021]
+    paths: [.github/workflows/nimzo-tana-original-theme-check.yml]
+  workflow_dispatch: {}
+permissions: {contents: read}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/real-premium-store-assets-integration
+          path: originals
+      - name: Check Tana original APK backgrounds and frame images
+        run: |
+          python3 -m pip install --quiet Pillow
+          python3 - <<'PY'
+          import hashlib,io,urllib.request
+          from PIL import Image
+          base='originals/nimzo/assets/licensed_tana_vani/tana/'
+          remote='https://raw.githubusercontent.com/adi4ch-cmd/Nimzo/3042cfa7d47238c935e53ec9972dc1f4439738b9/nimzo/assets/licensed_tana_vani/tana/'
+          for filename in ('ic_room_theme_love.webp','ic_room_theme_supreme.webp',
+                           'room_rank_avatar_frame1.webp','room_rank_avatar_frame2.webp','room_rank_avatar_frame3.webp'):
+              body=open(base+filename,'rb').read()
+              with Image.open(io.BytesIO(body)) as image:
+                  w,h=image.size
+                  print('VERIFIED_APK_ASSET',filename,'width',w,'height',h,'mode',image.mode,
+                        'bytes',len(body),'sha256',hashlib.sha256(body).hexdigest(),
+                        'possible_room_background',w>=600 and h>=600,
+                        'possible_avatar_decoration',w>=250 and h>=250)
+                  image.verify()
+              with urllib.request.urlopen(urllib.request.Request(
+                    remote+filename,headers={'User-Agent':'nimzo-catalog-qa/1.0'}),timeout=20) as response:
+                  fetched=response.read(4000000)
+                  assert fetched==body,filename
+          PY
