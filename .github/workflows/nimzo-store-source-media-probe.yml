@@ -1,0 +1,51 @@
+name: NIMZO Actual New Store Media Probe
+on:
+  push:
+    branches: [feature/store-apk-verified-assets-20261021]
+    paths: [.github/workflows/nimzo-store-source-media-probe.yml]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  inspect-original-store-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect every prospective original background and new AVATAR SVGA
+        run: |
+          python3 -m pip install --quiet Pillow
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import hashlib, zipfile, zlib, io
+          sources=[
+           'nimzo/assets/willchill_premium/store/bg_chat_id_card.png',
+           'nimzo/assets/willchill_premium/store/user_backpack_cute_id.png',
+           'nimzo/assets/willchill_premium/store/icon_char_id_card_id_bg.png',
+           'nimzo/assets/willchill_premium/store/icon_char_id_card_title_bg.png',
+           'nimzo/assets/willchill_premium/store/frame_avatar_weekstar_top1.png',
+           'nimzo/assets/willchill_premium/store/frame_avatar_weekstar_badge_top1.png',
+           'nimzo/assets/willchill_premium/vip/bg_voice_room_mic_vip_background.png',
+           'nimzo/assets/willchill_premium/vip/bg_voice_room_mic_vip_background_nine.png',
+           'nimzo/assets/willchill_premium/room_fx/voice_room_cp_love_avatar.svga',
+           'nimzo/assets/willchill_premium/room_fx/home_main_banner.svga'
+          ]
+          for name in sources:
+              path=Path(name)
+              data=path.read_bytes()
+              sha=hashlib.sha256(data).hexdigest()
+              if path.suffix=='.png':
+                  with Image.open(io.BytesIO(data)) as im:
+                      print('SOURCE_IMAGE',name,'w',im.width,'h',im.height,'mode',im.mode,'bytes',len(data),'sha256',sha)
+                      im.verify()
+              else:
+                  try:
+                      with zipfile.ZipFile(io.BytesIO(data)) as z:
+                          err=z.testzip()
+                          assert err is None
+                          print('SOURCE_SVGA_ZIP',name,'files',len(z.namelist()),'movie',('movie.binary' in z.namelist()),'sha256',sha)
+                  except zipfile.BadZipFile:
+                      inflated=zlib.decompress(data)
+                      print('SOURCE_SVGA_ZLIB',name,'inflated',len(inflated),'sha256',sha)
+          PY
