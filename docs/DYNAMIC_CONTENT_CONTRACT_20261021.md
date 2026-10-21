@@ -61,8 +61,13 @@ SELECT-only access to new tables. All management actions should be logged.
 * `media_kind`: `image`, `svga`, `vap`
 * `approved`: false until verified; no writable client policies
 * Only categories supported by shipped Flutter surfaces can be equipped.
-* Paid Store checkout is **not** implemented by this content-sync work. Do
-  not charge for an item without an audited server-side purchase transaction.
+* Paid Store checkout is implemented by the server-authoritative
+  `nimzo_store_purchase(item_id, expected_price, retry_key)` RPC.
+  Positive-priced cosmetics are purchasable only with a live approved full
+  asset, confirmed user price, sufficient wallet coins and atomic ownership
+  + `store_purchase` ledger entry. Per-account serialization and stable
+  32-character retry keys prevent duplicate charges.
+  **No live paid items are published by this code alone.**
 
 ### Supported Gift media record
 
@@ -98,8 +103,10 @@ user balance, gift price or game-outcome configuration is interpreted here.
 * GitHub **no-APK** workflow `.github/workflows/nimzo-dynamic-content-qa.yml`.
 * Run Flutter analyzer and targeted Gift/Store/Room/Event unit tests.
 * Supabase migration history, Realtime publication, RLS and grants verified.
-* Transactional `ROLLBACK` probes confirm revision triggers and paid-gift
-  activation guards without touching real accounts or coin balances.
+* Transactional `ROLLBACK` probes confirm revision triggers, paid-gift
+  activation guards, idempotent Store purchases, expected-price rejection,
+  approved-media rejection and ledger/ownership consistency. No QA purchases
+  or balances are left behind.
 * Before release: test one real PNG, SVGA, VAP and opaque MP4 (where relevant)
   uploaded to approved storage; verify full previews, equipment across avatar,
   room and chat surfaces, send/receive gift playback, media missing rollback,
@@ -114,8 +121,10 @@ user balance, gift price or game-outcome configuration is interpreted here.
   engines and first-time support for this updater require an APK/AAB once.
 * Media metadata starts empty; this branch adds the secure ability to publish
   it, **not** invented online assets.
-* Existing paid Store purchases and replacement VIP/SVIP packages remain
-  separate features. A coin price in a catalog is not proof checkout works.
+* Paid cosmetic checkout RPC and Buy UI exist, but an actual paid item must
+  pass native preview/equipment and live settlement verification before
+  production publication. The new-from-scratch VIP/SVIP packages remain
+  a separate feature; the retired membership schema is not restored.
 * A CDN URL alone cannot prevent a determined user from copying bytes. Use
   private storage/signed URLs for truly access-controlled media, and recognize
   that any rendered media can still be screen-recorded.
