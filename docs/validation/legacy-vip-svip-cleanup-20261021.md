@@ -19,8 +19,15 @@ Applied and verified:
 
 Verification after migration: zero public legacy membership tables; zero retired public membership RPCs; zero active assignments; zero gift VIP/SVIP gates; no old SVIP scheduled job; private profile backup has 3 rows.
 
-## Important compatibility boundary
-The **seven legacy membership columns in public.profiles** and two gift-level columns are intentionally kept at neutral values until the active SQL functions `public.send_gift`, `public.send_moment_gift`, `nimzo_private.send_profile_gift`, `public.kick_member`, and `public.moderate_room_member` are refactored. Dropping those columns without dependency repair could break gift settlement or room moderation. A legacy trigger prevents assigning retired membership again. This is cleanup, **not** full physical erasure of all traces or a completed new membership system.
+## Completed follow-up: legacy fields physically removed
+- Snapshot of all 3 profile rows retained privately before dropping legacy fields.
+- The 5 live gift/moment/profile-gift and moderation functions were backed up, then updated to remove only legacy tier checks while preserving authentication, anti-replay, wallet debits, receiver credits, moderation authorization and row locking.
+- 7 historical VIP/SVIP columns were dropped from `public.profiles`; 2 membership requirement columns were dropped from `public.gifts`.
+- `reject_retired_membership` trigger and function were removed after the columns were dropped.
+- Verification: zero VIP/SVIP columns in the public profile and gift tables, zero public legacy VIP/SVIP RPCs, zero remaining live SQL functions containing VIP/SVIP references, 3 profiles preserved and 29 gift catalog rows preserved.
+- Applied Supabase migration: `20261021010526_remove_vip_svip_fields_and_gates_20261021`. GitHub source migration now records the resulting function definitions.
+- Static review checked all 158 current app Dart files and 126 Flutter test Dart files for deleted membership classes/routes. Repaired obsolete profile/navigation/walkthrough/backend test assumptions.
+- **No Flutter build, complete test suite, or real device APK smoke test has run on this branch.** GitHub Actions currently shows no workflow runs for it; this is not a verified APK release.
 
 User accounts, balances, ledger, gifts, rooms and purchases were not erased. Old branches and Git history still retain previous content for rollback.
 
