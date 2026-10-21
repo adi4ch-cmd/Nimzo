@@ -44,16 +44,22 @@ void main() {
         owned:{},equipped:{},
       )),
     ],child:const MaterialApp(home:NimzoLiveStore())));
-    await tester.pumpAndSettle();
+    for (var frame = 0; frame < 8; frame++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
     expect(find.textContaining('250000 coins'), findsWidgets);
     final buyButton = find.byKey(const ValueKey('nimzo-store-action-nimzo-test-premium-frame'));
     expect(buyButton, findsOneWidget);
     await tester.tap(buyButton);
-    await tester.pumpAndSettle();
+    for (var frame = 0; frame < 8; frame++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
     expect(find.text('Confirm Store purchase'),findsOneWidget);
     expect(requests,0);
     await tester.tap(find.widgetWithText(FilledButton,'Buy').last);
-    await tester.pumpAndSettle();
+    for (var frame = 0; frame < 8; frame++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
     expect(requests,1);
     await tester.pumpWidget(const SizedBox());
   });
