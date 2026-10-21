@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nimzo/features/games/dynamic_game_catalog.dart';
 import 'package:nimzo/features/games/games_catalog_screen.dart';
 
 void main() {
   testWidgets(
       'catalog exposes existing server games and labels practice honestly',
       (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: GamesCatalogScreen()));
+    await tester.pumpWidget(ProviderScope(
+      overrides: [nimzoLiveGameFlagsProvider.overrideWith((_) async => const {})],
+      child: const MaterialApp(home: GamesCatalogScreen()),
+    ));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
         find.byKey(const ValueKey('game-catalog-fruit_party')), 400,

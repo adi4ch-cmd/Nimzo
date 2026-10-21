@@ -8,6 +8,7 @@ import '../features/social/family_screen.dart';
 import '../features/social/tingle_friends_screen.dart';
 import '../features/discover/ranking_screen.dart';
 import '../features/honors/honor_wall_screen.dart';
+import '../features/premium/willchill_premium_screen.dart';
 import '../features/profile/levels_screen.dart';
 import '../features/profile/profile_repository.dart';
 import '../features/auth/presentation/update_password_screen.dart';
@@ -158,6 +159,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
       GoRoute(path: '/honors', builder: (_, __) => const HonorWallScreen()),
+      GoRoute(
+          path: '/vip',
+          builder: (_, __) =>
+              const WillChillPremiumScreen(initialGroup: 'vip')),
+      GoRoute(
+          path: '/svip',
+          builder: (_, __) =>
+              const WillChillPremiumScreen(initialGroup: 'svip')),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
       GoRoute(path: '/task', builder: (_, __) => const TingleTasksScreen()),
       GoRoute(

@@ -117,6 +117,7 @@ void main() {
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
         await tester.pump();
+        await tester.runAsync(db.dispose);
       },
     );
   }

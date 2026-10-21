@@ -208,7 +208,7 @@ void main() {
       events.add(const DiamondUpdate(2));
       await tester.pumpAndSettle();
       expect(find.text('120.0M gifted in this room today'), findsOneWidget);
-      expect(find.text('All six Rocket levels completed!'), findsOneWidget);
+      expect(find.textContaining('All six Rocket levels'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

@@ -9,7 +9,6 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/core/theme/app_theme.dart';
-import 'package:nimzo/core/widgets/art/nimzo_identity_art.dart';
 import 'package:nimzo/features/auth/presentation/tingle_login_screen.dart';
 import 'package:nimzo/features/home/home_screen.dart';
 import 'package:nimzo/features/home/party_screen.dart';

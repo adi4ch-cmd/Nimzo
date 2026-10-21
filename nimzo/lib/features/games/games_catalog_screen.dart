@@ -45,10 +45,13 @@ class _GamesCatalogState extends ConsumerState<GamesCatalogScreen> {
   Widget build(BuildContext context) {
     final liveFlags = ref.watch(nimzoLiveGameFlagsProvider).valueOrNull ??
         const <String, bool>{};
-    final games = NimzoRoomGames.all.where(
-      (g) => isKnownGameEnabled(g.slug, liveFlags) &&
-          (filter == 'All' || kind(g.slug) == filter),
-    ).toList();
+    final games = NimzoRoomGames.all
+        .where(
+          (g) =>
+              isKnownGameEnabled(g.slug, liveFlags) &&
+              (filter == 'All' || kind(g.slug) == filter),
+        )
+        .toList();
     return Scaffold(
       backgroundColor: const Color(0xfff5faf7),
       appBar: AppBar(
@@ -263,55 +266,58 @@ Future<void> showRoomGamesSheet(
 }) async {
   final selected = await showReferenceSheet<String>(
     context,
-    Consumer(builder: (sheetContext, ref, _) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const GradientText('Games',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 12),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 4,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          mainAxisExtent: 100 * MediaQuery.textScalerOf(context).scale(1),
-          children: [
-            for (final game in NimzoRoomGames.all.where(
-              (g) => isKnownGameEnabled(
-                g.slug,
-                ref.watch(nimzoLiveGameFlagsProvider).valueOrNull ??
-                    const <String, bool>{},
-              ),
-            ))
-              InkWell(
-                onTap: () => Navigator.pop(context, game.slug),
-                child: Column(
+    Consumer(
+        builder: (sheetContext, ref, _) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const GradientText('Games',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 12),
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  mainAxisExtent:
+                      100 * MediaQuery.textScalerOf(context).scale(1),
                   children: [
-                    Flexible(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.asset(
-                          'assets/reference/game/${game.artwork}.jpg',
-                          width: 64,
-                          height: 64,
-                          fit: BoxFit.cover,
+                    for (final game in NimzoRoomGames.all.where(
+                      (g) => isKnownGameEnabled(
+                        g.slug,
+                        ref.watch(nimzoLiveGameFlagsProvider).valueOrNull ??
+                            const <String, bool>{},
+                      ),
+                    ))
+                      InkWell(
+                        onTap: () => Navigator.pop(context, game.slug),
+                        child: Column(
+                          children: [
+                            Flexible(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.asset(
+                                  'assets/reference/game/${game.artwork}.jpg',
+                                  width: 64,
+                                  height: 64,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              game.title,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      game.title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 12),
-                    ),
                   ],
                 ),
-              ),
-          ],
-        ),
-      ],
-    )),
+              ],
+            )),
   );
   if (selected != null && context.mounted) {
     if (onSelected != null) {

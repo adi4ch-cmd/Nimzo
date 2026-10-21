@@ -98,16 +98,12 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('rocket-stage-5')));
     await tester.pumpAndSettle();
     expect(find.text('ROCKET 6'), findsOneWidget);
-    await tester.ensureVisible(
-      find.byKey(const ValueKey('rocket-rewards-tab')),
-    );
+    await tester
+        .ensureVisible(find.byKey(const ValueKey('rocket-ranking-heading')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('rocket-rewards-tab')));
-    await tester.pumpAndSettle();
-    for (var rank = 1; rank <= 3; rank++) {
-      expect(find.byKey(ValueKey('rocket-reward-rank-$rank')), findsOneWidget);
-    }
-    expect(find.text('Prize not configured'), findsNWidgets(3));
+    expect(find.text('Gifting Top 1–3'), findsOneWidget);
+    expect(find.byKey(const ValueKey('rocket-rewards-tab')), findsNothing);
+    expect(find.text('Prize not configured'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

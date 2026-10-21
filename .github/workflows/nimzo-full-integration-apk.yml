@@ -1,6 +1,8 @@
 name: NIMZO 1.0.38 Integration Test APK - Voice Disabled
 on:
   workflow_dispatch: {}
+  push:
+    branches: [integration/nimzo-full-20261021]
 
 permissions:
   contents: write
@@ -278,7 +280,7 @@ jobs:
           cp nimzo/build/app/outputs/flutter-apk/app-release.apk premium-test-apk/NIMZO_1.0.38_Universal_NO_VIVOX_TEST.apk
           cp nimzo/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk premium-test-apk/NIMZO_1.0.38_ARM64_NO_VIVOX_TEST.apk
           printf '%s\n' "$GITHUB_SHA" > premium-test-apk/SOURCE_SHA.txt
-          echo 'Android test build, development signing. Vivox voice disabled because the SDK release download is unavailable. 15 mic seats, Rocket history/recovery/audio, gift rankings, persistent login, and server game integration. Voice SDK unavailable; membership purchasing remains retired. Authenticated end-to-end flows and device audio synchronization remain unverified.' > premium-test-apk/README.txt
+          echo 'Android test build, development signing. Vivox voice disabled because the SDK release download is unavailable. 15 mic seats, Rocket history/recovery/audio, gift rankings, persistent login, and server game integration. Voice SDK unavailable; 10-tier VIP/SVIP purchasing and claims restored prospectively; user balances preserved. Authenticated end-to-end flows and device audio synchronization remain unverified.' > premium-test-apk/README.txt
           (cd premium-test-apk && sha256sum *.apk > SHA256SUMS.txt)
       - name: Upload verified release-mode APK artifact
         uses: actions/upload-artifact@v4
@@ -295,7 +297,7 @@ jobs:
             premium-test-apk/*.apk premium-test-apk/SHA256SUMS.txt premium-test-apk/SOURCE_SHA.txt premium-test-apk/README.txt \
             --target "$GITHUB_SHA" \
             --title "NIMZO 1.0.38 Integration Test - Voice Disabled" \
-            --notes "Owner-requested Android integration TEST build. Read docs/validation/integration-report-20261021.md for scope and blockers. Vivox voice is disabled: its SDK release download returns 404. Source bridge retained. Package signatures, compiled assets and unauthenticated Android emulator startup checked. Development signing; no authenticated voice/purchase or physical-device validation. Membership purchasing remains disabled by the server." \
+            --notes "Owner-requested Android integration TEST build. Read docs/validation/integration-report-20261021.md for scope and blockers. Vivox voice is disabled: its SDK release download returns 404. Source bridge retained. Package signatures, compiled assets and unauthenticated Android emulator startup checked. Development signing; no authenticated voice/purchase or physical-device validation. VIP/SVIP restored prospectively with existing server prices and rewards; authenticated device purchase testing remains unverified." \
             --prerelease
       - name: Upload launch diagnostics
         if: always()

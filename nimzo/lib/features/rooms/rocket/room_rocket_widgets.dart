@@ -36,7 +36,6 @@ class RoomRocketSheet extends ConsumerStatefulWidget {
 
 class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
   int? selectedStage;
-  bool showRewards = false;
   bool showHistory = false;
 
   Future<void> _previewRocket(int stage) async {
@@ -101,7 +100,7 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
       0,
       roomRocketTargets.length - 1,
     );
-    final color = _rocketTones[selection];
+    final color = _rocketTones[selection % _rocketTones.length];
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -296,39 +295,18 @@ class _RoomRocketSheetState extends ConsumerState<RoomRocketSheet> {
                   ),
                 ),
               const SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  color: _rocketNavy,
-                ),
-                child: Row(
-                  children: [
-                    for (final tab in [false, true])
-                      Expanded(
-                        child: TextButton(
-                          key: ValueKey(
-                            tab ? 'rocket-rewards-tab' : 'rocket-ranking-tab',
-                          ),
-                          onPressed: () => setState(() => showRewards = tab),
-                          child: Text(
-                            tab ? 'Rewards Top 1–3' : 'Gifting Top 1–3',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: showRewards == tab
-                                  ? _rocketTones[4]
-                                  : Colors.white54,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+              const Text('Gifting Top 1–3',
+                  key: ValueKey('rocket-ranking-heading'),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800)),
+              const SizedBox(height: 6),
+              const Text(
+                  'Rocket milestones celebrate room gifts. No extra coin or item prizes.',
+                  style: TextStyle(color: Colors.white60, fontSize: 11)),
               const SizedBox(height: 10),
-              if (showRewards)
-                const _RocketRewardsPanel()
-              else if (id == null)
+              if (id == null)
                 const Text(
                   'Join a room to view gifting rankings.',
                   style: TextStyle(color: Colors.white70),
@@ -449,12 +427,15 @@ class _RocketStageTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
             color: selected
-                ? _rocketTones[stage].withValues(alpha: .24)
+                ? _rocketTones[stage % _rocketTones.length]
+                    .withValues(alpha: .24)
                 : const Color(0xff28354e),
             borderRadius: BorderRadius.circular(11),
             border: Border.all(
               width: selected ? 2 : 1,
-              color: selected ? _rocketTones[stage] : Colors.white24,
+              color: selected
+                  ? _rocketTones[stage % _rocketTones.length]
+                  : Colors.white24,
             ),
           ),
           child: Row(
@@ -468,19 +449,23 @@ class _RocketStageTile extends StatelessWidget {
                   errorBuilder: (_, __, ___) => Icon(
                     Icons.rocket_launch_rounded,
                     size: 20,
-                    color: _rocketTones[stage],
+                    color: _rocketTones[stage % _rocketTones.length],
                   ),
                 ),
               ),
               const SizedBox(width: 3),
-              Text(
-                'Lv' + (stage + 1).toString(),
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              Expanded(
+                  child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Lv' + (stage + 1).toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ))),
             ],
           ),
         ),
@@ -554,55 +539,6 @@ class _RocketPodiumItem extends ConsumerWidget {
       ),
     );
   }
-}
-
-class _RocketRewardsPanel extends StatelessWidget {
-  const _RocketRewardsPanel();
-
-  @override
-  Widget build(BuildContext context) => Column(
-        children: [
-          for (var rank = 1; rank <= 3; rank++)
-            Container(
-              key: ValueKey('rocket-reward-rank-' + rank.toString()),
-              margin: const EdgeInsets.only(bottom: 7),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xff172647),
-                borderRadius: BorderRadius.circular(13),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.workspace_premium_rounded,
-                    color: _rocketTones[rank + 2],
-                    size: 25,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Top ' + rank.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const Spacer(),
-                  const Text(
-                    'Prize not configured',
-                    style: TextStyle(color: Colors.white70, fontSize: 11),
-                  ),
-                ],
-              ),
-            ),
-          const Text(
-            'The six Rocket levels unlock animation milestones only. '
-            'Coin, car or frame prizes need a verified payout policy '
-            'before they can be awarded.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: NimzoStyle.muted, fontSize: 11),
-          ),
-        ],
-      );
 }
 
 class _ResetCountdown extends StatefulWidget {
@@ -757,7 +693,7 @@ class _RoomRocketHostState extends ConsumerState<RoomRocketHost>
     _cycle = event.cycleStart;
     setState(() {
       // All six threshold animations can be queued in server order.
-      if (_queue.length < 6) _queue.add(event);
+      if (_queue.length < roomRocketTargets.length) _queue.add(event);
     });
   }
 

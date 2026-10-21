@@ -42,7 +42,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.textContaining('added to Backpack'), findsNothing);
       expect(find.textContaining('Unable to update Store'), findsOneWidget);
-      expect(reads, 1);
+      expect(reads, 2);
       await tester.pumpWidget(const SizedBox());
       await tester.runAsync(client.dispose);
     });

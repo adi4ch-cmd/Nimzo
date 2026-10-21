@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Legacy membership routes are retired and intentionally not registered.
-/// New entitlements/screens must be implemented as a separate fresh feature.
+/// Only explicitly unavailable destinations are redirected.
+/// Restored membership routes use server capabilities and effective expiry.
 bool isComingSoonLocation(String location) {
   final route = Uri.parse(location).path;
   return const <String>{}.contains(route);

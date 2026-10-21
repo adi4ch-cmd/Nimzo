@@ -14,6 +14,8 @@ class Profile {
   // Authoritative counters are distinct from levels; missing values stay unknown.
   final int? wealthCoins, charmDiamonds, activePoints;
   final int level, wealthLevel, charmLevel, activeLevel;
+  final int svipLevel, purchasedVipLevel;
+  final DateTime? vipExpiresAt;
   const Profile({
     required this.id,
     required this.nimzoId,
@@ -34,7 +36,16 @@ class Profile {
     this.wealthLevel = 0,
     this.charmLevel = 0,
     this.activeLevel = 0,
+    this.svipLevel = 0,
+    this.purchasedVipLevel = 0,
+    this.vipExpiresAt,
   });
+
+  // VIP expires server-side. Do not show expired memberships as active.
+  int get vipLevel => vipExpiresAt != null &&
+          vipExpiresAt!.isAfter(DateTime.now())
+      ? purchasedVipLevel
+      : 0;
 
   factory Profile.fromJson(Map<String, dynamic> j) => Profile(
         id: j['id'] as String,
@@ -58,5 +69,10 @@ class Profile {
         wealthLevel: (j['wealth_level'] ?? 0) as int,
         charmLevel: (j['charm_level'] ?? 0) as int,
         activeLevel: (j['active_level'] ?? 0) as int,
+        svipLevel: (j['svip_level'] as num?)?.toInt() ?? 0,
+        purchasedVipLevel: (j['vip_level'] as num?)?.toInt() ?? 0,
+        vipExpiresAt: j['vip_expires_at'] == null
+            ? null
+            : DateTime.tryParse(j['vip_expires_at'].toString()),
       );
 }

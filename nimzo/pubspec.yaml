@@ -71,3 +71,7 @@ flutter:
     - assets/willchill_premium/catalog.json
     - assets/premium_store/danglive/
     - assets/premium_store/willchill/
+
+    - assets/willchill_premium/vip/
+
+    - assets/willchill_premium/svip/

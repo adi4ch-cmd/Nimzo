@@ -57,6 +57,8 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
     with WidgetsBindingObserver {
   VapPlayerController? _player;
   AudioPlayer? _soundPlayer;
+  Timer? _soundLoadTimer;
+  Completer<void>? _soundLoadWait;
   bool _soundUnavailable = false;
   StreamSubscription<VapEvent>? _events;
   Timer? _watchdog;
@@ -77,7 +79,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _watchdog = Timer(const Duration(seconds: 16), _playbackFailed);
+    _watchdog = Timer(const Duration(seconds: 20), _playbackFailed);
     unawaited(_start());
   }
 
@@ -139,6 +141,10 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
   }
 
   Future<void> _stopSound() async {
+    _soundLoadTimer?.cancel();
+    final loading = _soundLoadWait;
+    _soundLoadWait = null;
+    if (loading != null && !loading.isCompleted) loading.complete();
     try {
       await _soundPlayer?.stop();
     } catch (_) {/* Already disposed. */}
@@ -156,7 +162,25 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
         handleInterruptions: false,
         androidApplyAudioAttributes: false,
       );
-      await player.setAsset(asset).timeout(const Duration(seconds: 3));
+      final loading = Completer<void>();
+      _soundLoadWait = loading;
+      _soundLoadTimer = Timer(const Duration(seconds: 3), () {
+        if (!loading.isCompleted)
+          loading.completeError(TimeoutException('Rocket sound preload'));
+      });
+      unawaited(player.setAsset(asset).then<void>((_) {
+        if (!loading.isCompleted) loading.complete();
+      }, onError: (Object error, StackTrace stack) {
+        if (!loading.isCompleted) loading.completeError(error, stack);
+      }));
+      try {
+        await loading.future;
+      } finally {
+        if (identical(_soundLoadWait, loading)) {
+          _soundLoadTimer?.cancel();
+          _soundLoadWait = null;
+        }
+      }
     } catch (_) {
       if (mounted && !_finished) setState(() => _soundUnavailable = true);
     }
@@ -254,6 +278,10 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
   @override
   void dispose() {
     _watchdog?.cancel();
+    _soundLoadTimer?.cancel();
+    final loading = _soundLoadWait;
+    _soundLoadWait = null;
+    if (loading != null && !loading.isCompleted) loading.complete();
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_events?.cancel());
     final player = _player;

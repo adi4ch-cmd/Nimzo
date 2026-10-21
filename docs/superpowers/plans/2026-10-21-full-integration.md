@@ -35,3 +35,12 @@ Concurrent wallet/seat operations, account changes during async requests, duplic
 - Prior memberships and honors were explicitly retired server-side. Their restoration needs coherent original contracts and tests; displaying artwork cannot establish entitlement.
 - Existing room Rocket and legacy Diamond share settlement records; no evidence establishes a separate Room Rock system. Preserve this implementation and document the ambiguity.
 - Existing Vivox SDK download returns404. A voice-disabled development APK must be labeled as such and cannot be described as a fully functional voice app.
+
+## Latest owner steering
+- Explicitly restore VIP/SVIP after the earlier preserve-removal answer. Done
+  prospectively with10tiers; preserve archived historical user entitlements.
+- Prefer one coherent complete APK Rocket set over11mixed-source visuals.
+  Active selection is six Haza stages/twelve matching launch+reward videos.
+  Alternate Hafla candidates are archived outside the app bundle.
+- Unconfigured Rocket prize rows removed; only actual contribution ranking and
+  milestone celebrations remain. No new financial reward rules were invented.

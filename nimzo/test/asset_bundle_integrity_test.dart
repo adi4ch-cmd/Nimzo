@@ -16,7 +16,6 @@ void main() {
       'assets/hilo/game_levels/level_0.webp',
       'assets/gifts/free/sports_car.png',
       'assets/gifts/hall_of_fame.svg',
-      'assets/gifts/staged/tiger_warrior.svg',
     ];
     for (final path in samples) {
       final bytes = await rootBundle.load(path);
