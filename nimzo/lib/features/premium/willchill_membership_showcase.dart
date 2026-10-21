@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../store/cosmetic_media_view.dart';
+import 'dynamic_membership_media.dart';
 
 /// Membership page composition follows the supplied WillChill video reference.
 /// The account's tier/progress stay separate from the selected visual preview.
@@ -12,12 +14,14 @@ class WillChillMembershipShowcase extends StatelessWidget {
     required this.onTierChanged,
     this.onPreviewEntrance,
     this.growthProgress,
+    this.dynamicMedia = const {},
   });
   final String kind;
   final int tier, ownedLevel;
   final ValueChanged<int> onTierChanged;
   final VoidCallback? onPreviewEntrance;
   final double? growthProgress;
+  final Map<String, NimzoMembershipMedia> dynamicMedia;
   bool get _svip => kind == 'svip';
   String get _label => _svip ? 'SVIP' : 'VIP';
   String get _base => 'assets/willchill_premium/$kind/';
@@ -31,14 +35,41 @@ class WillChillMembershipShowcase extends StatelessWidget {
       ? 'bg_privil_item_svip$tier.webp'
       : 'bg_privil_item_vip$tier.${tier >= 6 ? 'png' : 'webp'}';
 
-  Widget _art(String file, {double? height, double? width}) => Image.asset(
-        '$_base$file',
+  String? _slotForFile(String file) {
+    if (file == _hero || file.contains('_top_logo.')) return 'hero';
+    if (file == _medal || file.contains('icon_vip${tier}_1.')) return 'badge';
+    if (file.contains('icon_vip${tier}_2.')) return 'avatar_frame';
+    if (file.contains('icon_vip${tier}_3.')) return 'nameplate';
+    if (file.contains('icon_vip${tier}_4.')) return 'chat_bubble';
+    if (file.contains('icon_vip${tier}_5.')) return 'mic_wave';
+    if (file.startsWith('voiceroom_icon_')) return 'nameplate';
+    if (file == _privilege) return 'privilege';
+    return null;
+  }
+
+  Widget _art(String file, {double? height, double? width}) {
+    final slot = _slotForFile(file);
+    final media = slot == null ? null : dynamicMedia[slot];
+    if (media != null) {
+      return SizedBox(
         height: height,
         width: width,
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) =>
-            const Icon(Icons.workspace_premium_outlined, color: gold, size: 36),
+        child: CosmeticMediaView(
+          key: ValueKey('live-membership-$kind-$tier-$slot'),
+          media: media.toCosmetic(),
+          animate: false,
+        ),
       );
+    }
+    return Image.asset(
+      '$_base$file',
+      height: height,
+      width: width,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) =>
+          const Icon(Icons.workspace_premium_outlined, color: gold, size: 36),
+    );
+  }
 
   Widget _section(String text) => Padding(
         padding: const EdgeInsets.fromLTRB(8, 18, 8, 12),
@@ -96,7 +127,10 @@ class WillChillMembershipShowcase extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.black.withValues(alpha: .18),
                 image: DecorationImage(
-                    image: AssetImage('$_base$_privilege'), fit: BoxFit.fill),
+                    image: dynamicMedia['privilege']?.url != null
+                        ? NetworkImage(dynamicMedia['privilege']!.url)
+                        : AssetImage('$_base$_privilege') as ImageProvider,
+                    fit: BoxFit.fill),
                 border: Border.all(color: gold.withValues(alpha: .28)),
               ),
               child: Padding(
@@ -153,7 +187,13 @@ class WillChillMembershipShowcase extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(28),
                 child: Column(children: [
-                  const Icon(Icons.workspace_premium, size: 84, color: gold),
+                  if (dynamicMedia['hero'] case final NimzoMembershipMedia hero)
+                    SizedBox(
+                      height: 160,
+                      child: CosmeticMediaView(
+                        media: hero.toCosmetic(), animate: false))
+                  else
+                    const Icon(Icons.workspace_premium, size: 84, color: gold),
                   const SizedBox(height: 18),
                   Text('$_label $tier',
                       style: const TextStyle(
@@ -241,8 +281,15 @@ class WillChillMembershipShowcase extends StatelessWidget {
               top: 0,
               left: 0,
               right: 0,
-              child: Image.asset('$_base$_hero',
-                  width: width, fit: BoxFit.fitWidth)),
+              child: dynamicMedia['hero'] case final NimzoMembershipMedia hero
+                  ? SizedBox(
+                      width: width,
+                      height: width * .62,
+                      child: CosmeticMediaView(
+                        key: ValueKey('live-membership-$kind-$tier-hero'),
+                        media: hero.toCosmetic(), animate: false))
+                  : Image.asset('$_base$_hero',
+                      width: width, fit: BoxFit.fitWidth)),
           Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             MembershipTierSelector(
                 kind: kind, tier: tier, maxTier: 10, onChanged: onTierChanged),
