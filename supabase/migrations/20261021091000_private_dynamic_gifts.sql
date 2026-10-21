@@ -5,8 +5,8 @@ SET LOCAL lock_timeout='8s';
 CREATE TABLE IF NOT EXISTS public.nimzo_private_gift_media (
   gift_id uuid PRIMARY KEY REFERENCES public.gifts(id) ON DELETE RESTRICT,
   storage_path text NOT NULL UNIQUE CHECK (
-    storage_path ~ '^dynamic/[a-zA-Z0-9_/-]{5,200}/[0-9a-f]{64}\\.mp4$'
-    AND storage_path !~ '\\.\\.'
+    storage_path ~ '^dynamic/[a-zA-Z0-9_/-]{5,200}/[0-9a-f]{64}[.]mp4$'
+    AND storage_path !~ '[.][.]'
   ),
   sha256 text NOT NULL CHECK(sha256 ~ '^[0-9a-f]{64}$'),
   media_kind text NOT NULL CHECK(media_kind IN ('vap','mp4')),
