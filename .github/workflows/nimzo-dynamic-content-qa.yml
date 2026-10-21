@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: dynamic-content-qa-\${{ github.ref }}
+  group: dynamic-content-qa-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
