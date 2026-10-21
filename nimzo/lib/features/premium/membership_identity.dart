@@ -30,8 +30,17 @@ class VerifiedMembershipIdentity extends ConsumerWidget {
     final membership =
         ref.watch(effectiveMembershipProvider(userId)).valueOrNull;
     if (membership == null) return const SizedBox.shrink();
+    final approved = ref.watch(nimzoMembershipMediaProvider)
+        .valueOrNull ?? const <NimzoMembershipMedia>[];
+    final vipBadge =
+        membershipTierMedia(approved, 'vip', membership.vipLevel)['badge'];
+    final svipBadge =
+        membershipTierMedia(approved, 'svip', membership.svipLevel)['badge'];
     return WillChillMembershipBadges(
-        vipLevel: membership.vipLevel, svipLevel: membership.svipLevel);
+        vipLevel: membership.vipLevel,
+        svipLevel: membership.svipLevel,
+        liveVipBadge: vipBadge,
+        liveSvipBadge: svipBadge);
   }
 }
 
