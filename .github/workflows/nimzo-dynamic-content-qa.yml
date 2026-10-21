@@ -70,4 +70,24 @@ jobs:
             test/gift_rejection_test.dart \
             test/room_rocket_test.dart \
             test/store_equipment_surfaces_test.dart \
-            test/store_paid_purchase_test.dart
+            test/store_paid_purchase_test.dart \
+            test/startup_bootstrap_contract_test.dart \
+            test/store_actual_media_test.dart \
+            test/store_full_preview_test.dart \
+            test/store_category_preview_ui_test.dart \
+            test/private_gift_readiness_test.dart \
+            test/verified_gift_broadcast_test.dart \
+            test/room_reconnect_test.dart \
+            test/game_repository_validation_test.dart \
+            test/events_routes_test.dart \
+            test/feature_retirement_contract_test.dart
+
+      - name: Audit whole Flutter source (diagnostic)
+        continue-on-error: true
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Full Flutter regression suite (diagnostic, no APK)
+        continue-on-error: true
+        working-directory: nimzo
+        run: flutter test --reporter expanded
