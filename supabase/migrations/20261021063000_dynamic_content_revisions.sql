@@ -33,10 +33,13 @@ grant select on public.nimzo_content_revisions to authenticated;
 grant select on public.nimzo_remote_settings to authenticated;
 grant select on public.nimzo_cosmetic_media to authenticated;
 
+drop policy if exists nimzo_revision_read on public.nimzo_content_revisions;
 create policy nimzo_revision_read on public.nimzo_content_revisions
 for select to authenticated using (true);
+drop policy if exists nimzo_remote_settings_read on public.nimzo_remote_settings;
 create policy nimzo_remote_settings_read on public.nimzo_remote_settings
 for select to authenticated using (active);
+drop policy if exists nimzo_media_read on public.nimzo_cosmetic_media;
 create policy nimzo_media_read on public.nimzo_cosmetic_media
 for select to authenticated using (approved);
 
@@ -61,18 +64,25 @@ end;
 $$;
 revoke all on function nimzo_internal.bump_content_revision() from public, anon, authenticated;
 
+drop trigger if exists nimzo_revision_gifts on public.gifts;
 create trigger nimzo_revision_gifts after insert or update or delete
 on public.gifts for each statement execute function nimzo_internal.bump_content_revision('gifts');
+drop trigger if exists nimzo_revision_gift_media on public.gift_animation_media;
 create trigger nimzo_revision_gift_media after insert or update or delete
 on public.gift_animation_media for each statement execute function nimzo_internal.bump_content_revision('gifts');
+drop trigger if exists nimzo_revision_store on public.nimzo_cosmetic_catalog;
 create trigger nimzo_revision_store after insert or update or delete
 on public.nimzo_cosmetic_catalog for each statement execute function nimzo_internal.bump_content_revision('store');
+drop trigger if exists nimzo_revision_store_media on public.nimzo_cosmetic_media;
 create trigger nimzo_revision_store_media after insert or update or delete
 on public.nimzo_cosmetic_media for each statement execute function nimzo_internal.bump_content_revision('store');
+drop trigger if exists nimzo_revision_banners on public.banners;
 create trigger nimzo_revision_banners after insert or update or delete
 on public.banners for each statement execute function nimzo_internal.bump_content_revision('banners');
+drop trigger if exists nimzo_revision_games on public.game_catalog;
 create trigger nimzo_revision_games after insert or update or delete
 on public.game_catalog for each statement execute function nimzo_internal.bump_content_revision('games');
+drop trigger if exists nimzo_revision_settings on public.nimzo_remote_settings;
 create trigger nimzo_revision_settings after insert or update or delete
 on public.nimzo_remote_settings for each statement execute function nimzo_internal.bump_content_revision('settings');
 
