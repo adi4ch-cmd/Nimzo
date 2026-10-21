@@ -114,7 +114,35 @@ class GiftRepository {
         .eq('gift_id', giftId)
         .eq('approved', true)
         .limit(1);
-    if (rows.isEmpty) return null;
+    if (rows.isEmpty) {
+      // Only new opt-in animated gifts use the new private gateway. Existing
+      // four protected animal gifts still use the original server gateway.
+      // A signed URL never changes coins, gift event state or entitlements.
+      final gifts = await _db
+          .from('gifts')
+          .select('requires_approved_media')
+          .eq('id', giftId)
+          .eq('active', true)
+          .limit(1);
+      if (gifts.isEmpty || gifts.first['requires_approved_media'] != true) {
+        return null;
+      }
+      try {
+        final response = await _db.functions.invoke(
+          'dynamic-gift-media', body: {'gift_id': giftId},
+        );
+        final body = response.data;
+        if (body is! Map) return null;
+        return GiftPlaybackMedia.fromRow({
+          'video_url': body['url'],
+          'media_kind': body['media_kind'],
+        });
+      } catch (_) {
+        // An inaccessible or expired private animation never grants a fake
+        // playback or retries a wallet debit.
+        return null;
+      }
+    }
     final media = GiftPlaybackMedia.fromRow(rows.first);
     if (media != null && giftId == hallOfFameGiftId) {
       return GiftPlaybackMedia(url: media.url, kind: 'vap');
