@@ -34,4 +34,22 @@ void main() {
     expect(migration, isNot(contains('purchase_normal_vip')));
     expect(migration, isNot(contains('nimzo_store_buy')));
   });
+
+  test('Paid Store uses locked server price, ledger and verified media', () async {
+    final live = await _source('lib/features/store/store_live_catalog.dart');
+    final service = await _source('lib/features/store/store_purchase_repository.dart');
+    final sql = await _source(
+      '../supabase/migrations/20261021073500_dynamic_paid_store_purchase.sql',
+    );
+    expect(live, contains('Confirm Store purchase'));
+    expect(live, contains('NimzoStorePurchaseRepository'));
+    expect(service, contains("'nimzo_store_purchase'"));
+    expect(service, contains("'p_expected_price'"));
+    expect(sql, contains("kind = 'store_purchase'"));
+    expect(sql, contains('p_expected_price'));
+    expect(sql, contains('pg_advisory_xact_lock'));
+    expect(sql, contains('nimzo_cosmetic_ownership'));
+    expect(sql, contains('m.approved'));
+    expect(sql, contains('update public.wallets'));
+  });
 }
