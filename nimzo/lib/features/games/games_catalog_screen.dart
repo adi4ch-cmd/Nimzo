@@ -1,20 +1,22 @@
 import '../../core/widgets/master_ui.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'game_catalog.dart';
+import 'dynamic_game_catalog.dart';
 import '../../core/theme/app_theme.dart';
 
-class GamesCatalogScreen extends StatefulWidget {
+class GamesCatalogScreen extends ConsumerStatefulWidget {
   final String? roomId;
   const GamesCatalogScreen({super.key, this.roomId});
 
   @override
-  State<GamesCatalogScreen> createState() => _GamesCatalogState();
+  ConsumerState<GamesCatalogScreen> createState() => _GamesCatalogState();
 }
 
-class _GamesCatalogState extends State<GamesCatalogScreen> {
+class _GamesCatalogState extends ConsumerState<GamesCatalogScreen> {
   String filter = 'All';
 
   static const filters = <String>['All', 'Party', 'Slots', 'Cards'];
@@ -41,8 +43,11 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final liveFlags = ref.watch(nimzoLiveGameFlagsProvider).valueOrNull ??
+        const <String, bool>{};
     final games = NimzoRoomGames.approved.where(
-      (g) => filter == 'All' || kind(g.slug) == filter,
+      (g) => isKnownGameEnabled(g.slug, liveFlags) &&
+          (filter == 'All' || kind(g.slug) == filter),
     ).toList();
     return Scaffold(
       backgroundColor: const Color(0xfff6f4ff),
@@ -264,7 +269,14 @@ Future<void> showRoomGamesSheet(
           mainAxisSpacing: 12,
           mainAxisExtent: 100 * MediaQuery.textScalerOf(context).scale(1),
           children: [
-            for (final game in NimzoRoomGames.approved)
+            for (final game in NimzoRoomGames.approved.where(
+              (g) => isKnownGameEnabled(
+                g.slug,
+                ProviderScope.containerOf(context, listen: false)
+                    .read(nimzoLiveGameFlagsProvider).valueOrNull ??
+                    const <String, bool>{},
+              ),
+            ))
               InkWell(
                 onTap: () => Navigator.pop(context, game.slug),
                 child: Column(
