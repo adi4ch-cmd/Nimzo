@@ -8,6 +8,8 @@ on:
       - tools/stage_apk_store_assets.py
       - tools/test_stage_apk_store_assets.py
       - .github/workflows/nimzo-store-apk-candidate-audit.yml
+      - nimzo/lib/features/store/store_live_catalog.dart
+      - nimzo/test/store_media_integrity_test.dart
       - docs/validation/store-apk-candidate-review.md
   workflow_dispatch: {}
 
@@ -69,6 +71,25 @@ jobs:
                         item.get('source'), "bytes",item.get('bytes'),
                         "sha256",item.get('sha256'))
           PY
+      - name: Set up Flutter for Store integrity QA
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Verify Store never fabricates incomplete products
+        working-directory: nimzo
+        run: |
+          flutter pub get --enforce-lockfile
+          flutter analyze --no-fatal-infos --no-fatal-warnings \
+            lib/features/store/store_live_catalog.dart \
+            test/store_media_integrity_test.dart
+          flutter test --reporter expanded \
+            test/store_media_integrity_test.dart \
+            test/store_live_contract_test.dart \
+            test/store_actual_media_test.dart \
+            test/store_equipment_surfaces_test.dart \
+            test/store_paid_purchase_test.dart
       - name: Preserve source-matched candidate review artifact
         uses: actions/upload-artifact@v4
         with:
