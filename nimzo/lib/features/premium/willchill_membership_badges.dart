@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dynamic_membership_media.dart';
+import '../store/cosmetic_media_view.dart';
 import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 
 /// Real membership badges from the authenticated profile model.
@@ -9,10 +11,13 @@ class WillChillMembershipBadges extends StatefulWidget {
     super.key,
     required this.svipLevel,
     required this.vipLevel,
+    this.liveVipBadge,
+    this.liveSvipBadge,
   });
 
   final int svipLevel;
   final int vipLevel;
+  final NimzoMembershipMedia? liveVipBadge, liveSvipBadge;
 
   @override
   State<WillChillMembershipBadges> createState() =>
@@ -32,11 +37,21 @@ class _WillChillMembershipBadgesState extends State<WillChillMembershipBadges> {
       future: _manifest,
       builder: (_, snapshot) {
         final known = snapshot.data?.listAssets().toSet() ?? const <String>{};
-        Widget badge(String label, String path, Color tint) {
+        Widget badge(String label, String path, Color tint,
+            NimzoMembershipMedia? liveMedia) {
           final hasMedia = known.contains(path);
           return Semantics(
             label: label,
-            child: hasMedia
+            child: liveMedia != null
+                ? SizedBox(
+                    height: 25,
+                    width: 60,
+                    child: CosmeticMediaView(
+                      media: liveMedia.toCosmetic(),
+                      animate: false,
+                    ),
+                  )
+                : hasMedia
                 ? Image.asset(path,
                     fit: BoxFit.contain,
                     height: 25,
@@ -71,12 +86,12 @@ class _WillChillMembershipBadgesState extends State<WillChillMembershipBadges> {
                   'SVIP $svip',
                   'assets/willchill_premium/svip/'
                       'voiceroom_svip${svip}_entry_level_ic.webp',
-                  const Color(0xff7041ad)),
+                  const Color(0xff7041ad), widget.liveSvipBadge),
             if (vip > 0)
               badge(
                   'VIP $vip',
                   'assets/willchill_premium/vip/ic_vip_leve$vip.png',
-                  const Color(0xff996827)),
+                  const Color(0xff996827), widget.liveVipBadge),
           ],
         );
       },
