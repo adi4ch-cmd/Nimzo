@@ -10,7 +10,6 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/reference_widgets.dart';
 import '../gifts/gift_sheet.dart';
 import '../store/store_equipped_frame.dart';
-import '../premium/willchill_membership_badges.dart';
 import '../social/social_repositories.dart';
 import '../social/friend_button.dart';
 import 'profile_repository.dart';
@@ -272,10 +271,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       style: const TextStyle(color: NimzoStyle.muted),
                     ),
                     const SizedBox(height: 5),
-                    WillChillMembershipBadges(
-                      svipLevel: p.svipLevel,
-                      vipLevel: p.vipLevel,
-                    ),
                     const SizedBox(height: 8),
                     Row(
                       key: const ValueKey('profile-level-badges'),

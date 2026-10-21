@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// VIP and SVIP now have dedicated premium preview routes.
-/// A preview never grants a paid membership or changes its duration.
+/// Legacy membership routes are retired and intentionally not registered.
+/// New entitlements/screens must be implemented as a separate fresh feature.
 bool isComingSoonLocation(String location) {
   final route = Uri.parse(location).path;
   return const <String>{}.contains(route);

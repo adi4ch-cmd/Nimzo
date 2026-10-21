@@ -9,20 +9,6 @@ import 'package:nimzo/features/auth/domain/auth_user.dart';
 import 'package:nimzo/features/profile/tingle_me_screen.dart';
 
 void main() {
-  for (final path in ['/vip', '/svip']) {
-    test('active premium destination $path is reachable by deep link', () {
-      expect(
-        authRedirect(
-          location: path,
-          user: const AuthUser(id: 'me', emailVerified: true),
-          loading: false,
-          recovering: false,
-        ),
-        isNull,
-      );
-    });
-  }
-
   for (final path in ['/store', '/store?bag=1']) {
     test('active Store destination $path is no longer redirected', () {
       expect(
@@ -37,17 +23,13 @@ void main() {
     });
   }
 
-  for (final label in ['My Store', 'Backpack', 'VIP', 'SVIP']) {
+  for (final label in ['My Store', 'Backpack']) {
     testWidgets('profile $label opens its active destination',
         (tester) async {
       var opened = false;
       String? bagFromRoute;
       final router = GoRouter(initialLocation: '/profile', routes: [
         GoRoute(path: '/profile', builder: (_, __) => const TingleMeScreen()),
-        GoRoute(path: '/vip',
-            builder: (_, __) => const Scaffold(body: Text('VIP opened'))),
-        GoRoute(path: '/svip',
-            builder: (_, __) => const Scaffold(body: Text('SVIP opened'))),
         GoRoute(
           path: '/store',
           builder: (_, state) {
@@ -75,19 +57,10 @@ void main() {
       await tester.tap(find.text(label).hitTestable());
       await tester.pumpAndSettle();
 
-      if (label == 'VIP' || label == 'SVIP') {
-        expect(find.text('$label opened'), findsOneWidget);
-        expect(find.text('Coming soon'), findsNothing);
-        expect(opened, isFalse);
-      } else {
-        expect(find.text('Store opened'), findsOneWidget);
-        expect(find.text('Coming soon'), findsNothing);
-        expect(opened, isTrue);
-        // A push adds an imperative route on top of /profile; some GoRouter
-        // versions keep the initial path in routeInformationProvider. The
-        // rendered route and captured matched state are authoritative.
-        expect(bagFromRoute, label == 'Backpack' ? '1' : isNull);
-      }
+      expect(find.text('Store opened'), findsOneWidget);
+      expect(find.text('Coming soon'), findsNothing);
+      expect(opened, isTrue);
+      expect(bagFromRoute, label == 'Backpack' ? '1' : isNull);
     });
   }
 }
