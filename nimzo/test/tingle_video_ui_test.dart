@@ -20,7 +20,6 @@ import 'package:nimzo/features/profile/profile.dart';
 import 'package:nimzo/features/profile/profile_repository.dart';
 import 'package:nimzo/features/profile/profile_setup_screen.dart';
 import 'package:nimzo/features/profile/tingle_me_screen.dart';
-import 'package:nimzo/features/profile/tingle_membership_screen.dart';
 import 'package:nimzo/features/rooms/presentation/create_room_screen.dart';
 import 'package:nimzo/features/rooms/presentation/room_user_sheet.dart';
 import 'package:nimzo/features/rooms/presentation/room_controller.dart';
@@ -110,7 +109,6 @@ void main() {
         'create-room': const CreateRoomScreen(),
         'friends': const TingleFriendsScreen(),
         'family': const FamilyScreen(),
-        'membership': const TingleMembershipScreen(svip: true),
         'cp': const CoupleRequestsScreen(),
         'cp-gallery': const Scaffold(
             body: SingleChildScrollView(child: CpRewardGallery())),
@@ -120,7 +118,6 @@ void main() {
         'levels': const LevelsScreen(),
         'tasks': const TingleTasksScreen(),
         'checkin-unavailable': const TingleDailyCheckinScreen(),
-        'vip': const TingleMembershipScreen(svip: false),
         for (final category in [
           'Party Theme',
           'Rides',
@@ -178,15 +175,11 @@ void main() {
                 for (final period in ['weekly', 'monthly'])
                   leaderboardProvider((kind, period))
                       .overrideWith((_) async => []),
-              membershipSnapshotProvider(false).overrideWith((_) async =>
-                  const MembershipSnapshot(level: 0, expiry: null, tiers: [])),
               momentsFeedProvider.overrideWith((_) async => []),
               followedMomentsAuthorsProvider.overrideWith((_) async => {}),
               conversationsProvider.overrideWith((_) async => []),
               for (var tab = 0; tab < 3; tab++)
                 tinglePeopleProvider(tab).overrideWith((_) async => []),
-              membershipSnapshotProvider(true).overrideWith((_) async =>
-                  const MembershipSnapshot(level: 0, expiry: null, tiers: [])),
             ],
             child: RepaintBoundary(
                 key: boundary,
@@ -233,11 +226,6 @@ void main() {
           await tester.pumpAndSettle();
           await capture(tester, 'party-follow-${width.toInt()}', boundary);
         }
-        if (entry.key == 'profile') {
-          await tester.scrollUntilVisible(find.text('VIP'), 160,
-              scrollable: find.byType(Scrollable).first);
-          expect(find.text('VIP'), findsOneWidget);
-        }
         if (entry.key == 'profile-details') {
           final save = find.byKey(const ValueKey('modify-profile-save'));
           expect(tester.getBottomRight(save).dy,
@@ -260,51 +248,6 @@ void main() {
           await tester.pageBack();
           await tester.pumpAndSettle();
           expect(find.byType(TingleLoginScreen), findsOneWidget);
-        }
-        if (entry.key == 'membership' || entry.key == 'vip') {
-          for (var tier = 1; tier <= 6; tier++) {
-            await tester.scrollUntilVisible(
-                find.byKey(ValueKey('membership-tier-$tier')), 100,
-                scrollable: find.byType(Scrollable).at(1));
-            await tester.tap(find.byKey(ValueKey('membership-tier-$tier')));
-            await tester.pumpAndSettle();
-            await capture(
-                tester, '${entry.key}-tier-$tier-${width.toInt()}', boundary);
-          }
-          await tester.scrollUntilVisible(
-              find.byKey(const ValueKey('membership-tier-6')), 160,
-              scrollable: find.byType(Scrollable).at(1));
-          await tester.tap(find.byKey(const ValueKey('membership-tier-6')));
-          await tester.pumpAndSettle();
-          await tester.scrollUntilVisible(
-              find.byKey(const ValueKey('membership-perk-0')), 180,
-              scrollable: find.byType(Scrollable).first);
-          await tester.tap(find.byKey(const ValueKey('membership-perk-0')));
-          await tester.pumpAndSettle();
-          expect(find.byType(Dialog), findsOneWidget);
-          final artSize = tester.getSize(find
-              .descendant(
-                  of: find.byType(Dialog),
-                  matching: find.byType(NimzoIdentityArt))
-              .first);
-          expect(artSize.width, artSize.height,
-              reason: 'Privilege art keeps its aspect ratio');
-          await capture(
-              tester, '${entry.key}-dialog-${width.toInt()}', boundary);
-          await tester.tap(find.byTooltip('Next privilege'));
-          await tester.pumpAndSettle();
-          expect(find.text('Exclusive Avatar Frame'), findsWidgets);
-          for (var perk = 2; perk < 20; perk++) {
-            await tester.tap(find.byTooltip('Next privilege'));
-            await tester.pumpAndSettle();
-            expect(find.text('${perk + 1} / 20'), findsOneWidget);
-            await capture(
-                tester, '${entry.key}-perk-$perk-${width.toInt()}', boundary);
-          }
-          await tester.tap(find.byTooltip('Close privilege preview'));
-          await tester.pumpAndSettle();
-          expect(find.byType(Dialog), findsNothing);
-          expect(tester.takeException(), isNull);
         }
         if (entry.key == 'messages') {
           await tester.tap(find.byTooltip('Search conversations'));
