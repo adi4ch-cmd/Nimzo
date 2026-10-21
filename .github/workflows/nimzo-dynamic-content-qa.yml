@@ -54,6 +54,7 @@ jobs:
             lib/features/rooms/domain/dynamic_room_backgrounds.dart \
             lib/features/rooms/presentation/room_screen.dart \
             lib/features/store/store_live_catalog.dart \
+            lib/features/store/store_purchase_repository.dart \
             lib/features/store/store_visual_equipment.dart \
             lib/features/store/cosmetic_media_view.dart \
             test/dynamic_content_sync_test.dart \
@@ -68,4 +69,5 @@ jobs:
             test/gift_retry_test.dart \
             test/gift_rejection_test.dart \
             test/room_rocket_test.dart \
-            test/store_equipment_surfaces_test.dart
+            test/store_equipment_surfaces_test.dart \
+            test/store_paid_purchase_test.dart
