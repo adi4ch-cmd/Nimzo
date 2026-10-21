@@ -85,6 +85,41 @@ void main() {
     expect(media['Avatar Frame']?.thumbnail, 'https://cdn.example/thumb.png');
   });
 
+  testWidgets('remotely equipped PNG uses network rather than asset loader',
+      (tester) async {
+    const media = CosmeticMedia(
+      'nimzo-dynamic-network-frame',
+      'Party Theme',
+      'Remote Theme',
+      'https://cdn.example.com/room.png',
+      CosmeticMediaKind.image,
+    );
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        storeVisualEquipmentProvider('member').overrideWith(
+          (_) async => {'Party Theme': media},
+        ),
+      ],
+      child: const MaterialApp(
+        home: Scaffold(
+          body: EquippedCosmetic(
+            userId: 'member',
+            category: 'Party Theme',
+            child: Text('Original room body'),
+          ),
+        ),
+      ),
+    ));
+    await tester.pump();
+    final images = tester.widgetList<Image>(find.byType(Image));
+    expect(images.any((image) =>
+      image.image is NetworkImage &&
+      (image.image as NetworkImage).url ==
+        'https://cdn.example.com/room.png'), isTrue);
+    expect(find.text('Original room body'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets(
       'equipped media reaches avatar, speaking wave and room background',
       (tester) async {
