@@ -1,0 +1,58 @@
+name: NIMZO APK Store Candidate Audit (No APK)
+
+on:
+  push:
+    branches:
+      - feature/store-apk-verified-assets-20261021
+    paths:
+      - tools/stage_apk_store_assets.py
+      - tools/test_stage_apk_store_assets.py
+      - .github/workflows/nimzo-store-apk-candidate-audit.yml
+      - docs/validation/store-apk-candidate-review.md
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: store-apk-candidate-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Python and nested APK fixture safety
+        run: |
+          python3 -m py_compile tools/stage_apk_store_assets.py
+          python3 -m unittest discover -s tools -p test_stage_apk_store_assets.py -v
+      - name: Recheck existing pinned complete Store files and checksums
+        run: |
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          rows=json.loads(Path('nimzo/assets/premium_store/manifest.json').read_text())
+          checked=0
+          for r in rows:
+              asset=Path('nimzo') / r['asset']
+              assert asset.is_file(), f"Missing pinned asset: {asset}"
+              assert hashlib.sha256(asset.read_bytes()).hexdigest() == r['sha256'], f"Corrupt pinned asset: {asset}"
+              if r.get('thumbnail'):
+                  thumb=Path('nimzo') / r['thumbnail']
+                  assert thumb.is_file(), f"Missing preview: {thumb}"
+              checked+=1
+          print(f'PASS: {checked} previously integrated Store source media exact hash matches.')
+          PY
+      - name: Scan available original 91k audit metadata without inserting Store items
+        run: |
+          python3 tools/stage_apk_store_assets.py \
+            --use-full-audit \
+            --report "$RUNNER_TEMP/store-apk-candidates-dry-run.json"
+      - name: Preserve source-matched candidate review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NIMZO-APKS-STORE-REVIEW-ONLY
+          path: ${{ runner.temp }}/store-apk-candidates-dry-run.json
+          retention-days: 14
