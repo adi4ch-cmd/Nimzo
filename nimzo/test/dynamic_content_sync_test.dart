@@ -48,4 +48,30 @@ void main() {
     expect(NimzoCosmeticItem.fromJson(item('https://cdn.example/a.png')).thumbnailUrl,
         'https://cdn.example/a.png');
   });
+
+  test('new approved remote Store item has playable equipment metadata', () {
+    final item = NimzoCosmeticItem.fromJson({
+      'id': 'new-owner-approved-frame',
+      'category': 'Avatar Frame',
+      'name': 'Dynamic Frame',
+      'variant': 2,
+      'coin_price': 0,
+      'thumbnail_url': 'https://cdn.example/thumb.png',
+      'asset_url': 'https://cdn.example/frame.svga',
+      'media_kind': 'svga',
+    });
+    expect(item.remoteMedia, isNotNull);
+    expect(item.remoteMedia?.asset, 'https://cdn.example/frame.svga');
+    expect(item.remoteMedia?.category, 'Avatar Frame');
+    final unsafe = NimzoCosmeticItem.fromJson({
+      'id': 'unsafe',
+      'category': 'Avatar Frame',
+      'name': 'Unsafe',
+      'variant': 1,
+      'coin_price': 0,
+      'asset_url': 'file:///tmp/secret',
+      'media_kind': 'svga',
+    });
+    expect(unsafe.remoteMedia, isNull);
+  });
 }
