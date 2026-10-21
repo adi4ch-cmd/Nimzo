@@ -43,6 +43,7 @@ jobs:
           flutter analyze --no-fatal-infos --no-fatal-warnings \
             lib/app/app.dart \
             lib/core/services/nimzo_content_sync.dart \
+            lib/core/services/approved_media_bytes.dart \
             lib/features/events/dynamic_event_banners.dart \
             lib/features/events/events_screen.dart \
             lib/features/games/dynamic_game_catalog.dart \
@@ -53,6 +54,8 @@ jobs:
             lib/features/rooms/domain/dynamic_room_backgrounds.dart \
             lib/features/rooms/presentation/room_screen.dart \
             lib/features/store/store_live_catalog.dart \
+            lib/features/store/store_visual_equipment.dart \
+            lib/features/store/cosmetic_media_view.dart \
             test/dynamic_content_sync_test.dart \
             test/dynamic_media_contract_test.dart
       - name: Test catalogs, validation and gift regressions
@@ -65,3 +68,4 @@ jobs:
             test/gift_retry_test.dart \
             test/gift_rejection_test.dart \
             test/room_rocket_test.dart
+            test/store_equipment_surfaces_test.dart
