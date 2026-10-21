@@ -1,0 +1,103 @@
+name: NIMZO Dynamic Content QA (No APK)
+
+on:
+  push:
+    branches:
+      - feature/dynamic-content-sync-20261021
+    paths:
+      - .github/workflows/nimzo-dynamic-content-qa.yml
+      - nimzo/lib/**
+      - nimzo/test/**
+      - supabase/migrations/**
+  pull_request:
+    branches:
+      - feature/retire-unused-store-gifts-20261021
+    paths:
+      - .github/workflows/nimzo-dynamic-content-qa.yml
+      - nimzo/lib/**
+      - nimzo/test/**
+      - supabase/migrations/**
+  workflow_dispatch:
+
+concurrency:
+  group: dynamic-content-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  dynamic-content-source-and-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Install packages
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Analyze dynamic content and existing Flutter source
+        working-directory: nimzo
+        run: |
+          flutter analyze --no-fatal-infos --no-fatal-warnings \
+            lib/app/app.dart \
+            lib/core/services/nimzo_content_sync.dart \
+            lib/core/services/approved_media_bytes.dart \
+            lib/features/events/dynamic_event_banners.dart \
+            lib/features/events/events_screen.dart \
+            lib/features/games/dynamic_game_catalog.dart \
+            lib/features/games/games_catalog_screen.dart \
+            lib/features/gifts/gift_repository.dart \
+            lib/features/gifts/remote_gift_svga_overlay.dart \
+            lib/features/gifts/verified_gift_broadcast.dart \
+            lib/features/rooms/domain/dynamic_room_backgrounds.dart \
+            lib/features/rooms/presentation/room_screen.dart \
+            lib/features/store/store_live_catalog.dart \
+            lib/features/store/store_purchase_repository.dart \
+            lib/features/store/store_visual_equipment.dart \
+            lib/features/store/cosmetic_media_view.dart \
+            test/dynamic_content_sync_test.dart \
+            test/dynamic_media_contract_test.dart
+      - name: Test catalogs, validation and gift regressions
+        working-directory: nimzo
+        run: |
+          flutter test --reporter expanded \
+            test/dynamic_content_sync_test.dart \
+            test/dynamic_media_contract_test.dart \
+            test/store_live_contract_test.dart \
+            test/gift_retry_test.dart \
+            test/gift_rejection_test.dart \
+            test/room_rocket_test.dart \
+            test/store_equipment_surfaces_test.dart \
+            test/store_paid_purchase_test.dart \
+            test/startup_bootstrap_contract_test.dart \
+            test/store_actual_media_test.dart \
+            test/store_full_preview_test.dart \
+            test/store_category_preview_ui_test.dart \
+            test/private_gift_readiness_test.dart \
+            test/verified_gift_broadcast_test.dart \
+            test/room_reconnect_test.dart \
+            test/game_repository_validation_test.dart \
+            test/events_routes_test.dart \
+            test/feature_retirement_contract_test.dart
+
+      - name: Paid checkout widget integration smoke (bounded diagnostic)
+        timeout-minutes: 3
+        continue-on-error: true
+        working-directory: nimzo
+        run: flutter test --reporter expanded --timeout 75s test/store_paid_checkout_ui_test.dart
+
+      - name: Audit whole Flutter source (diagnostic)
+        continue-on-error: true
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Full Flutter regression suite (diagnostic, no APK)
+        continue-on-error: true
+        working-directory: nimzo
+        run: flutter test --reporter expanded

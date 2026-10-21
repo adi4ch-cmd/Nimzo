@@ -2,7 +2,6 @@ import '../../app/feature_availability.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/art/nimzo_identity_art.dart';
 import '../store/store_equipped_frame.dart';
-import '../premium/willchill_membership_badges.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/supabase_provider.dart';
@@ -107,18 +106,6 @@ class TingleMeScreen extends ConsumerWidget {
         color: Color(0xffffaa22),
         route: '/info/About'
       ),
-      (
-        title: 'VIP',
-        icon: Icons.workspace_premium_rounded,
-        color: Color(0xff9e69e5),
-        route: '/vip'
-      ),
-      (
-        title: 'SVIP',
-        icon: Icons.diamond_rounded,
-        color: Color(0xffd4a046),
-        route: '/svip'
-      ),
     ];
 
     return Scaffold(
@@ -204,15 +191,6 @@ class TingleMeScreen extends ConsumerWidget {
                                         color: NimzoStyle.primary,
                                         fontSize: 10,
                                         fontWeight: FontWeight.w700)),
-                              ),
-                            if (p != null &&
-                                (p.svipLevel > 0 || p.vipLevel > 0))
-                              Padding(
-                                padding: const EdgeInsets.only(top: 5),
-                                child: WillChillMembershipBadges(
-                                  svipLevel: p.svipLevel,
-                                  vipLevel: p.vipLevel,
-                                ),
                               ),
                           ],
                         )),
@@ -304,13 +282,6 @@ class TingleMeScreen extends ConsumerWidget {
                         const Icon(Icons.chevron_right_rounded,
                             color: Colors.white70),
                       ]))),
-              const SizedBox(height: 10),
-              _MembershipShortcut(
-                  title: 'SVIP',
-                  subtitle: 'Explore membership privileges',
-                  start: const Color(0xff064a35),
-                  end: const Color(0xff087f5b),
-                  onTap: () => _go(context, '/svip')),
               const SizedBox(height: 10),
               Container(
                 decoration: BoxDecoration(
@@ -484,48 +455,3 @@ class TingleMeScreen extends ConsumerWidget {
   }
 }
 
-class _MembershipShortcut extends StatelessWidget {
-  final String title, subtitle;
-  final Color start, end;
-  final VoidCallback onTap;
-  const _MembershipShortcut({
-    required this.title,
-    required this.subtitle,
-    required this.start,
-    required this.end,
-    required this.onTap,
-  });
-  @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          height: 74,
-          padding: const EdgeInsets.symmetric(horizontal: 13),
-          decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [start, end]),
-              borderRadius: BorderRadius.circular(10)),
-          child: Row(children: [
-            Expanded(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900)),
-                Text(subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style:
-                        const TextStyle(color: Colors.white70, fontSize: 11)),
-              ],
-            )),
-            const NimzoIdentityArt(
-                kind: NimzoArt.crest, color: Color(0xffe4bdff), size: 72),
-          ]),
-        ),
-      );
-}

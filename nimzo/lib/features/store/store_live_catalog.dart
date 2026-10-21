@@ -1,4 +1,8 @@
+import 'dart:math';
+
 import 'store_visual_equipment.dart';
+import 'store_purchase_repository.dart';
+import '../wallet/wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'premium_cosmetics.dart';
@@ -15,6 +19,9 @@ class NimzoCosmeticItem {
     required this.name,
     required this.variant,
     required this.coinPrice,
+    this.thumbnailUrl,
+    this.assetUrl,
+    this.mediaKind,
   });
 
   final String id;
@@ -22,15 +29,42 @@ class NimzoCosmeticItem {
   final String name;
   final int variant;
   final int coinPrice;
+  final String? thumbnailUrl;
+  final String? assetUrl;
+  final CosmeticMediaKind? mediaKind;
 
-  factory NimzoCosmeticItem.fromJson(Map<String, dynamic> json) =>
-      NimzoCosmeticItem(
-        id: json['id'] as String,
-        category: json['category'] as String,
-        name: json['name'] as String,
-        variant: (json['variant'] as num).toInt(),
-        coinPrice: (json['coin_price'] as num).toInt(),
-      );
+  /// Only a server-approved, validated asset can be rendered or equipped.
+  CosmeticMedia? get remoteMedia =>
+      assetUrl == null || mediaKind == null
+          ? null
+          : CosmeticMedia(id, category, name, assetUrl!, mediaKind!,
+              thumbnail: thumbnailUrl);
+
+  factory NimzoCosmeticItem.fromJson(Map<String, dynamic> json) {
+    String? httpsUrl(Object? input) {
+      final uri = Uri.tryParse(input is String ? input : '');
+      return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty &&
+              uri.userInfo.isEmpty
+          ? uri.toString()
+          : null;
+    }
+    final kind = switch (json['media_kind']) {
+      'image' => CosmeticMediaKind.image,
+      'svga' => CosmeticMediaKind.svga,
+      'vap' => CosmeticMediaKind.vap,
+      _ => null,
+    };
+    return NimzoCosmeticItem(
+      id: json['id'] as String,
+      category: json['category'] as String,
+      name: json['name'] as String,
+      variant: (json['variant'] as num).toInt(),
+      coinPrice: (json['coin_price'] as num).toInt(),
+      thumbnailUrl: httpsUrl(json['thumbnail_url']),
+      assetUrl: httpsUrl(json['asset_url']),
+      mediaKind: kind,
+    );
+  }
 }
 
 class NimzoStoreSnapshot {
@@ -57,6 +91,17 @@ final nimzoStoreProvider = FutureProvider.autoDispose<NimzoStoreSnapshot>(
         .eq('active', true)
         .order('category')
         .order('variant');
+    // Approved server image previews are optional; bundled previews remain
+    // available for items without remote media.
+    final remoteMedia = await session.client
+        .from('nimzo_cosmetic_media')
+        .select('item_id,thumbnail_url,asset_url,media_kind')
+        .eq('approved', true);
+    final approved = <String, Map<String, dynamic>>{
+      for (final e in remoteMedia)
+        if (e['item_id'] is String)
+          e['item_id'] as String: Map<String, dynamic>.from(e),
+    };
     final ownership = await session.client
         .from('nimzo_cosmetic_ownership')
         .select('item_id')
@@ -69,7 +114,11 @@ final nimzoStoreProvider = FutureProvider.autoDispose<NimzoStoreSnapshot>(
     // Interleave different product types in the All tab instead of showing
     // seven nearly identical badges in a row (the v1.0.31 screenshot issue).
     final items = (catalog as List)
-        .map((e) => NimzoCosmeticItem.fromJson(e as Map<String, dynamic>))
+        .map((e) {
+          final row = Map<String, dynamic>.from(e as Map);
+          row.addAll(approved[row['id']] ?? const <String, dynamic>{});
+          return NimzoCosmeticItem.fromJson(row);
+        })
         .toList();
     const order = <String>[
       'Avatar Frame',
@@ -114,6 +163,8 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
   late bool bag = widget.initialBag;
   String category = 'All';
   String? pending;
+  // Stable retry key + server ownership guard prevent duplicate charging.
+  final Map<String, String> _purchaseKeys = {};
 
   static const categories = <String>[
     'All',
@@ -174,14 +225,50 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
           'nimzo_store_equip_free',
           params: {'p_item_id': item.id},
         );
-      } else {
-        if (item.coinPrice != 0) {
-          throw StateError('Paid checkout is not available yet.');
-        }
+      } else if (item.coinPrice == 0) {
         confirmed = await session.client.rpc(
           'nimzo_store_claim_free',
           params: {'p_item_id': item.id},
         );
+      } else {
+        if (item.remoteMedia == null) {
+          throw StateError('Item media not ready. No coins charged.');
+        }
+        final accepted = await showDialog<bool>(
+          context: context,
+          builder: (dialog) => AlertDialog(
+            title: const Text('Confirm Store purchase'),
+            content: Text(
+              'Buy ${item.name} for ${item.coinPrice} coins? '
+              'The server verifies the final price.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialog).pop(false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(dialog).pop(true),
+                child: const Text('Buy'),
+              ),
+            ],
+          ),
+        );
+        if (!mounted || accepted != true || ref.read(sessionSupabaseProvider).userId != session.userId) return;
+        final key = _purchaseKeys.putIfAbsent(
+          item.id,
+          () => List.generate(16,
+            (_) => Random.secure().nextInt(256)
+                .toRadixString(16).padLeft(2, '0')).join(),
+        );
+        await NimzoStorePurchaseRepository(session.client).purchase(
+          itemId: item.id,
+          expectedPrice: item.coinPrice,
+          retryKey: key,
+        );
+        confirmed = true;
+        _purchaseKeys.remove(item.id);
+        ref.invalidate(walletProvider);
       }
       if (confirmed != true) {
         throw StateError('Server did not confirm the update.');
@@ -202,8 +289,10 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
         ));
       }
     } catch (error) {
-      if (mounted &&
-          ref.read(sessionSupabaseProvider).userId == session.userId) {
+      // Network failures may occur after the server commits a purchase.
+      ref.invalidate(nimzoStoreProvider);
+      ref.invalidate(walletProvider);
+      if (mounted && ref.read(sessionSupabaseProvider).userId == session.userId) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Unable to update Store: $error'),
         ));
@@ -251,7 +340,14 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                 child: ColoredBox(
                   color: const Color(0xff241a2b),
                   child: Center(
-                    child: premiumCosmetics[item.id] != null
+                    child: item.thumbnailUrl != null
+                        ? Image.network(
+                            item.thumbnailUrl!,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) =>
+                                const Icon(Icons.broken_image_outlined),
+                          )
+                        : premiumCosmetics[item.id] != null
                         ? CosmeticMediaView(
                             key: ValueKey(item.id),
                             media: premiumCosmetics[item.id]!,
@@ -281,7 +377,9 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                   color: Color(0xffefc983)),
             ),
             Text(
-              item.category,
+              item.coinPrice > 0
+                  ? '${item.category} · ${item.coinPrice} coins'
+                  : item.category,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
@@ -293,7 +391,9 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
               child: FilledButton(
                 key: ValueKey('nimzo-store-action-${item.id}'),
                 onPressed:
-                    busy || pending != null || (item.coinPrice != 0 && !isOwned)
+                    busy || pending != null ||
+                            (item.coinPrice > 0 && !isOwned &&
+                                item.remoteMedia == null)
                         ? null
                         : () => doAction(item, isOwned, equipped),
                 style: FilledButton.styleFrom(
@@ -316,7 +416,9 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                                 ? 'Equip'
                                 : item.coinPrice == 0
                                     ? 'Collect free'
-                                    : 'Not for sale',
+                                    : item.remoteMedia != null
+                                        ? 'Buy'
+                                        : 'Not for sale',
                         style: const TextStyle(fontSize: 11),
                       ),
               ),
@@ -590,7 +692,26 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                 child: InteractiveViewer(
                   minScale: .7,
                   maxScale: 3,
-                  child: premiumCosmetics[item.id] != null
+                  child: item.remoteMedia != null
+                      ? SizedBox(
+                          width: canvas,
+                          height: canvas,
+                          child: CosmeticMediaView(
+                            key: ValueKey('remote-${item.id}-$replay'),
+                            media: item.remoteMedia!,
+                            animate: !MediaQuery.disableAnimationsOf(context),
+                          ),
+                        )
+                      : item.thumbnailUrl != null
+                      ? Image.network(
+                          item.thumbnailUrl!,
+                          width: canvas,
+                          height: canvas,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.broken_image_outlined),
+                        )
+                      : premiumCosmetics[item.id] != null
                       ? SizedBox(
                           width: canvas,
                           height: canvas,

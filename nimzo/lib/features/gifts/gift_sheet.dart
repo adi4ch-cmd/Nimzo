@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/supabase_provider.dart';
@@ -13,8 +12,6 @@ import 'gift_repository.dart';
 import 'private_animal_gifts.dart';
 import 'gift_error.dart';
 import 'gift_artwork.dart';
-import 'staged_gift_previews.dart';
-import 'pending_gift_gallery.dart';
 import 'gift_svga_overlay.dart';
 import 'hall_of_fame_vap_overlay.dart';
 import 'gift_celebration_overlay.dart';
@@ -488,20 +485,9 @@ class _State extends ConsumerState<GiftSheet> {
                                         giftName: g.name,
                                       ))
                                       .toList();
-                                  if (index < active.length) {
-                                    final gift = active[index];
-                                    return _giftCard(
-                                      gift,
-                                      legendary: gift.price == 35000000 ||
-                                          gift.price == 50000000,
-                                    );
-                                  }
-                                  final previews = activeGiftCategory == 'Cars'
-                                      ? const <StagedGiftPreview>[]
-                                      : stagedGiftPreviews;
-                                  return _stagedGiftCard(
-                                    previews[index - active.length],
-                                  );
+                                  final gift = active[index];
+                                  return _giftCard(gift,
+                                    legendary: gift.price == 35000000 || gift.price == 50000000);
                                 },
                                 childCount: gifts
                                     .where((g) => giftMatchesCategory(
@@ -509,22 +495,15 @@ class _State extends ConsumerState<GiftSheet> {
                                       activeGiftCategory,
                                       giftName: g.name,
                                     ))
-                                    .length +
-                                    (activeGiftCategory == 'Cars'
-                                        ? 0
-                                        : stagedGiftPreviews.length),
+                                    .length,
                               ),
                             ),
                           ),
-                          if (activeGiftCategory != 'Cars')
-                            const SliverToBoxAdapter(
-                              child: PendingGiftGallery(),
-                            ),
                           const SliverToBoxAdapter(
                             child: Padding(
                               padding: EdgeInsets.all(16),
                               child: Text(
-                                'Active gifts are billed by NIMZO server. PREVIEW gifts cannot be sent.',
+                                'Only verified active gifts appear here. Settlement is server-controlled.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: NimzoStyle.muted,
@@ -635,99 +614,6 @@ class _State extends ConsumerState<GiftSheet> {
     );
   }
 
-  Widget _stagedGiftCard(StagedGiftPreview gift) {
-    return Semantics(
-      label: '${gift.name}, ${gift.proposedCoins} coins proposed, preview only, sending disabled',
-      button: true,
-      child: InkWell(
-        key: ValueKey('gift-preview-${gift.name.toLowerCase().replaceAll(' ', '-')}'),
-        borderRadius: BorderRadius.circular(15),
-        onTap: busy || confirming || key != null
-            ? null
-            : () {
-                // Prevent a previously selected paid gift remaining selected
-                // after the user taps a preview-only item.
-                setState(() => selected = null);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${gift.name} is a preview. The original transparent video is not approved. No coins charged.',
-                    ),
-                  ),
-                );
-              },
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xff291a4f), Color(0xff160f30)],
-            ),
-            border: Border.all(color: const Color(0xff6c5299)),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(7, 7, 7, 10),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(7),
-                        child: SvgPicture.asset(
-                          gift.iconAsset,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      Positioned(
-                        top: 1,
-                        right: 1,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: const Color(0xff6b4d83),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                            child: Text('PREVIEW', style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 8,
-                              fontWeight: FontWeight.w700,
-                            )),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 7),
-                Text(
-                  gift.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white,
-                    fontSize: 12, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  '${compactNumber(gift.proposedCoins)} coins',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xffd5b3ff),
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Premium, accurately labelled artwork for the 20 real server catalog
-  /// gifts. Only Rocket and Sports Car have verified original SVGA playback.
-  /// All other icons are illustrations, never pretend video stills.
   Widget _giftCard(Gift gift, {bool legendary = false}) {
     final highlighted = selected?.id == gift.id;
     final realAnimation =

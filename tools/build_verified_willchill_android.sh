@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Safe local build: only with verified media, existing Vivox-enabled Android,
+# Safe local build: only with the remaining non-membership media, Vivox Android,
 # and passing regression tests. Never publishes a public APK.
 set -Eeuo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-if [[ $# -ne 1 || ! -f "$1" ]]; then
-  echo 'REFUSING BUILD: supply the original local WillChill assets ZIP' >&2
+if [[ $# -ne 0 ]]; then
+  echo 'REFUSING BUILD: retired VIP/SVIP archive import is disabled; use bundled non-membership assets' >&2
   exit 2
 fi
 if [[ ! -f nimzo/FEATURES.lock.json || ! -f nimzo/pubspec.yaml ]]; then
@@ -25,7 +25,7 @@ if [[ ! -f nimzo/android/app/libs/vivox-sdk-5.28.0.aar ]]; then
   exit 2
 fi
 
-python3 tools/import_willchill_package.py "$1"
+echo 'Using verified bundled non-membership media; legacy ZIP importer skipped'
 python3 tools/verify_willchill_premium.py
 cd nimzo
 flutter pub get

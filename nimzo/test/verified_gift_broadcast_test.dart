@@ -26,7 +26,7 @@ class CarGiftRepository extends GiftRepository {
       event['receiver_id'].toString(): 'Receiver',
   };
   @override
-  Future<String?> approvedAnimationUrl(String giftId) async {
+  Future<GiftPlaybackMedia?> approvedAnimationMedia(String giftId) async {
     if (privateAnimalVapGiftIds.contains(giftId)) {
       privateMediaLookups.add(giftId);
       return null;

@@ -12,9 +12,8 @@ for item in data['records']:
     assert hashlib.sha256(p.read_bytes()).hexdigest()==item['sha256'],p
     assert item['asset'] not in seen,item['asset'];seen.add(item['asset'])
     groups[item['group']]+=1;kinds[item['type']]+=1
-svip={r['tier'] for r in data['records'] if r['group']=='svip' and r['tier']}
-assert svip==set(range(1,9)),svip
+assert len(seen)==261,len(seen)
 assert kinds['vap']>=20,kinds
 assert kinds['svga']>=10,kinds
 print('VERIFIED',len(seen),'unique source assets, SHA256 all correct')
-print('SVIP',sorted(svip),'media types',dict(kinds),'groups',dict(groups))
+print('Remaining non-membership media types',dict(kinds),'groups',dict(groups))

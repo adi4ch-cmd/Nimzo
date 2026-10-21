@@ -41,9 +41,6 @@ flutter:
     - assets/brand/
     - assets/games/
     - assets/gifts/hall_of_fame.svg
-    - assets/gifts/libra.svg
-    - assets/gifts/aries.svg
-    - assets/gifts/staged/
     - assets/gifts/free/
     - assets/reference/game/
     - assets/reference/fruit/
@@ -65,8 +62,6 @@ flutter:
     - assets/nimzo/gift_controls/
     - assets/room_rocket/
     - assets/room_rocket/posters/
-    - assets/willchill_premium/vip/
-    - assets/willchill_premium/svip/
     - assets/willchill_premium/store/
     - assets/willchill_premium/room_fx/
     - assets/willchill_premium/gifts/

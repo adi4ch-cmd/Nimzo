@@ -8,6 +8,12 @@ import '../features/profile/profile_repository.dart';
 import 'router.dart';
 import '../core/services/presence_service.dart';
 import '../core/services/firebase_push_service.dart';
+import '../core/services/nimzo_content_sync.dart';
+import '../features/gifts/gift_repository.dart';
+import '../features/store/store_live_catalog.dart';
+import '../features/store/store_visual_equipment.dart';
+import '../features/events/dynamic_event_banners.dart';
+import '../features/games/dynamic_game_catalog.dart';
 
 /// Tingle-reference rebuild entry point.
 ///
@@ -21,6 +27,22 @@ class NimzoApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(presenceLifecycleProvider);
     ref.watch(pushLifecycleProvider);
+    ref.watch(nimzoContentResumeProvider);
+    // Keep catalogs synchronized without restarting the app or rebuilding APKs.
+    // A failed optional content stream must not block authentication or routing.
+    ref.listen(nimzoContentRevisionsProvider, (previous, next) {
+      final rows = next.valueOrNull;
+      if (rows == null) return;
+      final changed = changedContentChannels(previous?.valueOrNull, rows);
+      if (changed.contains('gifts')) ref.invalidate(giftCatalogProvider);
+      if (changed.contains('store')) {
+        ref.invalidate(nimzoStoreProvider);
+        ref.invalidate(storeVisualEquipmentProvider);
+      }
+      if (changed.contains('settings')) ref.invalidate(nimzoRemoteSettingsProvider);
+      if (changed.contains('banners')) ref.invalidate(nimzoEventBannersProvider);
+      if (changed.contains('games')) ref.invalidate(nimzoLiveGameFlagsProvider);
+    });
     final id = ref.watch(currentUserIdProvider);
     if (id != null) {
       ref.listen(profileProvider(id), (_, next) {

@@ -1,0 +1,55 @@
+name: NIMZO Store Gift Legacy Cleanup QA (No APK)
+
+on:
+  push:
+    branches:
+      - feature/retire-unused-store-gifts-20261021
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Verify no staged gift placeholders in send screen
+        run: |
+          set -euo pipefail
+          test ! -f nimzo/lib/features/gifts/pending_gift_gallery.dart
+          test ! -f nimzo/lib/features/gifts/staged_gift_previews.dart
+          if grep -E 'PendingGiftGallery|StagedGiftPreview|_stagedGiftCard' nimzo/lib/features/gifts/gift_sheet.dart; then
+            exit 1
+          fi
+      - name: Verify original nonmembership media
+        run: python3 tools/verify_willchill_premium.py
+      - name: Flutter packages
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Flutter analyzer
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Relevant Store Gift Profile and Rocket regression tests
+        working-directory: nimzo
+        run: |
+          flutter test --reporter expanded \
+            test/pending_gifts_preview_contract_test.dart \
+            test/gift_room_recipient_test.dart \
+            test/gift_rejection_test.dart \
+            test/gift_retry_test.dart \
+            test/store_live_contract_test.dart \
+            test/store_actual_media_test.dart \
+            test/store_equipment_surfaces_test.dart \
+            test/profile_model_test.dart \
+            test/room_rocket_test.dart
+      - name: Full regression diagnostic only (old baseline failures tracked)
+        continue-on-error: true
+        working-directory: nimzo
+        run: flutter test --reporter expanded

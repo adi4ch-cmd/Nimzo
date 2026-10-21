@@ -14,8 +14,6 @@
     "nimzo/lib/features/store/store_equipped_frame.dart",
     "nimzo/lib/features/gifts/gift_sheet.dart",
     "nimzo/lib/features/gifts/gift_repository.dart",
-    "nimzo/lib/features/gifts/pending_gift_gallery.dart",
-    "nimzo/lib/features/gifts/staged_gift_previews.dart",
     "nimzo/lib/features/gifts/verified_gift_broadcast.dart",
     "nimzo/lib/features/gifts/hall_of_fame_vap_overlay.dart",
     "nimzo/lib/features/rooms/rocket/room_rocket_playback.dart",
@@ -26,9 +24,6 @@
     "nimzo/native/vivox/android/MainActivity.java",
     "nimzo/native/vivox/android/CMakeLists.txt",
     "nimzo/assets/events/reference_banners.jpg",
-    "nimzo/assets/gifts/staged/ice_queen_magic.svg",
-    "nimzo/assets/gifts/staged/romantic_blossom.svg",
-    "nimzo/assets/gifts/staged/tiger_warrior.svg",
     "nimzo/assets/games/jackpot_9lines_demo.html",
     "nimzo/assets/games/lucky77_room_demo.html",
     "nimzo/assets/games/grady_lion_auto.html",
@@ -49,11 +44,13 @@
     "nimzo/assets/room_rocket/vap_rocket_reward_5.mp4",
     "nimzo/assets/room_rocket/vap_rocket_fly_6.mp4",
     "nimzo/assets/room_rocket/vap_rocket_reward_6.mp4",
-    "nimzo/test/startup_bootstrap_contract_test.dart"
+    "nimzo/test/startup_bootstrap_contract_test.dart",
+    "nimzo/lib/core/services/nimzo_content_sync.dart",
+    "nimzo/lib/features/store/store_purchase_repository.dart",
+    "nimzo/lib/features/gifts/remote_gift_svga_overlay.dart"
   ],
   "required_flutter_assets": [
     "assets/events/",
-    "assets/gifts/staged/",
     "assets/room_rocket/",
     "assets/room_rocket/posters/",
     "assets/games/",
@@ -76,9 +73,7 @@
       "nimzo_store_equip_free"
     ],
     "nimzo/lib/features/gifts/gift_sheet.dart": [
-      "_testGiftAnimation()",
-      "PendingGiftGallery()",
-      "_stagedGiftCard("
+      "_testGiftAnimation()"
     ],
     "nimzo/lib/features/rooms/rocket/room_rocket_playback.dart": [
       "mute: false",
@@ -101,6 +96,12 @@
     "nimzo/lib/core/services/firebase_push_service.dart": [
       "pushGatewayStateProvider",
       "ref.watch(pushGatewayStateProvider)"
+    ],
+    "nimzo/lib/features/store/store_purchase_repository.dart": [
+      "nimzo_store_purchase",
+      "p_expected_price",
+      "p_key"
     ]
-  }
+  },
+  "retired_staging_notice": "Staged gift gallery/media was intentionally removed by feature/retire-unused-store-gifts-20261021. Do not reintroduce as build prerequisite."
 }

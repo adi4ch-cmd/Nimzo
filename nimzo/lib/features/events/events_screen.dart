@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'dynamic_event_banners.dart';
 import 'package:go_router/go_router.dart';
 
 import '../home/home_header.dart';
@@ -24,7 +27,7 @@ class EventsScreen extends StatelessWidget {
 
 /// The five complete banners supplied by the user, in their original order.
 /// These are display artwork; no reward eligibility or live campaign is implied.
-class EventBannerList extends StatelessWidget {
+class EventBannerList extends ConsumerWidget {
   const EventBannerList({super.key});
 
   static const banners = <({String title, double top})>[
@@ -36,10 +39,16 @@ class EventBannerList extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) => ListView.separated(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final remote = ref.watch(nimzoEventBannersProvider).valueOrNull ??
+        const <NimzoEventBanner>[];
+    // Until the first verified live campaign is published, retain the
+    // existing bundled artwork. No reward/campaign is fabricated.
+    final live = remote.isNotEmpty;
+    return ListView.separated(
         key: const PageStorageKey('event-banners'),
         padding: const EdgeInsets.fromLTRB(13, 8, 13, 16),
-        itemCount: banners.length + 1,
+        itemCount: (live ? remote.length : banners.length) + 1,
         separatorBuilder: (_, __) => const SizedBox(height: 9),
         itemBuilder: (context, index) {
           if (index == 0) {
@@ -49,6 +58,35 @@ class EventBannerList extends StatelessWidget {
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
                     color: Color(0xff303030)));
+          }
+          if (live) {
+            final banner = remote[index - 1];
+            return Semantics(
+              image: true,
+              label: banner.title,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(11),
+                child: AspectRatio(
+                  aspectRatio: 540 / 175,
+                  child: Image.network(
+                    banner.imageUrl,
+                    key: ValueKey('nimzo-live-banner-${banner.id}'),
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => ColoredBox(
+                      color: const Color(0xffeeeaf1),
+                      child: Center(
+                        child: Text(banner.title,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xff303030)),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
           }
           final banner = banners[index - 1];
           return Semantics(
@@ -82,4 +120,5 @@ class EventBannerList extends StatelessWidget {
           );
         },
       );
+  }
 }
