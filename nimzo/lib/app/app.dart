@@ -27,6 +27,7 @@ class NimzoApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(presenceLifecycleProvider);
     ref.watch(pushLifecycleProvider);
+    ref.watch(nimzoContentResumeProvider);
     // Keep catalogs synchronized without restarting the app or rebuilding APKs.
     // A failed optional content stream must not block authentication or routing.
     ref.listen(nimzoContentRevisionsProvider, (previous, next) {
