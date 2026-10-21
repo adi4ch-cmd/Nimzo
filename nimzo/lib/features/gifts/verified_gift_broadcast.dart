@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'gift_repository.dart';
 import 'hall_of_fame_gift.dart';
-import 'zodiac_gifts.dart';
 import 'private_animal_gifts.dart';
 import 'hall_of_fame_vap_overlay.dart';
 import 'gift_video_overlay.dart';
@@ -184,7 +183,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
                 return (r['gift_id']?.toString() ==
                           '35e4c570-cb02-4466-ae86-d670b3fb05ab' ||
                       r['gift_id']?.toString() == hallOfFameGiftId ||
-                      zodiacVapGiftIds.contains(r['gift_id']?.toString()) ||
                       privateAnimalVapGiftIds.contains(
                         r['gift_id']?.toString(),
                       ) ||
@@ -309,7 +307,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final giftName = catalogName;
     if (_video != null &&
         ('${event['gift_id']}' == hallOfFameGiftId ||
-            zodiacVapGiftIds.contains('${event['gift_id']}') ||
             privateAnimalVapGiftIds.contains('${event['gift_id']}'))) {
       return HallOfFameVapOverlay(
         key: ValueKey(event['id']),
@@ -329,7 +326,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     if (!_loading &&
         _video == null &&
         (eventGiftId == hallOfFameGiftId ||
-            zodiacVapGiftIds.contains(eventGiftId) ||
             privateAnimalVapGiftIds.contains(eventGiftId))) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && identical(_active, event)) _next();
