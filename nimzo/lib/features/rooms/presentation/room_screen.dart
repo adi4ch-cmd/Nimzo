@@ -29,6 +29,8 @@ import 'room_user_sheet.dart';
 import 'room_overlays.dart';
 import '../rocket/room_rocket_widgets.dart';
 import '../diamond/room_diamond_repository.dart';
+import '../domain/dynamic_room_backgrounds.dart';
+import '../../../core/services/nimzo_content_sync.dart';
 import '../../../core/widgets/master_ui.dart';
 
 class RoomScreen extends ConsumerStatefulWidget {
@@ -447,7 +449,13 @@ class _State extends ConsumerState<RoomScreen> {
     final me = ref.watch(currentUserIdProvider),
         speaking = ref.watch(speakingProvider).valueOrNull ?? <String>{};
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
-    final palette = RoomTheme.byId(room.valueOrNull?.theme ?? 'nimzo_white');
+    final roomTheme = room.valueOrNull?.theme ?? 'nimzo_white';
+    final palette = RoomTheme.byId(roomTheme);
+    final backgroundUrl = nimzoApprovedRoomBackground(
+      ref.watch(nimzoRemoteSettingsProvider).valueOrNull ??
+          const <String, Map<String, dynamic>>{},
+      roomTheme,
+    );
     ref.listen(voiceConnectedProvider, (previous, next) {
       if (next.valueOrNull == true) {
         // The SDK may restore media automatically after a short network drop.
@@ -604,7 +612,17 @@ class _State extends ConsumerState<RoomScreen> {
                     child: SizedBox.shrink(),
                   ),
                 ),
-                body: SafeArea(
+                body: DecoratedBox(
+                  decoration: BoxDecoration(
+                    image: backgroundUrl == null
+                        ? null
+                        : DecorationImage(
+                            image: NetworkImage(backgroundUrl),
+                            fit: BoxFit.cover,
+                            onError: (_, __) {},
+                          ),
+                  ),
+                  child: SafeArea(
                   child: EquippedCosmetic(
                       userId: room.valueOrNull?.ownerId,
                       category: 'Party Theme',
@@ -1257,7 +1275,7 @@ class _State extends ConsumerState<RoomScreen> {
                           ),
                         ],
                       )),
-                ),
+                )),
               ),
               if (joined)
                 Positioned.fill(
