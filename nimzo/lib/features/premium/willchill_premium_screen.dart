@@ -8,6 +8,8 @@ import '../../core/providers/supabase_provider.dart';
 import 'willchill_membership_showcase.dart';
 import 'membership_status.dart';
 import 'membership_purchase_keys.dart';
+import 'dynamic_membership_media.dart';
+import '../store/cosmetic_media_view.dart';
 import '../wallet/wallet_screen.dart';
 import '../profile/profile_repository.dart';
 
@@ -57,7 +59,7 @@ final membershipStatusProvider = FutureProvider.autoDispose<MembershipStatus?>((
   return MembershipStatus.fromJson(Map<String, dynamic>.from(result as Map));
 });
 
-final _vipOffersProvider =
+final vipOffersProvider =
     FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
   final session = ref.watch(sessionSupabaseProvider);
   if (session.userId == null) return [];
@@ -68,7 +70,7 @@ final _vipOffersProvider =
   return rows.map((row) => Map<String, dynamic>.from(row)).toList();
 });
 
-final _svipThresholdsProvider =
+final svipThresholdsProvider =
     FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
   final session = ref.watch(sessionSupabaseProvider);
   if (session.userId == null) return [];
@@ -225,7 +227,8 @@ class _WillChillPremiumScreenState
     }
   }
 
-  Widget _svipOverview(int owned, double? progress) {
+  Widget _svipOverview(int owned, double? progress,
+      Map<String, NimzoMembershipMedia> liveMedia) {
     final possible = _assets
         ?.where(
           (item) =>
@@ -234,35 +237,46 @@ class _WillChillPremiumScreenState
         )
         .toList();
     final crown = possible == null || possible.isEmpty ? null : possible.first;
+    final liveEntry = liveMedia['entry'];
     return WillChillMembershipShowcase(
       kind: 'svip',
       growthProgress: progress,
       tier: _tier,
       ownedLevel: owned,
+      dynamicMedia: liveMedia,
       onTierChanged: (tier) => setState(() => _tier = tier),
-      onPreviewEntrance: crown == null
+      onPreviewEntrance: liveEntry == null && crown == null
           ? null
           : () => showModalBottomSheet<void>(
                 context: context,
                 isScrollControlled: true,
                 builder: (_) => FractionallySizedBox(
                   heightFactor: .85,
-                  child: _PremiumAssetPreview(asset: crown),
+                  child: liveEntry == null
+                      ? _PremiumAssetPreview(asset: crown!)
+                      : _LiveMembershipMediaPreview(media: liveEntry),
                 ),
               ),
     );
   }
 
-  Widget _vipOverview(int owned) => WillChillMembershipShowcase(
+  Widget _vipOverview(int owned,
+      Map<String, NimzoMembershipMedia> liveMedia) =>
+      WillChillMembershipShowcase(
         kind: 'vip',
         tier: _tier,
         ownedLevel: owned,
+        dynamicMedia: liveMedia,
         onTierChanged: (tier) => setState(() => _tier = tier),
       );
 
   @override
   Widget build(BuildContext context) {
     final membership = ref.watch(membershipStatusProvider);
+    final approvedMedia = ref.watch(nimzoMembershipMediaProvider)
+        .valueOrNull ?? const <NimzoMembershipMedia>[];
+    final liveTierMedia =
+        membershipTierMedia(approvedMedia, _group, _tier);
     final profile = membership.valueOrNull;
     final svip = profile?.svipLevel ?? 0;
     final activeVip = profile?.vipLevel ?? 0;
@@ -275,9 +289,9 @@ class _WillChillPremiumScreenState
                 : profile.retired
                     ? 'Membership purchases and rewards are unavailable'
                     : 'Your account · SVIP $svip · ${activeVip > 0 ? 'VIP $activeVip' : 'VIP inactive'}';
-    final offers = ref.watch(_vipOffersProvider).valueOrNull ?? const [];
+    final offers = ref.watch(vipOffersProvider).valueOrNull ?? const [];
     final thresholds =
-        ref.watch(_svipThresholdsProvider).valueOrNull ?? const [];
+        ref.watch(svipThresholdsProvider).valueOrNull ?? const [];
     final selectedOffers = offers.where((row) => row['tier'] == _tier);
     final offer = selectedOffers.isEmpty ? null : selectedOffers.first;
     final selectedThresholds = thresholds.where((row) => row['level'] == _tier);
@@ -421,8 +435,9 @@ class _WillChillPremiumScreenState
                 : RefreshIndicator(
                     onRefresh: () async {
                       ref.invalidate(membershipStatusProvider);
-                      ref.invalidate(_vipOffersProvider);
-                      ref.invalidate(_svipThresholdsProvider);
+                      ref.invalidate(vipOffersProvider);
+                      ref.invalidate(svipThresholdsProvider);
+                      ref.invalidate(nimzoMembershipMediaProvider);
                       await ref.read(membershipStatusProvider.future);
                     },
                     child: ListView(
@@ -514,8 +529,10 @@ class _WillChillPremiumScreenState
                                   textAlign: TextAlign.center,
                                   style:
                                       const TextStyle(color: Colors.white70))),
-                        if (_group == 'svip') _svipOverview(svip, progress),
-                        if (_group == 'vip') _vipOverview(activeVip),
+                        if (_group == 'svip')
+                          _svipOverview(svip, progress, liveTierMedia),
+                        if (_group == 'vip')
+                          _vipOverview(activeVip, liveTierMedia),
                       ],
                     ),
                   ),
@@ -640,4 +657,29 @@ class _PremiumAssetPreviewState extends State<_PremiumAssetPreview> {
           ),
         ),
       );
+}
+
+class _LiveMembershipMediaPreview extends StatelessWidget {
+  const _LiveMembershipMediaPreview({required this.media});
+  final NimzoMembershipMedia media;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xff101a15),
+    appBar: AppBar(title: Text('${media.kind.toUpperCase()} ${media.tier} preview')),
+    body: SafeArea(
+      child: IgnorePointer(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Center(
+            child: CosmeticMediaView(
+              key: ValueKey('live-tier-preview-${media.kind}-${media.tier}'),
+              media: media.toCosmetic(),
+              animate: true,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
