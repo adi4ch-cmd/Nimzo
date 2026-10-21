@@ -16,6 +16,8 @@ class NimzoCosmeticItem {
     required this.variant,
     required this.coinPrice,
     this.thumbnailUrl,
+    this.assetUrl,
+    this.mediaKind,
   });
 
   final String id;
@@ -24,19 +26,39 @@ class NimzoCosmeticItem {
   final int variant;
   final int coinPrice;
   final String? thumbnailUrl;
+  final String? assetUrl;
+  final CosmeticMediaKind? mediaKind;
+
+  /// Only a server-approved, validated asset can be rendered or equipped.
+  CosmeticMedia? get remoteMedia =>
+      assetUrl == null || mediaKind == null
+          ? null
+          : CosmeticMedia(id, category, name, assetUrl!, mediaKind!,
+              thumbnail: thumbnailUrl);
 
   factory NimzoCosmeticItem.fromJson(Map<String, dynamic> json) {
-    final uri = Uri.tryParse(json['thumbnail_url'] as String? ?? '');
+    String? httpsUrl(Object? input) {
+      final uri = Uri.tryParse(input is String ? input : '');
+      return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty &&
+              uri.userInfo.isEmpty
+          ? uri.toString()
+          : null;
+    }
+    final kind = switch (json['media_kind']) {
+      'image' => CosmeticMediaKind.image,
+      'svga' => CosmeticMediaKind.svga,
+      'vap' => CosmeticMediaKind.vap,
+      _ => null,
+    };
     return NimzoCosmeticItem(
       id: json['id'] as String,
       category: json['category'] as String,
       name: json['name'] as String,
       variant: (json['variant'] as num).toInt(),
       coinPrice: (json['coin_price'] as num).toInt(),
-      thumbnailUrl:
-          uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
-              ? uri.toString()
-              : null,
+      thumbnailUrl: httpsUrl(json['thumbnail_url']),
+      assetUrl: httpsUrl(json['asset_url']),
+      mediaKind: kind,
     );
   }
 }
@@ -69,12 +91,12 @@ final nimzoStoreProvider = FutureProvider.autoDispose<NimzoStoreSnapshot>(
     // available for items without remote media.
     final remoteMedia = await session.client
         .from('nimzo_cosmetic_media')
-        .select('item_id,thumbnail_url')
+        .select('item_id,thumbnail_url,asset_url,media_kind')
         .eq('approved', true);
-    final thumbnails = <String, String>{
+    final approved = <String, Map<String, dynamic>>{
       for (final e in remoteMedia)
-        if (e['item_id'] is String && e['thumbnail_url'] is String)
-          e['item_id'] as String: e['thumbnail_url'] as String,
+        if (e['item_id'] is String)
+          e['item_id'] as String: Map<String, dynamic>.from(e),
     };
     final ownership = await session.client
         .from('nimzo_cosmetic_ownership')
@@ -90,7 +112,7 @@ final nimzoStoreProvider = FutureProvider.autoDispose<NimzoStoreSnapshot>(
     final items = (catalog as List)
         .map((e) {
           final row = Map<String, dynamic>.from(e as Map);
-          row['thumbnail_url'] = thumbnails[row['id']];
+          row.addAll(approved[row['id']] ?? const <String, dynamic>{});
           return NimzoCosmeticItem.fromJson(row);
         })
         .toList();
@@ -608,7 +630,17 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                 child: InteractiveViewer(
                   minScale: .7,
                   maxScale: 3,
-                  child: item.thumbnailUrl != null
+                  child: item.remoteMedia != null
+                      ? SizedBox(
+                          width: canvas,
+                          height: canvas,
+                          child: CosmeticMediaView(
+                            key: ValueKey('remote-${item.id}-$replay'),
+                            media: item.remoteMedia!,
+                            animate: !MediaQuery.disableAnimationsOf(context),
+                          ),
+                        )
+                      : item.thumbnailUrl != null
                       ? Image.network(
                           item.thumbnailUrl!,
                           width: canvas,
