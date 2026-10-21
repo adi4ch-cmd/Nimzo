@@ -255,7 +255,7 @@ Future<void> showRoomGamesSheet(
 }) async {
   final selected = await showReferenceSheet<String>(
     context,
-    Column(
+    Consumer(builder: (sheetContext, ref, _) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const GradientText('Games',
@@ -272,8 +272,7 @@ Future<void> showRoomGamesSheet(
             for (final game in NimzoRoomGames.approved.where(
               (g) => isKnownGameEnabled(
                 g.slug,
-                ProviderScope.containerOf(context, listen: false)
-                    .read(nimzoLiveGameFlagsProvider).valueOrNull ??
+                ref.watch(nimzoLiveGameFlagsProvider).valueOrNull ??
                     const <String, bool>{},
               ),
             ))
@@ -304,7 +303,7 @@ Future<void> showRoomGamesSheet(
           ],
         ),
       ],
-    ),
+    )),
   );
   if (selected != null && context.mounted) {
     if (onSelected != null) {
