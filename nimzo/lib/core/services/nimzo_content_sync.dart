@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/supabase_provider.dart';
@@ -11,6 +13,12 @@ final nimzoContentRevisionsProvider =
   if (session.userId == null) {
     return Stream.value(const <Map<String, dynamic>>[]);
   }
+  // Recover from missed websocket changes or long offline intervals without
+  // depending on a permanent background service or rebuilding the app.
+  final poll = Timer.periodic(const Duration(minutes: 3), (_) {
+    ref.invalidateSelf();
+  });
+  ref.onDispose(poll.cancel);
   return session.client
       .from('nimzo_content_revisions')
       .stream(primaryKey: ['channel'])
