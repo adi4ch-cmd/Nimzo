@@ -71,6 +71,7 @@ jobs:
             test/room_rocket_test.dart \
             test/store_equipment_surfaces_test.dart \
             test/store_paid_purchase_test.dart \
+            test/store_paid_checkout_ui_test.dart \
             test/startup_bootstrap_contract_test.dart \
             test/store_actual_media_test.dart \
             test/store_full_preview_test.dart \
