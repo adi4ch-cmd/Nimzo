@@ -67,5 +67,5 @@ jobs:
             test/store_live_contract_test.dart \
             test/gift_retry_test.dart \
             test/gift_rejection_test.dart \
-            test/room_rocket_test.dart
+            test/room_rocket_test.dart \
             test/store_equipment_surfaces_test.dart
