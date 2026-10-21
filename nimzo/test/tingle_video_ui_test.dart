@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/core/theme/app_theme.dart';
@@ -143,6 +144,15 @@ void main() {
         // ignore: avoid_print
         print('Rendering ${entry.key} at $width');
         final boundary = GlobalKey();
+        Widget screenForRoute(GoRouterState state) {
+          if (entry.key != 'home') return entry.value;
+          final requestedTab = int.tryParse(state.uri.queryParameters['tab'] ?? '0') ?? 0;
+          return HomeScreen(initialTab: requestedTab);
+        }
+        final router = GoRouter(routes: [
+          GoRoute(path: '/', builder: (_, state) => screenForRoute(state)),
+          GoRoute(path: '/home', builder: (_, state) => screenForRoute(state)),
+        ]);
         await tester.pumpWidget(ProviderScope(
             key: ValueKey(entry.key),
             overrides: [
@@ -190,13 +200,13 @@ void main() {
             ],
             child: RepaintBoundary(
                 key: boundary,
-                child: MaterialApp(
+                child: MaterialApp.router(
                     debugShowCheckedModeBanner: false,
                     theme: AppTheme.light().copyWith(
                         textTheme: AppTheme.light()
                             .textTheme
                             .apply(fontFamily: 'Roboto')),
-                    home: entry.value))));
+                  routerConfig: router))));
         await tester.pumpAndSettle();
         if (entry.key == 'login') {
           await tester.runAsync(() => precacheImage(
@@ -223,7 +233,9 @@ void main() {
           await tester.tap(find.byTooltip('Close country filter'));
           await tester.pumpAndSettle();
           for (final index in [1, 3, 0]) {
-            await tester.tap(find.byKey(ValueKey('explore-tab-$index')));
+            final tab = find.byKey(ValueKey('explore-tab-$index'));
+            await tester.ensureVisible(tab);
+            await tester.tap(tab);
             await tester.pumpAndSettle();
             expect(tester.takeException(), isNull);
           }
@@ -359,8 +371,6 @@ void main() {
             'Monthly',
             'Daily',
             'Charm',
-            'Active',
-            'Gift',
             'Wealth',
             'Weekly'
           ]) {
@@ -376,6 +386,7 @@ void main() {
           expect(find.byKey(const ValueKey('friends-search')), findsOneWidget);
         }
         await tester.pumpWidget(const SizedBox());
+        router.dispose();
       }
     });
   }

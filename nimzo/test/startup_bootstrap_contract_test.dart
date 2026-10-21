@@ -6,9 +6,13 @@ void main() {
     final source = File('lib/main.dart').readAsStringSync();
     final render = source.indexOf('runApp(const NimzoBootstrapApp());');
     expect(render, greaterThanOrEqualTo(0));
-    expect(source.indexOf('await Supabase.initialize('), greaterThan(render));
+    expect(source.indexOf('Supabase.initialize('), greaterThan(render));
     expect(source.indexOf('await initializeFirebasePush()'), greaterThan(render));
     expect(source, contains('timeout(const Duration(seconds: 12))'));
+    expect(source, contains('Future<Supabase>? _supabaseInitialization;'));
+    expect(source, contains('_supabaseInitialization = null;'));
+    expect(source, contains('_safeStartupMessage(error)'));
+    expect(source, contains('debugPrintStack(stackTrace: stackTrace)'));
     expect(source, contains('timeout(const Duration(seconds: 8))'));
     expect(source, contains('UncontrolledProviderScope('));
     expect(source, contains('child: const NimzoApp()'));

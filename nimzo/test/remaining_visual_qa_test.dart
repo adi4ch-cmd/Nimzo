@@ -278,6 +278,7 @@ void main() {
             ),
             supabaseProvider.overrideWithValue(db),
             currentUserIdProvider.overrideWithValue('me'),
+            profileProvider('me').overrideWith((_) async => fixtureMe),
             authControllerProvider.overrideWith(AuthController.new),
             voiceServiceProvider.overrideWithValue(FixtureVoice()),
             ownedRoomPreviewProvider.overrideWith((_) async => fixtureRoom),
@@ -618,7 +619,7 @@ void main() {
             'Gold',
           ]) {
             await tester.scrollUntilVisible(
-              find.text(label),
+              find.byKey(ValueKey('level-band-$label')),
               120,
               scrollable: find.byType(Scrollable).first,
             );
