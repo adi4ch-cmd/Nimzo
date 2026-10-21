@@ -41,6 +41,10 @@ class NIMZOStoreApkTests(unittest.TestCase):
         self.assertIsNone(category_for("assets/store_tab_frame.png", "png"))
         self.assertIsNone(category_for("assets/chat_list_gold_anim.svga", "svga"))
         self.assertIsNone(category_for("assets/vip_avatar_frame.svga", "svga"))
+        self.assertIsNone(category_for("res/drawable-xhdpi-v4/ic_avatar_frame.png", "png"))
+        self.assertIsNone(category_for("assets/icons/gold_avatar_frame.png", "png"))
+        self.assertIsNone(category_for("assets/store_tab_avatar_frame.png", "png"))
+        self.assertIsNone(category_for("assets/2.0x/avatar_frame.webp", "webp"))
         self.assertIsNone(category_for("assets/game_entrance.svga", "svga"))
 
     def test_svga_structure_and_corrupted_bytes(self):
@@ -94,7 +98,7 @@ class NIMZOStoreApkTests(unittest.TestCase):
                     "files": [
                         {"source": "base.apk!/assets/room_theme_aurora.svga",
                          "format": "svga", "sha256": "a"*64,
-                         "bytes": 200, "package": "Example.apks"},
+                         "bytes": 200},
                         {"source": "base.apk!/assets/game_entrance.svga",
                          "format": "svga", "sha256": "b"*64,
                          "bytes": 200, "package": "Example.apks"},
@@ -107,6 +111,7 @@ class NIMZOStoreApkTests(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["proposed_store_category"],
                              "Party Theme")
+            self.assertEqual(rows[0]["source_package"], "Example.apks")
 
     def test_best_source_report_is_not_permission_to_publish(self):
         with tempfile.TemporaryDirectory() as folder:
