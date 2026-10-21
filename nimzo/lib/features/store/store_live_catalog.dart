@@ -69,6 +69,11 @@ class NimzoCosmeticItem {
   }
 }
 
+/// Only existing, reviewed bundled assets or approved playable remote media
+/// are considered real Store products. A thumbnail alone is not an item.
+bool hasVerifiedStoreMedia(NimzoCosmeticItem item) =>
+    item.remoteMedia != null || premiumCosmetics.containsKey(item.id);
+
 class NimzoStoreSnapshot {
   const NimzoStoreSnapshot({
     required this.items,
@@ -312,7 +317,7 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
     final isOwned = snap.owned.contains(item.id);
     final equipped = snap.equipped[item.category] == item.id;
     final busy = pending == item.id;
-    final accent = colors[item.variant % colors.length];
+    final hasRealMedia = hasVerifiedStoreMedia(item);
 
     return InkWell(
       key: ValueKey('nimzo-store-preview-${item.id}'),
@@ -358,15 +363,8 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                                 key: ValueKey(item.id),
                                 media: premiumCosmetics[item.id]!,
                                 animate: false)
-                            : item.id.startsWith('nimzo-media-')
-                                ? const Icon(Icons.image_not_supported_outlined,
-                                    semanticLabel: 'Item media unavailable')
-                                : NimzoIdentityArt(
-                                    kind: artFor(item.category),
-                                    variant: item.variant,
-                                    color: accent,
-                                    size: 102,
-                                  ),
+                            : const Icon(Icons.image_not_supported_outlined,
+                                semanticLabel: 'Item media unavailable'),
                   ),
                 ),
               ),
@@ -398,6 +396,7 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                 key: ValueKey('nimzo-store-action-${item.id}'),
                 onPressed: busy ||
                         pending != null ||
+                        !hasRealMedia ||
                         (item.coinPrice > 0 &&
                             !isOwned &&
                             item.remoteMedia == null)
@@ -417,7 +416,9 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Colors.white))
                     : Text(
-                        equipped
+                        !hasRealMedia
+                            ? 'Artwork unavailable'
+                            : equipped
                             ? 'Remove'
                             : isOwned
                                 ? 'Equip'
@@ -544,6 +545,7 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                 final filtered = snap.items
                     .where((item) =>
                         (!bag || snap.owned.contains(item.id)) &&
+                        (bag || hasVerifiedStoreMedia(item)) &&
                         (bag || category == 'All' || item.category == category))
                     .toList(growable: false);
 
@@ -727,24 +729,9 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                                       media: premiumCosmetics[item.id]!,
                                       animate: !MediaQuery.disableAnimationsOf(
                                           context)))
-                              : item.id.startsWith('nimzo-media-')
-                                  ? const Icon(
-                                      Icons.image_not_supported_outlined,
-                                      semanticLabel: 'Item media unavailable')
-                                  : AnimatedBuilder(
-                                      animation: controller,
-                                      builder: (_, __) => NimzoIdentityArt(
-                                        kind: art,
-                                        variant: item.variant,
-                                        color: color,
-                                        size: canvas,
-                                        progress:
-                                            MediaQuery.disableAnimationsOf(
-                                                    context)
-                                                ? 1
-                                                : controller.value,
-                                      ),
-                                    ),
+                              : const Icon(
+                                  Icons.image_not_supported_outlined,
+                                  semanticLabel: 'Item media unavailable'),
                 ),
               ),
             ),
