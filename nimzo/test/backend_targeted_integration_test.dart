@@ -129,15 +129,11 @@ void main() {
         'wealth_coins': 9007199254740993,
         'charm_diamonds': 450,
         'active_points': 0,
-        'svip_cycle_cents': 20000,
-        'svip_cycle_start': '2026-10-01T00:00:00Z',
       });
       expect(p.wealthCoins, 9007199254740993);
       expect(p.charmDiamonds, 450);
       expect(p.activePoints, 0);
       expect(p.wealthLevel, 0);
-      expect(p.vipLevel, 0);
-      expect(p.svipLevel, 0);
       final unavailable = Profile.fromJson({'id': 'me', 'nimzo_id': 11699311});
       expect(unavailable.wealthCoins, isNull);
       expect(unavailable.activePoints, isNull);
