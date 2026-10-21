@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nimzo/features/games/dynamic_game_catalog.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/games/games_catalog_screen.dart';
 import 'package:nimzo/features/rooms/presentation/room_themes_screen.dart';
@@ -6,9 +8,13 @@ import 'package:nimzo/features/rooms/domain/room_theme.dart';
 
 void main() {
   testWidgets('Tingle-reference Games gallery keeps approved catalog visible', (tester) async {
-    await tester.pumpWidget(const MaterialApp(
-      home: GamesCatalogScreen(),
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        nimzoLiveGameFlagsProvider.overrideWith((_) async => const {}),
+      ],
+      child: const MaterialApp(home: GamesCatalogScreen()),
     ));
+    await tester.pump();
     expect(find.text('Games'), findsOneWidget);
     expect(find.byType(GridView), findsOneWidget);
     expect(find.text('Grady Lion'), findsOneWidget);
