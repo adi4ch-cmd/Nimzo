@@ -89,6 +89,16 @@ def category_for(path: str, fmt: str) -> str | None:
     if fmt not in SUPPORTED:
         return None
     basename = PurePosixPath(path).name
+    # Android drawable/mipmap/UI state icons and Flutter density variants
+    # are internal decoration assets, not complete user-equippable products.
+    normalized = "/" + path.lower().lstrip("/")
+    if (normalized.startswith("/res/") or
+        "/2.0x/" in normalized or "/3.0x/" in normalized or
+        "/icons/" in normalized or
+        "_preview" in normalized or "_settled" in normalized or
+        "_active" in normalized or
+        basename.lower().startswith(("btn_", "ic_", "icon_", "bg_btn_"))):
+        return None
     if EXCLUDE.search(path) or EXCLUDE.search(basename):
         return None
     hits = [name for name, (match, formats) in CATEGORIES.items()
@@ -132,14 +142,17 @@ def discover_from_full_audit(path: Path) -> list[dict]:
     with gzip.open(path, "rt", encoding="utf-8") as source:
         payload = json.load(source)
     results = []
-    stack = [payload]
+    stack = [(payload, None)]
     while stack:
-        node = stack.pop()
+        node, parent_package = stack.pop()
         if isinstance(node, list):
-            stack.extend(node)
+            stack.extend((entry, parent_package) for entry in node)
             continue
         if not isinstance(node, dict):
             continue
+        parent_candidate = node.get("filename") or node.get("package")
+        if isinstance(parent_candidate, str) and parent_candidate.endswith(".apks"):
+            parent_package = parent_candidate
         original = node.get("source") or node.get("path")
         digest = node.get("sha256")
         if isinstance(original, str) and isinstance(digest, str):
@@ -149,7 +162,7 @@ def discover_from_full_audit(path: Path) -> list[dict]:
                 cat = category_for(container[1], fmt)
                 if cat is not None:
                     package = (node.get("package") or node.get("filename")
-                               or node.get("source_package"))
+                               or node.get("source_package") or parent_package)
                     results.append({
                         "source_package": package,
                         "source": original,
@@ -161,7 +174,8 @@ def discover_from_full_audit(path: Path) -> list[dict]:
                         "audit_rights": "individual asset rights not proven by filename",
                         "exclusion": None,
                     })
-        stack.extend(v for v in node.values() if isinstance(v, (dict, list)))
+        stack.extend((v, parent_package) for v in node.values()
+                     if isinstance(v, (dict, list)))
     return results
 
 
