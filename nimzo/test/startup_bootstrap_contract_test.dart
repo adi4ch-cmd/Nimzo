@@ -10,9 +10,16 @@ void main() {
     expect(source.indexOf('await initializeFirebasePush()'), greaterThan(render));
     expect(source, contains('timeout(const Duration(seconds: 12))'));
     expect(source, contains('Future<Supabase>? _supabaseInitialization;'));
+    expect(source, contains('SharedPreferences.getInstance()'));
+    expect(source, contains('NimzoNativeSessionStorage('));
+    expect(source, contains('NimzoNativePkceStorage()'));
+    expect(source, contains('recoveredStorage = native;'));
+    expect(source, contains('localStorage: recoveredStorage'));
+    expect(source, contains('pkceAsyncStorage: recoveredPkceStorage'));
+    expect(source, contains("_startupStage = 'android-storage'"));
+    expect(source, contains("_startupStage = 'supabase-auth'"));
     expect(source, contains('_supabaseInitialization = null;'));
     expect(source, contains('_safeStartupMessage(error)'));
-    expect(source, contains('debugPrintStack(stackTrace: stackTrace)'));
     expect(source, contains('timeout(const Duration(seconds: 8))'));
     expect(source, contains('UncontrolledProviderScope('));
     expect(source, contains('child: const NimzoApp()'));

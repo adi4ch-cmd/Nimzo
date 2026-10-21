@@ -162,14 +162,15 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
       NimzoCosmeticItem item, bool isOwned, bool equipped) async {
     if (pending != null) return;
     setState(() => pending = item.id);
+    final session = ref.read(sessionSupabaseProvider);
     try {
-      final session = ref.read(sessionSupabaseProvider);
+      dynamic confirmed;
       if (session.userId == null) throw StateError('Sign in required');
       if (equipped) {
-        await session.client
+        confirmed = await session.client
             .rpc('nimzo_store_unequip', params: {'p_category': item.category});
       } else if (isOwned) {
-        await session.client.rpc(
+        confirmed = await session.client.rpc(
           'nimzo_store_equip_free',
           params: {'p_item_id': item.id},
         );
@@ -177,10 +178,17 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
         if (item.coinPrice != 0) {
           throw StateError('Paid checkout is not available yet.');
         }
-        await session.client.rpc(
+        confirmed = await session.client.rpc(
           'nimzo_store_claim_free',
           params: {'p_item_id': item.id},
         );
+      }
+      if (confirmed != true) {
+        throw StateError('Server did not confirm the update.');
+      }
+      if (!mounted ||
+          ref.read(sessionSupabaseProvider).userId != session.userId) {
+        return;
       }
       ref.invalidate(nimzoStoreProvider);
       ref.invalidate(storeVisualEquipmentProvider);
@@ -194,7 +202,8 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
         ));
       }
     } catch (error) {
-      if (mounted) {
+      if (mounted &&
+          ref.read(sessionSupabaseProvider).userId == session.userId) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Unable to update Store: $error'),
         ));
@@ -559,6 +568,9 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
   Widget build(BuildContext context) {
     final item = widget.item;
     final color = accents[item.variant % accents.length];
+    final media = premiumCosmetics[item.id];
+    final animatedMedia =
+        media != null && media.kind != CosmeticMediaKind.image;
     final canvas =
         (MediaQuery.sizeOf(context).width * .84).clamp(180.0, 390.0).toDouble();
     return Scaffold(
@@ -642,17 +654,26 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                         }
                       },
                       icon: const Icon(Icons.replay_rounded),
-                      label: const Text('Replay artwork transition'),
+                      label: Text(animatedMedia
+                          ? 'Replay animation'
+                          : media != null
+                              ? 'View artwork again'
+                              : 'Replay artwork transition'),
                       style: FilledButton.styleFrom(
                           backgroundColor: const Color(0xffefc983),
                           foregroundColor: const Color(0xff28182c)),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Item preview · No coins charged.',
+                  Text(
+                    media != null
+                        ? '${animatedMedia ? 'Animated media' : 'Static artwork'} · No coins charged. Badges are decorative cosmetics.'
+                        : item.id.startsWith('nimzo-original-')
+                            ? 'Original NIMZO design · Artwork transition only. No coins charged.'
+                            : 'Item media unavailable · No coins charged.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 11, color: Color(0xffc5b5cd)),
+                    style:
+                        const TextStyle(fontSize: 11, color: Color(0xffc5b5cd)),
                   ),
                 ],
               ),

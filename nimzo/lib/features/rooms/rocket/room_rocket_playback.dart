@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 import 'package:flutter_vap_player/flutter_vap_player.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../core/providers/supabase_provider.dart';
 import 'room_rocket_top_sender.dart';
 
@@ -14,13 +15,23 @@ import 'room_rocket_top_sender.dart';
 String rocketRewardPath(int stage) {
   RangeError.checkValueInInterval(stage, 0, 5, 'stage');
   return 'assets/room_rocket/vap_rocket_reward_' +
-      (stage + 1).toString() + '.mp4';
+      (stage + 1).toString() +
+      '.mp4';
 }
 
 String rocketFlyPath(int stage) {
   RangeError.checkValueInInterval(stage, 0, 5, 'stage');
-  return 'assets/room_rocket/vap_rocket_fly_' +
-      (stage + 1).toString() + '.mp4';
+  return 'assets/room_rocket/vap_rocket_fly_' + (stage + 1).toString() + '.mp4';
+}
+
+/// ffprobe audit: all fly clips and rewards 1–3 have no audio track.
+/// Rewards 4–6 retain their original embedded AAC, without a second soundtrack.
+String? rocketSoundPath(int stage, {required bool reward}) {
+  RangeError.checkValueInInterval(stage, 0, 5, 'stage');
+  if (reward && stage >= 3) return null;
+  return reward
+      ? 'assets/room_rocket/nimzo_rocket_reward.wav'
+      : 'assets/room_rocket/nimzo_rocket_launch.wav';
 }
 
 /// Original videos have the VAP metadata box and alpha mask. A normal MP4
@@ -45,6 +56,8 @@ class RoomRocketPlayback extends ConsumerStatefulWidget {
 class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
     with WidgetsBindingObserver {
   VapPlayerController? _player;
+  AudioPlayer? _soundPlayer;
+  bool _soundUnavailable = false;
   StreamSubscription<VapEvent>? _events;
   Timer? _watchdog;
   bool _finished = false;
@@ -56,6 +69,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
     if (_finished || !mounted) return;
     _finished = true;
     _watchdog?.cancel();
+    unawaited(_stopSound());
     widget.onFinished();
   }
 
@@ -87,24 +101,31 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
   String? _winnerAvatarUrl(RocketTopSender? sender) {
     final path = sender?.avatarPath;
     if (path == null || path.isEmpty) return null;
-    return ref.read(supabaseProvider).storage.from('avatars').getPublicUrl(path);
+    return ref
+        .read(supabaseProvider)
+        .storage
+        .from('avatars')
+        .getPublicUrl(path);
   }
 
   Future<Uint8List?> _loadSenderImage() async {
     final id = widget.eventId;
     if (id == null) return null;
     try {
-      final sender = await ref.read(roomRocketTopSenderProvider(id).future)
+      final sender = await ref
+          .read(roomRocketTopSenderProvider(id).future)
           .timeout(const Duration(seconds: 3));
       final url = _winnerAvatarUrl(sender);
       if (url == null) return null;
-      final client = HttpClient()..connectionTimeout = const Duration(seconds: 2);
+      final client = HttpClient()
+        ..connectionTimeout = const Duration(seconds: 2);
       try {
         final req = await client.getUrl(Uri.parse(url));
         final response = await req.close().timeout(const Duration(seconds: 2));
         if (response.statusCode != 200) return null;
         final bytes = BytesBuilder(copy: false);
-        await for (final chunk in response.timeout(const Duration(seconds: 3))) {
+        await for (final chunk
+            in response.timeout(const Duration(seconds: 3))) {
           bytes.add(chunk);
           if (bytes.length > 2 * 1024 * 1024) return null;
         }
@@ -116,6 +137,44 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
       return null;
     }
   }
+
+  Future<void> _stopSound() async {
+    try {
+      await _soundPlayer?.stop();
+    } catch (_) {/* Already disposed. */}
+  }
+
+  Future<void> _prepareSound() async {
+    await _stopSound();
+    final asset = rocketSoundPath(widget.stage, reward: _part == 1);
+    if (asset == null || !mounted || _finished) return;
+    try {
+      // Vivox owns the room audio session. Do not request audio focus or
+      // replace its voice-chat audio attributes to play a short effect.
+      final player = _soundPlayer ??= AudioPlayer(
+        handleAudioSessionActivation: false,
+        handleInterruptions: false,
+        androidApplyAudioAttributes: false,
+      );
+      await player.setAsset(asset).timeout(const Duration(seconds: 3));
+    } catch (_) {
+      if (mounted && !_finished) setState(() => _soundUnavailable = true);
+    }
+  }
+
+  Future<void> _playSound(VapPlayerController controller) async {
+    if (_soundUnavailable ||
+        !mounted ||
+        _finished ||
+        _player != controller ||
+        rocketSoundPath(widget.stage, reward: _part == 1) == null) return;
+    try {
+      await _soundPlayer?.play();
+    } catch (_) {
+      if (mounted && !_finished) setState(() => _soundUnavailable = true);
+    }
+  }
+
   Future<void> _playSegment(String path) async {
     // Play original 1.5s lift-off, followed by the matching 10s reward.
     // Native players must never overlap or compete with Vivox audio.
@@ -124,6 +183,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
     final previous = _player;
     _player = null;
     if (previous != null) await previous.dispose();
+    await _prepareSound();
     if (!mounted || _finished) return;
     final controller = VapPlayerController.asset(
       path,
@@ -131,7 +191,8 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
         viewType: VapViewType.textureView,
         scaleType: VapScaleType.fitCenter,
         repeatCount: 0,
-        mute: false, // Preserve the original Rocket 4-6 AAC audio where present.
+        // Preserve the original Rocket 4–6 AAC audio where present.
+        mute: false,
         resourceDelegate: VapResourceDelegate(
           resolveText: (resource) async {
             if (widget.eventId == null) return null;
@@ -140,7 +201,9 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
                 roomRocketTopSenderProvider(widget.eventId!).future,
               );
               return sender?.name;
-            } catch (_) { return null; }
+            } catch (_) {
+              return null;
+            }
           },
           resolveImage: (resource) => _loadSenderImage(),
         ),
@@ -151,12 +214,16 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
     _events = controller.events.listen(
       (event) {
         if (_finished) return;
-        if (event is VapErrorEvent) {
+        if (event is VapStartedEvent) {
+          // Start the preloaded effect on the native VAP started event.
+          unawaited(_playSound(controller));
+        } else if (event is VapErrorEvent) {
           _playbackFailed();
         } else if (event is VapCompletedEvent) {
           if (_part == 0) {
             _part = 1;
-            unawaited(_playSegment(rocketRewardPath(widget.stage)));
+            unawaited(_playSegment(rocketRewardPath(widget.stage))
+                .catchError((Object _) => _playbackFailed()));
           } else {
             _finish();
           }
@@ -172,6 +239,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
 
   void _playbackFailed() {
     if (!mounted || _finished) return;
+    unawaited(_stopSound());
     setState(() => _unavailable = true);
     _watchdog?.cancel();
     _watchdog = Timer(const Duration(seconds: 3), _finish);
@@ -190,6 +258,9 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
     unawaited(_events?.cancel());
     final player = _player;
     if (player != null) unawaited(player.dispose());
+    final sound = _soundPlayer;
+    _soundPlayer = null;
+    if (sound != null) unawaited(sound.dispose());
     super.dispose();
   }
 
@@ -200,7 +271,8 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
           child: Stack(
             children: [
               if (!_unavailable && _player != null && _initialized)
-                Positioned.fill(child: IgnorePointer(
+                Positioned.fill(
+                    child: IgnorePointer(
                   child: VapPlayer(_player!),
                 )),
               if (_part == 1 && widget.eventId != null)
@@ -210,31 +282,46 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
                   right: 0,
                   child: IgnorePointer(
                     child: Center(
-                      child: ref.watch(
-                        roomRocketTopSenderProvider(widget.eventId!),
-                      ).maybeWhen(
-                        data: (sender) {
-                          final avatar = _winnerAvatarUrl(sender);
-                          if (sender == null || avatar == null) {
-                            return const SizedBox.shrink();
-                          }
-                          return Container(
-                            key: const ValueKey('rocket-blast-top1-avatar'),
-                            width: 100, height: 100,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xffffd76c), width: 3),
-                              image: DecorationImage(
-                                image: NetworkImage(avatar),
-                                fit: BoxFit.cover),
-                            ),
-                          );
-                        },
-                        orElse: () => const SizedBox.shrink(),
-                      ),
+                      child: ref
+                          .watch(
+                            roomRocketTopSenderProvider(widget.eventId!),
+                          )
+                          .maybeWhen(
+                            data: (sender) {
+                              final avatar = _winnerAvatarUrl(sender);
+                              if (sender == null || avatar == null) {
+                                return const SizedBox.shrink();
+                              }
+                              return Container(
+                                key: const ValueKey('rocket-blast-top1-avatar'),
+                                width: 100,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: const Color(0xffffd76c), width: 3),
+                                  image: DecorationImage(
+                                      image: NetworkImage(avatar),
+                                      fit: BoxFit.cover),
+                                ),
+                              );
+                            },
+                            orElse: () => const SizedBox.shrink(),
+                          ),
                     ),
                   ),
+                ),
+              if (_soundUnavailable && !_unavailable)
+                const Positioned(
+                  bottom: 64,
+                  left: 22,
+                  right: 22,
+                  child: IgnorePointer(
+                      child: Text(
+                    'Rocket sound unavailable on this device.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white70, fontSize: 11),
+                  )),
                 ),
               if (!_unavailable && !_initialized)
                 const Center(child: CircularProgressIndicator()),

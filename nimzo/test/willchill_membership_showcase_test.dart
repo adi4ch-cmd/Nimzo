@@ -3,11 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/premium/willchill_membership_showcase.dart';
 
 void main() {
-  testWidgets('video layout uses Identification and a three-column benefit grid',
+  testWidgets(
+      'video layout uses Identification and a three-column benefit grid',
       (tester) async {
-    await tester.pumpWidget(MaterialApp(home: Scaffold(
-      body: SingleChildScrollView(child: WillChillMembershipShowcase(
-        kind: 'vip', tier: 1, ownedLevel: 0, onTierChanged: (_) {},
+    await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+      body: SingleChildScrollView(
+          child: WillChillMembershipShowcase(
+        kind: 'vip',
+        tier: 1,
+        ownedLevel: 0,
+        onTierChanged: (_) {},
       )),
     )));
     await tester.pumpAndSettle();
@@ -16,7 +22,7 @@ void main() {
     expect(find.text('Avatar Frame'), findsOneWidget);
     expect(find.text('Chat Bubble'), findsOneWidget);
     expect(find.byKey(const ValueKey('membership-vip-identification-grid')),
-      findsOneWidget);
+        findsOneWidget);
   });
   for (final kind in ['vip', 'svip']) {
     testWidgets('$kind places badge and nameplate in composed tier cards',
@@ -96,4 +102,20 @@ void main() {
     expect(find.textContaining('files'), findsNothing);
     expect(tester.takeException(), isNull);
   });
+  for (final kind in ['vip', 'svip']) {
+    testWidgets('$kind tier 10 has an honest original fallback',
+        (tester) async {
+      await tester.pumpWidget(MaterialApp(
+          home: Scaffold(
+        body: WillChillMembershipShowcase(
+            kind: kind, tier: 10, ownedLevel: 10, onTierChanged: (_) {}),
+      )));
+      await tester.pump();
+      expect(find.byKey(ValueKey('membership-$kind-original-tier-10')),
+          findsOneWidget);
+      expect(find.textContaining('Original NIMZO'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
 }

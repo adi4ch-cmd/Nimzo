@@ -144,7 +144,7 @@ void main() {
     },
   );
   for (final kind in ['wealth', 'charm', 'room']) {
-    for (final period in ['weekly', 'monthly']) {
+    for (final period in ['daily', 'weekly', 'monthly', 'all_time']) {
       test(
         'supported $kind/$period forwards the exact live RPC contract',
         () async {
@@ -179,7 +179,7 @@ void main() {
       });
       addTearDown(db.dispose);
       for (final pair in [
-        ('wealth', 'daily'),
+        ('wealth', 'yearly'),
         ('gift', 'weekly'),
         ('active', 'monthly'),
       ]) {

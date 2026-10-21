@@ -6,7 +6,7 @@ const tingleSky = LinearGradient(
   begin: Alignment.topRight,
   end: Alignment.bottomLeft,
   stops: [0, .35, 1],
-  colors: [Color(0xff68b7f3), Color(0xffc7ceff), Color(0xfff2efff)],
+  colors: [Color(0xff6ccca4), Color(0xffd0efdf), Color(0xfff5faf7)],
 );
 
 class TingleTabs extends StatelessWidget {
@@ -44,7 +44,7 @@ class TingleTabs extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: pills
                             ? (selected == i
-                                ? const Color(0xffa32cf4)
+                                ? const Color(0xff087f5b)
                                 : Colors.white.withValues(alpha: .5))
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(20)),
@@ -61,8 +61,8 @@ class TingleTabs extends StatelessWidget {
                                         ? Colors.white
                                         : Colors.white70)
                                     : selected == i
-                                        ? const Color(0xffa32cf4)
-                                        : const Color(0xffa499bf))),
+                                        ? const Color(0xff087f5b)
+                                        : const Color(0xff60756b))),
                   ),
                 ),
               ),

@@ -11,6 +11,16 @@ public final class MainActivity extends FlutterActivity {
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
     super.configureFlutterEngine(flutterEngine);
+    // Safely recover auth plugins when auto-registration skipped them.
+    if (!flutterEngine.getPlugins().has(
+        io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin.class)) {
+      flutterEngine.getPlugins().add(
+          new io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin());
+    }
+    if (!flutterEngine.getPlugins().has(
+        com.llfbandit.app_links.AppLinksPlugin.class)) {
+      flutterEngine.getPlugins().add(new com.llfbandit.app_links.AppLinksPlugin());
+    }
     // Native Android preferences fallback for the legacy Flutter session store.
     // Access only project session/PKCE keys; never clear all preferences.
     new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(),

@@ -258,11 +258,11 @@ class _State extends ConsumerState<RoomScreen> {
     }
   }
 
-  /// Matches the reference empty-seat action sheet without inventing
-  /// moderation RPCs. Taking a seat keeps using the verified current RPC.
-  Future<void> _showOpenSeatActions(int seatNo) async {
+  Future<void> _showOpenSeatActions(MicSeat seat) async {
     if (!mounted || !joined) return;
-    final chosen = await showModalBottomSheet<bool>(
+    final canModerate =
+        ref.read(roomModerationProvider(widget.roomId)).valueOrNull == true;
+    final chosen = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.white,
       barrierColor: const Color(0xaa080411),
@@ -271,58 +271,93 @@ class _State extends ConsumerState<RoomScreen> {
       ),
       builder: (sheet) => SafeArea(
         top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 13),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const SizedBox(height: 13),
+          if (!seat.locked && seat.userId == null)
             ListTile(
               key: const ValueKey('room-seat-here'),
               minTileHeight: 58,
-              title: const Center(
-                  child: Text('Seat Here',
-                      style: TextStyle(
-                          fontSize: 17, fontWeight: FontWeight.w700))),
-              onTap: () => Navigator.of(sheet).pop(true),
+              title: const Center(child: Text('Seat Here')),
+              onTap: () => Navigator.of(sheet).pop('take'),
             ),
-            const Divider(height: 1, color: Color(0xfff2f2f2)),
-            const ListTile(
-              key: ValueKey('room-seat-give'),
-              enabled: false,
-              minTileHeight: 58,
-              title: Center(child: Text('Give the Mic')),
-            ),
-            const Divider(height: 1, color: Color(0xfff2f2f2)),
-            const ListTile(
-              key: ValueKey('room-seat-lock'),
-              enabled: false,
-              minTileHeight: 58,
-              title: Center(child: Text('Lock the Mic')),
-            ),
-            const Divider(height: 1, color: Color(0xfff2f2f2)),
-            const ListTile(
-              key: ValueKey('room-seat-mute'),
-              enabled: false,
-              minTileHeight: 58,
-              title: Center(child: Text('Mute the Mic')),
-            ),
-            const SizedBox(height: 8),
-            const Divider(thickness: 7, height: 7, color: Color(0xfff8f8fa)),
-            TextButton(
-              key: const ValueKey('room-seat-cancel'),
-              style: TextButton.styleFrom(
-                minimumSize: const Size.fromHeight(61),
-                foregroundColor: Colors.red,
+          if (canModerate) ...[
+            if (!seat.locked && seat.userId == null)
+              ListTile(
+                key: const ValueKey('room-seat-give'),
+                minTileHeight: 58,
+                title: const Center(child: Text('Give the Mic')),
+                onTap: () => Navigator.of(sheet).pop('assign'),
               ),
-              onPressed: () => Navigator.of(sheet).pop(false),
-              child: const Text('Cancel',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            ListTile(
+              key: const ValueKey('room-seat-lock'),
+              minTileHeight: 58,
+              title: Center(
+                  child: Text(seat.locked ? 'Unlock the Mic' : 'Lock the Mic')),
+              onTap: () => Navigator.of(sheet).pop('lock'),
+            ),
+            ListTile(
+              key: const ValueKey('room-seat-mute'),
+              minTileHeight: 58,
+              title: Center(
+                  child: Text(seat.muted ? 'Unmute the Mic' : 'Mute the Mic')),
+              onTap: () => Navigator.of(sheet).pop('mute'),
             ),
           ],
+          const Divider(thickness: 7, height: 7, color: Color(0xfff8f8fa)),
+          TextButton(
+            key: const ValueKey('room-seat-cancel'),
+            style: TextButton.styleFrom(
+                minimumSize: const Size.fromHeight(61),
+                foregroundColor: Colors.red),
+            onPressed: () => Navigator.of(sheet).pop(),
+            child: const Text('Cancel'),
+          ),
+        ]),
+      ),
+    );
+    if (!mounted || !joined) return;
+    final repository = ref.read(roomRepositoryProvider);
+    switch (chosen) {
+      case 'take':
+        await repository.takeSeat(widget.roomId, seat.seatNo);
+      case 'lock':
+        await repository.modLockSeat(widget.roomId, seat.seatNo, !seat.locked);
+      case 'mute':
+        await repository.modMuteSeat(widget.roomId, seat.seatNo, !seat.muted);
+      case 'assign':
+        await _chooseMicRecipient(seat.seatNo);
+    }
+  }
+
+  Future<void> _chooseMicRecipient(int seatNo) async {
+    final ids = await ref.read(roomMemberIdsProvider(widget.roomId).future);
+    final members = await ref
+        .read(roomRepositoryProvider)
+        .profilesForUsers(ids.toSet().toList());
+    if (!mounted || !joined) return;
+    final userId = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheet) => SafeArea(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(sheet).height * .5,
+          child: members.isEmpty
+              ? const Center(child: Text('No members available'))
+              : ListView(children: [
+                  for (final member in members)
+                    ListTile(
+                      key: ValueKey('room-seat-recipient-${member.id}'),
+                      title: Text(member.displayName ?? 'Member'),
+                      onTap: () => Navigator.of(sheet).pop(member.id),
+                    ),
+                ]),
         ),
       ),
     );
-    if (chosen == true && mounted && joined) {
-      await ref.read(roomRepositoryProvider).takeSeat(widget.roomId, seatNo);
+    if (userId != null && mounted && joined) {
+      await ref
+          .read(roomRepositoryProvider)
+          .modAssignSeat(widget.roomId, seatNo, userId);
     }
   }
 
@@ -447,6 +482,8 @@ class _State extends ConsumerState<RoomScreen> {
                 {};
     final me = ref.watch(currentUserIdProvider),
         speaking = ref.watch(speakingProvider).valueOrNull ?? <String>{};
+    final canModerate =
+        ref.watch(roomModerationProvider(widget.roomId)).valueOrNull == true;
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
     final ownSvipLevel = me == null
         ? 0
@@ -630,23 +667,28 @@ class _State extends ConsumerState<RoomScreen> {
                             DataFailure(message: failure!, onRetry: join),
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                              vertical: 16,
+                              vertical: 8,
                               horizontal: 10,
                             ),
                             child: Column(
                               children: [
-                                for (var row = 0; row < 2; row++)
+                                for (var row = 0; row < MicSeat.rows; row++)
                                   Padding(
                                     padding: EdgeInsets.only(
-                                      bottom: row == 0 ? 8 : 0,
+                                      bottom: row < MicSeat.rows - 1 ? 8 : 0,
                                     ),
                                     child: Row(
                                       children: [
-                                        for (var col = 0; col < 5; col++)
+                                        for (var col = 0;
+                                            col < MicSeat.columns;
+                                            col++)
                                           Expanded(
                                             child: Builder(
                                               builder: (c) {
-                                                final n = row * 5 + col + 1,
+                                                final n =
+                                                        row * MicSeat.columns +
+                                                            col +
+                                                            1,
                                                     s = seats.valueOrNull
                                                             ?.where(
                                                               (s) =>
@@ -656,16 +698,25 @@ class _State extends ConsumerState<RoomScreen> {
                                                         MicSeat(seatNo: n),
                                                     p = profiles[s.userId];
                                                 return InkWell(
+                                                  onLongPress: joined &&
+                                                          canModerate &&
+                                                          seats.hasValue
+                                                      ? () => action(() =>
+                                                          _showOpenSeatActions(
+                                                              s))
+                                                      : null,
                                                   onTap: !joined ||
                                                           !seats.hasValue ||
                                                           (s.locked &&
-                                                              s.userId == null)
+                                                              s.userId ==
+                                                                  null &&
+                                                              !canModerate)
                                                       ? null
                                                       : () => action(() async {
                                                             if (s.userId ==
                                                                 null) {
                                                               await _showOpenSeatActions(
-                                                                  n);
+                                                                  s);
                                                             } else {
                                                               await showDialog<
                                                                   void>(
@@ -716,7 +767,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                   child: Container(
                                                     key: ValueKey(
                                                         'room-mic-seat-$n'),
-                                                    height: 88,
+                                                    height: 84,
                                                     margin: const EdgeInsets
                                                         .symmetric(
                                                         horizontal: 1.5),

@@ -70,7 +70,9 @@ class DiamondBlastEvent {
     required this.roomId,
     required this.stage,
     required this.cycleStart,
+    this.createdAt,
   });
+  final DateTime? createdAt;
   final String id, roomId;
   final int stage;
   final DateTime cycleStart;
@@ -92,6 +94,9 @@ class DiamondBlastEvent {
       roomId: row['room_id'] as String,
       stage: stage,
       cycleStart: DateTime.parse(row['cycle_start'] as String).toUtc(),
+      createdAt: row['created_at'] is String
+          ? DateTime.tryParse(row['created_at'] as String)?.toUtc()
+          : null,
     );
   }
 }
@@ -119,7 +124,7 @@ class RoomDiamondRepository {
   }) async {
     final rows = await db
         .from('room_diamond_blast_events')
-        .select('id,room_id,stage,target_coins,cycle_start')
+        .select('id,room_id,stage,target_coins,cycle_start,created_at')
         .eq('room_id', roomId)
         .gte('created_at', since.toUtc().toIso8601String())
         .order('created_at', ascending: true)
@@ -127,13 +132,28 @@ class RoomDiamondRepository {
     final results = <DiamondBlastEvent>[];
     for (final row in rows) {
       try {
-        results.add(DiamondBlastEvent.fromJson(
-            Map<String, dynamic>.from(row)));
+        results.add(DiamondBlastEvent.fromJson(Map<String, dynamic>.from(row)));
       } on FormatException {
         // Never render a malformed or unsupported milestone.
       }
     }
     return results;
+  }
+
+  /// Historical milestones only; never enqueue these as live animations.
+  Future<List<DiamondBlastEvent>> history(String roomId) async {
+    final rows = await db
+        .from('room_diamond_blast_events')
+        .select('id,room_id,stage,target_coins,cycle_start,created_at')
+        .eq('room_id', roomId)
+        .order('created_at', ascending: false)
+        .order('stage', ascending: false)
+        .limit(60);
+    return rows
+        .map(
+          (row) => DiamondBlastEvent.fromJson(Map<String, dynamic>.from(row)),
+        )
+        .toList();
   }
 
   Stream<DiamondUpdate> changes(String roomId) {
@@ -163,32 +183,32 @@ class RoomDiamondRepository {
         );
         channel
             .onPostgresChanges(
-          event: PostgresChangeEvent.insert,
-          schema: 'public',
-          table: 'room_diamond_blast_events',
-          filter: PostgresChangeFilter(
-            type: PostgresChangeFilterType.eq,
-            column: 'room_id',
-            value: roomId,
-          ),
-          callback: (payload) {
-            if (stream.isClosed) return;
-            try {
-              final event = DiamondBlastEvent.fromJson(payload.newRecord);
-              if (event.roomId == roomId)
-                stream.add(DiamondUpdate(++sequence, event));
-            } on FormatException {
-              /* Never animate malformed or unsupported events. */
-            }
-          },
-        )
+              event: PostgresChangeEvent.insert,
+              schema: 'public',
+              table: 'room_diamond_blast_events',
+              filter: PostgresChangeFilter(
+                type: PostgresChangeFilterType.eq,
+                column: 'room_id',
+                value: roomId,
+              ),
+              callback: (payload) {
+                if (stream.isClosed) return;
+                try {
+                  final event = DiamondBlastEvent.fromJson(payload.newRecord);
+                  if (event.roomId == roomId)
+                    stream.add(DiamondUpdate(++sequence, event));
+                } on FormatException {
+                  /* Never animate malformed or unsupported events. */
+                }
+              },
+            )
             .subscribe((status, error) {
-          if (status == RealtimeSubscribeStatus.subscribed &&
-              !stream.isClosed) {
-            // Refresh on reconnect, without replaying old blast animations.
-            stream.add(DiamondUpdate(++sequence));
-          }
-        });
+              if (status == RealtimeSubscribeStatus.subscribed &&
+                  !stream.isClosed) {
+                // Refresh on reconnect, without replaying old blast animations.
+                stream.add(DiamondUpdate(++sequence));
+              }
+            });
       },
       onCancel: () async {
         await db.removeChannel(channel);
@@ -201,25 +221,37 @@ class RoomDiamondRepository {
 final roomDiamondRepositoryProvider = Provider(
   (ref) => RoomDiamondRepository(ref.watch(sessionSupabaseProvider).client),
 );
-final roomDiamondEventsProvider =
-    StreamProvider.autoDispose.family<DiamondUpdate, String>(
-  (ref, roomId) => ref.watch(roomDiamondRepositoryProvider).changes(roomId),
-);
+final roomDiamondEventsProvider = StreamProvider.autoDispose
+    .family<DiamondUpdate, String>(
+      (ref, roomId) => ref.watch(roomDiamondRepositoryProvider).changes(roomId),
+    );
 final roomDiamondStatusProvider = FutureProvider.autoDispose
     .family<RoomDiamondStatus, String>((ref, roomId) async {
-  ref.watch(roomDiamondEventsProvider(roomId));
-  Timer? timer;
-  var disposed = false;
-  ref.onDispose(() {
-    disposed = true;
-    timer?.cancel();
-  });
-  final status = await ref.watch(roomDiamondRepositoryProvider).status(roomId);
-  if (disposed) return status;
-  final remaining = status.resetAt.difference(status.serverNow);
-  timer = Timer(
-    remaining.isNegative ? const Duration(seconds: 1) : remaining,
-    ref.invalidateSelf,
-  );
-  return status;
-});
+      ref.watch(roomDiamondEventsProvider(roomId));
+      Timer? timer;
+      var disposed = false;
+      ref.onDispose(() {
+        disposed = true;
+        timer?.cancel();
+      });
+      final status = await ref
+          .watch(roomDiamondRepositoryProvider)
+          .status(roomId);
+      if (disposed) return status;
+      final remaining = status.resetAt.difference(status.serverNow);
+      timer = Timer(
+        remaining.isNegative
+            ? const Duration(seconds: 1)
+            : remaining < const Duration(seconds: 15)
+            ? remaining
+            : const Duration(seconds: 15),
+        ref.invalidateSelf,
+      );
+      return status;
+    });
+
+final roomRocketHistoryProvider = FutureProvider.autoDispose
+    .family<List<DiamondBlastEvent>, String>((ref, roomId) {
+      ref.watch(roomDiamondStatusProvider(roomId));
+      return ref.watch(roomDiamondRepositoryProvider).history(roomId);
+    });

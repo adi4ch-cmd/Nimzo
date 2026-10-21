@@ -26,7 +26,7 @@ class RoomGameHostState extends State<RoomGameHost> {
   bool _minimized = false;
   bool _expanded = false;
   void open(String slug) {
-    if (!NimzoRoomGames.approved.any((game) => game.slug == slug)) return;
+    if (!NimzoRoomGames.all.any((game) => game.slug == slug)) return;
     setState(() {
       _slug = slug;
       _minimized = false;
@@ -37,8 +37,7 @@ class RoomGameHostState extends State<RoomGameHost> {
   void _close() => setState(() => _slug = null);
   @override
   Widget build(BuildContext context) {
-    final game =
-        NimzoRoomGames.approved.where((g) => g.slug == _slug).firstOrNull;
+    final game = NimzoRoomGames.all.where((g) => g.slug == _slug).firstOrNull;
     return PopScope(
       canPop: game == null || _minimized,
       onPopInvokedWithResult: (didPop, _) {
@@ -50,7 +49,16 @@ class RoomGameHostState extends State<RoomGameHost> {
             widget.child,
             if (game != null)
               Positioned.fill(
-                top: _expanded ? 0 : constraints.maxHeight * (game.slug == 'grady_lion' ? .25 : game.slug == 'lucky_77' ? .305 : game.slug == 'jackpot' ? .21 : .35),
+                top: _expanded
+                    ? 0
+                    : constraints.maxHeight *
+                        (game.slug == 'grady_lion'
+                            ? .25
+                            : game.slug == 'lucky_77'
+                                ? .305
+                                : game.slug == 'jackpot'
+                                    ? .21
+                                    : .35),
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(24),

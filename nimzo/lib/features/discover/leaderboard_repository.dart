@@ -8,7 +8,7 @@ class LeaderboardRepository {
   LeaderboardRepository(this._db);
 
   static const supportedKinds = {'charm', 'wealth', 'room'};
-  static const supportedPeriods = {'weekly', 'monthly'};
+  static const supportedPeriods = {'daily', 'weekly', 'monthly', 'all_time'};
 
   /// Only combinations implemented by the deployed RPC may be requested.
   Future<List<Map<String, dynamic>>> top(
@@ -18,6 +18,9 @@ class LeaderboardRepository {
   }) async {
     if (!supportedKinds.contains(kind) || !supportedPeriods.contains(period)) {
       throw ArgumentError('Unsupported ranking kind or period');
+    }
+    if (limit < 1 || limit > 100) {
+      throw ArgumentError.value(limit, 'limit', 'Must be between 1 and 100');
     }
     return List<Map<String, dynamic>>.from(
       await _db.rpc(

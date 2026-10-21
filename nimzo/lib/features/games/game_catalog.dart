@@ -26,6 +26,8 @@ abstract final class NimzoRoomGames {
     NimzoGame('fruit_party', 'Fruit Party', 0, serverEnabled: true),
     NimzoGame('fruit_wheel', 'Fruit Wheel', 5, serverEnabled: true),
   ];
+  static bool isPractice(String slug) =>
+      {'lucky_77', 'grady_lion', 'jackpot', 'lucky_wheel_77'}.contains(slug);
   static bool canPlay(String slug) =>
       all.any((g) => g.slug == slug && g.serverEnabled);
 }

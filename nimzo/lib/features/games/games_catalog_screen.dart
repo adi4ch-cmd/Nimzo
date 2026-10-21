@@ -41,17 +41,21 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final games = NimzoRoomGames.approved.where(
-      (g) => filter == 'All' || kind(g.slug) == filter,
-    ).toList();
+    final games = NimzoRoomGames.all
+        .where(
+          (g) => filter == 'All' || kind(g.slug) == filter,
+        )
+        .toList();
     return Scaffold(
-      backgroundColor: const Color(0xfff6f4ff),
+      backgroundColor: const Color(0xfff5faf7),
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.white,
         title: const Text('Games',
-          style: TextStyle(color: Color(0xff23163f),
-            fontSize: 22, fontWeight: FontWeight.w900)),
+            style: TextStyle(
+                color: Color(0xff23163f),
+                fontSize: 22,
+                fontWeight: FontWeight.w900)),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(15, 16, 15, 105),
@@ -60,42 +64,47 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
             height: 166,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  Color(0xff42218a), Color(0xff8c35e6),
+                gradient: const LinearGradient(colors: [
+                  Color(0xff42218a),
+                  Color(0xff8c35e6),
                   Color(0xffd862d0),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight),
-              borderRadius: BorderRadius.circular(28)),
+                ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                borderRadius: BorderRadius.circular(28)),
             child: Stack(children: [
-              Positioned(right: -46, top: -58,
-                child: CircleAvatar(
-                  radius: 125,
-                  backgroundColor: Colors.white.withValues(alpha: .09))),
-              Positioned(right: 30, top: 18,
-                child: const Icon(Icons.casino_rounded,
-                  color: Color(0x70ffe6a1), size: 111)),
+              Positioned(
+                  right: -46,
+                  top: -58,
+                  child: CircleAvatar(
+                      radius: 125,
+                      backgroundColor: Colors.white.withValues(alpha: .09))),
               const Positioned(
-                left: 24, top: 29, bottom: 22,
+                  right: 30,
+                  top: 18,
+                  child: Icon(Icons.casino_rounded,
+                      color: Color(0x70ffe6a1), size: 111)),
+              const Positioned(
+                left: 24,
+                top: 29,
+                bottom: 22,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('NIMZO GAMES',
-                      style: TextStyle(
-                        color: Color(0xffffd69b),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 2)),
+                        style: TextStyle(
+                            color: Color(0xffffd69b),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 2)),
                     SizedBox(height: 9),
                     Text('Choose Your Game',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24, fontWeight: FontWeight.w900)),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900)),
                     SizedBox(height: 9),
-                    Text('Seven room game boards · three interactive demos',
-                      style: TextStyle(
-                        color: Color(0xfff2e6ff), fontSize: 12)),
+                    Text('Coin games, free practice and board previews',
+                        style:
+                            TextStyle(color: Color(0xfff2e6ff), fontSize: 12)),
                   ],
                 ),
               ),
@@ -118,14 +127,14 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
                       backgroundColor: Colors.white,
                       showCheckmark: false,
                       labelStyle: TextStyle(
-                        color: filter == option
-                          ? NimzoStyle.primary
-                          : const Color(0xff80738e),
-                        fontWeight: FontWeight.w800),
+                          color: filter == option
+                              ? NimzoStyle.primary
+                              : const Color(0xff80738e),
+                          fontWeight: FontWeight.w800),
                       side: BorderSide(
-                        color: filter == option
-                          ? NimzoStyle.primary
-                          : NimzoStyle.line),
+                          color: filter == option
+                              ? NimzoStyle.primary
+                              : NimzoStyle.line),
                     ),
                   ),
               ],
@@ -133,21 +142,21 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
           ),
           const SizedBox(height: 20),
           Row(children: [
-            const Expanded(child: Text('Game collection',
-              style: TextStyle(fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: Color(0xff2a2140)))),
+            const Expanded(
+                child: Text('Game collection',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xff2a2140)))),
             Text('${games.length} games',
-              style: const TextStyle(
-                color: Color(0xff8e80a7), fontSize: 13)),
+                style: const TextStyle(color: Color(0xff8e80a7), fontSize: 13)),
           ]),
           const SizedBox(height: 15),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: games.length,
-            gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: .80,
                 crossAxisSpacing: 13,
@@ -163,15 +172,14 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
                   borderRadius: BorderRadius.circular(23),
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(23),
-                      border: Border.all(
-                        color: const Color(0xffeee9f7)),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x105b3d98),
-                          blurRadius: 9,
-                          offset: Offset(0, 3)),
-                      ]),
+                        borderRadius: BorderRadius.circular(23),
+                        border: Border.all(color: const Color(0xffeee9f7)),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Color(0x105b3d98),
+                              blurRadius: 9,
+                              offset: Offset(0, 3)),
+                        ]),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(10, 11, 10, 11),
                       child: Column(children: [
@@ -182,28 +190,31 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
                               Image.asset(
                                 'assets/reference/game/${game.artwork}.jpg',
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) =>
-                                  const ColoredBox(
+                                errorBuilder: (_, __, ___) => const ColoredBox(
                                     color: Color(0xffeee5fa),
                                     child: Icon(Icons.sports_esports_rounded,
-                                      color: NimzoStyle.primary, size: 51)),
+                                        color: NimzoStyle.primary, size: 51)),
                               ),
                               if (!game.serverEnabled)
-                                const Positioned(
-                                  right: 6, top: 6,
+                                Positioned(
+                                  right: 6,
+                                  top: 6,
                                   child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      color: Color(0xcc31204d),
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(9))),
+                                    decoration: const BoxDecoration(
+                                        color: Color(0xcc31204d),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(9))),
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 7, vertical: 4),
-                                      child: Text('Preview',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w700)),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7, vertical: 4),
+                                      child: Text(
+                                          NimzoRoomGames.isPractice(game.slug)
+                                              ? 'Practice'
+                                              : 'Preview',
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w700)),
                                     ),
                                   ),
                                 ),
@@ -212,16 +223,16 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
                         ),
                         const SizedBox(height: 11),
                         Text(game.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Color(0xff281b39),
-                            fontWeight: FontWeight.w800,
-                            fontSize: 15)),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                color: Color(0xff281b39),
+                                fontWeight: FontWeight.w800,
+                                fontSize: 15)),
                         const SizedBox(height: 5),
                         Text(kind(game.slug),
-                          style: const TextStyle(
-                            color: Color(0xff8f83a6), fontSize: 11)),
+                            style: const TextStyle(
+                                color: Color(0xff8f83a6), fontSize: 11)),
                       ]),
                     ),
                   ),
@@ -231,11 +242,10 @@ class _GamesCatalogState extends State<GamesCatalogScreen> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Game boards marked Preview are visual-only until their '
-            'server-authoritative game rounds and payouts are available. '
-            'No fake winnings or betting settlements are used.',
-            style: TextStyle(
-              color: Color(0xff91849e), fontSize: 11, height: 1.4),
+            'Practice uses free demo chips only. Preview boards have no live game service. '
+            'Fruit Party and Fruit Wheel use server-confirmed coin rounds in a voice room.',
+            style:
+                TextStyle(color: Color(0xff91849e), fontSize: 11, height: 1.4),
           ),
         ],
       ),
@@ -254,7 +264,7 @@ Future<void> showRoomGamesSheet(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const GradientText('Games',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
         const SizedBox(height: 12),
         GridView.count(
           shrinkWrap: true,
@@ -264,7 +274,7 @@ Future<void> showRoomGamesSheet(
           mainAxisSpacing: 12,
           mainAxisExtent: 100 * MediaQuery.textScalerOf(context).scale(1),
           children: [
-            for (final game in NimzoRoomGames.approved)
+            for (final game in NimzoRoomGames.all)
               InkWell(
                 onTap: () => Navigator.pop(context, game.slug),
                 child: Column(

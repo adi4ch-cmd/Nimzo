@@ -35,7 +35,7 @@ jobs:
       - name: Generate Android project
         working-directory: nimzo
         run: |
-          flutter create --no-pub --platforms=android --project-name nimzo .
+          flutter create . --no-pub --platforms=android --project-name nimzo
           git restore --source=HEAD -- pubspec.lock
 
       - name: Configure API 36 compatible Android toolchain
@@ -263,7 +263,7 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Verify Android emulator startup
+      - name: Install and launch release APK
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
@@ -280,7 +280,7 @@ jobs:
           printf '%s\n' "$GITHUB_SHA" > premium-test-apk/SOURCE_SHA.txt
           echo 'Android test build, development signing. Vivox voice disabled because the SDK release download is unavailable. Store and membership presentation fixes included; server membership purchasing remains disabled.' > premium-test-apk/README.txt
           (cd premium-test-apk && sha256sum *.apk > SHA256SUMS.txt)
-      - name: Upload verified APK artifacts
+      - name: Upload verified release-mode APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: NIMZO-PREMIUM-STORE-1-0-37-NO-VIVOX-TEST

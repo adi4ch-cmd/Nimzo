@@ -60,6 +60,14 @@ class Room {
 }
 
 class MicSeat {
+  static const count = 15;
+  static const columns = 5;
+  static const rows = count ~/ columns;
+
+  static void validateNumber(int seat) {
+    RangeError.checkValueInInterval(seat, 1, count, 'seat');
+  }
+
   final int seatNo;
   final String? userId;
   final bool muted;

@@ -141,6 +141,45 @@ class WillChillMembershipShowcase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: (context, box) {
+        if (tier > (_svip ? 8 : 7)) {
+          return Column(
+            key: ValueKey('membership-$kind-original-tier-$tier'),
+            children: [
+              MembershipTierSelector(
+                  kind: kind,
+                  tier: tier,
+                  maxTier: 10,
+                  onChanged: onTierChanged),
+              Padding(
+                padding: const EdgeInsets.all(28),
+                child: Column(children: [
+                  const Icon(Icons.workspace_premium, size: 84, color: gold),
+                  const SizedBox(height: 18),
+                  Text('$_label $tier',
+                      style: const TextStyle(
+                          color: gold,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 12),
+                  const Text('NIMZO signature style',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: gold)),
+                  const SizedBox(height: 12),
+                  Text(
+                      ownedLevel >= tier
+                          ? 'Your membership tier'
+                          : 'Tier preview',
+                      style: const TextStyle(color: Colors.white70)),
+                  const SizedBox(height: 12),
+                  const Text(
+                      'Membership follows the selected tier and its expiry.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white70)),
+                ]),
+              ),
+            ],
+          );
+        }
         final width = box.maxWidth;
         final scaled = MediaQuery.textScalerOf(context).scale(28) - 28;
         final identity = <Widget>[
@@ -185,13 +224,10 @@ class WillChillMembershipShowcase extends StatelessWidget {
                     : _icon(Icons.badge_outlined)),
           ],
         ];
-        const benefits = <(String, IconData)>[
-          ('Animated Avatar', Icons.person_outline),
-          ('Room Limit', Icons.group_add_outlined),
-          ('Custom Gift', Icons.card_giftcard),
-          ('Custom Greeting', Icons.text_fields),
-          ('Coin Reward', Icons.savings_outlined),
-          ('Profile Music', Icons.music_note_outlined),
+        final benefits = <(String, IconData)>[
+          ('Membership Badge', Icons.workspace_premium_outlined),
+          ('Room Entry', Icons.door_front_door_outlined),
+          (_svip ? 'Weekly Coin Reward' : 'Daily Coin Reward', Icons.savings_outlined),
         ];
         return Stack(children: [
           Positioned.fill(
@@ -206,10 +242,7 @@ class WillChillMembershipShowcase extends StatelessWidget {
                   width: width, fit: BoxFit.fitWidth)),
           Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             MembershipTierSelector(
-                kind: kind,
-                tier: tier,
-                maxTier: _svip ? 8 : 7,
-                onChanged: onTierChanged),
+                kind: kind, tier: tier, maxTier: 10, onChanged: onTierChanged),
             SizedBox(
               height: _svip ? width * .74 : width * .82,
               child: _svip

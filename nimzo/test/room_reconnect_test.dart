@@ -28,6 +28,19 @@ final room = Room(
 class ReconnectRepository extends RoomRepository {
   ReconnectRepository(super.db);
   int memberships = 0;
+  final seatControls = <String>[];
+  @override
+  Future<bool> canModerate(String id) async => false;
+  @override
+  Future<void> modLockSeat(String roomId, int seat, bool locked) async {
+    seatControls.add('lock:$seat:$locked');
+  }
+
+  @override
+  Future<void> modMuteSeat(String roomId, int seat, bool muted) async {
+    seatControls.add('mute:$seat:$muted');
+  }
+
   @override
   Future<Room> get(String id) async => room;
   @override
@@ -135,7 +148,7 @@ void main() {
     expect(tester.widget<TextField>(find.byType(TextField)).controller!.text,
         '😆');
     final seatTiles = [
-      for (var seat = 1; seat <= 10; seat++)
+      for (var seat = 1; seat <= 15; seat++)
         find.byKey(ValueKey('room-mic-seat-$seat')),
     ];
     for (final tile in seatTiles) {
@@ -143,11 +156,15 @@ void main() {
     }
     final seatCenters = seatTiles.map(tester.getCenter).toList();
     expect(seatCenters.take(5).map((p) => p.dy).toSet().length, 1);
-    expect(seatCenters.skip(5).map((p) => p.dy).toSet().length, 1);
+    expect(seatCenters.skip(5).take(5).map((p) => p.dy).toSet().length, 1);
     expect(seatCenters[5].dy, greaterThan(seatCenters[0].dy));
+    expect(seatCenters[10].dy, greaterThan(seatCenters[5].dy));
+    expect(seatCenters.skip(10).map((p) => p.dy).toSet().length, 1);
+    expect(seatCenters.take(5).map((p) => p.dx).toList(),
+        seatCenters.skip(10).map((p) => p.dx).toList());
     expect(
       seatCenters.take(5).map((p) => p.dx).toList(),
-      seatCenters.skip(5).map((p) => p.dx).toList(),
+      seatCenters.skip(5).take(5).map((p) => p.dx).toList(),
     );
     await tester.tap(find.byTooltip('Microphone'));
     await tester.pump();
@@ -199,77 +216,93 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('cancelled room exit keeps ten-seat voice session alive', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final db = (await tester.runAsync(
-      () async => SupabaseClient(
-        'https://example.supabase.co',
-        'test-key',
-        authOptions: const AuthClientOptions(autoRefreshToken: false),
-      ),
-    ))!;
-    addTearDown(() => tester.runAsync(db.dispose));
-    final repo = ReconnectRepository(db);
-    final voice = ReconnectVoice();
-    addTearDown(voice.dispose);
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          currentUserIdProvider.overrideWithValue('viewer'),
-          storeVisualEquipmentProvider.overrideWith((_, id) async => {}),
-          roomMemberIdsProvider('room')
-              .overrideWith((_) => const Stream.empty()),
-          roomRepositoryProvider.overrideWithValue(repo),
-          roomProvider('room').overrideWith((_) async => room),
-          seatsProvider('room').overrideWith((_) =>
-              Stream.value(List.generate(10, (i) => MicSeat(seatNo: i + 1)))),
-          roomSeatProfilesProvider('room').overrideWith((_) async => {}),
-          onlineCountProvider('room').overrideWith((_) => Stream.value(1)),
-          roomChatProvider('room').overrideWith((_) => Stream.value([])),
-          voiceServiceProvider.overrideWithValue(voice),
-        ],
-        child: const MaterialApp(home: RoomScreen(roomId: 'room')),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(repo.memberships, 1);
-    expect(voice.joins, 1);
-    for (var seat = 1; seat <= 10; seat++) {
-      expect(find.byKey(ValueKey('room-mic-seat-$seat')), findsOneWidget);
-    }
-    await tester.tap(find.byKey(const ValueKey('room-mic-seat-1')));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('room-seat-here')), findsOneWidget);
-    for (final key in const [
-      'room-seat-give',
-      'room-seat-lock',
-      'room-seat-mute',
-    ]) {
-      expect(
-          tester.widget<ListTile>(find.byKey(ValueKey(key))).enabled, isFalse,
-          reason: 'Unverified moderation must not be tappable');
-    }
-    await tester.tap(find.byKey(const ValueKey('room-seat-cancel')));
-    await tester.pumpAndSettle();
-    expect(repo.memberships, 1,
-        reason: 'Opening then canceling a seat sheet never rejoins');
-    await tester.tap(find.byKey(const ValueKey('room-confirm-exit')));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('confirm-audio-room-exit-question')),
-        findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('cancel-room-exit')));
-    await tester.pumpAndSettle();
-    expect(find.text('Leave audio room?'), findsNothing);
-    expect(voice.leaves, 0,
-        reason: 'Cancel must not disconnect microphone playback');
-    expect(repo.memberships, 1,
-        reason: 'Cancel must not rejoin or remove the member');
-    expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
+  for (final moderator in [false, true]) {
+    testWidgets(
+        'cancelled room exit keeps 15-seat voice session alive (moderator=$moderator)',
+        (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final db = (await tester.runAsync(
+        () async => SupabaseClient(
+          'https://example.supabase.co',
+          'test-key',
+          authOptions: const AuthClientOptions(autoRefreshToken: false),
+        ),
+      ))!;
+      addTearDown(() => tester.runAsync(db.dispose));
+      final repo = ReconnectRepository(db);
+      final voice = ReconnectVoice();
+      addTearDown(voice.dispose);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            currentUserIdProvider.overrideWithValue('viewer'),
+            storeVisualEquipmentProvider.overrideWith((_, id) async => {}),
+            roomMemberIdsProvider('room')
+                .overrideWith((_) => const Stream.empty()),
+            roomRepositoryProvider.overrideWithValue(repo),
+            roomProvider('room').overrideWith((_) async => room),
+            roomModerationProvider('room').overrideWith((_) async => moderator),
+            seatsProvider('room').overrideWith((_) =>
+                Stream.value(List.generate(10, (i) => MicSeat(seatNo: i + 1)))),
+            roomSeatProfilesProvider('room').overrideWith((_) async => {}),
+            onlineCountProvider('room').overrideWith((_) => Stream.value(1)),
+            roomChatProvider('room').overrideWith((_) => Stream.value([])),
+            voiceServiceProvider.overrideWithValue(voice),
+          ],
+          child: const MaterialApp(home: RoomScreen(roomId: 'room')),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(repo.memberships, 1);
+      expect(voice.joins, 1);
+      for (var seat = 1; seat <= 15; seat++) {
+        expect(find.byKey(ValueKey('room-mic-seat-$seat')), findsOneWidget);
+      }
+      await tester.tap(find.byKey(const ValueKey('room-mic-seat-1')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('room-seat-here')), findsOneWidget);
+      for (final key in const [
+        'room-seat-give',
+        'room-seat-lock',
+        'room-seat-mute'
+      ]) {
+        expect(find.byKey(ValueKey(key)),
+            moderator ? findsOneWidget : findsNothing);
+      }
+      if (moderator) {
+        await tester.tap(find.byKey(const ValueKey('room-seat-lock')));
+        await tester.pumpAndSettle();
+        expect(repo.seatControls, ['lock:1:true']);
+        await tester.tap(find.byKey(const ValueKey('room-mic-seat-15')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('room-seat-mute')));
+        await tester.pumpAndSettle();
+        expect(repo.seatControls.last, 'mute:15:true');
+        await tester.tap(find.byKey(const ValueKey('room-mic-seat-1')));
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(find.byKey(const ValueKey('room-seat-cancel')));
+      await tester.pumpAndSettle();
+      expect(repo.memberships, 1,
+          reason: 'Opening then canceling a seat sheet never rejoins');
+      await tester.tap(find.byKey(const ValueKey('room-confirm-exit')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('confirm-audio-room-exit-question')),
+          findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('cancel-room-exit')));
+      await tester.pumpAndSettle();
+      expect(find.text('Leave audio room?'), findsNothing);
+      expect(voice.leaves, 0,
+          reason: 'Cancel must not disconnect microphone playback');
+      expect(repo.memberships, 1,
+          reason: 'Cancel must not rejoin or remove the member');
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
 }

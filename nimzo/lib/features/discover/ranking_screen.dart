@@ -19,9 +19,8 @@ class _State extends ConsumerState<RankingScreen> {
   Widget build(BuildContext context) {
     final key = (
       category == 0 ? 'wealth' : 'charm',
-      period == 1 ? 'weekly' : 'monthly',
+      const ['daily', 'weekly', 'monthly', 'all_time'][period],
     );
-    final supported = (category == 0 || category == 1) && period > 0;
     return Scaffold(
       backgroundColor: const Color(0xfff6f4ff),
       appBar: AppBar(
@@ -43,69 +42,75 @@ class _State extends ConsumerState<RankingScreen> {
           ),
           const SizedBox(height: 12),
           ReferenceTabs(
-            labels: const ['Daily', 'Weekly', 'Monthly'],
+            labels: const ['Daily', 'Weekly', 'Monthly', 'All Time'],
             selected: period,
             onSelected: (i) => setState(() => period = i),
             pills: true,
           ),
           const SizedBox(height: 12),
-          if (!supported)
-            const EmptyContent(
-                'Only verified Wealth/Charm weekly and monthly rankings are available.')
-          else
-            AsyncContent(
-              value: ref.watch(leaderboardProvider(key)),
-              onRetry: () => ref.invalidate(leaderboardProvider(key)),
-              builder: (rows) => rows.isEmpty
-                  ? const EmptyContent('No rankings yet')
-                  : Column(
-                      children: [
-                        for (var i = 0; i < rows.length; i++)
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 5),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(19),
-                              border: Border.all(color: NimzoStyle.line),
-                            ),
-                            child: ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                    width: 22,
-                                    child: Text(
-                                      '${i + 1}',
-                                      style: const TextStyle(
-                                        color: NimzoStyle.muted,
-                                      ),
+          Text(
+            '${const [
+              'Past 24 hours',
+              'Past 7 days',
+              'Past 30 days',
+              'All time'
+            ][period]} · ${category == 0 ? 'Coins sent' : 'Diamonds received'}',
+            style: const TextStyle(color: NimzoStyle.muted, fontSize: 12),
+          ),
+          const SizedBox(height: 8),
+          AsyncContent(
+            value: ref.watch(leaderboardProvider(key)),
+            onRetry: () => ref.invalidate(leaderboardProvider(key)),
+            builder: (rows) => rows.isEmpty
+                ? const EmptyContent('No rankings yet')
+                : Column(
+                    children: [
+                      for (var i = 0; i < rows.length; i++)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 5),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(19),
+                            border: Border.all(color: NimzoStyle.line),
+                          ),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 22,
+                                  child: Text(
+                                    '${i + 1}',
+                                    style: const TextStyle(
+                                      color: NimzoStyle.muted,
                                     ),
                                   ),
-                                  NimzoAvatar(
-                                    name: rows[i]['name']?.toString() ?? 'N',
-                                  ),
-                                ],
-                              ),
-                              title: Text(
-                                rows[i]['name']?.toString() ?? 'Nimzo user',
-                              ),
-                              trailing: Text(
-                                '${rows[i]['score']}',
-                                style: const TextStyle(
-                                  color: NimzoStyle.primary,
-                                  fontWeight: FontWeight.w700,
                                 ),
-                              ),
-                              onTap: () =>
-                                  context.push('/profile/${rows[i]['id']}'),
+                                NimzoAvatar(
+                                  name: rows[i]['name']?.toString() ?? 'N',
+                                ),
+                              ],
                             ),
+                            title: Text(
+                              rows[i]['name']?.toString() ?? 'Nimzo user',
+                            ),
+                            trailing: Text(
+                              '${rows[i]['score']}',
+                              style: const TextStyle(
+                                color: NimzoStyle.primary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            onTap: () =>
+                                context.push('/profile/${rows[i]['id']}'),
                           ),
-                      ],
-                    ),
-            ),
+                        ),
+                    ],
+                  ),
+          ),
         ],
       ),
     );

@@ -29,15 +29,15 @@ class RoomDiamondHost extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => RoomRocketHost(
-        roomId: roomId,
-        enabled: enabled,
-        child: child,
-        playbackBuilder: (event, finished) => DiamondBurst(
-          key: ValueKey(event.id),
-          event: event,
-          onFinished: finished,
-        ),
-      );
+    roomId: roomId,
+    enabled: enabled,
+    child: child,
+    playbackBuilder: (event, finished) => DiamondBurst(
+      key: ValueKey(event.id),
+      event: event,
+      onFinished: finished,
+    ),
+  );
 }
 
 /// Compatibility adapter: uses the real VAP renderer, not a Diamond burst.
@@ -53,8 +53,9 @@ class DiamondBurst extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => RoomRocketPlayback(
-        stage: event.stage,
-        targetCoins: diamondTargets[event.stage],
-        onFinished: onFinished,
-      );
+    stage: event.stage,
+    eventId: event.id,
+    targetCoins: diamondTargets[event.stage],
+    onFinished: onFinished,
+  );
 }

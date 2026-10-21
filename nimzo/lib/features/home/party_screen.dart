@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/providers/supabase_provider.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/widgets/tingle_surface.dart';
 import '../games/games_catalog_screen.dart';
 import '../rooms/domain/room.dart';
@@ -59,7 +60,7 @@ class _PartyScreenState extends ConsumerState<PartyScreen> {
                           label: Text('All',
                               style:
                                   TextStyle(fontSize: 11, color: Colors.white)),
-                          backgroundColor: Color(0xffa243f5),
+                          backgroundColor: NimzoStyle.primary,
                           side: BorderSide.none,
                           visualDensity: VisualDensity.compact))),
             Expanded(

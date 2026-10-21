@@ -101,7 +101,7 @@ class RoomRepository {
   }
 
   /// Room creation is performed by the SECURITY DEFINER RPC so the owner,
-  /// ten mic seats and membership are initialized atomically server-side.
+  /// fifteen mic seats and membership are initialized atomically server-side.
   Future<String> create(
     String name, {
     String? country,
@@ -143,24 +143,43 @@ class RoomRepository {
   }
 
   Future<void> leave(String roomId) => _rpc('leave_room', {'p_room': roomId});
+
   /// Server awards at most two verified room minutes per call.
   Future<int> touchActivity(String roomId) async {
     try {
-      final result = await _db.rpc('touch_room_activity',
-          params: {'p_room': roomId});
+      final result =
+          await _db.rpc('touch_room_activity', params: {'p_room': roomId});
       return (result as num?)?.toInt() ?? 0;
     } catch (e) {
       throw mapError(e);
     }
   }
-  Future<void> takeSeat(String roomId, int seat) =>
-      _rpc('take_seat', {'p_room': roomId, 'p_seat': seat});
+
+  Future<void> takeSeat(String roomId, int seat) async {
+    MicSeat.validateNumber(seat);
+    await _rpc('take_seat', {'p_room': roomId, 'p_seat': seat});
+  }
+
   Future<void> leaveSeat(String roomId) =>
       _rpc('leave_seat', {'p_room': roomId});
-  Future<void> modMuteSeat(String roomId, int seat, bool muted) => _rpc(
-        'mod_mute_seat',
-        {'p_room': roomId, 'p_seat': seat, 'p_muted': muted},
-      );
+  Future<void> modMuteSeat(String roomId, int seat, bool muted) async {
+    MicSeat.validateNumber(seat);
+    await _rpc(
+        'mod_mute_seat', {'p_room': roomId, 'p_seat': seat, 'p_muted': muted});
+  }
+
+  Future<void> modLockSeat(String roomId, int seat, bool locked) async {
+    MicSeat.validateNumber(seat);
+    await _rpc('mod_lock_seat',
+        {'p_room': roomId, 'p_seat': seat, 'p_locked': locked});
+  }
+
+  Future<void> modAssignSeat(String roomId, int seat, String userId) async {
+    MicSeat.validateNumber(seat);
+    await _rpc('mod_assign_seat',
+        {'p_room': roomId, 'p_seat': seat, 'p_user': userId});
+  }
+
   Future<bool> canModerate(String roomId) async {
     try {
       return await _db.rpc('get_room_moderation', params: {'p_room': roomId}) ==

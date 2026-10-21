@@ -88,6 +88,7 @@ class TingleMeScreen extends ConsumerWidget {
       ),
     ];
     const menu = <({String title, IconData icon, Color color, String route})>[
+      (title: 'Honor Wall', icon: Icons.military_tech_rounded, color: NimzoStyle.primary, route: '/honors'),
       (
         title: 'Help',
         icon: Icons.support_agent_rounded,
@@ -121,7 +122,7 @@ class TingleMeScreen extends ConsumerWidget {
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xfff5f4ff),
+      backgroundColor: const Color(0xfff5faf7),
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -271,8 +272,8 @@ class TingleMeScreen extends ConsumerWidget {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           gradient: const LinearGradient(colors: [
-                            Color(0xff951bfa),
-                            Color(0xfff846a3),
+                            Color(0xff087f5b),
+                            Color(0xff13a875),
                             Color(0xffffc64b)
                           ])),
                       child: Row(children: [
@@ -307,8 +308,8 @@ class TingleMeScreen extends ConsumerWidget {
               _MembershipShortcut(
                   title: 'SVIP',
                   subtitle: 'Explore membership privileges',
-                  start: const Color(0xff270949),
-                  end: const Color(0xff9525d2),
+                  start: const Color(0xff064a35),
+                  end: const Color(0xff087f5b),
                   onTap: () => _go(context, '/svip')),
               const SizedBox(height: 10),
               Container(
