@@ -187,7 +187,7 @@ class WillChillMembershipShowcase extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(28),
                 child: Column(children: [
-                  if (dynamicMedia['hero'] case final NimzoMembershipMedia hero)
+                  if (dynamicMedia['hero'] != null)
                     SizedBox(
                       height: 160,
                       child: CosmeticMediaView(
@@ -287,7 +287,7 @@ class WillChillMembershipShowcase extends StatelessWidget {
                       height: width * .62,
                       child: CosmeticMediaView(
                         key: ValueKey('live-membership-$kind-$tier-hero'),
-                        media: hero.toCosmetic(), animate: false))
+                        media: dynamicMedia['hero']!.toCosmetic(), animate: false))
                   : Image.asset('$_base$_hero',
                       width: width, fit: BoxFit.fitWidth)),
           Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
