@@ -14,6 +14,9 @@ import '../features/store/store_live_catalog.dart';
 import '../features/store/store_visual_equipment.dart';
 import '../features/events/dynamic_event_banners.dart';
 import '../features/games/dynamic_game_catalog.dart';
+import '../features/premium/dynamic_membership_media.dart';
+import '../features/premium/willchill_premium_screen.dart';
+import '../features/premium/membership_identity.dart';
 
 /// Tingle-reference rebuild entry point.
 ///
@@ -42,6 +45,13 @@ class NimzoApp extends ConsumerWidget {
       if (changed.contains('settings')) ref.invalidate(nimzoRemoteSettingsProvider);
       if (changed.contains('banners')) ref.invalidate(nimzoEventBannersProvider);
       if (changed.contains('games')) ref.invalidate(nimzoLiveGameFlagsProvider);
+      if (changed.contains('membership')) {
+        ref.invalidate(membershipStatusProvider);
+        ref.invalidate(vipOffersProvider);
+        ref.invalidate(svipThresholdsProvider);
+        ref.invalidate(nimzoMembershipMediaProvider);
+        ref.invalidate(effectiveMembershipProvider);
+      }
     });
     final id = ref.watch(currentUserIdProvider);
     if (id != null) {
