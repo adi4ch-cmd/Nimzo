@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'store_visual_equipment.dart';
+import 'store_purchase_repository.dart';
 import '../wallet/wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -259,11 +260,11 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
             (_) => Random.secure().nextInt(256)
                 .toRadixString(16).padLeft(2, '0')).join(),
         );
-        await session.client.rpc('nimzo_store_purchase', params: {
-          'p_item_id': item.id,
-          'p_expected_price': item.coinPrice,
-          'p_key': key,
-        });
+        await NimzoStorePurchaseRepository(session.client).purchase(
+          itemId: item.id,
+          expectedPrice: item.coinPrice,
+          retryKey: key,
+        );
         _purchaseKeys.remove(item.id);
         ref.invalidate(walletProvider);
       }
