@@ -33,3 +33,17 @@ User accounts, balances, ledger, gifts, rooms and purchases were not erased. Old
 
 ## New Codex task
 Use `feature/membership-reset-20261021` as source baseline. Build fresh VIP/SVIP semantics, user interface, assets and backend independently after auditing existing dependencies; do not copy the retired purchase/entitlement code. Keep Store equipment, gifts and room voice intact. Validate every new function with secure RLS, transactional privileges, and tests.
+
+## GitHub Actions QA — 2026-10-21
+
+Source QA run: https://github.com/adi4ch-cmd/Nimzo/actions/runs/39527543634
+
+- Flutter 3.47.6 dependency resolution and entire application analyzer: **passed**.
+- 261 remaining WillChill non-membership asset hashes / synthetic APK asset integrity tests: **passed**.
+- Deleted VIP/SVIP widget/route and member-only media directory checks: **passed**.
+- Focused profile, Store navigation, gift retry/rejection, room moderation, Rocket and Store-equipment tests: **passed**.
+- Separate historical diagnostics revealed 5 failures: 2 Realtime/client timer leakage tests and 3 UI walkthrough navigation/ranking fixtures.
+- Full Flutter regression: **374 passed, 9 failed**. Failures were the same five above plus `clone_constraints_test.dart`, `master_visual_preview_test.dart`, `reference_preview_test.dart`, and `remaining_visual_qa_test.dart`. These still require fixes and were explicitly marked non-blocking for the membership cleanup test job; the whole app must **not** be described as fully regression-tested.
+- No Android APK or device playback QA has been performed on this branch.
+
+Supabase later verification also found no remaining public VIP/SVIP tables, RPCs, functions, or profile/gift membership columns; the four Edge Functions and Storage object names had no direct VIP/SVIP references. Old catalogs, profiles and SQL definitions remain archived privately for rollback. Historical branches and Git object history are intentionally not erased.
