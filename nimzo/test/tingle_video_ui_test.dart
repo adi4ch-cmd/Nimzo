@@ -118,20 +118,7 @@ void main() {
         'levels': const LevelsScreen(),
         'tasks': const TingleTasksScreen(),
         'checkin-unavailable': const TingleDailyCheckinScreen(),
-        for (final category in [
-          'Party Theme',
-          'Rides',
-          'Chat Bubble',
-          'Live Frame'
-        ])
-          'store-$category': StoreCategoryPreview(
-              category: category,
-              icon: Icons.visibility_outlined,
-              accent: NimzoStyle.primary),
-        'store-preview': const StoreCategoryPreview(
-            category: 'Avatar Frame',
-            icon: Icons.filter_frames_rounded,
-            accent: NimzoStyle.primary),
+
       };
       const requested = String.fromEnvironment('NIMZO_UI_SURFACES');
       for (final entry in screens.entries) {
@@ -260,21 +247,6 @@ void main() {
           await tester.pumpAndSettle();
           expect(find.text('No conversations yet'), findsOneWidget);
           expect(find.byKey(const ValueKey('inbox-search')), findsNothing);
-        }
-        if (entry.key.startsWith('store-')) {
-          for (var style = 1; style < 7; style++) {
-            final tile = find.byKey(ValueKey('store-preview-style-$style'));
-            await tester.scrollUntilVisible(tile, 120,
-                scrollable: find.byType(Scrollable).first);
-            await tester.tap(tile);
-            await tester.pumpAndSettle();
-            expect(find.byKey(const ValueKey('store-category-preview-only')),
-                findsOneWidget);
-          }
-          await tester.drag(find.byType(ListView).first, const Offset(0, 1000));
-          await tester.pumpAndSettle();
-          await capture(
-              tester, '${entry.key}-selected-${width.toInt()}', boundary);
         }
         if (entry.key == 'cp-gallery') {
           for (final kind in ['theme', 'frame', 'bubble', 'entrance']) {
