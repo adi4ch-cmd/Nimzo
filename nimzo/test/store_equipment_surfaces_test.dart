@@ -52,6 +52,39 @@ void main() {
     expect(result['Avatar Frame']?.id, 'nimzo-media-frame-gold-circle');
   });
 
+  test('approved remote equipment maps to a real network media asset', () async {
+    final db = SupabaseClient('https://example.supabase.co', 'test',
+        httpClient: MockClient((request) async {
+      final path = request.url.path;
+      if (path.endsWith('/rpc/nimzo_store_visual_equipment')) {
+        return http.Response(jsonEncode([
+          {'item_id': 'dynamic-frame-1', 'category': 'Avatar Frame'}
+        ]), 200, request: request,
+            headers: {'content-type': 'application/json'});
+      }
+      expect(path, endsWith('/nimzo_cosmetic_media'));
+      return http.Response(jsonEncode([
+        {
+          'item_id': 'dynamic-frame-1',
+          'thumbnail_url': 'https://cdn.example/thumb.png',
+          'asset_url': 'https://cdn.example/live-frame.svga',
+          'media_kind': 'svga'
+        }
+      ]), 200, request: request,
+          headers: {'content-type': 'application/json'});
+    }), authOptions: const AuthClientOptions(autoRefreshToken: false));
+    final container = ProviderContainer(overrides: [
+      sessionSupabaseProvider.overrideWithValue((client: db, userId: 'viewer')),
+    ]);
+    addTearDown(db.dispose);
+    addTearDown(container.dispose);
+    final media =
+        await container.read(storeVisualEquipmentProvider('member').future);
+    expect(media['Avatar Frame']?.asset, 'https://cdn.example/live-frame.svga');
+    expect(media['Avatar Frame']?.kind, CosmeticMediaKind.svga);
+    expect(media['Avatar Frame']?.thumbnail, 'https://cdn.example/thumb.png');
+  });
+
   testWidgets(
       'equipped media reaches avatar, speaking wave and room background',
       (tester) async {
