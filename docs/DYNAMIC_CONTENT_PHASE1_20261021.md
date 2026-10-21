@@ -1,5 +1,9 @@
 # NIMZO Dynamic Content — Phase 1 (2026-10-21)
 
+> Historical first-phase snapshot. See `docs/DYNAMIC_CONTENT_CONTRACT_20261021.md`
+> for later paid Store, real equipment and native media work; the limitations
+> below describe the initial phase only.
+
 This is an additive, reversible-by-deactivation architecture. It intentionally
 does not restore retired VIP/SVIP systems or old Gifts/Store media.
 
