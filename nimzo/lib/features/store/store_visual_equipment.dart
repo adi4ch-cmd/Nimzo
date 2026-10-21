@@ -20,11 +20,58 @@ final storeVisualEquipmentProvider = FutureProvider.autoDispose
       'p_user_ids': [userId],
     },
   );
-  return {
-    for (final row in rows as List)
-      if (premiumCosmetics[row['item_id']] case final CosmeticMedia media)
-        if (media.category == row['category']) media.category: media,
+  // New approved Store items need functioning equipment; never render
+  // unapproved files or use catalog metadata to award ownership.
+  final equippedIds = (rows as List)
+      .whereType<Map>()
+      .map((row) => row['item_id'])
+      .whereType<String>()
+      .toSet().toList(growable: false);
+  if (equippedIds.isEmpty) return {};
+  final remote = await session.client
+      .from('nimzo_cosmetic_media')
+      .select('item_id,thumbnail_url,asset_url,media_kind')
+      .inFilter('item_id', equippedIds)
+      .eq('approved', true)
+      .limit(100);
+  final approved = <String, Map<String, dynamic>>{
+    for (final entry in remote)
+      if (entry['item_id'] is String)
+        entry['item_id'] as String: Map<String, dynamic>.from(entry),
   };
+  final equipped = <String, CosmeticMedia>{};
+  for (final row in rows as List) {
+    if (row is! Map) continue;
+    final itemId = row['item_id'];
+    final category = row['category'];
+    if (itemId is! String || category is! String) continue;
+    final entry = approved[itemId];
+    final asset = entry?['asset_url'];
+    final thumbnail = entry?['thumbnail_url'];
+    final kind = switch (entry?['media_kind']) {
+      'image' => CosmeticMediaKind.image,
+      'svga' => CosmeticMediaKind.svga,
+      'vap' => CosmeticMediaKind.vap,
+      _ => null,
+    };
+    final url = Uri.tryParse(asset is String ? asset : '');
+    if (url != null && url.scheme == 'https' && url.host.isNotEmpty &&
+        url.userInfo.isEmpty && kind != null) {
+      equipped[category] = CosmeticMedia(
+        itemId, category, itemId, url.toString(), kind,
+        thumbnail: thumbnail is String &&
+                Uri.tryParse(thumbnail)?.scheme == 'https'
+            ? thumbnail
+            : null,
+      );
+      continue;
+    }
+    // Bundled originals remain safe fallbacks and still equip normally.
+    if (premiumCosmetics[itemId] case final CosmeticMedia fallback) {
+      if (fallback.category == category) equipped[category] = fallback;
+    }
+  }
+  return equipped;
 });
 
 class EquippedCosmetic extends ConsumerWidget {
@@ -51,10 +98,17 @@ class EquippedCosmetic extends ConsumerWidget {
         Positioned.fill(
           child: IgnorePointer(
             child: media.kind == CosmeticMediaKind.image
-                ? Image.asset(
-                    media.asset,
-                    fit: category == 'Profile Card' ? BoxFit.fill : fit,
-                  )
+                ? (Uri.tryParse(media.asset)?.scheme == 'https'
+                    ? Image.network(
+                        media.asset,
+                        fit: category == 'Profile Card' ? BoxFit.fill : fit,
+                        errorBuilder: (_, __, ___) =>
+                            const SizedBox.shrink(),
+                      )
+                    : Image.asset(
+                        media.asset,
+                        fit: category == 'Profile Card' ? BoxFit.fill : fit,
+                      ))
                 : CosmeticMediaView(
                     key: ValueKey(media.id),
                     media: media,

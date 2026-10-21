@@ -1,4 +1,5 @@
 import 'private_animal_gifts.dart';
+import 'hall_of_fame_gift.dart';
 import '../../core/providers/supabase_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +13,24 @@ class Gift {
   final int price;
   final String? assetPath;
   const Gift(this.id, this.name, this.category, this.price, this.assetPath);
+}
+
+/// Server-approved playback record, never permission to send or spend coins.
+class GiftPlaybackMedia {
+  const GiftPlaybackMedia({required this.url, required this.kind});
+  final String url;
+  final String kind;
+
+  static GiftPlaybackMedia? fromRow(Map<String, dynamic> row) {
+    final raw = row['video_url'];
+    final kind = row['media_kind'];
+    if (raw is! String || kind is! String ||
+        !const {'mp4', 'vap', 'svga'}.contains(kind)) return null;
+    final uri = Uri.tryParse(raw);
+    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty ||
+        uri.userInfo.isNotEmpty) return null;
+    return GiftPlaybackMedia(url: uri.toString(), kind: kind);
+  }
 }
 
 class GiftRepository {
@@ -80,24 +99,32 @@ class GiftRepository {
     return rows.map((row) => Map<String, dynamic>.from(row)).toList();
   }
 
-  /// Only admin-approved HTTPS video media may be played.
-  Future<String?> approvedAnimationUrl(String giftId) async {
+  /// Only approved HTTPS media are played, after verified server settlement.
+  /// Private VAP gifts keep using the existing auth-checked Edge Function.
+  Future<GiftPlaybackMedia?> approvedAnimationMedia(String giftId) async {
     if (privateAnimalVapGiftIds.contains(giftId)) {
-      return privateMediaUrl(giftId, kind: 'animation');
+      final url = await privateMediaUrl(giftId, kind: 'animation');
+      return url == null
+          ? null
+          : GiftPlaybackMedia(url: url, kind: 'vap');
     }
     final rows = await _db
         .from('gift_animation_media')
-        .select('video_url')
+        .select('video_url,media_kind')
         .eq('gift_id', giftId)
         .eq('approved', true)
         .limit(1);
     if (rows.isEmpty) return null;
-    final url = rows.first['video_url'] as String?;
-    final uri = Uri.tryParse(url ?? '');
-    return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
-        ? url
-        : null;
+    final media = GiftPlaybackMedia.fromRow(rows.first);
+    if (media != null && giftId == hallOfFameGiftId) {
+      return GiftPlaybackMedia(url: media.url, kind: 'vap');
+    }
+    return media;
   }
+
+  /// Retained for existing callers that need only the server-approved URL.
+  Future<String?> approvedAnimationUrl(String giftId) async =>
+      (await approvedAnimationMedia(giftId))?.url;
 
   /// Checks private media availability before a debit without issuing a URL.
   Future<bool> privateMediaReady(String giftId) async {

@@ -1,0 +1,36 @@
+name: NIMZO Codespace Vivox Builder Script QA
+
+on:
+  push:
+    branches:
+      - feature/dynamic-content-sync-20261021
+    paths:
+      - tools/build_codespace_vivox_dynamic.py
+      - .github/workflows/nimzo-codespace-vivox-script-qa.yml
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  verify-local-sdk-builder:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Python syntax and CLI
+        run: |
+          python3 -m py_compile tools/build_codespace_vivox_dynamic.py
+          python3 tools/build_codespace_vivox_dynamic.py --help
+
+      - name: Verify fixture-only SDK path discovery without exposing actual SDK
+        run: |
+          set -euo pipefail
+          sdk="$(mktemp -d)"
+          mkdir -p "$sdk/include" "$sdk/android" "$sdk/lib/arm64-v8a"
+          echo 'FAKE UNIT TEST HEADER, NOT VIVOX SDK' > "$sdk/include/Vxc.h"
+          echo 'FAKE UNIT TEST AAR, NOT VIVOX SDK' > "$sdk/android/sdk-release.aar"
+          printf '\177ELF' > "$sdk/lib/arm64-v8a/libvivox-sdk.so"
+          python3 tools/build_codespace_vivox_dynamic.py \
+            --sdk-root "$sdk" --check-sdk-only
+          echo "Codespace SDK discovery fixture passed; NO native compilation attempted."

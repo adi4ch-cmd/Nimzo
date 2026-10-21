@@ -16,6 +16,11 @@ void main() {
   test('equipment RPC rejects unknown IDs and mismatched categories', () async {
     final db = SupabaseClient('https://example.supabase.co', 'test',
         httpClient: MockClient((request) async {
+      if (request.url.path.endsWith('/nimzo_cosmetic_media')) {
+        return http.Response('[]', 200,
+            request: request,
+            headers: {'content-type': 'application/json'});
+      }
       expect(request.url.path, endsWith('/rpc/nimzo_store_visual_equipment'));
       expect(jsonDecode(request.body), {
         'p_user_ids': ['member']
@@ -45,6 +50,74 @@ void main() {
         await container.read(storeVisualEquipmentProvider('member').future);
     expect(result.keys, ['Avatar Frame']);
     expect(result['Avatar Frame']?.id, 'nimzo-media-frame-gold-circle');
+  });
+
+  test('approved remote equipment maps to a real network media asset', () async {
+    final db = SupabaseClient('https://example.supabase.co', 'test',
+        httpClient: MockClient((request) async {
+      final path = request.url.path;
+      if (path.endsWith('/rpc/nimzo_store_visual_equipment')) {
+        return http.Response(jsonEncode([
+          {'item_id': 'dynamic-frame-1', 'category': 'Avatar Frame'}
+        ]), 200, request: request,
+            headers: {'content-type': 'application/json'});
+      }
+      expect(path, endsWith('/nimzo_cosmetic_media'));
+      return http.Response(jsonEncode([
+        {
+          'item_id': 'dynamic-frame-1',
+          'thumbnail_url': 'https://cdn.example/thumb.png',
+          'asset_url': 'https://cdn.example/live-frame.svga',
+          'media_kind': 'svga'
+        }
+      ]), 200, request: request,
+          headers: {'content-type': 'application/json'});
+    }), authOptions: const AuthClientOptions(autoRefreshToken: false));
+    final container = ProviderContainer(overrides: [
+      sessionSupabaseProvider.overrideWithValue((client: db, userId: 'viewer')),
+    ]);
+    addTearDown(db.dispose);
+    addTearDown(container.dispose);
+    final media =
+        await container.read(storeVisualEquipmentProvider('member').future);
+    expect(media['Avatar Frame']?.asset, 'https://cdn.example/live-frame.svga');
+    expect(media['Avatar Frame']?.kind, CosmeticMediaKind.svga);
+    expect(media['Avatar Frame']?.thumbnail, 'https://cdn.example/thumb.png');
+  });
+
+  testWidgets('remotely equipped PNG uses network rather than asset loader',
+      (tester) async {
+    const media = CosmeticMedia(
+      'nimzo-dynamic-network-frame',
+      'Party Theme',
+      'Remote Theme',
+      'https://cdn.example.com/room.png',
+      CosmeticMediaKind.image,
+    );
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        storeVisualEquipmentProvider('member').overrideWith(
+          (_) async => {'Party Theme': media},
+        ),
+      ],
+      child: const MaterialApp(
+        home: Scaffold(
+          body: EquippedCosmetic(
+            userId: 'member',
+            category: 'Party Theme',
+            child: Text('Original room body'),
+          ),
+        ),
+      ),
+    ));
+    await tester.pump();
+    final images = tester.widgetList<Image>(find.byType(Image));
+    expect(images.any((image) =>
+      image.image is NetworkImage &&
+      (image.image as NetworkImage).url ==
+        'https://cdn.example.com/room.png'), isTrue);
+    expect(find.text('Original room body'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
   });
 
   testWidgets(

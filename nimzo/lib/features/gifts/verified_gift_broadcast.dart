@@ -9,6 +9,7 @@ import 'private_animal_gifts.dart';
 import 'hall_of_fame_vap_overlay.dart';
 import 'gift_video_overlay.dart';
 import 'gift_svga_overlay.dart';
+import 'remote_gift_svga_overlay.dart';
 import 'gift_celebration_overlay.dart';
 import 'willchill_verified_gift_effect.dart';
 import 'nimzo_gift_control_art.dart';
@@ -32,11 +33,11 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   Map<String, dynamic>? _active;
   Map<String, String> _participants = const {};
   Timer? _timer;
-  String? _video;
+  GiftPlaybackMedia? _media;
   bool _loading = false;
   bool _foreground = true;
   Timer? _mediaTimer;
-  Completer<String?>? _mediaWait;
+  Completer<GiftPlaybackMedia?>? _mediaWait;
   Timer? _recoveryTimer;
   bool _recovering = false;
   int _recoveryGeneration = 0;
@@ -81,9 +82,9 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     _mediaWait = null;
   }
 
-  Future<String?> _lookupMedia(String giftId) {
+  Future<GiftPlaybackMedia?> _lookupMedia(String giftId) {
     _cancelMediaLookup();
-    final wait = Completer<String?>();
+    final wait = Completer<GiftPlaybackMedia?>();
     _mediaWait = wait;
     _mediaTimer = Timer(const Duration(seconds: 8), () {
       if (!wait.isCompleted) wait.complete(null);
@@ -92,11 +93,11 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     // A remote lookup failure must not suppress a bundled original. Complete
     // with null rather than leaving an unhandled asynchronous error.
     Future<void> resolve() async {
-      String? remote;
+      GiftPlaybackMedia? remote;
       try {
         remote = await ref
             .read(giftRepositoryProvider)
-            .approvedAnimationUrl(giftId);
+            .approvedAnimationMedia(giftId);
       } catch (_) {
         // Offline clients can still play a verified bundled original.
       }
@@ -135,7 +136,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         setState(() {
           _active = null;
           _participants = const {};
-          _video = null;
+          _media = null;
           _loading = false;
         });
       }
@@ -153,7 +154,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       _pending.clear();
       _active = null;
       _participants = const {};
-      _video = null;
+      _media = null;
       _loading = false;
       _startRecovery();
     }
@@ -180,20 +181,16 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
                 if (date == null || date.toUtc().isBefore(_listeningSince)) {
                   return false;
                 }
-                return (r['gift_id']?.toString() ==
-                          '35e4c570-cb02-4466-ae86-d670b3fb05ab' ||
-                      r['gift_id']?.toString() == hallOfFameGiftId ||
-                      privateAnimalVapGiftIds.contains(
-                        r['gift_id']?.toString(),
-                      ) ||
-                      // This only expands the verified event queue.
-                      // Media selection happens by a real matching gift name,
-                      // never by price or an unrelated generic image.
-                      (r['scope'] == 'room' &&
-                          isWillChillGoldCoinGift(
-                            (r['gift_name'] ?? '').toString(),
-                          ))) &&
-                    _seen.add('${r['id']}');
+                // The database table is populated by verified server
+                // settlement only. Show new approved-media gifts as well as
+                // the known bundled originals, never a client-side send.
+                final giftId = r['gift_id']?.toString();
+                final eventId = r['id']?.toString();
+                if (giftId == null || giftId.isEmpty ||
+                    eventId == null || eventId.isEmpty) return false;
+                final scope = r['scope'];
+                if (scope != 'room' && scope != 'country') return false;
+                return _seen.add(eventId);
               },
             )
             .toList()
@@ -220,7 +217,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       setState(() {
         _active = null;
         _participants = const {};
-        _video = null;
+        _media = null;
         _loading = false;
       });
       return;
@@ -229,7 +226,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     setState(() {
       _active = event;
       _participants = const {};
-      _video = null;
+      _media = null;
       _loading = true;
     });
     try {
@@ -252,7 +249,7 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       if (!mounted || !identical(_active, event)) return;
       _cancelMediaLookup();
       setState(() {
-        _video = url;
+        _media = url;
         _participants = participants;
         _loading = false;
       });
@@ -305,12 +302,10 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       }
     }
     final giftName = catalogName;
-    if (_video != null &&
-        ('${event['gift_id']}' == hallOfFameGiftId ||
-            privateAnimalVapGiftIds.contains('${event['gift_id']}'))) {
+    if (_media?.kind == 'vap') {
       return HallOfFameVapOverlay(
         key: ValueKey(event['id']),
-        source: _video!,
+        source: _media!.url,
         sender: sender,
         recipient: recipient,
         giftName: giftName,
@@ -320,22 +315,23 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         },
       );
     }
-    // For VAP-only gifts, do not fabricate a static celebration if the
-    // approved transparent animation is offline or not approved.
-    final eventGiftId = '${event['gift_id']}';
-    if (!_loading &&
-        _video == null &&
-        (eventGiftId == hallOfFameGiftId ||
-            privateAnimalVapGiftIds.contains(eventGiftId))) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && identical(_active, event)) _next();
-      });
-      return const SizedBox.shrink();
+    if (_media?.kind == 'svga') {
+      return RemoteGiftSvgaOverlay(
+        key: ValueKey(event['id']),
+        source: _media!.url,
+        giftName: giftName,
+        sender: sender,
+        recipient: recipient,
+        quantity: quantity,
+        onFinished: () {
+          if (mounted && identical(_active, event)) _next();
+        },
+      );
     }
-    if (_video != null) {
+    if (_media?.kind == 'mp4') {
       return GiftVideoOverlay(
         key: ValueKey(event['id']),
-        source: _video!,
+        source: _media!.url,
         sender: sender,
         recipient: recipient,
         giftName: '$giftName × $quantity',
@@ -359,6 +355,19 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
           if (mounted && identical(_active, event)) _next();
         },
       );
+    }
+    if (!_loading &&
+        _media == null &&
+        originalSvga == null &&
+        (!isWillChillGoldCoinGift(giftName) ||
+            '${event['gift_id']}' == hallOfFameGiftId ||
+            privateAnimalVapGiftIds.contains('${event['gift_id']}'))) {
+      // Missing/unapproved media is never replaced by an invented paid-gift
+      // animation. Advance the verified queue without another debit.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && identical(_active, event)) _next();
+      });
+      return const SizedBox.shrink();
     }
     if (!_loading &&
         event['scope'] == 'room' &&

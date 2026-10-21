@@ -6,6 +6,7 @@ import 'package:flutter_svga/flutter_svga.dart';
 import 'package:flutter_vap_player/flutter_vap_player.dart';
 
 import 'premium_cosmetics.dart';
+import '../../core/services/approved_media_bytes.dart';
 
 /// Renders the same pinned original media in the Store and on equipped surfaces.
 class CosmeticMediaView extends StatefulWidget {
@@ -42,10 +43,11 @@ class _CosmeticMediaViewState extends State<CosmeticMediaView>
       if (widget.media.kind == CosmeticMediaKind.svga) {
         final controller = SVGAAnimationController(vsync: this)..muted = true;
         _svga = controller;
-        final bytes = await rootBundle.load(widget.media.asset);
-        final movie = await SVGAParser.shared.decodeFromBuffer(
-          bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes),
-        );
+        final bytes = ApprovedMediaBytes.isSafeUrl(widget.media.asset)
+            ? await ApprovedMediaBytes.fetch(widget.media.asset)
+            : await rootBundle.load(widget.media.asset).then((data) =>
+                data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+        final movie = await SVGAParser.shared.decodeFromBuffer(bytes);
         if (!mounted) {
           movie.dispose();
           return;
@@ -61,15 +63,17 @@ class _CosmeticMediaViewState extends State<CosmeticMediaView>
           controller.value = .5;
         }
       } else {
-        final controller = VapPlayerController.asset(
-          widget.media.asset,
-          options: const VapPlayerOptions(
+        final options = const VapPlayerOptions(
             viewType: VapViewType.textureView,
             scaleType: VapScaleType.fitCenter,
             repeatCount: 0,
             mute: true,
-          ),
-        );
+          );
+        final controller = ApprovedMediaBytes.isSafeUrl(widget.media.asset)
+            ? VapPlayerController.networkUrl(
+                Uri.parse(widget.media.asset),
+                options: options)
+            : VapPlayerController.asset(widget.media.asset, options: options);
         _vap = controller;
         _events = controller.events.listen((event) {
           if (event is VapErrorEvent) _fail();
@@ -112,13 +116,22 @@ class _CosmeticMediaViewState extends State<CosmeticMediaView>
     final media = widget.media;
     if (media.kind == CosmeticMediaKind.image ||
         (!widget.animate && media.thumbnail != null)) {
-      return Image.asset(
-        media.thumbnail != null && !widget.animate
-            ? media.thumbnail!
-            : media.asset,
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined),
-      );
+      final source = media.thumbnail != null && !widget.animate
+          ? media.thumbnail!
+          : media.asset;
+      return ApprovedMediaBytes.isSafeUrl(source)
+          ? Image.network(
+              source,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.broken_image_outlined),
+            )
+          : Image.asset(
+              source,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.broken_image_outlined),
+            );
     }
     if (!_ready)
       return Center(
