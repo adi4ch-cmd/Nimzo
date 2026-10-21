@@ -2,41 +2,26 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/profile/profile.dart';
 
 void main() {
-  test('missing earned level records do not create fictional badges', () {
-    final p = Profile.fromJson({'id': 'u', 'nimzo_id': 100001});
-    expect([p.wealthLevel, p.charmLevel, p.activeLevel], [0, 0, 0]);
+  test('missing counters do not create invented badges', () {
+    final profile = Profile.fromJson({'id': 'u', 'nimzo_id': 100001});
+    expect([profile.wealthLevel, profile.charmLevel, profile.activeLevel],
+        [0, 0, 0]);
   });
 
-  test('expired VIP stays inactive; server SVIP level remains authoritative', () {
-    final p = Profile.fromJson({
+  test('unrelated profile information remains after legacy entitlement removal', () {
+    final profile = Profile.fromJson({
       'id': 'u',
       'nimzo_id': 100001,
-      'vip_level': 5,
-      'vip_expires_at': '2020-01-01T00:00:00Z',
-      'svip_level': 3,
-      'svip_cycle_start': '2020-01-01T00:00:00Z',
+      'display_name': 'Review',
+      'vip_level': 6,
+      'svip_level': 8,
+      'vip_expires_at': '2099-01-01T00:00:00Z',
+      'wealth_level': 12,
+      'charm_level': 4,
     });
-    expect(p.vipLevel, 0);
-    expect(p.svipLevel, 3);
-  });
-
-  test('an active VIP and server-assigned SVIP level are displayed', () {
-    final p = Profile.fromJson({
-      'id': 'u',
-      'nimzo_id': 100001,
-      'vip_level': 5,
-      'vip_expires_at':
-          DateTime.now().add(const Duration(days: 1)).toIso8601String(),
-      'svip_level': 3,
-      'svip_cycle_start': DateTime.now().toIso8601String(),
-    });
-    expect(p.vipLevel, 5);
-    expect(p.svipLevel, 3);
-  });
-
-  test('missing member fields do not invent any VIP/SVIP tier', () {
-    final p = Profile.fromJson({'id': 'u', 'nimzo_id': 100001});
-    expect(p.vipLevel, 0);
-    expect(p.svipLevel, 0);
+    expect(profile.displayName, 'Review');
+    expect(profile.wealthLevel, 12);
+    expect(profile.charmLevel, 4);
+    expect(profile.activeLevel, 0);
   });
 }
