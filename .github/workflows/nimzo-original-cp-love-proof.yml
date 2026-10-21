@@ -1,0 +1,66 @@
+name: NIMZO Original CP Love Avatar Flutter Media Proof
+on:
+  push:
+    branches: [feature/store-apk-verified-assets-20261021]
+    paths:
+      - .github/workflows/nimzo-original-cp-love-proof.yml
+      - nimzo/test/original_cp_avatar_animation_test.dart
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  decode-and-publish-real-animation-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Configure Flutter decoder
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Resolve project dependencies
+        working-directory: nimzo
+        run: flutter pub get --enforce-lockfile
+      - name: Decode original CP Love Avatar and capture verified real frame
+        working-directory: nimzo
+        run: flutter test --reporter expanded test/original_cp_avatar_animation_test.dart
+      - name: Validate generated preview is PNG with real non-flat artwork
+        run: |
+          python3 -m pip install --quiet Pillow
+          python3 - <<'PY'
+          from PIL import Image
+          p='nimzo/build/store_previews/cp_love_avatar.png'
+          with Image.open(p) as img:
+              assert img.size == (480,480),img.size
+              rgba=img.convert('RGBA')
+              colors=rgba.getcolors(480*480)
+              assert colors is None or len(colors)>30, 'Flat/placeholder frame, refusing publication'
+              assert rgba.getbbox() is not None, 'Blank animation frame'
+              print('REAL_SVGA_PREVIEW_PASS',img.size,len(colors) if colors is not None else '>230400')
+          PY
+      - name: Commit only the generated original animation preview
+        run: |
+          set -euo pipefail
+          install -m 0644 nimzo/build/store_previews/cp_love_avatar.png \
+            nimzo/assets/premium_store/willchill/cp_love_avatar_preview.png
+          git config user.name 'nimzo-media-ci[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add nimzo/assets/premium_store/willchill/cp_love_avatar_preview.png
+          if git diff --cached --quiet; then
+            echo "Original animation thumbnail already committed"
+          else
+            git commit -m 'Add authentic CP Love Avatar SVGA preview captured by Flutter decoder [skip-build]'
+            git push origin HEAD:feature/store-apk-verified-assets-20261021
+          fi
+      - name: Archive native Flutter-rendered preview proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-cp-love-avatar-decoded-preview
+          path: nimzo/build/store_previews/cp_love_avatar.png
+          retention-days: 14
