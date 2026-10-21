@@ -16,6 +16,11 @@ void main() {
   test('equipment RPC rejects unknown IDs and mismatched categories', () async {
     final db = SupabaseClient('https://example.supabase.co', 'test',
         httpClient: MockClient((request) async {
+      if (request.url.path.endsWith('/nimzo_cosmetic_media')) {
+        return http.Response('[]', 200,
+            request: request,
+            headers: {'content-type': 'application/json'});
+      }
       expect(request.url.path, endsWith('/rpc/nimzo_store_visual_equipment'));
       expect(jsonDecode(request.body), {
         'p_user_ids': ['member']
