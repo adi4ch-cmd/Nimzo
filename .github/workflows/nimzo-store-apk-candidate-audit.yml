@@ -50,6 +50,25 @@ jobs:
           python3 tools/stage_apk_store_assets.py \
             --use-full-audit \
             --report "$RUNNER_TEMP/store-apk-candidates-dry-run.json"
+      - name: Summarize credible Store media candidates by category
+        run: |
+          python3 - <<'PY'
+          import json
+          from collections import defaultdict
+          from pathlib import Path
+          path=Path('${{ runner.temp }}/store-apk-candidates-dry-run.json')
+          data=json.loads(path.read_text())
+          grouped=defaultdict(list)
+          for row in data['entries']:
+              if row.get('proposed_store_category'):
+                  grouped[row['proposed_store_category']].append(row)
+          for category,items in sorted(grouped.items()):
+              print(f"CATEGORY {category}: {len(items)} unique source-hash candidates")
+              for item in items[:12]:
+                  print("  SOURCE",item.get('source_package'),
+                        item.get('source'), "bytes",item.get('bytes'),
+                        "sha256",item.get('sha256'))
+          PY
       - name: Preserve source-matched candidate review artifact
         uses: actions/upload-artifact@v4
         with:
