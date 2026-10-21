@@ -91,3 +91,14 @@ https://github.com/adi4ch-cmd/Nimzo/actions/runs/39549970827
 
 This does not replace authenticated device/physical voice/VAP/payment testing.
 The post-build documentation/test-fixture commit changes no application code.
+
+## Subsequent concurrent live activity
+
+The preservation figures above describe the migration/readback checkpoint.
+At05:44:15UTC a new live5,000,000coin gift settled independently of this task's
+read-only production verification. The ledger records exactly−5,000,000coins
+(gift_sent) and+2,250,000diamonds(gift_received), reconciling the later totals:
+3,095,975coins and29,203,875diamonds across the same3wallets. Rocket events rose
+from32to33 with no extra stage beyond six. This later legitimate transaction
+is not a migration balance adjustment or a locally fabricated production test.
+No authenticated device animation assertion is inferred from that observation.
