@@ -19,6 +19,10 @@ on:
       - supabase/migrations/**
   workflow_dispatch:
 
+concurrency:
+  group: dynamic-content-qa-\${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
