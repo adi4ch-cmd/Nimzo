@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'store_visual_equipment.dart';
+import '../wallet/wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'premium_cosmetics.dart';
@@ -159,6 +162,8 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
   late bool bag = widget.initialBag;
   String category = 'All';
   String? pending;
+  // Stable retry key + server ownership guard prevent duplicate charging.
+  final Map<String, String> _purchaseKeys = {};
 
   static const categories = <String>[
     'All',
@@ -218,14 +223,49 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
           'nimzo_store_equip_free',
           params: {'p_item_id': item.id},
         );
-      } else {
-        if (item.coinPrice != 0) {
-          throw StateError('Paid checkout is not available yet.');
-        }
+      } else if (item.coinPrice == 0) {
         await session.client.rpc(
           'nimzo_store_claim_free',
           params: {'p_item_id': item.id},
         );
+      } else {
+        if (item.remoteMedia == null) {
+          throw StateError('Item media not ready. No coins charged.');
+        }
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (dialog) => AlertDialog(
+            title: const Text('Confirm Store purchase'),
+            content: Text(
+              'Buy ${item.name} for ${item.coinPrice} coins? '
+              'The server verifies the final price.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialog).pop(false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(dialog).pop(true),
+                child: const Text('Buy'),
+              ),
+            ],
+          ),
+        );
+        if (!mounted || confirmed != true) return;
+        final key = _purchaseKeys.putIfAbsent(
+          item.id,
+          () => List.generate(16,
+            (_) => Random.secure().nextInt(256)
+                .toRadixString(16).padLeft(2, '0')).join(),
+        );
+        await session.client.rpc('nimzo_store_purchase', params: {
+          'p_item_id': item.id,
+          'p_expected_price': item.coinPrice,
+          'p_key': key,
+        });
+        _purchaseKeys.remove(item.id);
+        ref.invalidate(walletProvider);
       }
       ref.invalidate(nimzoStoreProvider);
       ref.invalidate(storeVisualEquipmentProvider);
@@ -239,6 +279,9 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
         ));
       }
     } catch (error) {
+      // Network failures may occur after the server commits a purchase.
+      ref.invalidate(nimzoStoreProvider);
+      ref.invalidate(walletProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Unable to update Store: $error'),
@@ -324,7 +367,9 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                   color: Color(0xffefc983)),
             ),
             Text(
-              item.category,
+              item.coinPrice > 0
+                  ? '${item.category} · ${item.coinPrice} coins'
+                  : item.category,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
@@ -336,7 +381,9 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
               child: FilledButton(
                 key: ValueKey('nimzo-store-action-${item.id}'),
                 onPressed:
-                    busy || pending != null || (item.coinPrice != 0 && !isOwned)
+                    busy || pending != null ||
+                            (item.coinPrice > 0 && !isOwned &&
+                                item.remoteMedia == null)
                         ? null
                         : () => doAction(item, isOwned, equipped),
                 style: FilledButton.styleFrom(
@@ -359,7 +406,9 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                                 ? 'Equip'
                                 : item.coinPrice == 0
                                     ? 'Collect free'
-                                    : 'Not for sale',
+                                    : item.remoteMedia != null
+                                        ? 'Buy'
+                                        : 'Not for sale',
                         style: const TextStyle(fontSize: 11),
                       ),
               ),
