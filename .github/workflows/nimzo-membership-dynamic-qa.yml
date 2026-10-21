@@ -1,0 +1,62 @@
+name: NIMZO Dynamic VIP SVIP QA (no APK)
+
+on:
+  push:
+    branches:
+      - feature/dynamic-membership-publisher-20261021
+    paths:
+      - .github/workflows/nimzo-membership-dynamic-qa.yml
+      - nimzo/lib/**
+      - nimzo/test/**
+      - supabase/migrations/**
+  workflow_dispatch: {}
+
+concurrency:
+  group: nimzo-membership-dynamic-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Flutter stable
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Resolve pinned dependencies
+        working-directory: nimzo
+        run: flutter pub get --enforce-lockfile
+      - name: Analyze membership dynamic sources and tests
+        working-directory: nimzo
+        run: |
+          flutter analyze --no-fatal-infos --no-fatal-warnings \
+            lib/app/app.dart \
+            lib/features/premium/dynamic_membership_media.dart \
+            lib/features/premium/willchill_premium_screen.dart \
+            lib/features/premium/willchill_membership_showcase.dart \
+            lib/features/premium/membership_identity.dart \
+            test/dynamic_membership_media_test.dart
+      - name: Membership, Realtime, Store and entrance regressions
+        working-directory: nimzo
+        run: |
+          flutter test --reporter expanded \
+            test/dynamic_membership_media_test.dart \
+            test/dynamic_content_sync_test.dart \
+            test/membership_identity_test.dart \
+            test/membership_purchase_keys_test.dart \
+            test/membership_status_provider_test.dart \
+            test/membership_status_test.dart \
+            test/willchill_membership_showcase_test.dart \
+            test/store_equipment_surfaces_test.dart \
+            test/store_paid_purchase_test.dart
+      - name: Check no compiled files or SDK binaries are staged
+        run: |
+          git diff --exit-code
+          ! git ls-files | grep -E '(^|/)sdk-release\.aar$|(^|/)libvivox-sdk\.so$|(^|/)app-release\.apk$'
