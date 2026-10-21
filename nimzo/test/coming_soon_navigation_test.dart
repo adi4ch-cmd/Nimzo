@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nimzo/app/auth_redirect.dart';
-import 'package:nimzo/app/routes.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/features/auth/domain/auth_user.dart';
 import 'package:nimzo/features/profile/tingle_me_screen.dart';

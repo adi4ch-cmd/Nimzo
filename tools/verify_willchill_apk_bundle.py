@@ -11,7 +11,7 @@ from pathlib import Path
 import sys
 import zipfile
 
-EXPECTED_COUNT = 261
+EXPECTED_COUNT = 441
 PREFIX = 'assets/flutter_assets/'
 MEDIA_PREFIX = 'assets/willchill_premium/'
 

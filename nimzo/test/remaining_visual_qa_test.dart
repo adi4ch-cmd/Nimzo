@@ -211,7 +211,13 @@ void main() {
         'Help and feedback',
       ])
         title.toLowerCase().replaceAll(' ', '_'): InfoScreen(title: title),
-      for (final game in NimzoRoomGames.approved)
+      // Native WebViews need Android/browser runtime QA, not desktop goldens.
+      for (final game in NimzoRoomGames.approved.where((g) => !{
+            'lucky_77',
+            'grady_lion',
+            'jackpot',
+            'lucky_wheel_77'
+          }.contains(g.slug)))
         'game_${game.artwork}': GameScreen(slug: game.slug, roomId: 'room'),
     };
     const targetedGolden = String.fromEnvironment('NIMZO_GOLDEN_TARGET');
@@ -278,6 +284,7 @@ void main() {
             ),
             supabaseProvider.overrideWithValue(db),
             currentUserIdProvider.overrideWithValue('me'),
+            profileProvider('me').overrideWith((_) async => fixtureMe),
             authControllerProvider.overrideWith(AuthController.new),
             voiceServiceProvider.overrideWithValue(FixtureVoice()),
             ownedRoomPreviewProvider.overrideWith((_) async => fixtureRoom),
@@ -351,8 +358,7 @@ void main() {
                         i++)
                       {
                         'name': 'Owned ${kind.name} ${i + 1}',
-                        'image_path':
-                            'assets/reference/${kind.name}/$i.jpg',
+                        'image_path': 'assets/reference/${kind.name}/$i.jpg',
                       },
                   ],
                 ),
@@ -487,12 +493,6 @@ void main() {
                 !f.path.replaceAll('\\', '/').contains('/vip/'))) {
           await precacheImage(AssetImage(file.path), context);
         }
-        if (entry.key == 'honor_wall') {
-          for (final n in [1, 2, 3]) {
-            await precacheImage(
-                AssetImage('assets/hilo/store/royal_$n.webp'), context);
-          }
-        }
         // Eagerly decode gift controls so the golden never captures blank
         // placeholders while Flutter is decoding first-use WebP assets.
         if (entry.key == 'room_tools' || entry.key == 'room_games') {
@@ -618,7 +618,7 @@ void main() {
             'Gold',
           ]) {
             await tester.scrollUntilVisible(
-              find.text(label),
+              find.byKey(ValueKey('level-band-$label')),
               120,
               scrollable: find.byType(Scrollable).first,
             );
@@ -637,5 +637,7 @@ void main() {
       await tester.pump();
       router?.dispose();
     }
+    await tester.runAsync(db.dispose);
+    await tester.pump();
   });
 }

@@ -7,6 +7,8 @@ import '../features/social/social_screens.dart';
 import '../features/social/family_screen.dart';
 import '../features/social/tingle_friends_screen.dart';
 import '../features/discover/ranking_screen.dart';
+import '../features/honors/honor_wall_screen.dart';
+import '../features/premium/willchill_premium_screen.dart';
 import '../features/profile/levels_screen.dart';
 import '../features/profile/profile_repository.dart';
 import '../features/auth/presentation/update_password_screen.dart';
@@ -76,7 +78,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           user.emailVerified &&
           !ref.read(passwordRecoveryProvider)) {
         try {
-          final profile = await ref.read(profileProvider(user.id).future)
+          final profile = await ref
+              .read(profileProvider(user.id).future)
               .timeout(const Duration(seconds: 6));
           profileReady = (profile.displayName?.trim().isNotEmpty ?? false) &&
               profile.gender != null &&
@@ -155,6 +158,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (_, __) => const TingleBlockedUsersScreen()),
       GoRoute(path: '/cp', builder: (_, __) => const CoupleRequestsScreen()),
       GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
+      GoRoute(path: '/honors', builder: (_, __) => const HonorWallScreen()),
+      GoRoute(
+          path: '/vip',
+          builder: (_, __) =>
+              const WillChillPremiumScreen(initialGroup: 'vip')),
+      GoRoute(
+          path: '/svip',
+          builder: (_, __) =>
+              const WillChillPremiumScreen(initialGroup: 'svip')),
       GoRoute(path: '/levels', builder: (_, __) => const LevelsScreen()),
       GoRoute(path: '/task', builder: (_, __) => const TingleTasksScreen()),
       GoRoute(
@@ -180,11 +192,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         // are not navigable even from an older bookmark/deep link.
         redirect: (_, state) {
           const retired = {
-            'host request', 'demo agency', 'demo host', 'demo bd',
-            'agency', 'host', 'bd', 'demo coin', 'demo coins',
-            'honor wall', 'medals', 'medal wall',
+            'host request',
+            'demo agency',
+            'demo host',
+            'demo bd',
+            'agency',
+            'host',
+            'bd',
+            'demo coin',
+            'demo coins',
           };
           final name = state.pathParameters['title']?.trim().toLowerCase();
+          if (const {'honor wall', 'medals', 'medal wall'}.contains(name))
+            return '/honors';
           return retired.contains(name) ? Routes.profile : null;
         },
         builder: (_, s) => s.pathParameters['title'] == 'Family'

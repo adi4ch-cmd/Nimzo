@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "base_commit": "32f92ade54727a0f8aea3e1a926823212d2c16bc",
-  "min_app_version": "1.0.36+136",
+  "min_app_version": "1.0.37+137",
   "verification_scope": "Source-presence and connection guards; runtime behavior, asset licenses and RTP require separate validation",
   "required_files": [
     "nimzo/lib/app/router.dart",

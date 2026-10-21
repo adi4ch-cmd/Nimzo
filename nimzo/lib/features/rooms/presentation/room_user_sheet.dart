@@ -1,3 +1,4 @@
+import '../../premium/membership_identity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -256,6 +257,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                           fontWeight: FontWeight.w800,
                                         )),
                                   ),
+                                  VerifiedMembershipIdentity(userId: p.id),
                                   const SizedBox(height: 3),
                                   Row(
                                     children: [

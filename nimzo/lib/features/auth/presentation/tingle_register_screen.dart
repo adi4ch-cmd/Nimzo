@@ -220,7 +220,7 @@ class _TingleRegisterScreenState extends ConsumerState<TingleRegisterScreen> {
                     height: 65,
                     decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                            colors: [Color(0xffa243f5), Color(0xff7439d4)]),
+                            colors: [Color(0xff087f5b), Color(0xff056647)]),
                         borderRadius: BorderRadius.circular(22)),
                     child: TextButton(
                         onPressed: loading ? null : register,

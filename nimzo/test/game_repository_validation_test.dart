@@ -38,6 +38,7 @@ void main() {
       await rejected(bet: 500001);
       await rejected(key: '');
       await rejected(key: '  ');
+      await rejected(key: 'k' * 201);
     },
   );
 }

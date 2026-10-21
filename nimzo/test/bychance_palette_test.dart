@@ -3,12 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/core/theme/app_theme.dart';
 
 void main() {
-  test('Tingle-reference lavender palette keeps NIMZO identity consistent', () {
-    expect(NimzoStyle.primary, const Color(0xffa243f5));
+  test('NIMZO green palette keeps semantic accent colors distinct', () {
+    expect(NimzoStyle.primary, const Color(0xff087f5b));
     expect(NimzoStyle.pink, const Color(0xffed428c));
     expect(NimzoStyle.blue, const Color(0xff3a85ff));
     expect(NimzoStyle.orange, const Color(0xffffab21));
-    expect(NimzoStyle.royal, const Color(0xff7439d4));
+    expect(NimzoStyle.royal, const Color(0xff056647));
     expect(NimzoStyle.heroGradient.colors, <Color>[
       NimzoStyle.primary,
       NimzoStyle.royal,

@@ -34,20 +34,22 @@ class NimzoCosmeticItem {
   final CosmeticMediaKind? mediaKind;
 
   /// Only a server-approved, validated asset can be rendered or equipped.
-  CosmeticMedia? get remoteMedia =>
-      assetUrl == null || mediaKind == null
-          ? null
-          : CosmeticMedia(id, category, name, assetUrl!, mediaKind!,
-              thumbnail: thumbnailUrl);
+  CosmeticMedia? get remoteMedia => assetUrl == null || mediaKind == null
+      ? null
+      : CosmeticMedia(id, category, name, assetUrl!, mediaKind!,
+          thumbnail: thumbnailUrl);
 
   factory NimzoCosmeticItem.fromJson(Map<String, dynamic> json) {
     String? httpsUrl(Object? input) {
       final uri = Uri.tryParse(input is String ? input : '');
-      return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty &&
+      return uri != null &&
+              uri.scheme == 'https' &&
+              uri.host.isNotEmpty &&
               uri.userInfo.isEmpty
           ? uri.toString()
           : null;
     }
+
     final kind = switch (json['media_kind']) {
       'image' => CosmeticMediaKind.image,
       'svga' => CosmeticMediaKind.svga,
@@ -113,13 +115,11 @@ final nimzoStoreProvider = FutureProvider.autoDispose<NimzoStoreSnapshot>(
 
     // Interleave different product types in the All tab instead of showing
     // seven nearly identical badges in a row (the v1.0.31 screenshot issue).
-    final items = (catalog as List)
-        .map((e) {
-          final row = Map<String, dynamic>.from(e as Map);
-          row.addAll(approved[row['id']] ?? const <String, dynamic>{});
-          return NimzoCosmeticItem.fromJson(row);
-        })
-        .toList();
+    final items = (catalog as List).map((e) {
+      final row = Map<String, dynamic>.from(e as Map);
+      row.addAll(approved[row['id']] ?? const <String, dynamic>{});
+      return NimzoCosmeticItem.fromJson(row);
+    }).toList();
     const order = <String>[
       'Avatar Frame',
       'Rides',
@@ -213,19 +213,20 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
       NimzoCosmeticItem item, bool isOwned, bool equipped) async {
     if (pending != null) return;
     setState(() => pending = item.id);
+    final session = ref.read(sessionSupabaseProvider);
     try {
-      final session = ref.read(sessionSupabaseProvider);
+      dynamic confirmed;
       if (session.userId == null) throw StateError('Sign in required');
       if (equipped) {
-        await session.client
+        confirmed = await session.client
             .rpc('nimzo_store_unequip', params: {'p_category': item.category});
       } else if (isOwned) {
-        await session.client.rpc(
+        confirmed = await session.client.rpc(
           'nimzo_store_equip_free',
           params: {'p_item_id': item.id},
         );
       } else if (item.coinPrice == 0) {
-        await session.client.rpc(
+        confirmed = await session.client.rpc(
           'nimzo_store_claim_free',
           params: {'p_item_id': item.id},
         );
@@ -233,7 +234,7 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
         if (item.remoteMedia == null) {
           throw StateError('Item media not ready. No coins charged.');
         }
-        final confirmed = await showDialog<bool>(
+        final accepted = await showDialog<bool>(
           context: context,
           builder: (dialog) => AlertDialog(
             title: const Text('Confirm Store purchase'),
@@ -253,20 +254,33 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
             ],
           ),
         );
-        if (!mounted || confirmed != true) return;
+        if (!mounted ||
+            accepted != true ||
+            ref.read(sessionSupabaseProvider).userId != session.userId) return;
         final key = _purchaseKeys.putIfAbsent(
           item.id,
-          () => List.generate(16,
-            (_) => Random.secure().nextInt(256)
-                .toRadixString(16).padLeft(2, '0')).join(),
+          () => List.generate(
+              16,
+              (_) => Random.secure()
+                  .nextInt(256)
+                  .toRadixString(16)
+                  .padLeft(2, '0')).join(),
         );
         await NimzoStorePurchaseRepository(session.client).purchase(
           itemId: item.id,
           expectedPrice: item.coinPrice,
           retryKey: key,
         );
+        confirmed = true;
         _purchaseKeys.remove(item.id);
         ref.invalidate(walletProvider);
+      }
+      if (confirmed != true) {
+        throw StateError('Server did not confirm the update.');
+      }
+      if (!mounted ||
+          ref.read(sessionSupabaseProvider).userId != session.userId) {
+        return;
       }
       ref.invalidate(nimzoStoreProvider);
       ref.invalidate(storeVisualEquipmentProvider);
@@ -283,7 +297,8 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
       // Network failures may occur after the server commits a purchase.
       ref.invalidate(nimzoStoreProvider);
       ref.invalidate(walletProvider);
-      if (mounted) {
+      if (mounted &&
+          ref.read(sessionSupabaseProvider).userId == session.userId) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Unable to update Store: $error'),
         ));
@@ -339,19 +354,19 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                                 const Icon(Icons.broken_image_outlined),
                           )
                         : premiumCosmetics[item.id] != null
-                        ? CosmeticMediaView(
-                            key: ValueKey(item.id),
-                            media: premiumCosmetics[item.id]!,
-                            animate: false)
-                        : item.id.startsWith('nimzo-media-')
-                            ? const Icon(Icons.image_not_supported_outlined,
-                                semanticLabel: 'Item media unavailable')
-                            : NimzoIdentityArt(
-                                kind: artFor(item.category),
-                                variant: item.variant,
-                                color: accent,
-                                size: 102,
-                              ),
+                            ? CosmeticMediaView(
+                                key: ValueKey(item.id),
+                                media: premiumCosmetics[item.id]!,
+                                animate: false)
+                            : item.id.startsWith('nimzo-media-')
+                                ? const Icon(Icons.image_not_supported_outlined,
+                                    semanticLabel: 'Item media unavailable')
+                                : NimzoIdentityArt(
+                                    kind: artFor(item.category),
+                                    variant: item.variant,
+                                    color: accent,
+                                    size: 102,
+                                  ),
                   ),
                 ),
               ),
@@ -381,12 +396,13 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
               height: 35,
               child: FilledButton(
                 key: ValueKey('nimzo-store-action-${item.id}'),
-                onPressed:
-                    busy || pending != null ||
-                            (item.coinPrice > 0 && !isOwned &&
-                                item.remoteMedia == null)
-                        ? null
-                        : () => doAction(item, isOwned, equipped),
+                onPressed: busy ||
+                        pending != null ||
+                        (item.coinPrice > 0 &&
+                            !isOwned &&
+                            item.remoteMedia == null)
+                    ? null
+                    : () => doAction(item, isOwned, equipped),
                 style: FilledButton.styleFrom(
                   backgroundColor: const Color(0xffefc983),
                   foregroundColor: const Color(0xff28182c),
@@ -661,6 +677,9 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
   Widget build(BuildContext context) {
     final item = widget.item;
     final color = accents[item.variant % accents.length];
+    final media = premiumCosmetics[item.id];
+    final animatedMedia =
+        media != null && media.kind != CosmeticMediaKind.image;
     final canvas =
         (MediaQuery.sizeOf(context).width * .84).clamp(180.0, 390.0).toDouble();
     return Scaffold(
@@ -691,39 +710,41 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                           ),
                         )
                       : item.thumbnailUrl != null
-                      ? Image.network(
-                          item.thumbnailUrl!,
-                          width: canvas,
-                          height: canvas,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.broken_image_outlined),
-                        )
-                      : premiumCosmetics[item.id] != null
-                      ? SizedBox(
-                          width: canvas,
-                          height: canvas,
-                          child: CosmeticMediaView(
-                              key: ValueKey('${item.id}-$replay'),
-                              media: premiumCosmetics[item.id]!,
-                              animate:
-                                  !MediaQuery.disableAnimationsOf(context)))
-                      : item.id.startsWith('nimzo-media-')
-                          ? const Icon(Icons.image_not_supported_outlined,
-                              semanticLabel: 'Item media unavailable')
-                          : AnimatedBuilder(
-                              animation: controller,
-                              builder: (_, __) => NimzoIdentityArt(
-                                kind: art,
-                                variant: item.variant,
-                                color: color,
-                                size: canvas,
-                                progress:
-                                    MediaQuery.disableAnimationsOf(context)
-                                        ? 1
-                                        : controller.value,
-                              ),
-                            ),
+                          ? Image.network(
+                              item.thumbnailUrl!,
+                              width: canvas,
+                              height: canvas,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.broken_image_outlined),
+                            )
+                          : premiumCosmetics[item.id] != null
+                              ? SizedBox(
+                                  width: canvas,
+                                  height: canvas,
+                                  child: CosmeticMediaView(
+                                      key: ValueKey('${item.id}-$replay'),
+                                      media: premiumCosmetics[item.id]!,
+                                      animate: !MediaQuery.disableAnimationsOf(
+                                          context)))
+                              : item.id.startsWith('nimzo-media-')
+                                  ? const Icon(
+                                      Icons.image_not_supported_outlined,
+                                      semanticLabel: 'Item media unavailable')
+                                  : AnimatedBuilder(
+                                      animation: controller,
+                                      builder: (_, __) => NimzoIdentityArt(
+                                        kind: art,
+                                        variant: item.variant,
+                                        color: color,
+                                        size: canvas,
+                                        progress:
+                                            MediaQuery.disableAnimationsOf(
+                                                    context)
+                                                ? 1
+                                                : controller.value,
+                                      ),
+                                    ),
                 ),
               ),
             ),
@@ -763,17 +784,26 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                         }
                       },
                       icon: const Icon(Icons.replay_rounded),
-                      label: const Text('Replay full preview'),
+                      label: Text(animatedMedia
+                          ? 'Replay animation'
+                          : media != null
+                              ? 'View artwork again'
+                              : 'Replay artwork transition'),
                       style: FilledButton.styleFrom(
                           backgroundColor: const Color(0xffefc983),
                           foregroundColor: const Color(0xff28182c)),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Item preview · No coins charged.',
+                  Text(
+                    media != null
+                        ? '${animatedMedia ? 'Animated media' : 'Static artwork'} · No coins charged. Badges are decorative cosmetics.'
+                        : item.id.startsWith('nimzo-original-')
+                            ? 'Original NIMZO design · Artwork transition only. No coins charged.'
+                            : 'Item media unavailable · No coins charged.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 11, color: Color(0xffc5b5cd)),
+                    style:
+                        const TextStyle(fontSize: 11, color: Color(0xffc5b5cd)),
                   ),
                 ],
               ),

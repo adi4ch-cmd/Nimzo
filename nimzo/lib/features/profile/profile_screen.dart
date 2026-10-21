@@ -1,3 +1,4 @@
+import '../premium/membership_identity.dart';
 import '../store/store_visual_equipment.dart';
 import '../../core/widgets/master_ui.dart';
 
@@ -266,6 +267,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                       ],
                     ),
+                    VerifiedMembershipIdentity(userId: id),
                     Text(
                       'ID:${p.nimzoId} · ${p.countryName ?? p.countryCode ?? ''}',
                       style: const TextStyle(color: NimzoStyle.muted),

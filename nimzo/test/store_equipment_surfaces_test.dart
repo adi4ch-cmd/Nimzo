@@ -179,7 +179,7 @@ void main() {
             httpClient: MockClient((request) async {
           calls.add(request.url.path);
           expect(jsonDecode(request.body), {'p_category': 'Avatar Frame'});
-          return http.Response('null', 200,
+          return http.Response('true', 200,
               request: request, headers: {'content-type': 'application/json'});
         }), authOptions: const AuthClientOptions(autoRefreshToken: false))))!;
     var removed = false;

@@ -1,0 +1,32 @@
+-- DISPOSABLE EMPTY DATABASE ONLY. Minimal production-shaped dependency fixture.
+-- Cron shim validates registration; actual pg_cron scheduling remains a live review check.
+CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
+CREATE SCHEMA auth; CREATE SCHEMA nimzo_private; CREATE SCHEMA cron;
+CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
+GRANT USAGE ON SCHEMA auth TO authenticated,anon,service_role;
+CREATE TABLE public.profiles(id uuid PRIMARY KEY,status text DEFAULT 'active',vip_level int NOT NULL DEFAULT 0,vip_expires_at timestamptz,vip_last_claim date,svip_level int NOT NULL DEFAULT 0,svip_cycle_start timestamptz,svip_cycle_cents bigint NOT NULL DEFAULT 0,svip_last_claim date,display_name text,username text,bio text);
+GRANT SELECT ON public.profiles TO authenticated; GRANT UPDATE(bio) ON public.profiles TO authenticated;
+CREATE TABLE public.wallets(user_id uuid PRIMARY KEY,coins bigint DEFAULT 0,diamonds bigint DEFAULT 0);
+CREATE TABLE public.ledger(id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,user_id uuid,kind text,coin_delta bigint,diamond_delta bigint DEFAULT 0,ref jsonb,idempotency_key text,UNIQUE(user_id,idempotency_key,kind));
+CREATE TABLE public.recharge_packages(product_id text PRIMARY KEY,active bool,usd_cents int,coins bigint);
+CREATE TABLE public.purchases(store text,txn_id text,user_id uuid,usd_cents int,coins bigint,product_id text,PRIMARY KEY(store,txn_id));
+CREATE TABLE public.normal_vip_catalog(tier int PRIMARY KEY,coin_price bigint,duration_days int);
+CREATE TABLE public.svip_thresholds(level int PRIMARY KEY,usd_cents bigint);
+CREATE TABLE public.vip_daily_rewards(level int PRIMARY KEY,coins bigint);
+CREATE TABLE public.svip_friday_rewards(level int PRIMARY KEY,coins bigint);
+CREATE POLICY normal_vip_catalog_read ON public.normal_vip_catalog FOR SELECT TO authenticated USING(true);
+CREATE POLICY svip_thresholds_read ON public.svip_thresholds FOR SELECT TO authenticated USING(true);
+CREATE POLICY vipcfg_read ON public.vip_daily_rewards FOR SELECT TO authenticated USING(true);
+CREATE POLICY svip_friday_rewards_read ON public.svip_friday_rewards FOR SELECT TO authenticated USING(true);
+INSERT INTO public.normal_vip_catalog VALUES (1,1000000,30),(2,3000000,30),(3,8000000,30),(4,15000000,30),(5,30000000,30),(6,60000000,30),(7,100000000,30),(8,200000000,30),(9,350000000,30),(10,600000000,30);
+INSERT INTO public.svip_thresholds VALUES (1,5000),(2,20000),(3,50000),(4,100000),(5,300000),(6,1000000),(7,3000000),(8,7500000),(9,20000000),(10,50000000);
+INSERT INTO public.vip_daily_rewards VALUES (1,3000),(2,15000),(3,75000),(4,150000),(5,300000),(6,600000),(7,1200000),(8,2400000),(9,4800000),(10,9600000);
+INSERT INTO public.svip_friday_rewards VALUES (1,2000000),(2,5000000),(3,10000000),(4,20000000),(5,40000000),(6,80000000),(7,150000000),(8,250000000),(9,450000000),(10,800000000);
+INSERT INTO public.recharge_packages VALUES ('approved-small',true,5000,500000),('approved-large',true,20000,2000000);
+CREATE TABLE public.room_members(room_id uuid,user_id uuid,joined_at timestamptz DEFAULT now());
+CREATE TABLE public.phoenix_room_entries(room_id uuid,user_id uuid,display_name text,created_at timestamptz);
+CREATE TABLE nimzo_private.svip_sunday_payout_runs(week_sunday date,credited_count int,already_paid_count int,failed_count int,payout_coins bigint,status text);
+CREATE FUNCTION public.activate_vip(uuid,int) RETURNS void LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'VIP and SVIP have been retired'; END; $$;
+CREATE TABLE cron.job(jobid bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,jobname text UNIQUE,schedule text,command text,active bool DEFAULT false);
+CREATE FUNCTION cron.schedule(text,text,text) RETURNS bigint LANGUAGE plpgsql AS $$ DECLARE result bigint; BEGIN INSERT INTO cron.job(jobname,schedule,command) VALUES($1,$2,$3) ON CONFLICT(jobname) DO UPDATE SET schedule=excluded.schedule,command=excluded.command RETURNING jobid INTO result; RETURN result; END; $$;
+CREATE FUNCTION cron.alter_job(bigint,active bool) RETURNS void LANGUAGE sql AS $$ UPDATE cron.job SET active=$2 WHERE jobid=$1 $$;

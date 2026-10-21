@@ -46,7 +46,7 @@ class _MomentsState extends ConsumerState<MomentsScreen> {
     final moments = ref.watch(momentsFeedProvider);
     final following = ref.watch(followedMomentsAuthorsProvider);
     return Scaffold(
-      backgroundColor: const Color(0xfff6f5ff),
+      backgroundColor: const Color(0xfff5faf7),
       body: DecoratedBox(
         decoration: const BoxDecoration(gradient: tingleSky),
         child: Column(children: [
@@ -78,7 +78,7 @@ class _MomentsState extends ConsumerState<MomentsScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text('Moments',
                     style: TextStyle(
-                        color: Color(0xffa32cf4),
+                        color: Color(0xff087f5b),
                         fontSize: 12,
                         fontWeight: FontWeight.w700))),
           ),

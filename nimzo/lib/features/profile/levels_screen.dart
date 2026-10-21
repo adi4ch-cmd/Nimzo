@@ -261,6 +261,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                   const SizedBox(width: 14),
                   Expanded(
                       child: Text(band.label,
+                          key: ValueKey('level-band-${band.label}'),
                           style: const TextStyle(
                               color: Color(0xff433850),
                               fontWeight: FontWeight.w800,

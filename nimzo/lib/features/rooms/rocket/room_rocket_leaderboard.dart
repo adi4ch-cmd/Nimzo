@@ -55,8 +55,10 @@ class RoomRocketLeaderboardRepository {
   final SupabaseClient db;
 
   Future<List<RoomRocketLeader>> leaders(String roomId) async {
-    final raw =
-        await db.rpc('room_rocket_leaderboard', params: {'p_room': roomId});
+    final raw = await db.rpc(
+      'room_rocket_leaderboard',
+      params: {'p_room': roomId},
+    );
     if (raw is! Map) {
       throw const FormatException('Rocket leaderboard unavailable');
     }
@@ -69,9 +71,7 @@ class RoomRocketLeaderboardRepository {
       if (leader is! Map) {
         throw const FormatException('Invalid Rocket leaderboard entry');
       }
-      parsed.add(RoomRocketLeader.fromJson(
-        Map<String, dynamic>.from(leader),
-      ));
+      parsed.add(RoomRocketLeader.fromJson(Map<String, dynamic>.from(leader)));
     }
     return parsed;
   }
@@ -85,7 +85,7 @@ final roomRocketLeaderboardRepositoryProvider = Provider(
 
 final roomRocketLeaderboardProvider = FutureProvider.autoDispose
     .family<List<RoomRocketLeader>, String>((ref, roomId) {
-  // The same settled gift event stream refreshes both totals and podium.
-  ref.watch(roomDiamondEventsProvider(roomId));
-  return ref.watch(roomRocketLeaderboardRepositoryProvider).leaders(roomId);
-});
+      // The same settled gift event stream refreshes both totals and podium.
+      ref.watch(roomDiamondStatusProvider(roomId));
+      return ref.watch(roomRocketLeaderboardRepositoryProvider).leaders(roomId);
+    });

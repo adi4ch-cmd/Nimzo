@@ -40,7 +40,7 @@ final storeVisualEquipmentProvider = FutureProvider.autoDispose
         entry['item_id'] as String: Map<String, dynamic>.from(entry),
   };
   final equipped = <String, CosmeticMedia>{};
-  for (final row in rows as List) {
+  for (final row in rows) {
     if (row is! Map) continue;
     final itemId = row['item_id'];
     final category = row['category'];

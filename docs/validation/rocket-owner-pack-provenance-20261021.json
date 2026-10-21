@@ -1,0 +1,113 @@
+{
+  "basis": "Existing owner-provided extracted Rocket packs and repository Haza metadata; Haza source APK is not currently present among the connected Drive search results. Binary identity with the owner packs is verified; independent APK-origin verification is not claimed.",
+  "clips": [
+    {
+      "level": 1,
+      "kind": "fly",
+      "file": "nimzo/assets/room_rocket/vap_rocket_fly_1.mp4",
+      "bytes": 333182,
+      "sha256": "c82c04d3136c57949e0507fbaff1a3c66fe859e29deed2ac64f6cd60ee13aadc",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip"
+    },
+    {
+      "level": 1,
+      "kind": "reward",
+      "file": "nimzo/assets/room_rocket/vap_rocket_reward_1.mp4",
+      "bytes": 4460573,
+      "sha256": "0188090003c1f42bfb1d47e352b62f15ca67c0931864af57b6a7a881d76b115e",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip"
+    },
+    {
+      "level": 2,
+      "kind": "fly",
+      "file": "nimzo/assets/room_rocket/vap_rocket_fly_2.mp4",
+      "bytes": 440418,
+      "sha256": "b1ecd9a861e5eebd535b73b962a365cfb701cef2980761770eff0399181878eb",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip"
+    },
+    {
+      "level": 2,
+      "kind": "reward",
+      "file": "nimzo/assets/room_rocket/vap_rocket_reward_2.mp4",
+      "bytes": 4950714,
+      "sha256": "1cf36d4a7ec75216e4a74ede6375a842f009d7613507f0e04a83a90cd57b5f38",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip"
+    },
+    {
+      "level": 3,
+      "kind": "fly",
+      "file": "nimzo/assets/room_rocket/vap_rocket_fly_3.mp4",
+      "bytes": 482209,
+      "sha256": "2a96acf80c34bb530df39dad96d1c3e7799c5f6b8ac02966d6e70b87800988c5",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip"
+    },
+    {
+      "level": 3,
+      "kind": "reward",
+      "file": "nimzo/assets/room_rocket/vap_rocket_reward_3.mp4",
+      "bytes": 5472858,
+      "sha256": "352642effd22491cff2bed42cb74ff989f0a18764af628bf5394a09e991c122b",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_A_Levels_1_to_3.zip"
+    },
+    {
+      "level": 4,
+      "kind": "fly",
+      "file": "nimzo/assets/room_rocket/vap_rocket_fly_4.mp4",
+      "bytes": 497624,
+      "sha256": "d7884cf6a2597926c52cd40f696e6f9e700bebd84693631d8245f821b9f43ddb",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip"
+    },
+    {
+      "level": 4,
+      "kind": "reward",
+      "file": "nimzo/assets/room_rocket/vap_rocket_reward_4.mp4",
+      "bytes": 6355369,
+      "sha256": "cffd9eab89d89977800db96c3cccdc4d6fad2d88b22d46c866e81f995140924d",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip"
+    },
+    {
+      "level": 5,
+      "kind": "fly",
+      "file": "nimzo/assets/room_rocket/vap_rocket_fly_5.mp4",
+      "bytes": 475274,
+      "sha256": "8de2958cbc3edbefc8af30ac7635104f9bf9e96928defbe4724a53b0bfdd9aac",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip"
+    },
+    {
+      "level": 5,
+      "kind": "reward",
+      "file": "nimzo/assets/room_rocket/vap_rocket_reward_5.mp4",
+      "bytes": 6681751,
+      "sha256": "744bd8f9b9608c9d72d3d3639f49b86d43e0e4d627a86151c3b774948b021ae9",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip"
+    },
+    {
+      "level": 6,
+      "kind": "fly",
+      "file": "nimzo/assets/room_rocket/vap_rocket_fly_6.mp4",
+      "bytes": 491552,
+      "sha256": "5a04a93e919bbd44d9818d0e6bf0512b20ae9bd3c67532a7531ab5d606ed19a8",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip"
+    },
+    {
+      "level": 6,
+      "kind": "reward",
+      "file": "nimzo/assets/room_rocket/vap_rocket_reward_6.mp4",
+      "bytes": 6473920,
+      "sha256": "146aea9c91eefe10dc0802a7da838b4b53a2629667fe71fd6ae89005a17deb92",
+      "has_vapc": true,
+      "owner_provided_pack": "NIMZO_Room_Rocket_Part_B_Levels_4_to_6.zip"
+    }
+  ]
+}

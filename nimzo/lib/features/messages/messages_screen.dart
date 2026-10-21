@@ -37,7 +37,7 @@ class _InboxState extends ConsumerState<MessagesScreen> {
   Widget build(BuildContext context) {
     final conversations = ref.watch(conversationsProvider);
     return Scaffold(
-      backgroundColor: const Color(0xfff5f4ff),
+      backgroundColor: const Color(0xfff5faf7),
       body: DecoratedBox(
         decoration: const BoxDecoration(
             gradient: LinearGradient(

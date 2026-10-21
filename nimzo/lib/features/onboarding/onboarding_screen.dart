@@ -123,7 +123,7 @@ class OnboardingScreen extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xffa243f5), Color(0xff7439d4)]),
+                  colors: [Color(0xff087f5b), Color(0xff056647)]),
                 borderRadius: BorderRadius.circular(25),
               ),
               child: TextButton(

@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 import '../widgets/master_ui.dart';
 
-/// Unified ByChance-inspired color language with original NIMZO components.
+/// NIMZO green and white foundation shared by original app components.
 /// These are independently authored colors; no third-party artwork is bundled.
 abstract final class NimzoStyle {
-  static const primary = Color(0xffa243f5);
+  static const primary = Color(0xff087f5b);
   static const pink = Color(0xffed428c);
   static const blue = Color(0xff3a85ff);
   static const orange = Color(0xffffab21);
-  static const royal = Color(0xff7439d4);
-  static const surface = Color(0xfff6f5ff);
-  static const ink = Color(0xff17111f);
-  static const muted = Color(0xff81749c);
-  static const line = Color(0xffeeeaf8);
+  static const royal = Color(0xff056647);
+  static const surface = Color(0xfff5faf7);
+  static const ink = Color(0xff142b23);
+  static const muted = Color(0xff60756b);
+  static const line = Color(0xffe1eee7);
   static const gradient = LinearGradient(
     colors: [primary, royal],
     begin: Alignment.topLeft,
@@ -25,7 +25,7 @@ abstract final class NimzoStyle {
     end: Alignment.bottomRight,
   );
   static const softGradient = LinearGradient(
-    colors: [Color(0xffdbd9ff), Color(0xfff3eefe), Color(0xfffcf9ff)],
+    colors: [Color(0xffd8f3e6), Color(0xffedf9f1), Color(0xfffbfefc)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

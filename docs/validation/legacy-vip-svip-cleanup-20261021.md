@@ -1,5 +1,10 @@
 # NIMZO legacy VIP/SVIP cleanup — 2026-10-21
 
+Historical cleanup record. The owner later explicitly reauthorized fresh prospective
+VIP/SVIP restoration; see integration-report-20261021.md and migration
+20261021051156_restored_verified_memberships.sql. Archived user entitlements
+remain preserved and are not re-granted automatically.
+
 **Branch:** `feature/membership-reset-20261021`. Base: `fix/premium-store-integration`, to avoid overwriting newer Store and Vivox work.
 
 ## GitHub

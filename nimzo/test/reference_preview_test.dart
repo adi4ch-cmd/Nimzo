@@ -23,6 +23,15 @@ void main() {
         ),
       );
     await font.load();
+    await (FontLoader('serif')
+          ..addFont(
+            Future.value(
+              ByteData.sublistView(
+                File('assets/reference/fonts/Cinzel.ttf').readAsBytesSync(),
+              ),
+            ),
+          ))
+        .load();
     final icons = FontLoader('packages/lucide_flutter/LucideIcons')
       ..addFont(rootBundle.load('packages/lucide_flutter/assets/lucide.ttf'));
     await icons.load();
@@ -54,12 +63,7 @@ void main() {
       find.byKey(const ValueKey('preview')),
       matchesGoldenFile('goldens/home_empty.png'),
     );
-    for (final slug in [
-      'fruit_party_jackpot',
-      'grady_lion',
-      'slot',
-      'lucky_wheel_77',
-    ]) {
+    for (final slug in ['bigetar', 'teen_patti', 'bounty_football']) {
       await tester.pumpWidget(
         ProviderScope(
           key: ValueKey(slug),
@@ -73,11 +77,6 @@ void main() {
         ),
       );
       final context = tester.element(find.byKey(const ValueKey('preview')));
-      final group = slug == 'grady_lion'
-          ? 'grady'
-          : slug == 'slot'
-              ? 'slot'
-              : 'fruit';
       await tester.runAsync(() async {
         // pumpAndSettle does not wait for asynchronous image decoding. The
         // header is a separate asset family from the board and must be ready.
@@ -86,20 +85,14 @@ void main() {
           AssetImage('assets/reference/game/${game.artwork}.jpg'),
           context,
         );
-        if (slug != 'lucky_wheel_77') {
-          for (var i = 0;
-              i <
-                  (group == 'grady'
-                      ? 10
-                      : group == 'slot'
-                          ? 12
-                          : 8);
-              i++) {
-            await precacheImage(
-              AssetImage('assets/reference/$group/$i.jpg'),
-              context,
-            );
-          }
+        final tileImages = slug == 'bigetar'
+            ? List.generate(7, (index) => index)
+            : [game.artwork];
+        for (final index in tileImages) {
+          await precacheImage(
+            AssetImage('assets/reference/game/$index.jpg'),
+            context,
+          );
         }
       });
       await tester.pumpAndSettle();

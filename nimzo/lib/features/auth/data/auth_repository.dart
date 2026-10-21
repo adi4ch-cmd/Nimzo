@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
+import 'package:flutter/foundation.dart';
 
 import '../../../core/errors/error_handler.dart';
 import '../domain/auth_user.dart';
@@ -24,7 +25,10 @@ class AuthRepository {
     try {
       return await f();
     } catch (e) {
-      throw mapError(e);
+      final failure = mapError(e);
+      // Never log exception messages, credentials, callback URLs or sessions.
+      debugPrint('NIMZO auth failure type=${e.runtimeType} code=${failure.code ?? 'unclassified'}');
+      throw failure;
     }
   }
 
