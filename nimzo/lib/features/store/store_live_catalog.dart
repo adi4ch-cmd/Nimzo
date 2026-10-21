@@ -15,6 +15,7 @@ class NimzoCosmeticItem {
     required this.name,
     required this.variant,
     required this.coinPrice,
+    this.thumbnailUrl,
   });
 
   final String id;
@@ -22,15 +23,20 @@ class NimzoCosmeticItem {
   final String name;
   final int variant;
   final int coinPrice;
+  final String? thumbnailUrl;
 
-  factory NimzoCosmeticItem.fromJson(Map<String, dynamic> json) =>
-      NimzoCosmeticItem(
-        id: json['id'] as String,
-        category: json['category'] as String,
-        name: json['name'] as String,
-        variant: (json['variant'] as num).toInt(),
-        coinPrice: (json['coin_price'] as num).toInt(),
-      );
+  factory NimzoCosmeticItem.fromJson(Map<String, dynamic> json) {
+    final uri = Uri.tryParse(json['thumbnail_url'] as String? ?? '');
+    return NimzoCosmeticItem(
+      id: json['id'] as String,
+      category: json['category'] as String,
+      name: json['name'] as String,
+      variant: (json['variant'] as num).toInt(),
+      coinPrice: (json['coin_price'] as num).toInt(),
+      thumbnailUrl:
+          uri?.scheme == 'https' && uri?.host.isNotEmpty ? uri.toString() : null,
+    );
+  }
 }
 
 class NimzoStoreSnapshot {
@@ -57,6 +63,17 @@ final nimzoStoreProvider = FutureProvider.autoDispose<NimzoStoreSnapshot>(
         .eq('active', true)
         .order('category')
         .order('variant');
+    // Approved server image previews are optional; bundled previews remain
+    // available for items without remote media.
+    final remoteMedia = await session.client
+        .from('nimzo_cosmetic_media')
+        .select('item_id,thumbnail_url')
+        .eq('approved', true);
+    final thumbnails = <String, String>{
+      for (final e in remoteMedia)
+        if (e['item_id'] is String && e['thumbnail_url'] is String)
+          e['item_id'] as String: e['thumbnail_url'] as String,
+    };
     final ownership = await session.client
         .from('nimzo_cosmetic_ownership')
         .select('item_id')
@@ -69,7 +86,11 @@ final nimzoStoreProvider = FutureProvider.autoDispose<NimzoStoreSnapshot>(
     // Interleave different product types in the All tab instead of showing
     // seven nearly identical badges in a row (the v1.0.31 screenshot issue).
     final items = (catalog as List)
-        .map((e) => NimzoCosmeticItem.fromJson(e as Map<String, dynamic>))
+        .map((e) {
+          final row = Map<String, dynamic>.from(e as Map);
+          row['thumbnail_url'] = thumbnails[row['id']];
+          return NimzoCosmeticItem.fromJson(row);
+        })
         .toList();
     const order = <String>[
       'Avatar Frame',
@@ -242,7 +263,14 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
                 child: ColoredBox(
                   color: const Color(0xff241a2b),
                   child: Center(
-                    child: premiumCosmetics[item.id] != null
+                    child: item.thumbnailUrl != null
+                        ? Image.network(
+                            item.thumbnailUrl!,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) =>
+                                const Icon(Icons.broken_image_outlined),
+                          )
+                        : premiumCosmetics[item.id] != null
                         ? CosmeticMediaView(
                             key: ValueKey(item.id),
                             media: premiumCosmetics[item.id]!,
@@ -578,7 +606,16 @@ class _NimzoStoreFullPreviewState extends State<NimzoStoreFullPreview>
                 child: InteractiveViewer(
                   minScale: .7,
                   maxScale: 3,
-                  child: premiumCosmetics[item.id] != null
+                  child: item.thumbnailUrl != null
+                      ? Image.network(
+                          item.thumbnailUrl!,
+                          width: canvas,
+                          height: canvas,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.broken_image_outlined),
+                        )
+                      : premiumCosmetics[item.id] != null
                       ? SizedBox(
                           width: canvas,
                           height: canvas,
