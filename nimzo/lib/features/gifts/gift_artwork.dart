@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'hall_of_fame_gift.dart';
-import 'zodiac_gifts.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -54,18 +53,6 @@ class GiftArtwork extends StatelessWidget {
         fit: BoxFit.contain,
         placeholderBuilder: (_) =>
             const Icon(Icons.workspace_premium, color: Color(0xffdfb968)),
-      );
-    }
-    final normalized = name.trim().toLowerCase();
-    if (normalized == libraGiftName.toLowerCase() ||
-        normalized == ariesGiftName.toLowerCase()) {
-      return SvgPicture.asset(
-        normalized == libraGiftName.toLowerCase()
-            ? libraGiftIconAsset
-            : ariesGiftIconAsset,
-        fit: BoxFit.contain,
-        placeholderBuilder: (_) =>
-            const Icon(Icons.auto_awesome, color: Color(0xffe0c188)),
       );
     }
     final path = freeGiftArtwork(name);
