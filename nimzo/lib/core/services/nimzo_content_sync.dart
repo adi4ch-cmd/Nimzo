@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/widgets.dart';
 
 import '../providers/supabase_provider.dart';
 
@@ -64,4 +65,25 @@ Set<String> changedContentChannels(
     if (before == null || revision.toInt() > before) changed.add(channel);
   }
   return changed;
+}
+
+/// Ensure returning from sleep/offline triggers an immediate version check
+/// instead of waiting for the periodic network recovery interval.
+final nimzoContentResumeProvider = Provider<void>((ref) {
+  final observer = _NimzoContentResumeObserver(ref);
+  WidgetsBinding.instance.addObserver(observer);
+  ref.onDispose(() => WidgetsBinding.instance.removeObserver(observer));
+});
+
+class _NimzoContentResumeObserver extends WidgetsBindingObserver {
+  _NimzoContentResumeObserver(this.ref);
+  final Ref ref;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(nimzoContentRevisionsProvider);
+      ref.invalidate(nimzoRemoteSettingsProvider);
+    }
+  }
 }
