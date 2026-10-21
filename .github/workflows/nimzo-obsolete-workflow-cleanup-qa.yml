@@ -1,0 +1,47 @@
+name: NIMZO Obsolete Workflow Cleanup QA (No APK)
+on:
+  push:
+    branches:
+      - chore/remove-dead-nimzo-workflows-20261021
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  static-and-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify retired importers and outdated preview workflows are absent
+        run: |
+          set -euo pipefail
+          test ! -e tools/import_willchill_package.py
+          test ! -e tools/install_willchill_premium.py
+          test ! -e .github/workflows/willchill-premium-qa.yml
+          test ! -e .github/workflows/nimzo-premium-no-vivox-apk.yml
+          test ! -e .github/workflows/nimzo-gift-gallery-preview.yml
+          test -s tools/verify_willchill_premium.py
+          test -s .github/workflows/willchill-android-emulator-smoke.yml
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Verify retained premium media and source
+        run: python3 tools/verify_willchill_premium.py
+      - name: Resolve Flutter packages
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Analyze all Flutter files
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Preserve Store, gift and rocket contracts
+        working-directory: nimzo
+        run: |
+          flutter test --reporter expanded \
+            test/store_live_contract_test.dart \
+            test/store_actual_media_test.dart \
+            test/gift_retry_test.dart \
+            test/gift_rejection_test.dart \
+            test/pending_gifts_preview_contract_test.dart \
+            test/room_rocket_test.dart
