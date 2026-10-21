@@ -11,6 +11,7 @@ import '../core/services/firebase_push_service.dart';
 import '../core/services/nimzo_content_sync.dart';
 import '../features/gifts/gift_repository.dart';
 import '../features/store/store_live_catalog.dart';
+import '../features/store/store_visual_equipment.dart';
 import '../features/events/dynamic_event_banners.dart';
 import '../features/games/dynamic_game_catalog.dart';
 
@@ -33,7 +34,10 @@ class NimzoApp extends ConsumerWidget {
       if (rows == null) return;
       final changed = changedContentChannels(previous?.valueOrNull, rows);
       if (changed.contains('gifts')) ref.invalidate(giftCatalogProvider);
-      if (changed.contains('store')) ref.invalidate(nimzoStoreProvider);
+      if (changed.contains('store')) {
+        ref.invalidate(nimzoStoreProvider);
+        ref.invalidate(storeVisualEquipmentProvider);
+      }
       if (changed.contains('settings')) ref.invalidate(nimzoRemoteSettingsProvider);
       if (changed.contains('banners')) ref.invalidate(nimzoEventBannersProvider);
       if (changed.contains('games')) ref.invalidate(nimzoLiveGameFlagsProvider);
