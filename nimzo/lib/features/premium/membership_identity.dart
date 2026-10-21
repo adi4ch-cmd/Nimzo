@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +7,8 @@ import '../../core/providers/supabase_provider.dart';
 import 'membership_status.dart';
 import 'willchill_membership_badges.dart';
 import 'willchill_own_svip_entrance.dart';
+import 'dynamic_membership_media.dart';
+import '../store/cosmetic_media_view.dart';
 
 /// Effective, expiry-checked identity from the server; cached profile tiers
 /// never establish an entitlement. Dispose on navigation/account changes.
@@ -42,6 +46,19 @@ class VerifiedOwnMembershipEntrance extends ConsumerWidget {
     final membership = ref.watch(effectiveMembershipProvider(id)).valueOrNull;
     if (membership == null) return const SizedBox.shrink();
     final svip = membership.svipLevel;
+    final approved = ref.watch(nimzoMembershipMediaProvider)
+            .valueOrNull ?? const <NimzoMembershipMedia>[];
+    // Never trust a client-chosen tier. Eligibility is from the audited
+    // effectiveMembershipProvider RPC and is rechecked on revisions.
+    final remoteEntry = svip > 0
+        ? membershipTierMedia(approved, 'svip', svip)['entry']
+        : membershipTierMedia(approved, 'vip', membership.vipLevel)['entry'];
+    if (remoteEntry != null) {
+      return _RemoteMembershipEntrance(
+        key: ValueKey('live-member-entry-$id-${remoteEntry.kind}-${remoteEntry.tier}'),
+        media: remoteEntry,
+      );
+    }
     if (svip >= 1 && svip <= 8) {
       return WillChillOwnSvipEntrance(
           key: ValueKey('$id:$svip'), svipLevel: svip);
@@ -88,4 +105,79 @@ class _OriginalMembershipEntrance extends StatelessWidget {
           ),
         ),
       );
+}
+
+/// Transient, non-interactive approved entrance for the local joined member.
+/// Never grants membership or runs a server wallet transaction.
+class _RemoteMembershipEntrance extends StatefulWidget {
+  const _RemoteMembershipEntrance({super.key, required this.media});
+  final NimzoMembershipMedia media;
+
+  @override
+  State<_RemoteMembershipEntrance> createState() =>
+      _RemoteMembershipEntranceState();
+}
+
+class _RemoteMembershipEntranceState extends State<_RemoteMembershipEntrance>
+    with WidgetsBindingObserver {
+  Timer? _timeout;
+  bool _finished = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _timeout = Timer(const Duration(seconds: 12), _stop);
+  }
+
+  void _stop() {
+    if (!_finished && mounted) setState(() => _finished = true);
+    _timeout?.cancel();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) _stop();
+  }
+
+  @override
+  void dispose() {
+    _timeout?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_finished) return const SizedBox.shrink();
+    return IgnorePointer(
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: CosmeticMediaView(
+              key: ValueKey('remote-membership-entrance-effect'),
+              media: widget.media.toCosmetic(),
+              animate: true,
+              onFinished: _stop,
+            ),
+          ),
+          Positioned(
+            top: 42,
+            left: 12,
+            right: 12,
+            child: SafeArea(
+              child: Text(
+                'Your ${widget.media.kind.toUpperCase()} ${widget.media.tier} entrance',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
