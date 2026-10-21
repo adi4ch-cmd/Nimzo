@@ -89,6 +89,25 @@ class NIMZOStoreApkTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     source.payload({**meta, "bytes": len(data)+1})
 
+    def test_codespace_extracted_files_are_used_only_on_exact_hash(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            extracted = root/"codex_unpacked"/"some_apk"/"assets"
+            extracted.mkdir(parents=True)
+            candidate = extracted/"room_avatar_frame.svga"
+            payload = b"proper original file bytes"
+            candidate.write_bytes(payload)
+            row = {
+                "source_package": "archive-missing.apks",
+                "source": "base.apk!/assets/room_avatar_frame.svga",
+                "bytes": len(payload),
+                "sha256": hashlib.sha256(payload).hexdigest(),
+            }
+            with ApkSources(root/"archives", extracted=root/"codex_unpacked") as source:
+                self.assertEqual(source.payload(row), payload)
+                with self.assertRaises(FileNotFoundError):
+                    source.payload({**row, "sha256": "a"*64})
+
     def test_full_audit_only_collects_strict_store_candidates(self):
         with tempfile.TemporaryDirectory() as folder:
             full = Path(folder)/"inventory.json.gz"
