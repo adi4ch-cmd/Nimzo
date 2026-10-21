@@ -98,12 +98,18 @@ def sdk_location(explicit: str | None, tmp: Path) -> tuple[Path, Path, Path, Pat
         located = sdk_files(folder)
         if located:
             header, aar, native = located
-            print("Vivox SDK found under:", folder)
-            print("Header:", header.relative_to(folder))
-            print("Android archive:", aar.relative_to(folder))
-            print("Native library:", native.relative_to(folder))
+            # Narrow the CMake search root to the shared SDK subtree. In
+            # particular, do not aim CMake GLOB_RECURSE at all /workspaces.
+            sdk_tree = Path(os.path.commonpath(
+                (str(header), str(aar), str(native))))
+            if sdk_tree.is_file():
+                sdk_tree = sdk_tree.parent
+            print("Vivox SDK found under:", sdk_tree)
+            print("Header:", header.relative_to(sdk_tree))
+            print("Android archive:", aar.relative_to(sdk_tree))
+            print("Native library:", native.relative_to(sdk_tree))
             print("SDK archive SHA256:", hashlib.sha256(aar.read_bytes()).hexdigest())
-            return folder, header, aar, native
+            return sdk_tree, header, aar, native
 
     raise RuntimeError(
         "Vivox SDK headers/Vxc.h, sdk-release.aar and native .so were not "
