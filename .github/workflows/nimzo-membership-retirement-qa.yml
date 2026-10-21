@@ -1,0 +1,68 @@
+name: NIMZO Legacy VIP SVIP Removal QA (No APK)
+
+on:
+  push:
+    branches:
+      - feature/membership-reset-20261021
+    paths:
+      - .github/workflows/nimzo-membership-retirement-qa.yml
+      - nimzo/lib/**
+      - nimzo/test/**
+      - nimzo/pubspec.yaml
+      - tools/verify_willchill_premium.py
+      - tools/test_verify_willchill_apk_bundle.py
+      - nimzo/assets/willchill_premium/catalog.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  flutter-source-and-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - name: Checkout exact cleanup branch
+        uses: actions/checkout@v4
+      - name: Flutter 3.47.6
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Verify surviving nonmembership media
+        run: |
+          python3 tools/verify_willchill_premium.py
+          python3 -m unittest tools/test_verify_willchill_apk_bundle.py -v
+      - name: Ensure the retired screens and routes cannot be compiled
+        run: |
+          set -euo pipefail
+          test ! -f nimzo/lib/features/premium/willchill_premium_screen.dart
+          test ! -f nimzo/lib/features/premium/willchill_membership_badges.dart
+          test ! -f nimzo/lib/features/premium/willchill_own_svip_entrance.dart
+          test ! -d nimzo/assets/willchill_premium/vip
+          test ! -d nimzo/assets/willchill_premium/svip
+          if grep -RInE 'WillChillPremiumScreen|WillChillMembershipBadges|WillChillOwnSvipEntrance|TingleMembershipScreen|membershipSnapshotProvider' nimzo/lib nimzo/test; then
+            echo 'ERROR: a deleted membership widget is still referenced' >&2
+            exit 1
+          fi
+      - name: Fetch Flutter packages
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Analyze full Flutter source
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Verify changed profile, routing, gift and Store behavior
+        working-directory: nimzo
+        run: |
+          flutter test --reporter expanded \
+            test/profile_model_test.dart \
+            test/coming_soon_navigation_test.dart \
+            test/backend_targeted_integration_test.dart \
+            test/tingle_video_ui_test.dart \
+            test/store_live_contract_test.dart \
+            test/room_rocket_test.dart \
+            test/gift_retry_test.dart
+      - name: Run full Flutter regression suite
+        working-directory: nimzo
+        run: flutter test --reporter expanded
