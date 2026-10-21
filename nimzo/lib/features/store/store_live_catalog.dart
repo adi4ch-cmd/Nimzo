@@ -34,7 +34,9 @@ class NimzoCosmeticItem {
       variant: (json['variant'] as num).toInt(),
       coinPrice: (json['coin_price'] as num).toInt(),
       thumbnailUrl:
-          uri?.scheme == 'https' && uri?.host.isNotEmpty ? uri.toString() : null,
+          uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
+              ? uri.toString()
+              : null,
     );
   }
 }
