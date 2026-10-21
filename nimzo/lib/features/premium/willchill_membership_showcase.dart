@@ -191,7 +191,7 @@ class WillChillMembershipShowcase extends StatelessWidget {
                     SizedBox(
                       height: 160,
                       child: CosmeticMediaView(
-                        media: hero.toCosmetic(), animate: false))
+                        media: dynamicMedia['hero']!.toCosmetic(), animate: false))
                   else
                     const Icon(Icons.workspace_premium, size: 84, color: gold),
                   const SizedBox(height: 18),
@@ -281,7 +281,7 @@ class WillChillMembershipShowcase extends StatelessWidget {
               top: 0,
               left: 0,
               right: 0,
-              child: dynamicMedia['hero'] case final NimzoMembershipMedia hero
+              child: dynamicMedia['hero'] != null
                   ? SizedBox(
                       width: width,
                       height: width * .62,
