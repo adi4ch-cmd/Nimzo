@@ -7,7 +7,7 @@ import 'gift_repository.dart';
 import 'hall_of_fame_gift.dart';
 import 'private_animal_gifts.dart';
 import 'hall_of_fame_vap_overlay.dart';
-import 'gift_media_overlay.dart';
+import 'gift_video_overlay.dart';
 import 'gift_svga_overlay.dart';
 import 'remote_gift_svga_overlay.dart';
 import 'gift_celebration_overlay.dart';
