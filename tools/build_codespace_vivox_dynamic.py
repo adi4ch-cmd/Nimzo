@@ -195,7 +195,7 @@ def configure_android(work: Path, sdk_root: Path, aar: Path) -> None:
     run("flutter", "create", "--no-pub", "--platforms=android",
         "--project-name", "nimzo", ".", cwd=app)
     # Flutter create may regenerate lockfile: retain the branch's original.
-    run("git", "restore", "--", "nimzo/pubspec.lock", cwd=work)
+    run("git", "restore", "--", "nimzo/pubspec.yaml", "nimzo/pubspec.lock", cwd=work)
     run(sys.executable, "../tools/configure_android_gradle.py", "android", cwd=app)
 
     native = app / "native/vivox/android"
