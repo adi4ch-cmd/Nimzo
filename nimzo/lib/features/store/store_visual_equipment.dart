@@ -22,11 +22,18 @@ final storeVisualEquipmentProvider = FutureProvider.autoDispose
   );
   // New approved Store items need functioning equipment; never render
   // unapproved files or use catalog metadata to award ownership.
+  final equippedIds = (rows as List)
+      .whereType<Map>()
+      .map((row) => row['item_id'])
+      .whereType<String>()
+      .toSet().toList(growable: false);
+  if (equippedIds.isEmpty) return {};
   final remote = await session.client
       .from('nimzo_cosmetic_media')
       .select('item_id,thumbnail_url,asset_url,media_kind')
+      .inFilter('item_id', equippedIds)
       .eq('approved', true)
-      .limit(150);
+      .limit(100);
   final approved = <String, Map<String, dynamic>>{
     for (final entry in remote)
       if (entry['item_id'] is String)
@@ -91,10 +98,17 @@ class EquippedCosmetic extends ConsumerWidget {
         Positioned.fill(
           child: IgnorePointer(
             child: media.kind == CosmeticMediaKind.image
-                ? Image.asset(
-                    media.asset,
-                    fit: category == 'Profile Card' ? BoxFit.fill : fit,
-                  )
+                ? (Uri.tryParse(media.asset)?.scheme == 'https'
+                    ? Image.network(
+                        media.asset,
+                        fit: category == 'Profile Card' ? BoxFit.fill : fit,
+                        errorBuilder: (_, __, ___) =>
+                            const SizedBox.shrink(),
+                      )
+                    : Image.asset(
+                        media.asset,
+                        fit: category == 'Profile Card' ? BoxFit.fill : fit,
+                      ))
                 : CosmeticMediaView(
                     key: ValueKey(media.id),
                     media: media,
