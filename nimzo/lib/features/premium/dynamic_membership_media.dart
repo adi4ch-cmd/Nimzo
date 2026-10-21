@@ -64,7 +64,7 @@ class NimzoMembershipMedia {
   }
 
   CosmeticMedia toCosmetic() => CosmeticMedia(
-        'membership-\$kind-\$tier-\$slot',
+        'membership-$kind-$tier-$slot',
         slot,
         '${kind.toUpperCase()} $tier $slot',
         url,
