@@ -89,3 +89,42 @@ executable terminal to this chat. The GitHub-hosted runner does not receive
 private Google Drive archive files or private Codespace filesystem bytes.
 **No new candidate is described as live or playback-verified without that
 last actual-byte/device step.**
+
+
+## LIVE PUBLISH UPDATE — 21 October 2026 (verified)
+
+The earlier sections are historical. Since this report was written, **five**
+original, verified, free Store cosmetics have ACTUALLY been added to the
+production Supabase catalog with approved remote media. The network URLs are
+pinned to exact public Git commit SHA values rather than mutable branch
+names. No APK rebuild, client code push, coin deduction or owner removal was
+used to publish them.
+
+| Item ID suffix | Store category | Exact asset | Verified format/dimensions |
+| --- | --- | --- | --- |
+| `orig-id-ribbon` | ID Frame | `bg_chat_id_card.png` | PNG RGBA 240 × 48 |
+| `orig-profile-royal` | Profile Card | `icon_char_id_card_id_bg.png` | PNG RGBA 527 × 233 |
+| `orig-id-banner` | ID Frame | `icon_char_id_card_title_bg.png` | PNG RGBA 463 × 124 |
+| `apk-theme-love` | Party Theme | Tana `ic_room_theme_love.webp` | WebP RGBA 1125 × 2437 |
+| `apk-theme-supreme` | Party Theme | Tana `ic_room_theme_supreme.webp` | WebP RGB 1125 × 2646 |
+
+Source verification workflows:
+* `39566655294`: new identity image files have exact local SHA256 matches and successful public pinned-URL fetches.
+* `39567447009`: Tana originals have full-resolution canvas checks and exact pinned-URL byte matches.
+* Supabase RLS rollback tests: signed-in accounts can query all five approved items, and the existing free-Collect RPC creates Backpack ownership; test writes are rolled back.
+
+The database now contains **38** active Store records and **5** approved
+remote media rows. Some older 33 catalog items remain bundled-only. One
+orphaned legacy Golden Stars record remains owned and must not be deleted.
+
+These five are **static** original art assets (three ID/profile panels and
+two full original room themes); no claim is made that the 9k-source animated
+Gifts, cars, VIP effects or 91k audit are all published. The staged CP Love
+Avatar SVGA requires proof of genuine Flutter animation decoding and
+preview before any catalog activation.
+
+The latest branch changes remain **Draft PR #42**, not merged; existing
+compatible NIMZO clients read approved remote media from Supabase but final
+physical Android verification remains pending. If an old installed APK
+does not include the dynamic Store UI, it cannot display new content
+without a one-time compatible application update.
