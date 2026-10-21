@@ -1,0 +1,39 @@
+name: NIMZO Dynamic Content QA (No APK)
+
+on:
+  push:
+    branches:
+      - feature/dynamic-content-sync-20261021
+    paths:
+      - .github/workflows/nimzo-dynamic-content-qa.yml
+      - nimzo/lib/app/app.dart
+      - nimzo/lib/core/services/nimzo_content_sync.dart
+      - nimzo/lib/features/store/store_live_catalog.dart
+      - nimzo/test/dynamic_content_sync_test.dart
+      - supabase/migrations/20261021063000_dynamic_content_revisions.sql
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dynamic-content-source-and-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Install packages
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Analyze changed Dart sources
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/app/app.dart lib/core/services/nimzo_content_sync.dart lib/features/store/store_live_catalog.dart test/dynamic_content_sync_test.dart
+      - name: Test dynamic refresh and Store baseline
+        working-directory: nimzo
+        run: flutter test --reporter expanded test/dynamic_content_sync_test.dart test/store_live_contract_test.dart
