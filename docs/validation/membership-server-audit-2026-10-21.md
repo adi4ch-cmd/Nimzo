@@ -4,7 +4,7 @@ Owner subsequently explicitly requested VIP/SVIP restoration. Migration202610210
 
 ## Historical investigation
 
-# Current decision
+# Superseded removal decision
 
 Owner confirmed on21October: preserve the NEW VIP/SVIP removal. Membership restoration is excluded from this build. A guarded restoration attempt failed before any changes because newer migrations removed the old columns/catalogs. The SQL research is stored under docs/blocked and must not be applied.
 

@@ -39,7 +39,9 @@ Existing occupied-seat checksum remained789da0d46b0efa8c386926eb455e8e47.
 All12Rocket video hashes and441premium catalog media hashes match originals.
 Full Flutter suite:457passed. After removing unconfigured Rocket prize rows,
 11Rocket regressions passed again. Focused40integration regressions and14Python
-tools tests also passed. Android CI results are recorded in the release/job.
+tools tests also passed. Four standalone APK-verifier tests and three native
+ABI policy tests passed. All12Rocket clips decoded fully without video/audio
+errors. Android CI results are recorded in the release/job.
 Analyzer:zero errors/zero warnings;52informational style suggestions.
 Golden previews were reviewed; desktop golden QA excludes native WebViews and
 is not evidence of browser gameplay or authenticated device behavior.
@@ -64,3 +66,28 @@ is not evidence of browser gameplay or authenticated device behavior.
 - Publication requires a successful release APK install/launch CI gate. No new
   APK download is claimed before that succeeds. Development signing may differ
   from an existing installed app; no uninstall/data-clearing workaround is used.
+
+## Android delivery result — PASS (test build)
+
+CI run39549970827 succeeded:
+https://github.com/adi4ch-cmd/Nimzo/actions/runs/39549970827
+
+- Exact application source:e7acadabffdef295ed760fa771bc85ddf3f029d4.
+- Entire Flutter suite passed again on GitHub before the build.
+- Universal and ARM64 release APK builds/signatures passed; all441premium
+  compiled asset checks and native preferences ABI checks passed.
+- Universal release APK installed/launched in Android API29x86_64emulator,
+  remained running20seconds without unhandled startup exceptions/crash logs.
+- Release published only after that installation/launch gate succeeded:
+  https://github.com/adi4ch-cmd/Nimzo/releases/tag/nimzo-integration-1.0.38-39549970827
+- Downloaded published ARM64 APK locally and independently checked its release
+  checksum, exact source SHA, all12Rocket clip hashes, absence of alternate
+  Rocket clips, all441premium assets and native preferences ABI.
+- ARM64 bytes143146903; SHA256:
+  086c544d9f42de247db36350d3a74702fb267fb9dd24b24f1d936df40fcaaf57
+- CI launch diagnostics artifact exists; local download of that artifact/logs
+  was denied by the storage proxy, so no personal screenshot review is claimed.
+  The CI installation/launch result above is confirmed by its successful gate.
+
+This does not replace authenticated device/physical voice/VAP/payment testing.
+The post-build documentation/test-fixture commit changes no application code.
