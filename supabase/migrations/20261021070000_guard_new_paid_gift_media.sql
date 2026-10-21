@@ -39,10 +39,12 @@ $$;
 revoke all on function nimzo_internal.require_gift_media_on_activation() from public, anon, authenticated;
 revoke all on function nimzo_internal.reject_unplayable_settled_gift() from public, anon, authenticated;
 
+drop trigger if exists nimzo_validate_new_gift_media on public.gifts;
 create trigger nimzo_validate_new_gift_media before insert or update
 on public.gifts for each row
 execute function nimzo_internal.require_gift_media_on_activation();
 
+drop trigger if exists nimzo_guard_paid_room_gift_media on public.gift_events;
 create trigger nimzo_guard_paid_room_gift_media before insert
 on public.gift_events for each row
 execute function nimzo_internal.reject_unplayable_settled_gift();
