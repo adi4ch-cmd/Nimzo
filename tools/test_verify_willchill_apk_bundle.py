@@ -25,7 +25,7 @@ class PremiumAPKIntegrity(unittest.TestCase):
         self.apk = self.root / 'test.apk'
         self.records = []
         self.payloads = {}
-        for n in range(441):
+        for n in range(261):
             asset = f'assets/willchill_premium/gifts/fixture_{n:03}.png'
             data = f'synthetic-media-fixture-{n}'.encode('ascii')
             self.payloads[asset] = data
@@ -43,13 +43,13 @@ class PremiumAPKIntegrity(unittest.TestCase):
                 apk.write(self.catalog,
                     'assets/flutter_assets/assets/willchill_premium/catalog.json')
             for idx, (name, data) in enumerate(self.payloads.items()):
-                if missing and idx == 440:
+                if missing and idx == 260:
                     continue
                 if corrupt and idx == 50:
                     data = b'wrong-content'
                 apk.writestr('assets/flutter_assets/' + name, data)
 
-    def test_all_441_originals_pass(self):
+    def test_all_261_non_membership_media_pass(self):
         self.make_apk()
         check.verify(self.apk, self.catalog)
 
