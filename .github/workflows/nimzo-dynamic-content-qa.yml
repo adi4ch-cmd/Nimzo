@@ -11,6 +11,14 @@ on:
       - nimzo/lib/features/store/store_live_catalog.dart
       - nimzo/test/dynamic_content_sync_test.dart
       - supabase/migrations/20261021063000_dynamic_content_revisions.sql
+  pull_request:
+    branches:
+      - feature/retire-unused-store-gifts-20261021
+    paths:
+      - nimzo/lib/**
+      - nimzo/test/**
+      - supabase/migrations/**
+      - .github/workflows/nimzo-dynamic-content-qa.yml
   workflow_dispatch:
 
 permissions:
