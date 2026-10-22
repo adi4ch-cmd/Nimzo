@@ -1,0 +1,34 @@
+begin;
+insert into profiles(id,display_name) values('00000000-0000-0000-0000-000000000001','Creator'),('00000000-0000-0000-0000-000000000002','Voter'),('00000000-0000-0000-0000-000000000003','Outsider');
+insert into rooms(id) values('10000000-0000-0000-0000-000000000001');
+insert into room_members(room_id,user_id) select '10000000-0000-0000-0000-000000000001',id from profiles where display_name<>'Outsider';
+do $$declare p uuid;r jsonb;begin
+ perform set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
+ p:=public.create_room_poll('10000000-0000-0000-0000-000000000001','Which song?',array[' A ','B'],'poll-fixture',auth.uid());
+ if public.create_room_poll('10000000-0000-0000-0000-000000000001','Which song?',array['A','B'],'poll-fixture',auth.uid())<>p then raise exception 'Duplicate poll';end if;
+ begin perform public.create_room_poll('10000000-0000-0000-0000-000000000001','Another?',array['A','B'],'another',auth.uid());raise exception 'Overlapping poll';exception when sqlstate 'P0001' then if sqlerrm<>'POLL_ALREADY_ACTIVE' then raise;end if;end;
+ perform set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000002',true);
+ perform public.cast_room_vote(p,1,auth.uid());perform public.cast_room_vote(p,1,auth.uid());
+ begin perform public.cast_room_vote(p,0,auth.uid());raise exception 'Changed vote';exception when sqlstate 'P0001' then if sqlerrm<>'VOTE_ALREADY_CAST' then raise;end if;end;
+ r:=public.room_poll_state('10000000-0000-0000-0000-000000000001')->0;
+ if r->'counts'<>'[0,1]'::jsonb or r->>'my_choice'<>'1' then raise exception 'Incorrect real counts';end if;
+ begin perform public.close_room_poll(p,auth.uid());raise exception 'Noncreator closed poll';exception when sqlstate 'P0001' then if sqlerrm<>'POLL_CLOSE_DENIED' then raise;end if;end;
+ perform set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000003',true);
+ begin perform public.cast_room_vote(p,0,auth.uid());raise exception 'Outsider vote';exception when sqlstate 'P0001' then if sqlerrm<>'ROOM_MEMBERSHIP_REQUIRED' then raise;end if;end;
+ begin perform public.room_poll_state('10000000-0000-0000-0000-000000000001');raise exception 'Outsider read';exception when sqlstate 'P0001' then if sqlerrm<>'ROOM_MEMBERSHIP_REQUIRED' then raise;end if;end;
+ perform set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
+ begin perform public.cast_room_vote(p,0,'00000000-0000-0000-0000-000000000002');raise exception 'Switched account vote';exception when sqlstate '22023' then null;end;
+ perform public.close_room_poll(p,auth.uid());
+ r:=public.room_poll_state('10000000-0000-0000-0000-000000000001')->0;
+ if r->>'active'<>'false' or r->'counts'<>'[0,1]'::jsonb then raise exception 'Closed result lost';end if;
+ begin perform public.cast_room_vote(p,0,auth.uid());raise exception 'Closed poll vote';exception when sqlstate 'P0001' then if sqlerrm<>'POLL_CLOSED' then raise;end if;end;
+ begin perform public.create_room_poll('10000000-0000-0000-0000-000000000001','Duplicates?',array[' A ','a'],'bad',auth.uid());raise exception 'Duplicate options';exception when sqlstate '22023' then null;end;
+end$$;
+set local role authenticated;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000003',true);
+do $$begin
+ if exists(select 1 from public.room_polls) or exists(select 1 from public.room_poll_votes) then raise exception 'Private room poll leaked';end if;
+ begin insert into public.room_poll_votes(poll_id,user_id,choice) values(gen_random_uuid(),auth.uid(),0);raise exception 'Direct vote write';exception when insufficient_privilege then null;end;
+end$$;
+reset role;
+rollback;

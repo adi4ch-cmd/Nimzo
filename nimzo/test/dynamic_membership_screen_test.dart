@@ -32,6 +32,7 @@ void main() {
             container.dispose();
           }
         }))!;
+        expect(actualTiers, hasLength(20));
         await loadReviewFonts();
         final boundary = GlobalKey();
         await tester.pumpWidget(ProviderScope(

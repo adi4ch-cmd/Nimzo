@@ -75,14 +75,18 @@ void main() {
   test('game forwards room and stable key and keeps server payout', () async {
     final repo = GameRepository(
       client((r) {
+        if (r.url.path.endsWith('/rpc/my_game_receipt'))
+          return http.Response('{"status":"missing"}', 200);
         final body = jsonDecode(r.body) as Map;
         expect(body['p_room'], 'room-id');
         expect(body['p_client_key'], 'same-key');
+        expect(body['p_expected_user'], 'fixture-user');
         return http.Response(
           '{"payout":0,"result":{"symbol":"lemon","segment":2}}',
           200,
         );
       }),
+      expectedUserId: 'fixture-user',
     );
     final result = await repo.play(
       roomId: 'room-id',

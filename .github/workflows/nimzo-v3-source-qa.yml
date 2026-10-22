@@ -61,5 +61,8 @@ jobs:
           python3 tools/test_store_ownership_expiry.py --container "$SQL_CONTAINER" --database store_expiry_ci
           python3 tools/test_dynamic_memberships.py --container "$SQL_CONTAINER" --database membership_dynamic_ci
           python3 tools/test_dynamic_event_images.py --container "$SQL_CONTAINER" --database event_images_ci
+          python3 tools/test_room_treasure.py --container "$SQL_CONTAINER" --database treasure_escrow_ci
+          python3 tools/test_game_receipt_recovery.py --container "$SQL_CONTAINER" --database game_receipt_ci
+          python3 tools/test_room_polls.py --container "$SQL_CONTAINER" --database polls_ci
       - name: Gift media authorization tests
         run: node --test supabase/functions/gift-media/tests/access.test.mjs

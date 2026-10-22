@@ -1094,7 +1094,7 @@ class _State extends ConsumerState<RoomScreen> {
                                             'chest',
                                             () => showReferenceSheet(
                                               context,
-                                              const TreasureSheet(),
+                                              TreasureSheet(roomId: widget.roomId),
                                             ),
                                           ),
                                           const SizedBox(height: 10),

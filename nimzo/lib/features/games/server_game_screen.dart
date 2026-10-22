@@ -100,7 +100,8 @@ class _ServerGameScreenState extends ConsumerState<ServerGameScreen> {
       _error = null;
     });
     try {
-      final repo = GameRepository(session.client);
+      final repo =
+          GameRepository(session.client, expectedUserId: session.userId);
       final result = await round.play(amount ?? 0, (bet, key) {
         if (ref.read(sessionSupabaseProvider).userId != session.userId) {
           throw StateError('Account changed before round submission');

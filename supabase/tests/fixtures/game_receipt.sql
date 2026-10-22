@@ -1,0 +1,16 @@
+create schema auth;
+create extension pgcrypto;
+create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+grant usage on schema auth to authenticated,anon,service_role;
+create table profiles(id uuid primary key,status text default 'active');
+create table wallets(user_id uuid primary key,coins bigint not null,diamonds bigint default 0);
+create table ledger(user_id uuid,kind text,coin_delta bigint,diamond_delta bigint,ref jsonb,idempotency_key text);
+create table rooms(id uuid primary key,status text default 'open',perm_game bool default true,game_permission text default 'members');
+create table room_members(room_id uuid,user_id uuid);
+create table room_bans(room_id uuid,user_id uuid);
+create function public.room_allows(uuid,uuid,text) returns boolean language sql as $$select true$$;
+create table game_catalog(id uuid primary key default gen_random_uuid(),slug text unique,name text,active bool default true);
+create table game_rounds(id uuid primary key default gen_random_uuid(),game_id uuid,status text,server_seed_hash text,server_seed text,result_symbol text,result_index int,result_payload jsonb,settled_at timestamptz);
+create table game_bets(id uuid primary key default gen_random_uuid(),room_id uuid,round_id uuid,game_id uuid,user_id uuid,bet_type text,selection text,bet_amount bigint,payout_amount bigint,status text,client_key text,result_payload jsonb,settled_at timestamptz,unique(user_id,client_key));
+create table game_round_events(round_id uuid,game_id uuid,user_id uuid,event_type text,payload jsonb);
+create table game_wheel_segments(game_id uuid,segment_no int,active bool,symbol text,multiplier numeric);
