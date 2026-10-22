@@ -22,8 +22,6 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
-    env:
-      SQL_CONTAINER: ${{ job.services.postgres.id }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -50,6 +48,8 @@ jobs:
         working-directory: nimzo
         run: flutter test --concurrency=4 --reporter expanded
       - name: Isolated Postgres security and financial fixtures
+        env:
+          SQL_CONTAINER: ${{ job.services.postgres.id }}
         run: |
           docker exec -i "$SQL_CONTAINER" psql -U postgres -v ON_ERROR_STOP=1 <<'SQL'
           create role anon;

@@ -55,3 +55,12 @@ class BuildHoldTests(unittest.TestCase):
                 builds=[i for i,s in enumerate(steps) if re.search(r'flutter\s+build\s+(apk|appbundle|ipa)',s.get('run',''))]
                 for build in builds:
                     self.assertTrue(any('tools/verify_prebuild_acceptance.py' in s.get('run','') for s in steps[:build]),str(path))
+
+    def test_workflow_service_context_only_uses_runtime_step_env(self):
+        import re
+        for path in (ROOT/'.github/workflows').glob('*.yml'):
+            workflow=yaml.safe_load(path.read_text())
+            scopes=[workflow.get('env',{})]+[j.get('env',{}) for j in workflow.get('jobs',{}).values()]
+            for scope in scopes:
+                self.assertFalse(any(re.search(r'\bjob\.',str(v)) for v in scope.values()),
+                    f'{path}: job.services context is unavailable in workflow/job env; use step env')
