@@ -1,0 +1,41 @@
+name: NIMZO Publish Existing Verified v3 TEST Artifact (No Build)
+on:
+  push:
+    branches: [integration/nimzo-v3-dynamic-20261021]
+    paths: [.github/workflows/nimzo-v3-publish-tested-artifact.yml]
+  workflow_dispatch: {}
+permissions:
+  contents: write
+  actions: read
+jobs:
+  upload-existing-tested-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      NIMZO_TEST_TAG: nimzo-v3-dynamic-1.0.39-39775727112
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download the original tested artifact
+        run: gh run download 39775727112 --repo adi4ch-cmd/Nimzo --name NIMZO-PREMIUM-STORE-1-0-39-NO-VIVOX-TEST --dir verified-test-apk
+      - name: Validate exact original bytes, source and startup result
+        run: |
+          cd verified-test-apk
+          sha256sum -c SHA256SUMS.txt
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          apk=Path('NIMZO_1.0.39_Universal_NO_VIVOX_TEST.apk')
+          assert hashlib.sha256(apk.read_bytes()).hexdigest()=='eef17d8f6fe77d7507984697b41f6c0264a7e8c2460c1fff3d98d085cad0303b'
+          assert Path('SOURCE_SHA.txt').read_text().strip()=='10a0041f479d1e80b0196ad8eda35e45ebd0781d'
+          assert Path('STARTUP_TEST.txt').read_text().startswith('PASS: APK installed')
+          accepted=json.loads(Path('ACCEPTANCE.json').read_text())
+          assert accepted['qa_build_authorized'] is True and accepted['build_authorized'] is False
+          print('PASS: original tested APK and successful emulator result; no rebuild')
+          PY
+          cd ..
+          python3 tools/verify_v3_apk_assets.py verified-test-apk/NIMZO_1.0.39_Universal_NO_VIVOX_TEST.apk
+          python3 tools/verify_willchill_apk_bundle.py verified-test-apk/NIMZO_1.0.39_Universal_NO_VIVOX_TEST.apk
+      - name: Upload to the owner-created draft and tag
+        run: |
+          gh release upload "$NIMZO_TEST_TAG" verified-test-apk/NIMZO_1.0.39_Universal_NO_VIVOX_TEST.apk verified-test-apk/SHA256SUMS.txt verified-test-apk/SOURCE_SHA.txt verified-test-apk/README.txt verified-test-apk/ACCEPTANCE.json verified-test-apk/STARTUP_TEST.txt --repo adi4ch-cmd/Nimzo
