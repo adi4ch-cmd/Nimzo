@@ -1,5 +1,5 @@
 -- Synthetic isolated membership prerequisite schema. Never production.
-  
+
 CREATE SCHEMA auth; CREATE SCHEMA nimzo_private; CREATE SCHEMA cron;
 CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
 GRANT USAGE ON SCHEMA auth TO authenticated,anon,service_role;
