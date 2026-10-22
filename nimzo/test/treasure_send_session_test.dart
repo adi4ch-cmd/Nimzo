@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -7,6 +8,31 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
   const request = TreasureRequest(
       scope: 'room', total: 10000, quantity: 6, eligibility: 'all');
+  test('late old screen success preserves a newer funded-box confirmation',
+      () async {
+    final old = TreasureSendSession(userId: 'a', roomId: 'r');
+    final entered = Completer<void>(),
+        reply = Completer<Map<String, dynamic>>();
+    final pending = old.send(request, (_) {
+      entered.complete();
+      return reply.future;
+    });
+    await entered.future;
+    final reopened = TreasureSendSession(userId: 'a', roomId: 'r');
+    await reopened.send(
+        request, (_) async => {'id': 'box-old', 'status': 'replayed'});
+    await expectLater(
+        reopened.send(
+            const TreasureRequest(
+                scope: 'room', total: 50000, quantity: 6, eligibility: 'all'),
+            (_) async => throw StateError('response lost')),
+        throwsStateError);
+    reply.complete({'id': 'box-old', 'status': 'funded'});
+    await pending;
+    final finalOpen = TreasureSendSession(userId: 'a', roomId: 'r');
+    await finalOpen.restore();
+    expect(finalOpen.request?.total, 50000);
+  });
   test('lost funding response restores the exact request after restart',
       () async {
     final first = TreasureSendSession(userId: 'a', roomId: 'r');

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/providers/supabase_provider.dart';
+import '../../../core/storage/pending_confirmation_store.dart';
 
 class TreasureRequest {
   const TreasureRequest(
@@ -59,6 +60,7 @@ class TreasureSendSession {
           ])))}';
   Map<String, dynamic>? _pending;
   bool _restored = false, _busy = false;
+  int? _attempt;
   bool get pending => _pending != null;
   TreasureRequest? get request =>
       _pending == null ? null : TreasureRequest.fromParams(_pending!);
@@ -82,8 +84,8 @@ class TreasureSendSession {
   }
 
   Future<void> _clear() async {
-    if (!await (await SharedPreferences.getInstance()).remove(storageKey))
-      throw StateError('Treasure confirmation could not be saved');
+    await PendingConfirmationStore.complete(
+        storageKey, jsonEncode(_pending), _attempt!);
     _pending = null;
   }
 
@@ -109,9 +111,8 @@ class TreasureSendSession {
                   .padLeft(2, '0')).join()
         };
       }
-      if (!await (await SharedPreferences.getInstance())
-          .setString(storageKey, jsonEncode(_pending)))
-        throw StateError('Save confirmation before spending');
+      _attempt = await PendingConfirmationStore.prepare(
+          storageKey, jsonEncode(_pending));
       final result = await submit(Map<String, dynamic>.from(_pending!)
         ..remove('account')
         ..['p_expected_sender'] = userId);

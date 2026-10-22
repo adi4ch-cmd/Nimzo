@@ -1,3 +1,4 @@
+import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,26 +9,30 @@ void main() {
       (tester) async {
     await tester.pumpWidget(ProviderScope(
       overrides: [
-        walletProvider.overrideWith((ref) async =>
-            (coins: 7300000, diamonds: 45000)),
+        currentUserIdProvider.overrideWithValue(null),
+        walletProvider
+            .overrideWith((ref) async => (coins: 7300000, diamonds: 45000)),
       ],
       child: const MaterialApp(home: WalletScreen()),
     ));
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('wallet-diamonds')), findsOneWidget);
     expect(find.text('45,000'), findsOneWidget);
-    expect(find.byKey(const ValueKey('exchange-diamond-amount')),
-        findsOneWidget);
-    expect(find.byKey(const ValueKey('exchange-diamonds-1-to-1')),
-        findsOneWidget);
+    expect(
+        find.byKey(const ValueKey('exchange-diamond-amount')), findsOneWidget);
+    expect(
+        find.byKey(const ValueKey('exchange-diamonds-1-to-1')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
   testWidgets('exchange disabled on zero diamonds', (tester) async {
     await tester.pumpWidget(ProviderScope(
-      overrides: [walletProvider.overrideWith(
-        (ref) async => (coins: 100, diamonds: 0),
-      )],
+      overrides: [
+        currentUserIdProvider.overrideWithValue(null),
+        walletProvider.overrideWith(
+          (ref) async => (coins: 100, diamonds: 0),
+        )
+      ],
       child: const MaterialApp(home: WalletScreen()),
     ));
     await tester.pumpAndSettle();

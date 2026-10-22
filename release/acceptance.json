@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "build_authorized": false,
-  "app_source_sha256": "7cb8a6f8fa94e9c9b252b9e2fc267a9a6b63698d205ef60df1a4f0479f23022e",
+  "app_source_sha256": "7796acf2884f675eab0e82ecfbaf375661e20f9d54568d147086f75d9ac2b949",
   "voice_enabled": false,
   "open_blockers": [
     "Final Vivox integration deferred by owner",
@@ -104,7 +104,8 @@
         "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
         "docs/validation/v3-evidence/verified-results.json",
         "docs/validation/v3-evidence/backend-deployment.json",
-        "docs/validation/ROOM_TOOLS_DELIVERY_20261022.md"
+        "docs/validation/ROOM_TOOLS_DELIVERY_20261022.md",
+        "docs/validation/WALLET_RECOVERY_20261022.md"
       ]
     },
     "gifts": {
@@ -145,7 +146,8 @@
         "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
         "docs/validation/v3-evidence/verified-results.json",
         "docs/validation/v3-evidence/backend-deployment.json",
-        "docs/validation/room-tools-evidence-20261022.json"
+        "docs/validation/room-tools-evidence-20261022.json",
+        "docs/validation/wallet-recovery-evidence-20261022.json"
       ]
     },
     "store_backpack": {

@@ -1,0 +1,106 @@
+{
+  "scope": "Source/backend only; no new APK or authenticated Android claim",
+  "flutter_passed": 550,
+  "python_passed": 19,
+  "source_digest": "7796acf2884f675eab0e82ecfbaf375661e20f9d54568d147086f75d9ac2b949",
+  "logs": {
+    "confirmed-full-serial.log": {
+      "sha256": "effa5df9190a28d1c7695e78a496728e0f8e8cf4843ffbacc27a46f593b0bff8",
+      "bytes": 79108,
+      "tail": [
+        "02:50 +544: /workspace/Nimzo-v3/nimzo/test/willchill_gift_effect_test.dart: verified gift falls back safely when native playback cannot finish",
+        "02:50 +545: /workspace/Nimzo-v3/nimzo/test/willchill_gift_effect_test.dart: verified gift falls back safely when native playback cannot finish",
+        "02:51 +546: /workspace/Nimzo-v3/nimzo/test/willchill_gift_effect_test.dart: verified gift falls back safely when native playback cannot finish",
+        "02:51 +547: /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart: imported frame renders its real image in Store and Backpack",
+        "02:51 +548: /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart: imported frame renders its real image in Store and Backpack",
+        "02:51 +549: /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart: full preview resolves the same item media",
+        "02:51 +550: All tests passed!"
+      ]
+    },
+    "confirmed-analyze-final.log": {
+      "sha256": "e44826b347a9d13a79c0565dd641d76d042e26bb0c9a2142451444d4c357a893",
+      "bytes": 12883,
+      "tail": [
+        "   info \u2022 Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation \u2022 test/dynamic_membership_screen_test.dart:68:47 \u2022 prefer_const_constructors",
+        "   info \u2022 Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation \u2022 test/mobile_otp_login_test.dart:24:18 \u2022 prefer_const_constructors",
+        "   info \u2022 The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/services.dart'. Try removing the import directive \u2022 test/renderable_media_test.dart:2:8 \u2022 unnecessary_import",
+        "   info \u2022 Unnecessary braces in a string interpolation. Try removing the braces \u2022 test/rocket_unified_gifts_contract_test.dart:14:61 \u2022 unnecessary_brace_in_string_interps",
+        "   info \u2022 Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation \u2022 test/store_paid_checkout_ui_test.dart:68:52 \u2022 prefer_const_constructors",
+        "",
+        "59 issues found. (ran in 7.6s)"
+      ]
+    },
+    "confirmed-python-final.log": {
+      "sha256": "3b99ce6b937fb00c60cb630ad553bb98a96b001cdc946745fa864501c6496155",
+      "bytes": 450,
+      "tail": [
+        "Ran 19 tests in 2.520s",
+        "",
+        "OK",
+        "Android toolchain: AGP 8.11.1 / Kotlin 2.2.20 / Gradle 8.14.3",
+        "Android toolchain: AGP 8.11.1 / Kotlin 2.2.20 / Gradle 8.14.3",
+        "NIMZO FCM Android configured: Gradle plugin, package ID, Android 13 permission and Firebase client JSON",
+        "NIMZO FCM Android configured: Gradle plugin, package ID, Android 13 permission and Firebase client JSON"
+      ]
+    },
+    "exchange-sql-reviewed.log": {
+      "sha256": "2421e9ca100eca40a1f05e6b170b4729b7de37fc99bf9bf7d794e72634e81ce8",
+      "bytes": 201,
+      "tail": [
+        "PASS: original 1:1 exchange, receipt-first replay, account binding, balance conservation and anonymous denial",
+        "PASS: duplicate, legacy/checked and changed-amount concurrent exchanges settle once at 1:1"
+      ]
+    },
+    "stale-confirmations-green.log": {
+      "sha256": "a316eee20036a5e1dfbd837eccef7f2d659b541e97999481dc9f788a94929f73",
+      "bytes": 3407,
+      "tail": [
+        "00:03 +16: /workspace/Nimzo-v3/nimzo/test/treasure_sheet_test.dart: repository accepts the server JSON receipt contract",
+        "00:03 +17: /workspace/Nimzo-v3/nimzo/test/treasure_sheet_test.dart: treasure requires confirmation and retries original funding after lost response",
+        "00:04 +18: /workspace/Nimzo-v3/nimzo/test/treasure_sheet_test.dart: eligible claim shows only server confirmed coins on a narrow screen",
+        "00:04 +19: loading /workspace/Nimzo-v3/nimzo/test/server_game_screen_test.dart",
+        "00:05 +19: /workspace/Nimzo-v3/nimzo/test/server_game_screen_test.dart: server coin game retries original wager and renders only confirmed result",
+        "00:06 +20: /workspace/Nimzo-v3/nimzo/test/server_game_screen_test.dart: coin game outside a room cannot submit a wager",
+        "00:06 +21: All tests passed!"
+      ]
+    },
+    "confirmation-save-green.log": {
+      "sha256": "b76c9b625911180ec6f33bbbadcf6ebb622f4a68cf5ab67a99ca47d1dc092759",
+      "bytes": 2589,
+      "tail": [
+        "00:02 +11: /workspace/Nimzo-v3/nimzo/test/treasure_send_session_test.dart: corrupt confirmation blocks a replacement debit",
+        "00:02 +12: loading /workspace/Nimzo-v3/nimzo/test/game_pending_persistence_test.dart",
+        "00:04 +12: /workspace/Nimzo-v3/nimzo/test/game_pending_persistence_test.dart: late old game settlement preserves the next pending round",
+        "00:04 +13: /workspace/Nimzo-v3/nimzo/test/game_pending_persistence_test.dart: restart restores original request persisted before uncertain RPC",
+        "00:04 +14: /workspace/Nimzo-v3/nimzo/test/game_pending_persistence_test.dart: pending requests are isolated by account room and game",
+        "00:04 +15: /workspace/Nimzo-v3/nimzo/test/game_pending_persistence_test.dart: definitive database rollback clears durable pending request",
+        "00:04 +16: All tests passed!"
+      ]
+    },
+    "exchange-ui-green.log": {
+      "sha256": "7343a229517659485ede382d63b900de8fd7bba4ba42456526c94d7de3c7062a",
+      "bytes": 966,
+      "tail": [
+        "00:00 +1: /workspace/Nimzo-v3/nimzo/test/diamond_exchange_session_test.dart: pending exchange does not cross accounts and corrupt state fails closed",
+        "00:00 +2: loading /workspace/Nimzo-v3/nimzo/test/wallet_exchange_restart_test.dart",
+        "00:00 +2: /workspace/Nimzo-v3/nimzo/test/wallet_exchange_restart_test.dart: reopened wallet can recover an uncertain exchange with zero diamonds",
+        "00:02 +3: loading /workspace/Nimzo-v3/nimzo/test/wallet_diamond_exchange_test.dart",
+        "00:02 +3: /workspace/Nimzo-v3/nimzo/test/wallet_diamond_exchange_test.dart: wallet shows server diamonds and provides one-to-one exchange",
+        "00:03 +4: /workspace/Nimzo-v3/nimzo/test/wallet_diamond_exchange_test.dart: exchange disabled on zero diamonds",
+        "00:03 +5: All tests passed!"
+      ]
+    }
+  },
+  "live_readback": {
+    "wallets": 4,
+    "coins": 4795975,
+    "diamonds": 22003875,
+    "rocket_history_rows": 34,
+    "qa_exchanges_created": 0,
+    "checked_exchange_anon_execute": false,
+    "checked_exchange_authenticated_execute": true
+  },
+  "migration": "20261022174046_checked_diamond_exchange.sql",
+  "migration_sha256": "43595cdc7e6ef4a29fa1af81d35f03c4e0b6e8ff0c5eefb58999c94b2f256d11",
+  "review": "Two financial retry races and the failed-platform-write case reproduced before fixes; reviewed with no important findings remaining."
+}

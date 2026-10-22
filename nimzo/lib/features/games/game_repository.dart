@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'game_catalog.dart';
+import '../../core/storage/pending_confirmation_store.dart';
 
 class GameRepository {
   final SupabaseClient db;
@@ -76,6 +77,9 @@ class GameRetrySession {
   int? get pendingBet => _request?.bet;
   bool _busy = false;
   bool _restored = false;
+  int? _attempt;
+  String get _encoded =>
+      jsonEncode({'bet': _request!.bet, 'key': _request!.key});
 
   Future<void> restore() async {
     if (_restored) return;
@@ -101,19 +105,14 @@ class GameRetrySession {
 
   Future<void> _save() async {
     if (scope == null) return;
-    final prefs = await SharedPreferences.getInstance();
-    final request = _request!;
-    if (!await prefs.setString(scope!.storageKey,
-        jsonEncode({'bet': request.bet, 'key': request.key}))) {
-      throw StateError('Round must be saved before spending coins');
-    }
+    _attempt =
+        await PendingConfirmationStore.prepare(scope!.storageKey, _encoded);
   }
 
   Future<void> _clear() async {
     if (scope != null) {
-      final prefs = await SharedPreferences.getInstance();
-      if (!await prefs.remove(scope!.storageKey))
-        throw StateError('Round receipt could not be saved');
+      await PendingConfirmationStore.complete(
+          scope!.storageKey, _encoded, _attempt!);
     }
     _request = null;
   }

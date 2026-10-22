@@ -64,5 +64,6 @@ jobs:
           python3 tools/test_room_treasure.py --container "$SQL_CONTAINER" --database treasure_escrow_ci
           python3 tools/test_game_receipt_recovery.py --container "$SQL_CONTAINER" --database game_receipt_ci
           python3 tools/test_room_polls.py --container "$SQL_CONTAINER" --database polls_ci
+          python3 tools/test_checked_diamond_exchange.py --container "$SQL_CONTAINER" --database exchange_ci
       - name: Gift media authorization tests
         run: node --test supabase/functions/gift-media/tests/access.test.mjs
