@@ -1,3 +1,5 @@
+import '../../core/services/media_publication.dart';
+import '../../core/widgets/published_image.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -26,11 +28,12 @@ final storeVisualEquipmentProvider = FutureProvider.autoDispose
       .whereType<Map>()
       .map((row) => row['item_id'])
       .whereType<String>()
-      .toSet().toList(growable: false);
+      .toSet()
+      .toList(growable: false);
   if (equippedIds.isEmpty) return {};
   final remote = await session.client
       .from('nimzo_cosmetic_media')
-      .select('item_id,thumbnail_url,asset_url,media_kind')
+      .select()
       .inFilter('item_id', equippedIds)
       .eq('approved', true)
       .limit(100);
@@ -55,12 +58,26 @@ final storeVisualEquipmentProvider = FutureProvider.autoDispose
       _ => null,
     };
     final url = Uri.tryParse(asset is String ? asset : '');
-    if (url != null && url.scheme == 'https' && url.host.isNotEmpty &&
-        url.userInfo.isEmpty && kind != null) {
+    if (url != null &&
+        url.scheme == 'https' &&
+        url.host.isNotEmpty &&
+        url.userInfo.isEmpty &&
+        kind != null) {
+      final publication =
+          parseMediaPublication(entry!, kind: entry['media_kind'] as String);
+      final thumbnailPublication =
+          parseMediaPublication(entry, kind: 'image', prefix: 'thumbnail_');
       equipped[category] = CosmeticMedia(
-        itemId, category, itemId, url.toString(), kind,
+        itemId,
+        category,
+        itemId,
+        url.toString(),
+        kind,
+        publication: publication,
+        thumbnailPublication: thumbnailPublication,
         thumbnail: thumbnail is String &&
-                Uri.tryParse(thumbnail)?.scheme == 'https'
+                Uri.tryParse(thumbnail)?.scheme == 'https' &&
+                (publication == null || thumbnailPublication != null)
             ? thumbnail
             : null,
       );
@@ -99,11 +116,11 @@ class EquippedCosmetic extends ConsumerWidget {
           child: IgnorePointer(
             child: media.kind == CosmeticMediaKind.image
                 ? (Uri.tryParse(media.asset)?.scheme == 'https'
-                    ? Image.network(
-                        media.asset,
+                    ? PublishedImage(
+                        url: media.asset,
+                        publication: media.publication,
                         fit: category == 'Profile Card' ? BoxFit.fill : fit,
-                        errorBuilder: (_, __, ___) =>
-                            const SizedBox.shrink(),
+                        unavailable: const SizedBox.shrink(),
                       )
                     : Image.asset(
                         media.asset,

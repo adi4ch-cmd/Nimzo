@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "build_authorized": false,
+  "app_source_sha256": "65f8256350cb5ac905a7dc0c934224d6df0c22baa0780df6e45c05eafae4b4ab",
+  "voice_enabled": false,
+  "open_blockers": [
+    "Final Vivox integration deferred by owner",
+    "Authenticated Android purchases/claims and native media/audio QA remain unverified",
+    "Complete original-task acceptance remains incomplete"
+  ],
+  "checks": {
+    "gifts": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "memberships": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "store_backpack": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "voice_rooms_15": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "games": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "progression": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "premium_ui": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "room_rocket": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "dynamic_audit": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "dynamic_models": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "dynamic_sync": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "financial_security": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "vivox_sdk": {
+      "status": "OWNER_DEFERRED",
+      "evidence": [
+        "docs/validation/v3-codespace-voice-access.md"
+      ]
+    },
+    "source_tests": {
+      "status": "BLOCKED",
+      "evidence": []
+    }
+  },
+  "qa_build_authorized": true,
+  "qa_open_blockers": [],
+  "voice_status": "OWNER_DEFERRED",
+  "qa_scope": "Dynamic supported-content source/backend integration; Android TEST APK only; native/authenticated device verification follows build",
+  "owner_authorization": "Dynamic systam complete kar ke apk test ke kiy build kar skty ho",
+  "qa_checks": {
+    "dynamic_audit": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "dynamic_models": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "dynamic_sync": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "financial_security": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "gifts": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "memberships": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "progression": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "room_rocket": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "source_tests": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "store_backpack": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    }
+  }
+}

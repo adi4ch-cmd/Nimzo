@@ -1,3 +1,6 @@
+import '../../core/services/renderable_media.dart';
+import '../../core/services/verified_media_file.dart';
+import '../../core/widgets/published_image.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -9,8 +12,23 @@ import 'premium_cosmetics.dart';
 import '../../core/services/approved_media_bytes.dart';
 
 /// Renders the same pinned original media in the Store and on equipped surfaces.
-class CosmeticMediaView extends StatefulWidget {
-  const CosmeticMediaView({
+class CosmeticMediaView extends StatelessWidget {
+  const CosmeticMediaView(
+      {super.key, required this.media, this.animate = true, this.onFinished});
+  final CosmeticMedia media;
+  final bool animate;
+  final VoidCallback? onFinished;
+  @override
+  Widget build(BuildContext context) => _CosmeticMediaPlayback(
+      key: ValueKey(
+          '${media.id}:${media.asset}:${media.kind}:${media.publication?.cacheKey}:$animate'),
+      media: media,
+      animate: animate,
+      onFinished: onFinished);
+}
+
+class _CosmeticMediaPlayback extends StatefulWidget {
+  const _CosmeticMediaPlayback({
     super.key,
     required this.media,
     this.animate = true,
@@ -20,13 +38,14 @@ class CosmeticMediaView extends StatefulWidget {
   final bool animate;
   final VoidCallback? onFinished;
   @override
-  State<CosmeticMediaView> createState() => _CosmeticMediaViewState();
+  State<_CosmeticMediaPlayback> createState() => _CosmeticMediaViewState();
 }
 
-class _CosmeticMediaViewState extends State<CosmeticMediaView>
+class _CosmeticMediaViewState extends State<_CosmeticMediaPlayback>
     with SingleTickerProviderStateMixin {
   SVGAAnimationController? _svga;
   VapPlayerController? _vap;
+  VerifiedMediaFile? _verifiedFile;
   StreamSubscription<VapEvent>? _events;
   bool _ready = false;
   bool _failed = false;
@@ -44,9 +63,13 @@ class _CosmeticMediaViewState extends State<CosmeticMediaView>
         final controller = SVGAAnimationController(vsync: this)..muted = true;
         _svga = controller;
         final bytes = ApprovedMediaBytes.isSafeUrl(widget.media.asset)
-            ? await ApprovedMediaBytes.fetch(widget.media.asset)
-            : await rootBundle.load(widget.media.asset).then((data) =>
-                data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+            ? await ApprovedMediaBytes.fetch(widget.media.asset,
+                publication: widget.media.publication)
+            : await rootBundle.load(widget.media.asset).then((data) => data
+                .buffer
+                .asUint8List(data.offsetInBytes, data.lengthInBytes));
+        if (widget.media.publication != null)
+          await validateRenderableMedia(bytes, widget.media.publication!);
         final movie = await SVGAParser.shared.decodeFromBuffer(bytes);
         if (!mounted) {
           movie.dispose();
@@ -64,16 +87,28 @@ class _CosmeticMediaViewState extends State<CosmeticMediaView>
         }
       } else {
         final options = const VapPlayerOptions(
-            viewType: VapViewType.textureView,
-            scaleType: VapScaleType.fitCenter,
-            repeatCount: 0,
-            mute: true,
-          );
-        final controller = ApprovedMediaBytes.isSafeUrl(widget.media.asset)
-            ? VapPlayerController.networkUrl(
-                Uri.parse(widget.media.asset),
-                options: options)
-            : VapPlayerController.asset(widget.media.asset, options: options);
+          viewType: VapViewType.textureView,
+          scaleType: VapScaleType.fitCenter,
+          repeatCount: 0,
+          mute: true,
+        );
+        if (ApprovedMediaBytes.isSafeUrl(widget.media.asset) &&
+            widget.media.publication != null) {
+          final file = await VerifiedMediaFile.create(
+              widget.media.asset, widget.media.publication!);
+          if (!mounted) {
+            await file.dispose();
+            return;
+          }
+          _verifiedFile = file;
+        }
+        final controller = _verifiedFile != null
+            ? VapPlayerController.file(_verifiedFile!.file, options: options)
+            : ApprovedMediaBytes.isSafeUrl(widget.media.asset)
+                ? VapPlayerController.networkUrl(Uri.parse(widget.media.asset),
+                    options: options)
+                : VapPlayerController.asset(widget.media.asset,
+                    options: options);
         _vap = controller;
         _events = controller.events.listen((event) {
           if (event is VapErrorEvent) _fail();
@@ -98,9 +133,17 @@ class _CosmeticMediaViewState extends State<CosmeticMediaView>
 
   @override
   void dispose() {
-    _events?.cancel();
+    unawaited(_events?.cancel());
     _svga?.dispose();
-    _vap?.dispose();
+    final vap = _vap;
+    final file = _verifiedFile;
+    if (vap != null) {
+      unawaited(vap.dispose().whenComplete(() async {
+        await file?.dispose();
+      }));
+    } else {
+      unawaited(file?.dispose());
+    }
     super.dispose();
   }
 
@@ -120,11 +163,13 @@ class _CosmeticMediaViewState extends State<CosmeticMediaView>
           ? media.thumbnail!
           : media.asset;
       return ApprovedMediaBytes.isSafeUrl(source)
-          ? Image.network(
-              source,
+          ? PublishedImage(
+              url: source,
+              publication: source == media.asset
+                  ? media.publication
+                  : media.thumbnailPublication,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) =>
-                  const Icon(Icons.broken_image_outlined),
+              unavailable: const Icon(Icons.broken_image_outlined),
             )
           : Image.asset(
               source,

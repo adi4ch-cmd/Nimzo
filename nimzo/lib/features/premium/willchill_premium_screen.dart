@@ -1,112 +1,96 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/providers/supabase_provider.dart';
-import 'willchill_membership_showcase.dart';
+import '../../core/services/nimzo_content_sync.dart';
+import 'membership_catalog.dart';
+import 'membership_media_view.dart';
 import 'membership_status.dart';
 import 'membership_purchase_keys.dart';
 import '../wallet/wallet_screen.dart';
 import '../profile/profile_repository.dart';
 
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_svga/flutter_svga.dart';
-import 'package:flutter_vap_player/flutter_vap_player.dart';
+final membershipStatusProvider = FutureProvider.autoDispose<MembershipStatus?>((ref) async {
+  final session = ref.watch(sessionSupabaseProvider);
+  if (session.userId == null) return null;
+  final result = await session.client.rpc('vip_status').timeout(const Duration(seconds: 6));
+  return result is Map ? MembershipStatus.fromJson(Map<String, dynamic>.from(result)) : null;
+});
 
-/// Membership destination; source artwork is composed in the tier layout.
+final membershipOffersProvider = FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+  final session = ref.watch(sessionSupabaseProvider);
+  if (session.userId == null) return [];
+  ref.watch(nimzoContentRevisionsProvider);
+  final rows = await session.client.from('normal_vip_catalog')
+      .select('tier,coin_price,duration_days').order('tier');
+  return rows.map((row) => Map<String, dynamic>.from(row)).toList();
+});
+final membershipThresholdsProvider = FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+  final session = ref.watch(sessionSupabaseProvider);
+  if (session.userId == null) return [];
+  ref.watch(nimzoContentRevisionsProvider);
+  final rows = await session.client.from('svip_thresholds').select('level,usd_cents').order('level');
+  return rows.map((row) => Map<String, dynamic>.from(row)).toList();
+});
+
+/// A new server-driven membership destination. The historical route/class name
+/// remains for navigation compatibility; no legacy privilege tiles are used.
 class WillChillPremiumScreen extends ConsumerStatefulWidget {
   const WillChillPremiumScreen({super.key, this.initialGroup = 'svip'});
   final String initialGroup;
+  @override
+  ConsumerState<WillChillPremiumScreen> createState() => _WillChillPremiumScreenState();
+}
+class _WillChillPremiumScreenState extends ConsumerState<WillChillPremiumScreen>
+    with WidgetsBindingObserver {
+  late String _group = widget.initialGroup == 'vip' ? 'vip' : 'svip';
+  int _tier = 1;
+  bool _buying = false, _claiming = false;
+  Timer? _statusRefresh;
+  String? _verifiedHero, _verifiedBadge;
+  static const emerald = Color(0xff064e3b), gold = Color(0xffd6b665);
 
   @override
-  ConsumerState<WillChillPremiumScreen> createState() =>
-      _WillChillPremiumScreenState();
-}
-
-class _PremiumAsset {
-  _PremiumAsset(Map<String, dynamic> json)
-      : group = json['group'] as String,
-        name = json['name'] as String,
-        asset = json['asset'] as String,
-        mediaType = json['type'] as String,
-        tier = json['tier'] as int?;
-  final String group, name, asset, mediaType;
-  final int? tier;
-  bool get isImage => mediaType == 'image';
-  bool get canPlay => mediaType == 'vap' || mediaType == 'svga';
-  String get displayName => group == 'entrances' &&
-          name.startsWith('voiceroom_crown_orb_')
-      ? 'SVIP ${RegExp(r'\d+').firstMatch(name)?.group(0) ?? ''} room entrance'
-      : name
-          .replaceAll(RegExp(r'\.(png|webp|jpg|svga|mp4)$'), '')
-          .replaceAll('_', ' ');
-}
-
-final membershipStatusProvider = FutureProvider.autoDispose<MembershipStatus?>((
-  ref,
-) async {
-  final session = ref.watch(sessionSupabaseProvider);
-  if (session.userId == null) return null;
-  final result = await session.client
-      .rpc('vip_status')
-      .timeout(const Duration(seconds: 6));
-  if (result == null) return null;
-  return MembershipStatus.fromJson(Map<String, dynamic>.from(result as Map));
-});
-
-final _vipOffersProvider =
-    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
-  final session = ref.watch(sessionSupabaseProvider);
-  if (session.userId == null) return [];
-  final rows = await session.client
-      .from('normal_vip_catalog')
-      .select('tier,coin_price,duration_days')
-      .order('tier');
-  return rows.map((row) => Map<String, dynamic>.from(row)).toList();
-});
-
-final _svipThresholdsProvider =
-    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
-  final session = ref.watch(sessionSupabaseProvider);
-  if (session.userId == null) return [];
-  final rows = await session.client
-      .from('svip_thresholds')
-      .select('level,usd_cents')
-      .order('level');
-  return rows.map((row) => Map<String, dynamic>.from(row)).toList();
-});
-
-class _WillChillPremiumScreenState
-    extends ConsumerState<WillChillPremiumScreen> {
-  List<_PremiumAsset>? _assets;
-  Object? _error;
-  late final String _group = widget.initialGroup == 'vip' ? 'vip' : 'svip';
-  int _tier = 1;
-  bool _buying = false;
-  Timer? _statusRefresh;
-  bool _claiming = false;
-
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _statusRefresh = Timer.periodic(const Duration(minutes: 1), (_) => _refresh());
+  }
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _statusRefresh?.cancel();
     super.dispose();
   }
-
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refresh();
+  }
+  void _refresh() {
+    ref.invalidate(membershipStatusProvider);
+    ref.invalidate(membershipPresentationsProvider);
+    ref.invalidate(membershipOffersProvider);
+    ref.invalidate(membershipThresholdsProvider);
+  }
   Future<void> _purchase(Map<String, dynamic> offer) async {
     if (_buying) return;
     final session = ref.read(sessionSupabaseProvider);
     final status = ref.read(membershipStatusProvider).valueOrNull;
     if (session.userId == null || status?.canPurchase != true) return;
     final tier = (offer['tier'] as num).toInt();
+    final preferences = await SharedPreferences.getInstance();
+    final keys = MembershipPurchaseKeys(preferences);
+    final expectedCoins = keys.pendingPrice(session.userId!, tier) ?? (offer['coin_price'] as num).toInt();
+    if (!mounted) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Purchase VIP $tier?'),
         content: Text(
-          '${offer['coin_price']} coins for ${offer['duration_days']} days. '
+          '$expectedCoins coins for ${offer['duration_days']} days. '
           'Same-tier renewal extends your expiry; changing tier starts a new cycle.',
         ),
         actions: [
@@ -128,14 +112,12 @@ class _WillChillPremiumScreenState
     // Preserve the same key after an uncertain response, preventing a retry
     // from charging again when the server already committed the purchase.
     try {
-      final preferences = await SharedPreferences.getInstance();
-      final keys = MembershipPurchaseKeys(preferences);
-      final key = await keys.prepare(session.userId!, tier);
+      final key = await keys.prepareWithPrice(session.userId!, tier, expectedCoins);
       if (!mounted ||
           ref.read(sessionSupabaseProvider).userId != session.userId) return;
       final result = await session.client.rpc(
-        'purchase_normal_vip',
-        params: {'p_tier': tier, 'p_key': key},
+        'nimzo_purchase_vip_checked',
+        params: {'p_tier': tier, 'p_key': key, 'p_expected_coins': expectedCoins},
       );
       if (result is! Map || !['ok', 'replayed'].contains(result['status'])) {
         throw StateError('Purchase was not confirmed');
@@ -153,6 +135,7 @@ class _WillChillPremiumScreenState
       if (mounted &&
           ref.read(sessionSupabaseProvider).userId == session.userId) {
         ref.invalidate(membershipStatusProvider);
+        ref.invalidate(membershipOffersProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -197,447 +180,152 @@ class _WillChillPremiumScreenState
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    unawaited(_load());
-    _statusRefresh = Timer.periodic(const Duration(minutes: 1), (_) {
-      ref.invalidate(membershipStatusProvider);
-    });
-  }
-
-  Future<void> _load() async {
-    try {
-      final raw = await rootBundle.loadString(
-        'assets/willchill_premium/catalog.json',
-      );
-      final decoded = jsonDecode(raw) as Map<String, dynamic>;
-      final records = decoded['records'] as List<dynamic>;
-      if (!mounted) return;
-      setState(() {
-        _assets = records
-            .map((item) => _PremiumAsset(item as Map<String, dynamic>))
-            .toList(growable: false);
-        _error = null;
-      });
-    } catch (error) {
-      if (mounted) setState(() => _error = error);
-    }
-  }
-
-  Widget _svipOverview(int owned, double? progress) {
-    final possible = _assets
-        ?.where(
-          (item) =>
-              item.group == 'entrances' &&
-              item.name == 'voiceroom_crown_orb_$_tier.mp4',
-        )
-        .toList();
-    final crown = possible == null || possible.isEmpty ? null : possible.first;
-    return WillChillMembershipShowcase(
-      kind: 'svip',
-      growthProgress: progress,
-      tier: _tier,
-      ownedLevel: owned,
-      onTierChanged: (tier) => setState(() => _tier = tier),
-      onPreviewEntrance: crown == null
-          ? null
-          : () => showModalBottomSheet<void>(
-                context: context,
-                isScrollControlled: true,
-                builder: (_) => FractionallySizedBox(
-                  heightFactor: .85,
-                  child: _PremiumAssetPreview(asset: crown),
-                ),
-              ),
-    );
-  }
-
-  Widget _vipOverview(int owned) => WillChillMembershipShowcase(
-        kind: 'vip',
-        tier: _tier,
-        ownedLevel: owned,
-        onTierChanged: (tier) => setState(() => _tier = tier),
-      );
 
   @override
   Widget build(BuildContext context) {
-    final membership = ref.watch(membershipStatusProvider);
-    final profile = membership.valueOrNull;
-    final svip = profile?.svipLevel ?? 0;
-    final activeVip = profile?.vipLevel ?? 0;
-    final status = membership.isLoading
-        ? 'Checking membership…'
-        : membership.hasError
-            ? 'Membership unavailable · tap to retry'
-            : profile == null
-                ? 'Sign in to view your membership'
-                : profile.retired
-                    ? 'Membership purchases and rewards are unavailable'
-                    : 'Your account · SVIP $svip · ${activeVip > 0 ? 'VIP $activeVip' : 'VIP inactive'}';
-    final offers = ref.watch(_vipOffersProvider).valueOrNull ?? const [];
-    final thresholds =
-        ref.watch(_svipThresholdsProvider).valueOrNull ?? const [];
-    final selectedOffers = offers.where((row) => row['tier'] == _tier);
-    final offer = selectedOffers.isEmpty ? null : selectedOffers.first;
-    final selectedThresholds = thresholds.where((row) => row['level'] == _tier);
-    final threshold = selectedThresholds.isEmpty
-        ? null
-        : (selectedThresholds.first['usd_cents'] as num?)?.toDouble();
-    final cents = profile?.cycleCents.toDouble();
-    final progress = threshold != null && threshold > 0 && cents != null
-        ? (cents / threshold).clamp(0.0, 1.0)
-        : null;
+    final statusAsync = ref.watch(membershipStatusProvider);
+    final status = statusAsync.valueOrNull;
+    final presentations = ref.watch(membershipPresentationsProvider);
+    final bundled = ref.watch(membershipBundledPresentationsProvider);
+    final offersAsync = ref.watch(membershipOffersProvider);
+    final thresholdsAsync = ref.watch(membershipThresholdsProvider);
+    final offers = offersAsync.valueOrNull ?? const <Map<String, dynamic>>[];
+    final thresholds = thresholdsAsync.valueOrNull ?? const <Map<String, dynamic>>[];
+    final catalog = _group == 'vip' ? offers : thresholds;
+    final tiers = catalog.map((row) => (row[_group == 'vip' ? 'tier' : 'level'] as num).toInt()).toList();
+    final matches = (presentations.valueOrNull ?? const <MembershipPresentation>[])
+        .where((row) => row.kind == _group && row.tier == _tier);
+    final fallbacks = (bundled.valueOrNull ?? const <MembershipPresentation>[]).where((row) => row.kind == _group && row.tier == _tier);
+    final presentation = !presentations.hasError && !presentations.isLoading && matches.isNotEmpty ? matches.first : fallbacks.isEmpty ? null : fallbacks.first;
+    final offerRows = offers.where((row) => row['tier'] == _tier);
+    final offer = offerRows.isEmpty ? null : offerRows.first;
+    final thresholdRows = thresholds.where((row) => row['level'] == _tier);
+    final threshold = thresholdRows.isEmpty ? null : (thresholdRows.first['usd_cents'] as num).toInt();
+    final owned = (_group == 'vip' ? status?.vipLevel : status?.svipLevel) ?? 0;
+    final expiry = _group == 'vip' ? status?.vipExpiresAt : status?.svipExpiresAt;
+    final ready = status != null && !statusAsync.isLoading && !statusAsync.hasError;
+    final presentationReady = presentation?.hero != null && presentation?.badge != null &&
+        _verifiedHero == presentation!.hero!.sha256 && _verifiedBadge == presentation.badge!.sha256;
+    final canBuy = ready && status.canPurchase && presentationReady &&
+        !offersAsync.isLoading && !offersAsync.hasError && offer != null && !_buying;
+    final label = _group.toUpperCase();
     return Scaffold(
-      backgroundColor: const Color(0xff090a10),
-      appBar: AppBar(
-        title: Text(_group == 'svip' ? 'NIMZO SVIP' : 'NIMZO VIP'),
-        centerTitle: true,
-        backgroundColor: const Color(0xff100e12),
-        foregroundColor: const Color(0xffead8a1),
-        actions: [
-          IconButton(
-            tooltip: 'Membership information',
-            icon: const Icon(Icons.help_outline),
-            onPressed: () => showModalBottomSheet<void>(
-              context: context,
-              backgroundColor: const Color(0xff17131c),
-              showDragHandle: true,
-              builder: (_) => SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    '$status\n\nArtwork previews do not grant benefits. VIP artwork covers tiers 1–7 and SVIP artwork covers tiers 1–8; the server catalog has 10 tiers. Purchases require an enabled server contract.',
-                    style: const TextStyle(
-                      color: Color(0xffead8a1),
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Container(
-          key: const ValueKey('membership-fixed-status'),
-          constraints: const BoxConstraints(minHeight: 72),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xff100e12),
-            border: const Border(top: BorderSide(color: Color(0xff806943))),
-            image: _group == 'svip' && _tier <= 8
-                ? DecorationImage(
-                    image: AssetImage(
-                      'assets/willchill_premium/svip/svip${_tier}_expiration_container.webp',
-                    ),
-                    fit: BoxFit.fill,
-                  )
-                : null,
-          ),
-          child: _group == 'svip'
-              ? Row(
-                  children: [
-                    const Icon(
-                      Icons.workspace_premium_outlined,
-                      color: Color(0xffead8a1),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        membership.isLoading ||
-                                membership.hasError ||
-                                profile == null
-                            ? status
-                            : profile.retired
-                                ? 'SVIP currently unavailable'
-                                : svip > 0
-                                    ? 'SVIP $svip active'
-                                    : 'SVIP Not Unlocked Yet',
-                        style: const TextStyle(
-                          color: Color(0xffead8a1),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              : Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        offer == null
-                            ? 'Price unavailable'
-                            : '${offer['coin_price']} coins / ${offer['duration_days']} days',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Tooltip(
-                      message: profile?.canPurchase == true
-                          ? 'Purchase the selected VIP tier with coins'
-                          : 'VIP purchases are currently unavailable',
-                      child: FilledButton(
-                        onPressed: profile?.canPurchase == true &&
-                                !membership.isLoading &&
-                                !membership.hasError &&
-                                offer != null &&
-                                !_buying
-                            ? () => _purchase(offer)
-                            : null,
-                        style: FilledButton.styleFrom(
-                          disabledBackgroundColor: const Color(0xff988352),
-                          disabledForegroundColor: const Color(0xff292018),
-                        ),
-                        child: Text(
-                          _buying
-                              ? 'Purchasing…'
-                              : profile?.canPurchase == true
-                                  ? 'Purchase'
-                                  : 'Unavailable',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-        ),
-      ),
-      body: SafeArea(
-        top: false,
-        child: _error != null
-            ? Center(
-                child: TextButton(
-                  onPressed: _load,
-                  child: const Text('Unable to load membership · Retry'),
-                ),
-              )
-            : _assets == null
-                ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: () async {
-                      ref.invalidate(membershipStatusProvider);
-                      ref.invalidate(_vipOffersProvider);
-                      ref.invalidate(_svipThresholdsProvider);
-                      await ref.read(membershipStatusProvider.future);
-                    },
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.zero,
-                      children: [
-                        if (membership.hasError)
-                          TextButton(
-                            key: const ValueKey('willchill-membership-status'),
-                            onPressed: () =>
-                                ref.invalidate(membershipStatusProvider),
-                            child: Text(status),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(
-                            '$status\nAppearance previews only · ${_group == 'vip' ? 'VIP artwork 1–7' : 'SVIP artwork 1–8'}; server tiers 1–10',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Color(0xffead8a1)),
-                          ),
-                        ),
-                        if (!membership.hasError &&
-                            profile != null &&
-                            !profile.retired &&
-                            (_group == 'vip'
-                                    ? profile.vipExpiresAt
-                                    : profile.svipExpiresAt) !=
-                                null)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(
-                              'Expires: ${(_group == 'vip' ? profile.vipExpiresAt : profile.svipExpiresAt)!.toUtc().toIso8601String()} UTC',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.white70),
-                            ),
-                          ),
-                        if (profile?.canClaim == true && !membership.hasError)
-                          Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(children: [
-                              if (_group == 'vip' &&
-                                  activeVip > 0 &&
-                                  profile!.vipDailyReward != null)
-                                Text(
-                                    'Daily reward: ${profile.vipDailyReward} coins · Saudi time',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        const TextStyle(color: Colors.white70)),
-                              if (_group == 'svip' &&
-                                  svip > 0 &&
-                                  profile!.svipWeeklyReward != null)
-                                Text(
-                                    'Weekly reward: ${profile.svipWeeklyReward} coins · Sunday 21:00 Saudi time',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        const TextStyle(color: Colors.white70)),
-                              if (_group == 'svip' &&
-                                  profile!.svipAutoEnabled &&
-                                  profile.nextSvipPayout != null)
-                                Text(
-                                    'Next payout: ${profile.nextSvipPayout!.toUtc().toIso8601String()} UTC',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        const TextStyle(color: Colors.white70)),
-                              if (_group == 'vip' && activeVip > 0 ||
-                                  _group == 'svip' &&
-                                      profile!.svipWeeklyClaimable)
-                                TextButton(
-                                  onPressed: _claiming ||
-                                          membership.isLoading ||
-                                          (_group == 'vip' &&
-                                              profile!.vipDailyClaimed)
-                                      ? null
-                                      : _claimReward,
-                                  child: Text(_claiming
-                                      ? 'Claiming…'
-                                      : _group == 'vip' &&
-                                              profile!.vipDailyClaimed
-                                          ? 'Claimed today'
-                                          : 'Claim reward'),
-                                ),
-                            ]),
-                          ),
-                        if (_group == 'svip' && threshold != null)
-                          Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Text(
-                                  'SVIP $_tier threshold: USD ${(threshold / 100).toStringAsFixed(0)} in verified recharge per 90-day cycle',
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      const TextStyle(color: Colors.white70))),
-                        if (_group == 'svip') _svipOverview(svip, progress),
-                        if (_group == 'vip') _vipOverview(activeVip),
-                      ],
-                    ),
-                  ),
-      ),
+      backgroundColor: const Color(0xfff4f8f5),
+      appBar: AppBar(title: const Text('NIMZO Membership'), centerTitle: true,
+        backgroundColor: emerald, foregroundColor: Colors.white),
+      bottomNavigationBar: SafeArea(top: false, child: Container(
+        key: const ValueKey('membership-fixed-status'),
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(color: Colors.white,
+          border: Border(top: BorderSide(color: Color(0xffdce8df)))),
+        child: Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 12, runSpacing: 8, children: [
+          Text(_group == 'vip'
+            ? offer == null ? 'Price unavailable' : '${offer['coin_price']} coins · ${offer['duration_days']} days'
+            : owned > 0 ? 'SVIP $owned active' : 'Unlock with verified recharge',
+            style: const TextStyle(color: emerald, fontWeight: FontWeight.w700)),
+          if (_group == 'vip') FilledButton(onPressed: canBuy ? () => _purchase(offer) : null,
+            style: FilledButton.styleFrom(backgroundColor: emerald),
+            child: Text(_buying ? 'Purchasing…' : canBuy ? 'Purchase VIP $_tier' : 'Unavailable')),
+          if (_group == 'svip') FilledButton(onPressed: ready && !status.retired ? () => context.push('/recharge') : null,
+            style: FilledButton.styleFrom(backgroundColor: emerald), child: const Text('Recharge')),
+        ]))),
+      body: RefreshIndicator(onRefresh: () async { _refresh(); await ref.read(membershipStatusProvider.future); },
+        child: ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
+          SegmentedButton<String>(segments: const [
+            ButtonSegment(value: 'vip', label: Text('VIP'), icon: Icon(Icons.workspace_premium)),
+            ButtonSegment(value: 'svip', label: Text('SVIP'), icon: Icon(Icons.auto_awesome)),
+          ], selected: {_group}, onSelectionChanged: (selection) => setState(() { _group = selection.first; _tier = 1; })),
+          const SizedBox(height: 18),
+          Card(color: emerald, child: Padding(padding: const EdgeInsets.all(20),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('YOUR MEMBERSHIP', style: TextStyle(color: gold, letterSpacing: 2, fontSize: 11, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 10),
+              Text(statusAsync.isLoading ? 'Checking membership…' : statusAsync.hasError ? 'Membership status unavailable' : status == null ? 'Sign in to view membership' : status.retired ? 'Membership unavailable' : owned == 0 ? 'Discover $label' : '$label $owned',
+                style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800)),
+              if (ready && expiry != null && owned > 0) Padding(padding: const EdgeInsets.only(top: 8), child: Text('Expires ${expiry.toLocal()}', style: const TextStyle(color: Colors.white70))),
+              if (statusAsync.hasError) TextButton(onPressed: _refresh, child: const Text('Retry', style: TextStyle(color: gold))),
+              if (ready && _group == 'svip' && threshold != null && threshold > 0) ...[
+                const SizedBox(height: 14),
+                LinearProgressIndicator(value: (status.cycleCents / threshold).clamp(0.0, 1.0), color: gold, backgroundColor: Colors.white24),
+                const SizedBox(height: 8),
+                Text('USD ${(status.cycleCents / 100).toStringAsFixed(2)} / ${(threshold / 100).toStringAsFixed(2)} verified recharge', style: const TextStyle(color: Colors.white70)),
+              ],
+            ]))),
+          const SizedBox(height: 18),
+          Text('Choose your $label tier', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: emerald)),
+          const SizedBox(height: 10),
+          if (tiers.isEmpty) const Padding(padding: EdgeInsets.all(20), child: Text('Tier catalog unavailable. Pull to refresh.')),
+          Wrap(spacing: 8, runSpacing: 6, children: [for (final tier in tiers)
+            ChoiceChip(label: Text('$label $tier'), selected: tier == _tier,
+              onSelected: (_) => setState(() => _tier = tier),
+              selectedColor: const Color(0xffdcece2))]),
+          const SizedBox(height: 14),
+          if (presentation != null) _presentation(presentation, owned)
+          else Card(child: Padding(padding: const EdgeInsets.all(24), child: Column(children: [
+            const Icon(Icons.workspace_premium_outlined, color: emerald, size: 56),
+            const SizedBox(height: 10),
+            Text('$label $_tier', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 22, color: emerald)),
+            const SizedBox(height: 8),
+            const Text('Tier artwork is currently unavailable.', textAlign: TextAlign.center),
+          ]))),
+          if (ready && status.canClaim && owned > 0) _reward(status),
+          const SizedBox(height: 14),
+          Card(child: Padding(padding: const EdgeInsets.all(18), child: Text(_group == 'vip'
+            ? 'VIP uses your coin balance. Renewing the same active tier extends its expiry. Changing tier starts a new cycle. The server confirms the final price and entitlement.'
+            : 'SVIP follows verified Google Play or App Store recharge in a 90-day cycle. Only confirmed purchases count; the server determines your tier and expiry.',
+            style: const TextStyle(height: 1.5, color: Color(0xff395448))))),
+        ])),
     );
   }
-}
 
-class _PremiumAssetPreview extends StatefulWidget {
-  const _PremiumAssetPreview({required this.asset});
-  final _PremiumAsset asset;
-  @override
-  State<_PremiumAssetPreview> createState() => _PremiumAssetPreviewState();
-}
-
-class _PremiumAssetPreviewState extends State<_PremiumAssetPreview> {
-  VapPlayerController? _vap;
-  StreamSubscription<VapEvent>? _events;
-  bool _initialized = false;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.asset.mediaType == 'vap') unawaited(_startVap());
+  Widget _presentation(MembershipPresentation row, int owned) {
+    final benefits = row.benefits;
+    return Card(clipBehavior: Clip.antiAlias, color: Colors.white,
+      child: Column(children: [
+        Container(height: 235, width: double.infinity,
+          decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xff052e24), Color(0xff126647)])),
+          child: row.hero == null ? const Icon(Icons.workspace_premium, size: 80, color: gold)
+              : MembershipMediaView(key: ValueKey(row.hero!.sha256), media: row.hero!,
+                onReady: () { if (mounted) setState(() => _verifiedHero = row.hero!.sha256); },
+                onUnavailable: () { if (mounted) setState(() => _verifiedHero = null); })),
+        Padding(padding: const EdgeInsets.all(20), child: Column(children: [
+          if (row.badge != null) SizedBox(height: 42, child: MembershipMediaView(key: ValueKey(row.badge!.sha256), media: row.badge!,
+            onReady: () { if (mounted) setState(() => _verifiedBadge = row.badge!.sha256); },
+            onUnavailable: () { if (mounted) setState(() => _verifiedBadge = null); })),
+          const SizedBox(height: 12),
+          Text(row.title.isEmpty ? '${row.kind.toUpperCase()} ${row.tier}' : row.title,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: emerald)),
+          Text(owned == row.tier ? 'Your active tier' : 'Tier details', style: const TextStyle(color: Color(0xff668273))),
+          const SizedBox(height: 14),
+          if (benefits.contains('badge') && row.badge != null) _benefit(Icons.verified_outlined, 'Membership badge', 'Shown with your server-verified membership.'),
+          if (benefits.contains('room_entry')) _benefit(Icons.door_front_door_outlined, 'Room welcome', 'Appears after your confirmed room join.'),
+          if (benefits.contains('daily_reward') && row.kind == 'vip') _benefit(Icons.savings_outlined, 'Daily coin reward', 'Claim amount and eligibility are checked by the server.'),
+          if (benefits.contains('weekly_reward') && row.kind == 'svip') _benefit(Icons.savings_outlined, 'Weekly coin reward', 'Sunday 21:00 Saudi time, subject to server eligibility.'),
+          if (row.entrance != null && benefits.contains('room_entry')) TextButton.icon(
+            icon: const Icon(Icons.play_circle_outline), label: const Text('Preview entrance'),
+            onPressed: () => showModalBottomSheet<void>(context: context, isScrollControlled: true,
+              builder: (_) => SafeArea(child: SizedBox(height: MediaQuery.sizeOf(context).height * .7,
+                child: MembershipMediaView(media: row.entrance!, animate: true))))),
+        ])),
+      ]));
   }
+  Widget _benefit(IconData icon, String title, String description) => ListTile(
+    contentPadding: EdgeInsets.zero, leading: Icon(icon, color: emerald),
+    title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+    subtitle: Text(description));
 
-  Future<void> _startVap() async {
-    try {
-      final controller = VapPlayerController.asset(
-        widget.asset.asset,
-        options: const VapPlayerOptions(
-          viewType: VapViewType.textureView,
-          scaleType: VapScaleType.fitCenter,
-          repeatCount: 0,
-          mute: false,
-        ),
-      );
-      _vap = controller;
-      _events = controller.events.listen(
-        (event) {
-          if (event is VapErrorEvent && mounted) {
-            setState(() => _error = 'Native VAP playback failed');
-          }
-        },
-        onError: (Object _) {
-          if (mounted) setState(() => _error = 'VAP event stream failed');
-        },
-      );
-      await controller.initialize();
-      if (!mounted) return;
-      setState(() => _initialized = true);
-      await controller.play();
-    } catch (_) {
-      if (mounted)
-        setState(() => _error = 'Unable to initialize native player');
-    }
+  Widget _reward(MembershipStatus status) {
+    final vip = _group == 'vip';
+    final amount = vip ? status.vipDailyReward : status.svipWeeklyReward;
+    final canClaim = vip ? !status.vipDailyClaimed : status.svipWeeklyClaimable;
+    return Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(children: [
+      Text('${vip ? 'Daily' : 'Weekly'} reward${amount == null ? '' : ' · $amount coins'}',
+        style: const TextStyle(color: emerald, fontWeight: FontWeight.w800, fontSize: 18)),
+      if (!vip && status.svipAutoEnabled && status.nextSvipPayout != null)
+        Text('Next automatic payout: ${status.nextSvipPayout!.toLocal()}', textAlign: TextAlign.center),
+      TextButton(onPressed: !_claiming && canClaim ? _claimReward : null,
+        child: Text(_claiming ? 'Claiming…' : vip && status.vipDailyClaimed ? 'Claimed today' : canClaim ? 'Claim reward' : 'No claim available')),
+    ])));
   }
-
-  @override
-  void dispose() {
-    unawaited(_events?.cancel());
-    final controller = _vap;
-    if (controller != null) unawaited(controller.dispose());
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: const Color(0xff111a17),
-        appBar: AppBar(
-          title: Text(
-            widget.asset.displayName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          backgroundColor: const Color(0xff192e26),
-          foregroundColor: Colors.white,
-        ),
-        body: SafeArea(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              if (_error != null)
-                Center(
-                  child: Text(_error!,
-                      style: const TextStyle(color: Colors.white)),
-                )
-              else if (widget.asset.isImage)
-                InteractiveViewer(
-                  child: Center(
-                    child: Image.asset(widget.asset.asset, fit: BoxFit.contain),
-                  ),
-                )
-              else if (widget.asset.mediaType == 'svga')
-                SVGAEasyPlayer(
-                    assetsName: widget.asset.asset, fit: BoxFit.contain)
-              else if (widget.asset.mediaType == 'vap' &&
-                  _initialized &&
-                  _vap != null)
-                VapPlayer(_vap!)
-              else if (widget.asset.mediaType == 'vap')
-                const Center(child: CircularProgressIndicator())
-              else
-                const Center(
-                  child: Text(
-                    'Preview not available for this format',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              Positioned(
-                bottom: 20,
-                left: 14,
-                right: 14,
-                child: Text(
-                  'Room entrance preview',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white70, fontSize: 11),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
 }

@@ -10,6 +10,10 @@ import 'package:flutter_vap_player/flutter_vap_player.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../core/providers/supabase_provider.dart';
 import 'room_rocket_top_sender.dart';
+import 'room_rocket_config.dart';
+import 'room_rocket_media.dart';
+import '../diamond/room_diamond_repository.dart';
+import '../../../core/services/verified_media_file.dart';
 
 /// Index is zero-based, matching the server's verified six-stage event.
 String rocketRewardPath(int stage) {
@@ -41,12 +45,16 @@ class RoomRocketPlayback extends ConsumerStatefulWidget {
     super.key,
     required this.stage,
     this.eventId,
+    this.event,
+    this.config,
     required this.targetCoins,
     required this.onFinished,
   });
 
   final int stage, targetCoins;
   final String? eventId;
+  final DiamondBlastEvent? event;
+  final RoomRocketConfig? config;
   final VoidCallback onFinished;
 
   @override
@@ -65,6 +73,16 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
   bool _finished = false;
   bool _unavailable = false;
   bool _initialized = false;
+  RoomRocketConfig _config = RoomRocketConfig.original;
+  final _verifiedFiles = <VerifiedMediaFile?>[null, null];
+  VerifiedMediaFile? _activeFile;
+  bool _transitioning = false;
+  int get _artworkStage => _config.artworkStages[widget.stage] - 1;
+  RocketMediaDescriptor? get _media => _part == 0
+      ? _config.flyMedia[widget.stage]
+      : _config.rewardMedia[widget.stage];
+  String? get _soundAsset =>
+      rocketSegmentSound(_artworkStage, reward: _part == 1, media: _media);
   int _part = 0; // 0: rocket launch; 1: achieved-level reward
 
   void _finish() {
@@ -72,6 +90,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
     _finished = true;
     _watchdog?.cancel();
     unawaited(_stopSound());
+    unawaited(_releaseAllVideo());
     widget.onFinished();
   }
 
@@ -79,22 +98,51 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _watchdog = Timer(const Duration(seconds: 20), _playbackFailed);
+    _watchdog = Timer(const Duration(seconds: 60), _playbackFailed);
     unawaited(_start());
   }
 
   Future<void> _start() async {
     try {
-      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-      // Require both Haza clips for a stage, no fabricated single-video effect.
-      final reward = rocketRewardPath(widget.stage);
-      final fly = rocketFlyPath(widget.stage);
-      if (!manifest.listAssets().contains(reward) ||
-          !manifest.listAssets().contains(fly)) {
-        _playbackFailed();
-        return;
+      final event = widget.event;
+      final config = event == null
+          ? widget.config ?? RoomRocketConfig.original
+          : await ref
+              .read(roomDiamondRepositoryProvider)
+              .eventConfig(event)
+              .timeout(const Duration(seconds: 8));
+      if (!mounted || _finished || _unavailable) return;
+      if (widget.stage < 0 ||
+          widget.stage >= config.thresholds.length ||
+          config.thresholds[widget.stage] != widget.targetCoins) {
+        throw const FormatException('Rocket milestone configuration mismatch');
       }
-      await _playSegment(fly);
+      _config = config;
+      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      for (var part = 0; part < 2; part++) {
+        final media = part == 0
+            ? config.flyMedia[widget.stage]
+            : config.rewardMedia[widget.stage];
+        if (media != null) {
+          final file = await prepareRocketMediaFile(media);
+          if (!mounted || _finished || _unavailable) {
+            await file.dispose();
+            return;
+          }
+          _verifiedFiles[part] = file;
+        } else {
+          final path = part == 0
+              ? rocketFlyPath(_artworkStage)
+              : rocketRewardPath(_artworkStage);
+          if (!manifest.listAssets().contains(path)) {
+            throw const FormatException('Bundled Rocket effect unavailable');
+          }
+        }
+      }
+      if (!mounted || _finished || _unavailable) return;
+      _watchdog?.cancel();
+      _watchdog = Timer(const Duration(seconds: 45), _playbackFailed);
+      await _playSegment();
     } catch (_) {
       _playbackFailed();
     }
@@ -152,7 +200,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
 
   Future<void> _prepareSound() async {
     await _stopSound();
-    final asset = rocketSoundPath(widget.stage, reward: _part == 1);
+    final asset = _soundAsset;
     if (asset == null || !mounted || _finished) return;
     try {
       // Vivox owns the room audio session. Do not request audio focus or
@@ -188,10 +236,11 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
 
   Future<void> _playSound(VapPlayerController controller) async {
     if (_soundUnavailable ||
+        _unavailable ||
         !mounted ||
         _finished ||
         _player != controller ||
-        rocketSoundPath(widget.stage, reward: _part == 1) == null) return;
+        _soundAsset == null) return;
     try {
       await _soundPlayer?.play();
     } catch (_) {
@@ -199,56 +248,98 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
     }
   }
 
-  Future<void> _playSegment(String path) async {
-    // Play original 1.5s lift-off, followed by the matching 10s reward.
-    // Native players must never overlap or compete with Vivox audio.
-    await _events?.cancel();
+  Future<void> _releaseVideo() async {
+    final events = _events;
     _events = null;
-    final previous = _player;
+    final player = _player;
     _player = null;
-    if (previous != null) await previous.dispose();
+    final file = _activeFile;
+    _activeFile = null;
+    for (var i = 0; i < _verifiedFiles.length; i++) {
+      if (identical(_verifiedFiles[i], file)) _verifiedFiles[i] = null;
+    }
+    try {
+      await events?.cancel();
+      if (player != null) await player.dispose();
+    } catch (_) {
+      // Native teardown may already have happened after a platform error.
+    } finally {
+      if (file != null) {
+        try {
+          await file.dispose();
+        } catch (_) {/* Best-effort temporary file cleanup. */}
+      }
+    }
+  }
+
+  Future<void> _releaseAllVideo() async {
+    try {
+      await _releaseVideo();
+    } finally {
+      for (var i = 0; i < _verifiedFiles.length; i++) {
+        final file = _verifiedFiles[i];
+        _verifiedFiles[i] = null;
+        if (file != null) {
+          try {
+            await file.dispose();
+          } catch (_) {/* Best-effort temporary file cleanup. */}
+        }
+      }
+    }
+  }
+
+  Future<void> _playSegment() async {
+    // Dispose native decoding before deleting its pinned file or starting
+    // the next phase. Voice, chat and microphone controls stay independent.
+    await _releaseVideo();
     await _prepareSound();
-    if (!mounted || _finished) return;
-    final controller = VapPlayerController.asset(
-      path,
-      options: VapPlayerOptions(
-        viewType: VapViewType.textureView,
-        scaleType: VapScaleType.fitCenter,
-        repeatCount: 0,
-        // Preserve the original Rocket 4–6 AAC audio where present.
-        mute: false,
-        resourceDelegate: VapResourceDelegate(
-          resolveText: (resource) async {
-            if (widget.eventId == null) return null;
-            try {
-              final sender = await ref.read(
-                roomRocketTopSenderProvider(widget.eventId!).future,
-              );
-              return sender?.name;
-            } catch (_) {
-              return null;
-            }
-          },
-          resolveImage: (resource) => _loadSenderImage(),
-        ),
+    if (!mounted || _finished || _unavailable) return;
+    final options = VapPlayerOptions(
+      viewType: VapViewType.textureView,
+      scaleType: VapScaleType.fitCenter,
+      repeatCount: 0,
+      // Preserve the original Rocket 4–6 AAC audio where present.
+      mute: rocketNativeMuted(_media),
+      resourceDelegate: VapResourceDelegate(
+        resolveText: (resource) async {
+          if (widget.eventId == null) return null;
+          try {
+            final sender = await ref.read(
+              roomRocketTopSenderProvider(widget.eventId!).future,
+            );
+            return sender?.name;
+          } catch (_) {
+            return null;
+          }
+        },
+        resolveImage: (resource) => _loadSenderImage(),
       ),
     );
+    _activeFile = _verifiedFiles[_part];
+    final path = _part == 0
+        ? rocketFlyPath(_artworkStage)
+        : rocketRewardPath(_artworkStage);
+    final controller = _activeFile == null
+        ? VapPlayerController.asset(path, options: options)
+        : VapPlayerController.file(_activeFile!.file, options: options);
     _player = controller;
     if (mounted) setState(() => _initialized = false);
     _events = controller.events.listen(
       (event) {
-        if (_finished) return;
+        if (_finished || _player != controller) return;
         if (event is VapStartedEvent) {
           // Start the preloaded effect on the native VAP started event.
           unawaited(_playSound(controller));
         } else if (event is VapErrorEvent) {
           _playbackFailed();
         } else if (event is VapCompletedEvent) {
-          if (_part == 0) {
+          if (_part == 0 && !_transitioning) {
+            _transitioning = true;
             _part = 1;
-            unawaited(_playSegment(rocketRewardPath(widget.stage))
-                .catchError((Object _) => _playbackFailed()));
-          } else {
+            unawaited(_playSegment()
+                .catchError((Object _) => _playbackFailed())
+                .whenComplete(() => _transitioning = false));
+          } else if (!_transitioning) {
             _finish();
           }
         }
@@ -256,14 +347,15 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
       onError: (Object _) => _playbackFailed(),
     );
     await controller.initialize();
-    if (!mounted || _finished) return;
+    if (!mounted || _finished || _unavailable) return;
     setState(() => _initialized = true);
     await controller.play();
   }
 
   void _playbackFailed() {
-    if (!mounted || _finished) return;
+    if (!mounted || _finished || _unavailable) return;
     unawaited(_stopSound());
+    unawaited(_releaseAllVideo());
     setState(() => _unavailable = true);
     _watchdog?.cancel();
     _watchdog = Timer(const Duration(seconds: 3), _finish);
@@ -283,9 +375,7 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
     _soundLoadWait = null;
     if (loading != null && !loading.isCompleted) loading.complete();
     WidgetsBinding.instance.removeObserver(this);
-    unawaited(_events?.cancel());
-    final player = _player;
-    if (player != null) unawaited(player.dispose());
+    unawaited(_releaseAllVideo());
     final sound = _soundPlayer;
     _soundPlayer = null;
     if (sound != null) unawaited(sound.dispose());
@@ -378,7 +468,8 @@ class _RoomRocketPlaybackState extends ConsumerState<RoomRocketPlayback>
                   child: Text(
                     'NIMZO ROOM ROCKET  ' +
                         (widget.stage + 1).toString() +
-                        ' / 6',
+                        ' / ' +
+                        _config.thresholds.length.toString(),
                     style: const TextStyle(
                       color: Color(0xffffdd83),
                       fontWeight: FontWeight.w800,

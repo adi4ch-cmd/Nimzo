@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nimzo/app/shell.dart';
 import 'package:nimzo/features/home/home_screen.dart';
 import 'package:nimzo/features/events/events_screen.dart';
+import 'package:nimzo/features/events/dynamic_event_banners.dart';
 import 'package:nimzo/features/rooms/domain/room.dart';
 import 'package:nimzo/features/rooms/presentation/room_controller.dart';
 
@@ -21,6 +22,7 @@ void main() {
         status: 'open',
         createdAt: DateTime(2026));
     await tester.pumpWidget(ProviderScope(overrides: [
+      nimzoEventBannersProvider.overrideWith((_) async => []),
       popularRoomsProvider(null).overrideWith((_) async => <Room>[]),
       myRoomsProvider.overrideWith((_) async => {
             'recent': [room],
@@ -32,10 +34,10 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Discover opens the five supplied event banners', (tester) async {
-    final semantics = tester.ensureSemantics();
+  testWidgets('Discover shows an honest empty events state', (tester) async {
     await tester.pumpWidget(ProviderScope(
       overrides: [
+        nimzoEventBannersProvider.overrideWith((_) async => []),
         popularRoomsProvider(null).overrideWith((_) async => <Room>[]),
         myRoomsProvider.overrideWith(
             (_) async => {'recent': <Room>[], 'followed': <Room>[]}),
@@ -46,17 +48,10 @@ void main() {
     await tester.tap(find.text('Discover'));
     await tester.pumpAndSettle();
     expect(find.text('Event'), findsOneWidget);
-    expect(find.bySemanticsLabel('Glamour Queen'), findsOneWidget);
-    await tester.scrollUntilVisible(
-        find.bySemanticsLabel('Recharge To Get Super Rebate'), 250,
-        scrollable: find.descendant(
-            of: find.byType(ListView), matching: find.byType(Scrollable)));
-    await tester.pumpAndSettle();
-    expect(
-        find.bySemanticsLabel('Recharge To Get Super Rebate'), findsOneWidget);
+    expect(find.text('More moments to celebrate soon'), findsOneWidget);
+    expect(find.byType(Image), findsNothing);
     expect(find.text('No rooms found.'), findsNothing);
     expect(tester.takeException(), isNull);
-    semantics.dispose();
   });
 
   testWidgets('Events header can reopen My after Discover was selected',
@@ -87,6 +82,7 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(ProviderScope(
       overrides: [
+        nimzoEventBannersProvider.overrideWith((_) async => []),
         myRoomsProvider.overrideWith(
             (_) async => {'recent': <Room>[], 'followed': <Room>[]}),
       ],

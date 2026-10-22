@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:nimzo/features/gifts/gift_sheet.dart';
 import 'package:nimzo/features/wallet/wallet_screen.dart';
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   testWidgets(
     'known gift rejection explains recovery and allows changing quantity',
     (tester) async {
@@ -39,7 +41,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            currentUserIdProvider.overrideWithValue(null),
+            currentUserIdProvider.overrideWithValue('sender'),
             giftRepositoryProvider.overrideWithValue(GiftRepository(db)),
             giftCatalogProvider.overrideWith(
               (_) async => [const Gift('gift', 'Coffee', 'Classic', 500, null)],

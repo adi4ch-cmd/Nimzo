@@ -22,6 +22,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Enforce combined v3 APK build hold
+        run: python3 tools/verify_prebuild_acceptance.py
+
       - name: Java 17
         uses: actions/setup-java@v4
         with:

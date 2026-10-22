@@ -31,7 +31,7 @@ final followedMomentsAuthorsProvider =
   return rows.map((row) => row['followee_id'].toString()).toSet();
 });
 
-/// Reference-style Moments feed, retaining the real MomentCard actions.
+/// Real Moments feed with the shared NIMZO emerald presentation.
 class MomentsScreen extends ConsumerStatefulWidget {
   const MomentsScreen({super.key});
   @override
@@ -57,30 +57,30 @@ class _MomentsState extends ConsumerState<MomentsScreen> {
                   child: TingleTabs(
                       labels: const ['Square', 'Follow'],
                       selected: selected,
-                      light: true,
+                      pills: true,
                       onSelected: (value) => setState(() => selected = value))),
               IconButton(
                   tooltip: 'Search people',
                   onPressed: () => context.push('/discover'),
                   icon: const Icon(Icons.search_rounded,
-                      color: Colors.white, size: 22)),
+                      color: Color(0xff087f5b), size: 22)),
               IconButton(
                   key: const ValueKey('moments-post-button'),
                   tooltip: 'Create moment',
                   onPressed: () => context.push('/moments/create'),
                   icon: const Icon(Icons.add_box_outlined,
-                      color: Colors.white, size: 22)),
+                      color: Color(0xff087f5b), size: 22)),
             ]),
           ),
           const Padding(
-            padding: EdgeInsets.fromLTRB(14, 0, 14, 8),
+            padding: EdgeInsets.fromLTRB(18, 18, 18, 18),
             child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Moments',
                     style: TextStyle(
                         color: Color(0xff087f5b),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700))),
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800))),
           ),
           Expanded(
               child: RefreshIndicator(
@@ -140,7 +140,7 @@ class _MomentsState extends ConsumerState<MomentsScreen> {
                           const NimzoIdentityArt(
                               kind: NimzoArt.mascot,
                               size: 88,
-                              color: Color(0xffb09cda)),
+                              color: Color(0xff087f5b)),
                           const SizedBox(height: 12),
                           Text(
                               selected == 0
@@ -148,7 +148,7 @@ class _MomentsState extends ConsumerState<MomentsScreen> {
                                   : 'Nothing from people you follow',
                               style: const TextStyle(
                                   fontWeight: FontWeight.w700,
-                                  color: Color(0xff716687))),
+                                  color: Color(0xff60756b))),
                           if (selected == 0)
                             TextButton(
                                 onPressed: () =>
@@ -190,15 +190,15 @@ class _MomentCardState extends ConsumerState<MomentCard> {
     final author = ref.watch(profileProvider(moment.authorId)).valueOrNull;
     return Container(
       key: const ValueKey('premium-moment-card'),
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.fromLTRB(10, 9, 10, 10),
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: NimzoStyle.line),
         boxShadow: const [
           BoxShadow(
-              color: Color(0x176628cf), blurRadius: 12, offset: Offset(0, 3))
+              color: Color(0x0b087f5b), blurRadius: 12, offset: Offset(0, 3))
         ],
       ),
       child: Material(
@@ -221,11 +221,20 @@ class _MomentCardState extends ConsumerState<MomentCard> {
               ),
               title: Tooltip(
                 message: moment.createdAt.toLocal().toString().split('.').first,
-                child: Text(author?.displayName ?? 'Nimzo user'),
+                child: Text(author?.displayName ?? 'Nimzo user',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w800, color: Color(0xff153e30))),
               ),
               onTap: () => context.push('/profile/${moment.authorId}'),
             ),
-            if (moment.text != null) Text(moment.text!),
+            if (moment.text != null)
+              Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 12),
+                  child: Text(moment.text!,
+                      style: const TextStyle(
+                          fontSize: 14,
+                          height: 1.5,
+                          color: Color(0xff29483a)))),
             if (moment.imagePaths.isNotEmpty)
               SizedBox(
                 height: moment.imagePaths.length > 1 ? 240 : null,
@@ -479,10 +488,10 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           centerTitle: true,
-          foregroundColor: const Color(0xff332347),
+          foregroundColor: const Color(0xff153e30),
           title: Text(widget.id == null ? 'Post Moments' : 'Edit Moment',
               style:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
           actions: [
             TextButton(
               key: const ValueKey('moment-top-post'),
@@ -491,7 +500,7 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                   style: TextStyle(
                       fontWeight: FontWeight.w800,
                       color: busy || !ready || !canPost
-                          ? const Color(0xffaaa5bc)
+                          ? const Color(0xff91a69a)
                           : NimzoStyle.primary)),
             ),
           ],
@@ -578,10 +587,10 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                                     },
                               style: OutlinedButton.styleFrom(
                                 padding: EdgeInsets.zero,
-                                backgroundColor: const Color(0xfff2f4fb),
-                                foregroundColor: const Color(0xff9d99b0),
+                                backgroundColor: const Color(0xfff0f7f2),
+                                foregroundColor: const Color(0xff60756b),
                                 side:
-                                    const BorderSide(color: Color(0xffe5e9f4)),
+                                    const BorderSide(color: Color(0xffdceae1)),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)),
                               ),
@@ -616,14 +625,14 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                         decoration: const InputDecoration(
                           hintText: 'Say something to record this moment...',
                           hintStyle:
-                              TextStyle(color: Color(0xff9b98a9), fontSize: 12),
+                              TextStyle(color: Color(0xff60756b), fontSize: 12),
                           filled: true,
-                          fillColor: Color(0xfff2f4fb),
+                          fillColor: Color(0xfff0f7f2),
                           contentPadding: EdgeInsets.fromLTRB(12, 12, 12, 12),
                           enabledBorder: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10)),
-                              borderSide: BorderSide(color: Color(0xffe5dff2))),
+                              borderSide: BorderSide(color: Color(0xffdceae1))),
                           focusedBorder: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10)),
@@ -642,17 +651,17 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                         child: Container(
                           height: 44,
                           padding: const EdgeInsets.symmetric(horizontal: 14),
-                          color: const Color(0xfff2f4fb),
+                          color: const Color(0xfff0f7f2),
                           child: const Row(children: [
                             Icon(Icons.alternate_email_rounded,
-                                color: Color(0xff292332)),
+                                color: Color(0xff153e30)),
                             SizedBox(width: 10),
                             Text('Mention',
                                 style: TextStyle(
                                     fontSize: 12, fontWeight: FontWeight.w700)),
                             Spacer(),
                             Icon(Icons.chevron_right_rounded,
-                                color: Color(0xff9a93b1)),
+                                color: Color(0xff91a69a)),
                           ]),
                         ),
                       ),
@@ -679,8 +688,8 @@ class _CreateState extends ConsumerState<CreateMomentScreen> {
                               key: ValueKey('moment-topic-' + topic),
                               label: Text(topic,
                                   style: const TextStyle(
-                                      fontSize: 11, color: Color(0xff79659c))),
-                              backgroundColor: const Color(0xfff3efff),
+                                      fontSize: 11, color: Color(0xff087f5b))),
+                              backgroundColor: const Color(0xffe7f4eb),
                               side: BorderSide.none,
                               onPressed: () {
                                 final current = text.text.trimRight();

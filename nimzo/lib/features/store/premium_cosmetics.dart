@@ -1,3 +1,5 @@
+import '../../core/services/approved_media_bytes.dart';
+
 enum CosmeticMediaKind { image, svga, vap }
 
 class CosmeticMedia {
@@ -8,10 +10,14 @@ class CosmeticMedia {
     this.asset,
     this.kind, {
     this.thumbnail,
+    this.publication,
+    this.thumbnailPublication,
   });
   final String id, category, name, asset;
   final CosmeticMediaKind kind;
   final String? thumbnail;
+  final ApprovedMediaPublication? publication;
+  final ApprovedMediaPublication? thumbnailPublication;
 }
 
 // IDs and bundled paths are pinned together; catalog data cannot inject a URL.

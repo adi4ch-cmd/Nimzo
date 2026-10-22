@@ -42,7 +42,7 @@ void main() {
       '../supabase/migrations/20261021073500_dynamic_paid_store_purchase.sql',
     );
     expect(live, contains('Confirm Store purchase'));
-    expect(live, contains('NimzoStorePurchaseRepository'));
+    expect(live, contains('nimzoStorePurchaseRepositoryProvider'));
     expect(service, contains("'nimzo_store_purchase'"));
     expect(service, contains("'p_expected_price'"));
     expect(sql, contains("kind = 'store_purchase'"));

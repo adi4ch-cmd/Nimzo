@@ -1,7 +1,7 @@
 name: nimzo
 description: Nimzo social voice-room app
 publish_to: none
-version: 1.0.38+138
+version: 1.0.39+139
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:
@@ -10,6 +10,7 @@ dependencies:
   go_router: ^14.0.0
   supabase_flutter: ^2.15.4
   shared_preferences: 2.5.6
+  crypto: 3.0.7
   url_launcher: ^6.3.2
   package_info_plus: ^8.1.0
   lucide_flutter: ^1.47.0
@@ -61,6 +62,7 @@ flutter:
     - assets/hilo/game_levels/
     - assets/nimzo/gift_controls/
     - assets/room_rocket/
+    - assets/membership/voku/
     - assets/room_rocket/posters/
     - assets/willchill_premium/store/
     - assets/willchill_premium/room_fx/

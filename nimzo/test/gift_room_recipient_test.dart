@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,12 +20,14 @@ class RecordingRoomGiftRepository extends GiftRepository {
     required String giftId,
     required int qty,
     required String key,
+    int? expectedTotal,
   }) async {
     receiver = receiverId;
   }
 }
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   for (final seated in [true, false]) {
     testWidgets(
       'room gift recipient can switch to Myself ${seated ? 'on mic' : 'off mic'}',

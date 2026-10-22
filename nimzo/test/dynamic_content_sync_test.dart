@@ -3,6 +3,45 @@ import 'package:nimzo/core/services/nimzo_content_sync.dart';
 import 'package:nimzo/features/store/store_live_catalog.dart';
 
 void main() {
+  test('high water marks survive out of order snapshots', () {
+    final tracker = ContentRevisionTracker();
+    expect(
+        tracker.accept([
+          {'channel': 'gifts', 'revision': 10}
+        ]),
+        {'gifts'});
+    expect(
+        tracker.accept([
+          {'channel': 'gifts', 'revision': 2}
+        ]),
+        isEmpty);
+    expect(
+        tracker.accept([
+          {'channel': 'gifts', 'revision': 9}
+        ]),
+        isEmpty);
+    expect(
+        tracker.accept([
+          {'channel': 'gifts', 'revision': 11}
+        ]),
+        {'gifts'});
+    expect(
+        ContentRevisionTracker().accept([
+          {'channel': 'gifts', 'revision': 1}
+        ]),
+        {'gifts'});
+  });
+
+  test('fractional negative and zero revisions are not valid publications', () {
+    expect(
+        changedContentChannels(null, [
+          {'channel': 'gifts', 'revision': 1.5},
+          {'channel': 'store', 'revision': -1},
+          {'channel': 'settings', 'revision': 0},
+        ]),
+        isEmpty);
+  });
+
   test('initial revision snapshot refreshes available channels', () {
     expect(
       changedContentChannels(null, [
@@ -28,24 +67,30 @@ void main() {
   });
 
   test('missing/invalid revision records are ignored', () {
-    expect(changedContentChannels([], [
-      {'channel': 1, 'revision': 2},
-      {'channel': 'gifts', 'revision': null},
-    ]), isEmpty);
+    expect(
+        changedContentChannels([], [
+          {'channel': 1, 'revision': 2},
+          {'channel': 'gifts', 'revision': null},
+        ]),
+        isEmpty);
   });
 
   test('Store only accepts HTTPS remote thumbnails', () {
     Map<String, dynamic> item(String? url) => {
-      'id': 'nimzo-original-frame-test',
-      'category': 'Avatar Frame',
-      'name': 'Example',
-      'variant': 0,
-      'coin_price': 0,
-      'thumbnail_url': url,
-    };
-    expect(NimzoCosmeticItem.fromJson(item('http://bad/a.png')).thumbnailUrl, isNull);
-    expect(NimzoCosmeticItem.fromJson(item('file:///tmp/a.png')).thumbnailUrl, isNull);
-    expect(NimzoCosmeticItem.fromJson(item('https://cdn.example/a.png')).thumbnailUrl,
+          'id': 'nimzo-original-frame-test',
+          'category': 'Avatar Frame',
+          'name': 'Example',
+          'variant': 0,
+          'coin_price': 0,
+          'thumbnail_url': url,
+        };
+    expect(NimzoCosmeticItem.fromJson(item('http://bad/a.png')).thumbnailUrl,
+        isNull);
+    expect(NimzoCosmeticItem.fromJson(item('file:///tmp/a.png')).thumbnailUrl,
+        isNull);
+    expect(
+        NimzoCosmeticItem.fromJson(item('https://cdn.example/a.png'))
+            .thumbnailUrl,
         'https://cdn.example/a.png');
   });
 

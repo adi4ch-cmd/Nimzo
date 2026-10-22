@@ -22,7 +22,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 
-REPO_BRANCH = "feature/dynamic-content-sync-20261021"
+REPO_BRANCH = "integration/nimzo-v3-dynamic-20261021"
 A = "{http://schemas.android.com/apk/res/android}"
 TOOLS = "{http://schemas.android.com/tools}"
 ET.register_namespace("android", A[1:-1])
@@ -305,9 +305,13 @@ def main() -> None:
     source = Path(output("git", "rev-parse", "--show-toplevel")).resolve()
     tmp_parent = Path(tempfile.mkdtemp(prefix="nimzo-codespace-voice-qa-"))
     sdk_root, header, aar, native = sdk_location(args.sdk_root, tmp_parent)
+    run(sys.executable, str(source / "tools/validate_vivox_sdk.py"),
+        "--header", str(header), "--aar", str(aar), "--native", str(native),
+        "--abi", "arm64-v8a", cwd=source)
     if args.check_sdk_only:
         print("SDK READINESS PASS. No code changes, APK build or upload.")
         return
+    run(sys.executable, "tools/verify_prebuild_acceptance.py", cwd=source)
     for cmd in ("git", "flutter", "java"):
         if not shutil.which(cmd):
             raise RuntimeError(f"{cmd} not found in Codespace PATH")
@@ -321,6 +325,7 @@ def main() -> None:
     print("Build source:", commit)
     print("Original Codespace worktree is untouched:", source)
     run(sys.executable, "tools/verify_nimzo_feature_lock.py", cwd=work)
+    run(sys.executable, "tools/verify_prebuild_acceptance.py", cwd=work)
     configure_android(work, sdk_root, aar)
     app = work / "nimzo"
     run("flutter", "pub", "get", "--enforce-lockfile", cwd=app)

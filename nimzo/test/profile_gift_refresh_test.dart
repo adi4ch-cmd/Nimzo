@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,10 +18,12 @@ class SettledGiftRepository extends GiftRepository {
     required String giftId,
     required int qty,
     required String key,
+    int? expectedTotal,
   }) async {}
 }
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   testWidgets('successful profile gift refreshes both cached profiles', (
     tester,
   ) async {
@@ -84,6 +87,8 @@ void main() {
     expect(senderLoads, 1);
     expect(receiverLoads, 1);
     await tester.tap(find.text('Open gift sheet'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Test gift'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Test gift'));
     await tester.pumpAndSettle();

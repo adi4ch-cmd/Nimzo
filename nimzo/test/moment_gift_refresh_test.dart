@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,10 +20,12 @@ class SettledMomentGiftRepository extends MomentRepository {
     required String giftId,
     required int qty,
     required String key,
+    int? expectedTotal,
   }) async {}
 }
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   testWidgets('Moment gift refreshes detail and author Moments caches', (
     tester,
   ) async {
@@ -50,7 +53,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         supabaseProvider.overrideWithValue(db),
-        currentUserIdProvider.overrideWithValue(null),
+        currentUserIdProvider.overrideWithValue('sender'),
         momentRepositoryProvider.overrideWithValue(
           SettledMomentGiftRepository(db),
         ),

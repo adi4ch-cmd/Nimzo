@@ -1,3 +1,4 @@
+import '../gifts/gift_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -186,16 +187,32 @@ class MomentRepository {
     required String giftId,
     required int qty,
     required String key,
+    int? expectedTotal,
   }) async {
     try {
+      final account = _db.auth.currentUser?.id;
+      final gifts = GiftRepository(_db);
+      if (expectedTotal != null &&
+          await gifts.recoverReceipt(
+              scope: 'moment',
+              context: momentId,
+              receiverId: receiverId,
+              giftId: giftId,
+              qty: qty,
+              key: key,
+              expectedTotal: expectedTotal)) return;
+      await gifts.verifyBeforeSending(giftId);
+      if (_db.auth.currentUser?.id != account)
+        throw StateError('Account changed before gift submission');
       await _db.rpc(
-        'send_moment_gift',
+        expectedTotal == null ? 'send_moment_gift' : 'send_moment_gift_checked',
         params: {
           'p_moment': momentId,
           'p_receiver': receiverId,
           'p_gift': giftId,
           'p_qty': qty,
           'p_key': key,
+          if (expectedTotal != null) 'p_expected_total': expectedTotal,
         },
       );
     } catch (e) {

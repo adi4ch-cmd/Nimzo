@@ -1,3 +1,5 @@
+import '../../core/widgets/published_image.dart';
+import '../../core/services/approved_media_bytes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -18,16 +20,39 @@ String? originalDragonPoster(String name) => null;
 /// The Sports Car is the only active NIMZO room/profile/Moment gift.
 String? freeGiftArtwork(String name) =>
     name.trim().toLowerCase() == 'sports car'
-    ? 'assets/gifts/free/sports_car.png'
-    : null;
+        ? 'assets/gifts/free/sports_car.png'
+        : null;
 
 class GiftArtwork extends StatelessWidget {
   final String name;
   final String? assetPath;
-  const GiftArtwork({super.key, required this.name, this.assetPath});
+  const GiftArtwork(
+      {super.key,
+      required this.name,
+      this.assetPath,
+      this.publication,
+      this.requiresPublication = false});
+  final ApprovedMediaPublication? publication;
+  final bool requiresPublication;
 
   @override
   Widget build(BuildContext context) {
+    final supplied = assetPath;
+    if (supplied != null && ApprovedMediaBytes.isSafeUrl(supplied)) {
+      if (requiresPublication && publication == null)
+        return const Icon(Icons.broken_image_outlined);
+      return PublishedImage(url: supplied, publication: publication);
+    }
+    if (supplied != null &&
+        supplied.startsWith('assets/') &&
+        !supplied.contains('..') &&
+        RegExp(r'\.(png|webp|jpe?g)$', caseSensitive: false)
+            .hasMatch(supplied)) {
+      return Image.asset(supplied,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) =>
+              const Icon(Icons.card_giftcard_outlined));
+    }
     final protectedId = privateAnimalGiftIdForName(name);
     if (protectedId != null) {
       return Consumer(
@@ -36,12 +61,8 @@ class GiftArtwork extends StatelessWidget {
             .when(
               data: (url) => url == null
                   ? const SizedBox.shrink()
-                  : Image.network(
-                      url,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) =>
-                          const Icon(Icons.card_giftcard),
-                    ),
+                  : PublishedImage(
+                      url: url, unavailable: const Icon(Icons.card_giftcard)),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (_, __) => const Icon(Icons.card_giftcard),
             ),

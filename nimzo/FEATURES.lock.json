@@ -76,7 +76,7 @@
       "_testGiftAnimation()"
     ],
     "nimzo/lib/features/rooms/rocket/room_rocket_playback.dart": [
-      "mute: false",
+      "mute: rocketNativeMuted(_media)",
       "VapErrorEvent"
     ],
     "nimzo/lib/features/voice/vivox_voice_service.dart": [

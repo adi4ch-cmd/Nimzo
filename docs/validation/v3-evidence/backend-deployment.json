@@ -1,0 +1,52 @@
+{
+  "project": "kvqvlpozqokwarovwmwv",
+  "applied_date": "2026-10-22",
+  "migrations": [
+    {
+      "file": "supabase/migrations/20261021120000_dynamic_verified_media_publications.sql",
+      "sha256": "e428aa75498e89f62ea061a87bcb2e3b0181954229fbe141d55dadf4be5d3916",
+      "apply_tool_result": "success:true"
+    },
+    {
+      "file": "supabase/migrations/20261021120100_dynamic_membership_presentation.sql",
+      "sha256": "a0289d00c450dc4c53a2cf2935c3f26633ba5d392916027bec480019cf6715b3",
+      "apply_tool_result": "success:true"
+    },
+    {
+      "file": "supabase/migrations/20261021144829_gift_checked_send_expected_price.sql",
+      "sha256": "4f667500352fdef4e7338a680cd4267ee3de4f6e2b57cf94fe4d409374a41850",
+      "apply_tool_result": "success:true"
+    },
+    {
+      "file": "supabase/migrations/20261021145817_dynamic_room_rocket_cycle_config.sql",
+      "sha256": "c8d0a00293f443958ca9206addec75e53886e625bccac775b0d9e7d60579d593",
+      "apply_tool_result": "success:true"
+    },
+    {
+      "file": "supabase/migrations/20261021150306_dynamic_store_ownership_expiry.sql",
+      "sha256": "3a6f66a3d3100100a0483e292f6e916a76fefdd2b50e18538a26799e3a3242ca",
+      "apply_tool_result": "success:true"
+    },
+    {
+      "file": "supabase/migrations/20261021151626_dynamic_game_event_presentation.sql",
+      "sha256": "bd27602e9d6ff6ed9aa02263f8d3a0020b584ea2426afb1e700cd39d7248fb76",
+      "apply_tool_result": "success:true"
+    },
+    {
+      "file": "supabase/migrations/20261022115352_dynamic_gift_availability_and_sound.sql",
+      "sha256": "25ef86341806180c576bac57449c7295a0e6298b97b846ae48658e27cac2b613",
+      "apply_tool_result": "success:true"
+    }
+  ],
+  "post_deployment_read_only": {
+    "wallet_count": 4,
+    "rocket_history_count": 34,
+    "ownership_count": 8,
+    "ownership_expiry_nonnull_count": 0,
+    "membership_presentation_count": 0,
+    "sampled_new_rpcs_anonymous_execute": false,
+    "sampled_new_rpcs_authenticated_execute": true
+  },
+  "production_test_debits": 0,
+  "production_test_gift_events": 0
+}

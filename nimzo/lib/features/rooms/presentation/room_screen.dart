@@ -1,3 +1,4 @@
+import '../../../core/widgets/published_image.dart';
 import '../../premium/membership_identity.dart';
 import '../../store/store_visual_equipment.dart';
 import '../../store/room_cosmetic_entrance.dart';
@@ -494,6 +495,10 @@ class _State extends ConsumerState<RoomScreen> {
           const <String, Map<String, dynamic>>{},
       roomTheme,
     );
+    final backgroundPublication = nimzoApprovedRoomBackgroundPublication(
+        ref.watch(nimzoRemoteSettingsProvider).valueOrNull ??
+            const <String, Map<String, dynamic>>{},
+        roomTheme);
     ref.listen(voiceConnectedProvider, (previous, next) {
       if (next.valueOrNull == true) {
         // The SDK may restore media automatically after a short network drop.
@@ -650,16 +655,9 @@ class _State extends ConsumerState<RoomScreen> {
                     child: SizedBox.shrink(),
                   ),
                 ),
-                body: DecoratedBox(
-                    decoration: BoxDecoration(
-                      image: backgroundUrl == null
-                          ? null
-                          : DecorationImage(
-                              image: NetworkImage(backgroundUrl),
-                              fit: BoxFit.cover,
-                              onError: (_, __) {},
-                            ),
-                    ),
+                body: PublishedBackground(
+                    url: backgroundUrl,
+                    publication: backgroundPublication,
                     child: SafeArea(
                       child: EquippedCosmetic(
                           userId: room.valueOrNull?.ownerId,
@@ -1109,7 +1107,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                       isScrollControlled: true,
                                                       backgroundColor:
                                                           const Color(
-                                                              0xff0c1728),
+                                                              0xfff7faf7),
                                                       barrierColor: Colors.black
                                                           .withValues(
                                                               alpha: .72),
@@ -1126,8 +1124,8 @@ class _State extends ConsumerState<RoomScreen> {
                                                         child: Padding(
                                                           padding:
                                                               const EdgeInsets
-                                                                  .fromLTRB(17,
-                                                                  18, 17, 12),
+                                                                  .fromLTRB(
+                                                                  0, 8, 0, 0),
                                                           child:
                                                               RoomRocketSheet(
                                                                   roomId: widget

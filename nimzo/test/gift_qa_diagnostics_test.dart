@@ -38,7 +38,8 @@ void main() {
     expect(overlay, contains('void _fail(String reason)'));
     expect(overlay, contains('Gift animation could not play'));
     expect(overlay, contains('VapErrorEvent'));
-    expect(overlay, contains('mute: false'));
+    expect(overlay, contains('mute: widget.muted'));
+    expect(overlay, contains('this.muted = false'));
     expect(overlay, contains('Duration(seconds: 8)'));
     expect(overlay, contains('VapPlayer(_controller!)'));
   });

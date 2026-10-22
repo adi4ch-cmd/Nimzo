@@ -1,0 +1,170 @@
+{
+  "v3-full-regression-candidate.log": {
+    "sha256": "4bc7521e5076dce241a4e821584fe8c54b4e44654ffbaca6a70bc056726e3d94",
+    "bytes": 86481,
+    "tail": [
+      "03:50 +513: loading /workspace/Nimzo-v3/nimzo/test/bychance_ui_smoke_test.dart",
+      "03:51 +513: /workspace/Nimzo-v3/nimzo/test/bychance_ui_smoke_test.dart: Tingle-reference Games gallery keeps approved catalog visible",
+      "03:52 +514: /workspace/Nimzo-v3/nimzo/test/bychance_ui_smoke_test.dart: Room theme gallery preserves included free themes",
+      "03:52 +515: loading /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart",
+      "03:53 +515: /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart: Portrait 3 decodes its bundled SVGA instead of staying a placeholder",
+      "03:54 +516: /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart: imported frame renders its real image in Store and Backpack",
+      "03:55 +517: /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart: full preview resolves the same item media",
+      "03:55 +518: loading /workspace/Nimzo-v3/nimzo/test/willchill_gift_effect_test.dart",
+      "03:55 +518: /workspace/Nimzo-v3/nimzo/test/willchill_gift_effect_test.dart: gold coin effect never substitutes for lion, tiger or other gifts",
+      "03:55 +519: /workspace/Nimzo-v3/nimzo/test/willchill_gift_effect_test.dart: verified gift falls back safely when native playback cannot finish",
+      "03:56 +520: /workspace/Nimzo-v3/nimzo/test/willchill_gift_effect_test.dart: premium effect does not start a transaction or modify balance",
+      "03:56 +521: All tests passed!"
+    ]
+  },
+  "v3-final-targeted.log": {
+    "sha256": "4ca8f4c43751ce54f126a4bb51e5fcb0a00267329e49fe191e25f97d3d91af4a",
+    "bytes": 1592,
+    "tail": [
+      "00:00 +1: loading /workspace/Nimzo-v3/nimzo/test/gift_availability_test.dart",
+      "00:00 +1: /workspace/Nimzo-v3/nimzo/test/gift_availability_test.dart: gift availability uses inclusive start and exclusive expiry",
+      "00:00 +2: /workspace/Nimzo-v3/nimzo/test/gift_availability_test.dart: published gift sound is explicitly controlled by catalog",
+      "00:00 +3: loading /workspace/Nimzo-v3/nimzo/test/dynamic_media_contract_test.dart",
+      "00:01 +3: /workspace/Nimzo-v3/nimzo/test/dynamic_media_contract_test.dart: Remote VAP/SVGA/MP4 must be approved HTTPS metadata",
+      "00:01 +4: /workspace/Nimzo-v3/nimzo/test/dynamic_media_contract_test.dart: Approved room backgrounds accept only built-in themes and HTTPS",
+      "00:01 +5: /workspace/Nimzo-v3/nimzo/test/dynamic_media_contract_test.dart: Dynamic banner validates date window, active flag and URL path",
+      "00:01 +6: loading /workspace/Nimzo-v3/nimzo/test/membership_purchase_keys_test.dart",
+      "00:01 +6: /workspace/Nimzo-v3/nimzo/test/membership_purchase_keys_test.dart: reopening restores account and tier bound purchase until confirmed",
+      "00:01 +7: /workspace/Nimzo-v3/nimzo/test/membership_purchase_keys_test.dart: reopened retries retain the original confirmed price after price changes",
+      "00:01 +8: /workspace/Nimzo-v3/nimzo/test/membership_purchase_keys_test.dart: competing membership confirmations retain one immutable key and price",
+      "00:01 +9: All tests passed!"
+    ]
+  },
+  "v3-analyze-last.log": {
+    "sha256": "ce1a12febab2278e05d85c7d41b105fb3997a643536f8fabaae858da447a09fd",
+    "bytes": 12435,
+    "tail": [
+      "   info \u2022 Use interpolation to compose strings and values. Try using string interpolation to build the composite string \u2022 lib/features/rooms/presentation/create_room_screen.dart:173:27 \u2022 prefer_interpolation_to_compose_strings",
+      "   info \u2022 Use interpolation to compose strings and values. Try using string interpolation to build the composite string \u2022 lib/features/settings/tingle_blocked_users_screen.dart:132:36 \u2022 prefer_interpolation_to_compose_strings",
+      "   info \u2022 Use 'const' for final variables initialized to a constant value. Try replacing 'final' with 'const' \u2022 lib/features/store/cosmetic_media_view.dart:89:9 \u2022 prefer_const_declarations",
+      "   info \u2022 Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check \u2022 lib/features/store/store_live_catalog.dart:329:28 \u2022 use_build_context_synchronously",
+      "   info \u2022 Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check \u2022 lib/features/store/store_live_catalog.dart:382:30 \u2022 use_build_context_synchronously",
+      "   info \u2022 Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation \u2022 lib/features/store/store_live_catalog.dart:740:18 \u2022 prefer_const_constructors",
+      "   info \u2022 Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation \u2022 test/mobile_otp_login_test.dart:24:18 \u2022 prefer_const_constructors",
+      "   info \u2022 The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/services.dart'. Try removing the import directive \u2022 test/renderable_media_test.dart:2:8 \u2022 unnecessary_import",
+      "   info \u2022 Unnecessary braces in a string interpolation. Try removing the braces \u2022 test/rocket_unified_gifts_contract_test.dart:14:61 \u2022 unnecessary_brace_in_string_interps",
+      "   info \u2022 Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation \u2022 test/store_paid_checkout_ui_test.dart:68:52 \u2022 prefer_const_constructors",
+      "",
+      "57 issues found. (ran in 4.1s)"
+    ]
+  },
+  "v3-python-latest.log": {
+    "sha256": "22fe47988123e067963bf003d7f556df7a8bad9b1d78369bbc246512f997274c",
+    "bytes": 449,
+    "tail": [
+      "..................",
+      "----------------------------------------------------------------------",
+      "Ran 18 tests in 0.753s",
+      "",
+      "OK",
+      "Android toolchain: AGP 8.11.1 / Kotlin 2.2.20 / Gradle 8.14.3",
+      "Android toolchain: AGP 8.11.1 / Kotlin 2.2.20 / Gradle 8.14.3",
+      "NIMZO FCM Android configured: Gradle plugin, package ID, Android 13 permission and Firebase client JSON",
+      "NIMZO FCM Android configured: Gradle plugin, package ID, Android 13 permission and Firebase client JSON"
+    ]
+  },
+  "v3-sdk-validator-latest.log": {
+    "sha256": "6b87d9efce36c97652b26bc4051caf34ff6f88a7d7657017338d1d9645fd033c",
+    "bytes": 121,
+    "tail": [
+      "s.........",
+      "----------------------------------------------------------------------",
+      "Ran 10 tests in 0.012s",
+      "",
+      "OK (skipped=1)"
+    ]
+  },
+  "v3-original-asset-integrity.log": {
+    "sha256": "0b69526c9f6e928f4aa84c2db9fba5549bf5c96147cdf5bdcc4451c18d149a33",
+    "bytes": 249,
+    "tail": [
+      "VERIFIED 441 unique source assets, SHA256 all correct",
+      "Verified premium media types {'audio': 2, 'vap': 27, 'svga': 19, 'image': 393} groups {'audio': 2, 'entrances': 13, 'games': 40, 'gifts': 141, 'room_fx': 12, 'store': 53, 'svip': 59, 'vip': 121}"
+    ]
+  },
+  "v3-gift-edge-latest.log": {
+    "sha256": "a8b8b8c747cfbe55579421336364c250cf84e205ffa9562ccd9e951f52284bae",
+    "bytes": 724,
+    "tail": [
+      "\u2714 verified room viewer receives only a 60-second signed URL (1.869892ms)",
+      "\u2714 unknown gift IDs and arbitrary object paths are rejected (1.227299ms)",
+      "\u2714 prepayment readiness checks media without signing or requiring a debit (1.263603ms)",
+      "\u2714 missing media returns not ready without a download URL (0.616894ms)",
+      "\u2139 tests 8",
+      "\u2139 suites 0",
+      "\u2139 pass 8",
+      "\u2139 fail 0",
+      "\u2139 cancelled 0",
+      "\u2139 skipped 0",
+      "\u2139 todo 0",
+      "\u2139 duration_ms 372.260854"
+    ]
+  },
+  "v3-gift-window-sql.log": {
+    "sha256": "03db719603321465ffd6e6c7486ef63030f392676bbdce474c90b51153b93aa9",
+    "bytes": 1580,
+    "tail": [
+      "SET",
+      "{\"total\": 10, \"status\": \"ok\", \"diamonds\": 4}",
+      "RESET",
+      "UPDATE 1",
+      "SET",
+      "{\"total\": 10, \"status\": \"replayed\", \"diamonds\": 4}",
+      "RESET",
+      "DO",
+      "ROLLBACK",
+      "",
+      "PASS: concurrent duplicate/legacy/cross-scope retries; exact single settlement; catalog row lock; stale post-update rejection",
+      "PASS: disposable SQL assertions on nimzo-postgres-test/gift_checked_root_window_b20261022"
+    ]
+  },
+  "v3-rocket-root-sql.log": {
+    "sha256": "a91a99b5d1bc4517c51dc552e4778d92dc8974489201be9e7a9a9b10ad1c650d",
+    "bytes": 909,
+    "tail": [
+      "00000000-0000-0000-0000-000000000002",
+      "",
+      "",
+      "",
+      "RESET",
+      "",
+      "",
+      "PASS: 33 historical milestones retained; config permissions/validation; pinning/publication/deactivation; actual settled progress; dynamic labels/VAP; rollover; idempotency; membership",
+      "ROLLBACK",
+      "",
+      "PASS: concurrent initialization/gifts pin one version and settle once; concurrent publication preserves remaining milestone; rollback no pin/event leak; new cycle uses successor",
+      "PASS: dynamic Rocket disposable SQL on nimzo-postgres-test/rocket_dynamic_root_20261022"
+    ]
+  },
+  "v3-store-root-sql.log": {
+    "sha256": "d7f96df97c7f8703fcc31dcf25ea5259968376c8a7e4d7008598c4a5f5c36aa7",
+    "bytes": 330,
+    "tail": [
+      "PASS: lifetime preservation, durations, expiry rendering/RLS, renewals, receipts, price/media/auth safety and free-claim guards",
+      "PASS: concurrent duplicate sends and distinct renewal keys settle once; catalog duration lock serializes updates",
+      "PASS: isolated Store lifecycle checks on nimzo-postgres-test/store_expiry_v3_root_latest"
+    ]
+  },
+  "v3-membership-root-sql.log": {
+    "sha256": "f2c3a2bc72530fc01d84641fd055928ace49341add5d75021a1a472de1faf34b",
+    "bytes": 169,
+    "tail": [
+      "PASS: restored_memberships",
+      "PASS: dynamic_membership_presentation",
+      "PASS: membership_checked_purchase",
+      "PASS: isolated membership rules, artwork RLS, price and replay safety"
+    ]
+  },
+  "v3-events-root-sql.log": {
+    "sha256": "354f9938eb6bc901e8d3534e4d1d90e66258ac15a61eaee593f251c24606fe0b",
+    "bytes": 94,
+    "tail": [
+      "PASS: legacy campaigns preserved; staged approvals, hash, size and new active guards verified"
+    ]
+  }
+}

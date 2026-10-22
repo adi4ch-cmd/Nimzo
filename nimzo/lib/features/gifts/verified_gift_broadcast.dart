@@ -59,12 +59,14 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final generation = _recoveryGeneration;
     final room = widget.roomId;
     try {
-      final rows = await ref.read(giftRepositoryProvider)
-          .recentVerifiedRoomAnimations(
-            room,
-            since: _listeningSince.subtract(const Duration(seconds: 2)),
-          );
-      if (!mounted || !_foreground || widget.roomId != room ||
+      final rows =
+          await ref.read(giftRepositoryProvider).recentVerifiedRoomAnimations(
+                room,
+                since: _listeningSince.subtract(const Duration(seconds: 2)),
+              );
+      if (!mounted ||
+          !_foreground ||
+          widget.roomId != room ||
           generation != _recoveryGeneration) return;
       _receive(rows);
     } catch (_) {
@@ -73,7 +75,6 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       _recovering = false;
     }
   }
-
 
   void _cancelMediaLookup() {
     _mediaTimer?.cancel();
@@ -173,30 +174,29 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
   void _receive(List<Map<String, dynamic>> rows) {
     // Ignore history from before joining this room, but do not discard
     // a real gift that settles during initial Realtime subscription.
-    final fresh =
-        rows
-            .where(
-              (r) {
-                final date = DateTime.tryParse('${r['created_at'] ?? ''}');
-                if (date == null || date.toUtc().isBefore(_listeningSince)) {
-                  return false;
-                }
-                // The database table is populated by verified server
-                // settlement only. Show new approved-media gifts as well as
-                // the known bundled originals, never a client-side send.
-                final giftId = r['gift_id']?.toString();
-                final eventId = r['id']?.toString();
-                if (giftId == null || giftId.isEmpty ||
-                    eventId == null || eventId.isEmpty) return false;
-                final scope = r['scope'];
-                if (scope != 'room' && scope != 'country') return false;
-                return _seen.add(eventId);
-              },
-            )
-            .toList()
-          ..sort(
-            (a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'),
-          );
+    final fresh = rows.where(
+      (r) {
+        final date = DateTime.tryParse('${r['created_at'] ?? ''}');
+        if (date == null || date.toUtc().isBefore(_listeningSince)) {
+          return false;
+        }
+        // The database table is populated by verified server
+        // settlement only. Show new approved-media gifts as well as
+        // the known bundled originals, never a client-side send.
+        final giftId = r['gift_id']?.toString();
+        final eventId = r['id']?.toString();
+        if (giftId == null ||
+            giftId.isEmpty ||
+            eventId == null ||
+            eventId.isEmpty) return false;
+        final scope = r['scope'];
+        if (scope != 'room' && scope != 'country') return false;
+        return _seen.add(eventId);
+      },
+    ).toList()
+      ..sort(
+        (a, b) => '${a['created_at']}'.compareTo('${b['created_at']}'),
+      );
     // The server stream retains 100 events. Bound deduplication memory too.
     if (_seen.length > 200) {
       _seen.retainAll(rows.map((r) => '${r['id']}'));
@@ -291,10 +291,12 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     // client-provided label. Resolve other gift names from the live catalog.
     String catalogName = '${event['gift_name'] ?? 'Gift'}';
     String? catalogArtwork;
+    Gift? matchedGift;
     final catalog = ref.watch(giftCatalogProvider).valueOrNull;
     if (catalog != null) {
       for (final gift in catalog) {
         if (gift.id == '${event['gift_id']}') {
+          matchedGift = gift;
           catalogName = gift.name;
           catalogArtwork = gift.assetPath;
           break;
@@ -304,8 +306,10 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final giftName = catalogName;
     if (_media?.kind == 'vap') {
       return HallOfFameVapOverlay(
+        muted: _media!.publication != null && !_media!.soundEnabled,
         key: ValueKey(event['id']),
         source: _media!.url,
+        publication: _media!.publication,
         sender: sender,
         recipient: recipient,
         giftName: giftName,
@@ -317,8 +321,10 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     }
     if (_media?.kind == 'svga') {
       return RemoteGiftSvgaOverlay(
+        soundEnabled: _media!.soundEnabled,
         key: ValueKey(event['id']),
         source: _media!.url,
+        publication: _media!.publication,
         giftName: giftName,
         sender: sender,
         recipient: recipient,
@@ -332,11 +338,12 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
       return GiftVideoOverlay(
         key: ValueKey(event['id']),
         source: _media!.url,
+        publication: _media!.publication,
         sender: sender,
         recipient: recipient,
         giftName: '$giftName × $quantity',
         // Voice remains audible; users can enable the original video's sound.
-        muted: true,
+        muted: !_media!.soundEnabled,
         onFinished: () {
           if (mounted && identical(_active, event)) _next();
         },
@@ -388,6 +395,9 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
           quantity: quantity,
           unitPrice: price,
           assetPath: catalogArtwork,
+          thumbnailPublication: matchedGift?.thumbnailPublication,
+          requiresThumbnailPublication:
+              matchedGift?.requiresThumbnailPublication ?? false,
           scope: event['scope'] == 'country' ? 'country' : 'room',
           onFinished: () {
             if (mounted && identical(_active, event)) _next();
@@ -404,6 +414,9 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
         quantity: quantity,
         unitPrice: price,
         assetPath: catalogArtwork,
+        thumbnailPublication: matchedGift?.thumbnailPublication,
+        requiresThumbnailPublication:
+            matchedGift?.requiresThumbnailPublication ?? false,
         scope: event['scope'] == 'country' ? 'country' : 'room',
         onFinished: () {
           if (mounted && identical(_active, event)) _next();
@@ -413,8 +426,8 @@ class _BroadcastState extends ConsumerState<VerifiedGiftBroadcast>
     final colors = price >= 10000000
         ? [const Color(0xff710c19), const Color(0xffd6a347)]
         : price >= 5000000
-        ? [const Color(0xff4e277e), const Color(0xffd6a347)]
-        : [const Color(0xff8c6016), const Color(0xffe6bc58)];
+            ? [const Color(0xff4e277e), const Color(0xffd6a347)]
+            : [const Color(0xff8c6016), const Color(0xffe6bc58)];
     return IgnorePointer(
       ignoring: true,
       child: Align(

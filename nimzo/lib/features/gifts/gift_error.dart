@@ -9,6 +9,27 @@ class GiftRejectedException extends AppException {
 }
 
 AppException mapGiftError(Object error) {
+  if (error is PostgrestException && error.code == '22023') {
+    if (error.message ==
+        'Gift is outside its availability window; no coins charged') {
+      return const GiftRejectedException(
+          'This gift is not available right now. Choose another gift.');
+    }
+    if (error.message ==
+        'Gift membership requirement not met; no coins charged') {
+      return const GiftRejectedException(
+          'Your current membership does not include this gift.');
+    }
+    if (error.message.startsWith('gift price changed')) {
+      return const GiftRejectedException(
+          'Gift price changed. Refresh and confirm the current price.');
+    }
+    if (error.message == 'gift unavailable') {
+      return const GiftRejectedException(
+          'This gift is unavailable. Choose another gift.');
+    }
+  }
+
   if (error is PostgrestException && error.code == 'P0001') {
     final message = switch (error.message.trim().toLowerCase()) {
       'insufficient coins' =>
