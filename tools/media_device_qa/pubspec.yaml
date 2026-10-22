@@ -1,0 +1,14 @@
+name: nimzo_media_device_qa
+publish_to: none
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+dependencies:
+  flutter: {sdk: flutter}
+  flutter_svga: 0.0.13
+  crypto: 3.0.7
+dev_dependencies:
+  flutter_test: {sdk: flutter}
+  integration_test: {sdk: flutter}
+flutter:
+  assets:
+    - assets/drive_catalog/

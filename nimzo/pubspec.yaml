@@ -44,6 +44,7 @@ flutter:
     - assets/games/
     - assets/gifts/hall_of_fame.svg
     - assets/gifts/free/
+    - assets/drive_catalog/
     - assets/reference/game/
     - assets/reference/fruit/
     - assets/reference/grady/
