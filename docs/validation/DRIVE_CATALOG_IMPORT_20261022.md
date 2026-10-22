@@ -26,3 +26,18 @@ python3 tools/finalize_drive_catalog.py <successful-render-log> /tmp/nimzo-drive
 ```
 
 Publication requires separate Android emulator renderer evidence, HTTPS hash paths, correct response MIME, byte lengths and hash readback. The Android harness is isolated from accounts, wallets and voice. It does not publish a NIMZO APK. Activation must retain the existing strict publication triggers; device timestamps cannot be inferred from host tests. Full physical-device and authenticated purchase QA are separate from this media verification.
+
+## Live activation and results
+
+Migration `20261022190130_activate_verified_drive_gifts_store.sql` applied successfully to project `kvqvlpozqokwarovwmwv`. Readback confirms both new gifts and all seven new Store items active with approved SVGA publications: **7 active gifts total, 45 active Store products total**. Existing wallets, ownership, equipped rows and original catalog records retain identical aggregate hashes before/after. No production purchase, gift send or wallet debit was performed by QA.
+
+- Host full regression: **553 passed** after the equipped ID plate fit correction; analyzer has **0 errors/warnings, 59 existing informational lints**.
+- Python guards: **19 passed**.
+- Actual additive migration in a new disposable clone: preserves prior fixture wallet/ledger/ownership, both gifts settle and replay, all seven Store products purchase/replay/equip with lifetime ownership. Total fictional debit exactly77,500; no duplicate debit.
+- All **18** public Storage objects pass HTTPS, response MIME, byte size and SHA256 readback.
+- Android35 x86_64 emulator: all nine media render tests passed every frame at18:55:47.906975Z. First workflow39834701067 failed afterward because preview archive collection assumed the wrong app cache path; that failure is retained in the proof JSON. Collector now derives application ID from built metadata and finds the actual preview directory.
+- Source/backend CI for media commit0529578 passed: https://github.com/adi4ch-cmd/Nimzo/actions/runs/39834700753
+
+The temporary JWT/nonce-protected Storage importer was sealed to HTTP410 immediately after uploading18 immutable objects; its deployed second version has no credentials or upload logic. Storage RLS grants no client writes to the new bucket. Source provenance and caller-independent SHA verification remain in the manifest and readback evidence.
+
+The catalog uses remote publications supported by the existing dynamic client. Equipped ID plate scaling is corrected in updated Flutter source; that client improvement requires a subsequent app build. No new distributed NIMZO APK was built in this batch. Android renderer proof uses an isolated test application, without authentication, wallet operations or Vivox. Physical-device authenticated end-to-end purchase testing remains unverified.

@@ -129,6 +129,7 @@ class EquippedCosmetic extends ConsumerWidget {
                 : CosmeticMediaView(
                     key: ValueKey(media.id),
                     media: media,
+                    fit: category == 'ID Frame' ? BoxFit.fill : BoxFit.contain,
                     animate: !MediaQuery.disableAnimationsOf(context)),
           ),
         ),

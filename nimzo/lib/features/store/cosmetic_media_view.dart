@@ -14,8 +14,13 @@ import '../../core/services/approved_media_bytes.dart';
 /// Renders the same pinned original media in the Store and on equipped surfaces.
 class CosmeticMediaView extends StatelessWidget {
   const CosmeticMediaView(
-      {super.key, required this.media, this.animate = true, this.onFinished});
+      {super.key,
+      required this.media,
+      this.animate = true,
+      this.onFinished,
+      this.fit = BoxFit.contain});
   final CosmeticMedia media;
+  final BoxFit fit;
   final bool animate;
   final VoidCallback? onFinished;
   @override
@@ -23,6 +28,7 @@ class CosmeticMediaView extends StatelessWidget {
       key: ValueKey(
           '${media.id}:${media.asset}:${media.kind}:${media.publication?.cacheKey}:$animate'),
       media: media,
+      fit: fit,
       animate: animate,
       onFinished: onFinished);
 }
@@ -31,10 +37,12 @@ class _CosmeticMediaPlayback extends StatefulWidget {
   const _CosmeticMediaPlayback({
     super.key,
     required this.media,
+    required this.fit,
     this.animate = true,
     this.onFinished,
   });
   final CosmeticMedia media;
+  final BoxFit fit;
   final bool animate;
   final VoidCallback? onFinished;
   @override
@@ -168,12 +176,12 @@ class _CosmeticMediaViewState extends State<_CosmeticMediaPlayback>
               publication: source == media.asset
                   ? media.publication
                   : media.thumbnailPublication,
-              fit: BoxFit.contain,
+              fit: widget.fit,
               unavailable: const Icon(Icons.broken_image_outlined),
             )
           : Image.asset(
               source,
-              fit: BoxFit.contain,
+              fit: widget.fit,
               errorBuilder: (_, __, ___) =>
                   const Icon(Icons.broken_image_outlined),
             );
@@ -186,7 +194,7 @@ class _CosmeticMediaViewState extends State<_CosmeticMediaPlayback>
               : Icons.hourglass_empty,
         ),
       );
-    if (_svga != null) return SVGAImage(_svga!, fit: BoxFit.contain);
+    if (_svga != null) return SVGAImage(_svga!, fit: widget.fit);
     return VapPlayer(_vap!);
   }
 }

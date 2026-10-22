@@ -58,6 +58,7 @@ jobs:
           SQL
           python3 tools/test_gift_checked_send.py --container "$SQL_CONTAINER" --database gift_checked_ci
           python3 tools/test_dynamic_room_rocket_config.py --container "$SQL_CONTAINER" --database rocket_dynamic_ci
+          python3 tools/test_drive_catalog.py --container "$SQL_CONTAINER" --gift-fixture gift_checked_ci --database drive_catalog_ci
           python3 tools/test_store_ownership_expiry.py --container "$SQL_CONTAINER" --database store_expiry_ci
           python3 tools/test_dynamic_memberships.py --container "$SQL_CONTAINER" --database membership_dynamic_ci
           python3 tools/test_dynamic_event_images.py --container "$SQL_CONTAINER" --database event_images_ci

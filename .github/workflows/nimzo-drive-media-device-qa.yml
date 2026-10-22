@@ -49,9 +49,13 @@ jobs:
           script: |
             flutter test integration_test/catalog_device_test.dart --reporter expanded -d emulator-5554
             mkdir -p artifacts
-            adb exec-out run-as com.example.nimzo_media_device_qa tar -C cache -c nimzo-drive-rendered | tar -x -C artifacts
+            package_id=$(python3 -c "import json; print(json.load(open('build/app/outputs/apk/debug/output-metadata.json'))['applicationId'])")
+            preview_dir=$(adb shell run-as "$package_id" find . -type d -name nimzo-drive-rendered | tr -d '\r')
+            test -n "$preview_dir"
+            adb exec-out run-as "$package_id" tar -C "$preview_dir" -c . > previews.tar
+            tar -xf previews.tar -C artifacts
       - uses: actions/upload-artifact@v4
         with:
           name: drive-catalog-android-previews
-          path: tools/media_device_qa/artifacts/nimzo-drive-rendered/
+          path: tools/media_device_qa/artifacts/
           if-no-files-found: error
