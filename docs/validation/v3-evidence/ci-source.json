@@ -1,0 +1,24 @@
+{
+  "run_id": 39776010537,
+  "run_url": "https://github.com/adi4ch-cmd/Nimzo/actions/runs/39776010537",
+  "commit": "4035e52a0d6b07ea73ecae183c7962a0767b7965",
+  "result": "success",
+  "flutter_tests_passed": 522,
+  "python_guard_tests_passed": 19,
+  "sdk_validator_tests_passed": 9,
+  "sdk_validator_skipped": 1,
+  "postgres_fixture_groups": [
+    "gift checked send and availability",
+    "cycle-pinned Rocket",
+    "Store expiry and receipts",
+    "memberships",
+    "banner media"
+  ],
+  "edge_authorization_tests_passed": 8,
+  "additional_local_responsive_membership_tests_passed": 4,
+  "membership_responsive_widths_dp": [
+    280,
+    360
+  ],
+  "membership_responsive_text_scale": 1.2
+}
