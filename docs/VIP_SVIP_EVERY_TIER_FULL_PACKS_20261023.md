@@ -28,6 +28,18 @@ The user's final requirement overrides previous cross-level mixing:
 - The 20 membership hero/badge/card sets from YoHo/Mizah/Falla already align to the same kind and number; their source APKs may differ without breaking this rule. Unapproved other packs must remain unapproved.
 - Server membership and related purchases stay authoritative and unchanged.
 
+## Same-tier originals newly audited/integrated
+
+- **VIP 1–5**: WillChill `icon_vipN_2.png` shows a real same-tier decorative profile/avatar frame, and `icon_vipN_4.png` a same-tier chat bubble. They now render on user profile/room mic avatars and room chat for verified members, with the source icon as a static image. Generic NIMZO theme handles unavailable animated effects.
+- **VIP 1–5**: Orii `vipN_profilecardbg.png` files are genuine same-tier profile card images, not screenshots. Applied to the profile cover only if the user has not chosen a cover and has not equipped a Store profile card.
+- **VIP 1–5, SVIP 1–8**: Matching WillChill entry artwork is a static emblem shown during the existing NIMZO animated room-join banner. **Do not call it a native VAP/SVGA animated entry**.
+- **SVIP 3–6**: Orii original `mic_wave_svipN.svga` (N=3,4,5,6) recovered from the already-bundled `drive_catalog_expanded` assets, wired into actual speaking mic avatar and the tier gallery. The image for each tier is its own tier's animated file, not an unrelated Store effect.
+- **VIP 6**: Tana archive `bg_voice_room_vip6_mode.webp` recovered with SHA-256 `853fd173261a4f4b5c17156e3eba652dc4a2bbd7534570567c3629286bacc661`. Added as `assets/membership/tana-vip6-room-bg.webp`; only displayed when a verified VIP 6 owner has the default room theme and no approved user-selected remote wallpaper.
+- **VIP 6**: Tana original `ic_locked_seat_vip6.png` and `ic_seat_unlocked_vip6.png` added for the actual seat controls in default VIP 6 rooms. These are **static mic seat icons, not voice wave animation**.
+- **No cross-tier sharing**: the `MembershipPackArtwork.matching` provenance guard rejects both different VIP/SVIP classes and different numbers. The "all 20 original complete packs" claim remains blocked by genuinely absent assets.
+
+These additions are source integrations. GitHub Flutter analyzer and tests are not proof of real Android native VAP/SVGA frame playback or of signed-in Supabase/device behavior.
+
 ## Per-tier acceptance checklist
 
 For **every** tier (VIP *n* and SVIP *n*) verify the following distinct assets and behaviors:
