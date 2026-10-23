@@ -36,7 +36,7 @@ void main() {
           membershipBundledPresentationsProvider.overrideWith((_) async => []),
           currentUserIdProvider.overrideWithValue('member'),
           effectiveMembershipProvider('member').overrideWith((_) async =>
-              MembershipStatus.fromJson({'vip_level': 0, 'svip_level': 10})),
+              MembershipStatus.fromJson({'vip_level': 0, 'svip_level': 10,'pack_kind':'svip','pack_tier':10,'pack_slots':['Rides']})),
         ],
         child: const MaterialApp(
             home: Scaffold(body: VerifiedOwnMembershipEntrance()))));

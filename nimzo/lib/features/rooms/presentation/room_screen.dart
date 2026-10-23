@@ -1,6 +1,7 @@
 import '../../../core/widgets/published_image.dart';
 import '../../premium/membership_identity.dart';
 import '../../premium/membership_pack_runtime.dart';
+import '../../premium/membership_room_background.dart';
 import '../../store/store_visual_equipment.dart';
 import '../../store/room_cosmetic_entrance.dart';
 // ignore_for_file: prefer_interpolation_to_compose_strings
@@ -479,9 +480,14 @@ class _State extends ConsumerState<RoomScreen> {
 
   bool _hasChatBubble(String userId) =>
       ref
-          .watch(storeVisualEquipmentProvider(userId))
-          .valueOrNull?['Chat Bubble'] !=
-      null;
+              .watch(effectiveMembershipProvider(userId))
+              .valueOrNull
+              ?.hasSlot('Chat Bubble') ==
+          true ||
+      ref
+              .watch(storeVisualEquipmentProvider(userId))
+              .valueOrNull?['Chat Bubble'] !=
+          null;
 
   @override
   Widget build(BuildContext context) {
@@ -496,12 +502,14 @@ class _State extends ConsumerState<RoomScreen> {
         ref.watch(roomModerationProvider(widget.roomId)).valueOrNull == true;
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
     final roomTheme = room.valueOrNull?.theme ?? 'nimzo_white';
+    final membershipBackground =
+        ref.watch(membershipRoomBackgroundProvider(widget.roomId)).valueOrNull;
     final ownerId = room.valueOrNull?.ownerId;
     final verifiedOwner = ownerId == null
         ? null
         : ref.watch(effectiveMembershipProvider(ownerId)).valueOrNull;
-    final showVip6Seats = verifiedOwner?.vipLevel == 6 &&
-        verifiedOwner?.svipLevel == 0 &&
+    final showVip6Seats = verifiedOwner?.packKind == 'vip' &&
+        verifiedOwner?.packTier == 6 &&
         roomTheme == 'nimzo_white';
     final palette = RoomTheme.byId(roomTheme);
     final backgroundUrl = nimzoApprovedRoomBackground(
@@ -674,762 +682,729 @@ class _State extends ConsumerState<RoomScreen> {
                     publication: backgroundPublication,
                     child: SafeArea(
                       child: MembershipPackRoomAtmosphere(
+                          roomId: widget.roomId,
                           ownerId: room.valueOrNull?.ownerId,
-                          allowOriginalBackground:
-                              roomTheme == 'nimzo_white' &&
+                          allowOriginalBackground: roomTheme == 'nimzo_white' &&
                               backgroundUrl == null,
                           child: EquippedCosmetic(
-                          userId: room.valueOrNull?.ownerId,
-                          category: 'Party Theme',
-                          child: Column(
-                            children: [
-                              MembershipPackRoomBanner(
-                                  ownerId: room.valueOrNull?.ownerId),
-                              if (joining) const LinearProgressIndicator(),
-                              if (room.hasError)
-                                DataFailure(
-                                  onRetry: () => ref
-                                      .invalidate(roomProvider(widget.roomId)),
-                                ),
-                              if (seats.hasError)
-                                DataFailure(
-                                  message: 'Seats could not be loaded.',
-                                  onRetry: () => ref
-                                      .invalidate(seatsProvider(widget.roomId)),
-                                ),
-                              if (failure != null)
-                                DataFailure(message: failure!, onRetry: join),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8,
-                                  horizontal: 10,
-                                ),
-                                child: Column(
-                                  children: [
-                                    for (var row = 0; row < MicSeat.rows; row++)
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                          bottom:
-                                              row < MicSeat.rows - 1 ? 8 : 0,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            for (var col = 0;
-                                                col < MicSeat.columns;
-                                                col++)
-                                              Expanded(
-                                                child: Builder(
-                                                  builder: (c) {
-                                                    final n = row *
-                                                                MicSeat
-                                                                    .columns +
-                                                            col +
-                                                            1,
-                                                        s = seats.valueOrNull
-                                                                ?.where(
-                                                                  (s) =>
-                                                                      s.seatNo ==
-                                                                      n,
-                                                                )
-                                                                .firstOrNull ??
-                                                            MicSeat(seatNo: n),
-                                                        p = profiles[s.userId];
-                                                    return InkWell(
-                                                      onLongPress: joined &&
-                                                              canModerate &&
-                                                              seats.hasValue
-                                                          ? () => action(() =>
-                                                              _showOpenSeatActions(
-                                                                  s))
-                                                          : null,
-                                                      onTap: !joined ||
-                                                              !seats.hasValue ||
-                                                              (s.locked &&
-                                                                  s.userId ==
-                                                                      null &&
-                                                                  !canModerate)
-                                                          ? null
-                                                          : () =>
-                                                              action(() async {
-                                                                if (s.userId ==
-                                                                    null) {
-                                                                  await _showOpenSeatActions(
-                                                                      s);
-                                                                } else {
-                                                                  await showDialog<
-                                                                      void>(
-                                                                    context:
-                                                                        context,
-                                                                    builder: (_) =>
-                                                                        Dialog(
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .transparent,
-                                                                      insetPadding:
-                                                                          const EdgeInsets
-                                                                              .symmetric(
-                                                                        horizontal:
-                                                                            18,
-                                                                        vertical:
-                                                                            24,
-                                                                      ),
-                                                                      child:
-                                                                          RoomUserSheet(
-                                                                        roomId:
-                                                                            widget.roomId,
-                                                                        userId:
-                                                                            s.userId!,
-                                                                        seatNo:
-                                                                            n,
-                                                                        muted: s
-                                                                            .muted,
-                                                                        onMention:
-                                                                            (name) {
-                                                                          final mention =
-                                                                              '@$name ';
-                                                                          text.value =
-                                                                              TextEditingValue(
-                                                                            text:
-                                                                                mention + text.text,
-                                                                            selection:
-                                                                                TextSelection.collapsed(
-                                                                              offset: mention.length,
-                                                                            ),
-                                                                          );
-                                                                        },
-                                                                      ),
-                                                                    ),
-                                                                  );
-                                                                }
-                                                              }),
-                                                      child: Container(
-                                                        key: ValueKey(
-                                                            'room-mic-seat-$n'),
-                                                        height: 84,
-                                                        margin: const EdgeInsets
-                                                            .symmetric(
-                                                            horizontal: 1.5),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: const Color(
-                                                              0x665e337e),
-                                                          border: Border.all(
-                                                              color: const Color(
-                                                                  0x667c548d),
-                                                              width: .8),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5),
-                                                        ),
-                                                        child: Stack(children: [
-                                                          Positioned(
-                                                            left: 3,
-                                                            top: 3,
-                                                            child: Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      horizontal:
-                                                                          4,
-                                                                      vertical:
-                                                                          1),
-                                                              decoration: BoxDecoration(
-                                                                  color: const Color(
-                                                                      0x666e4e86),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              6)),
-                                                              child: Text('$n',
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          10,
-                                                                      color: Color(
-                                                                          0xfff0d9ff))),
-                                                            ),
-                                                          ),
-                                                          Center(
-                                                              child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              if (s.userId ==
-                                                                  null)
-                                                                SizedBox(
-                                                                  width: 46,
-                                                                  height: 48,
-                                                                  child: showVip6Seats
-                                                                      ? Image.asset(
-                                                                          s.locked
-                                                                              ? 'assets/membership/tana-vip6-locked-seat.png'
-                                                                              : 'assets/membership/tana-vip6-open-seat.png',
-                                                                          width: 43,
-                                                                          height: 43,
-                                                                          fit: BoxFit.contain,
-                                                                          errorBuilder: (_, __, ___) =>
-                                                                              const Icon(Icons.mic),
-                                                                        )
-                                                                      : s.locked
-                                                                      ? const Icon(
-                                                                          Icons
-                                                                              .lock_outline_rounded,
-                                                                          size:
-                                                                              30,
-                                                                          color: Color(
-                                                                              0xffd8b9e8))
-                                                                      : const NimzoNavigationArt(
-                                                                          index:
-                                                                              5,
-                                                                          size:
-                                                                              43,
-                                                                          color:
-                                                                              Color(0xffd8b9e8)),
-                                                                )
-                                                              else
-                                                                Stack(
-                                                                  clipBehavior:
-                                                                      Clip.none,
-                                                                  children: [
-                                                                    Container(
-                                                                      padding:
-                                                                          const EdgeInsets
-                                                                              .all(
-                                                                        2,
-                                                                      ),
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        shape: BoxShape
-                                                                            .circle,
-                                                                        border:
-                                                                            Border.all(
-                                                                          color: speaking.contains(
-                                                                            s.userId,
-                                                                          )
-                                                                              ? NimzoStyle.primary
-                                                                              : Colors.transparent,
-                                                                          width:
-                                                                              2,
-                                                                        ),
-                                                                      ),
-                                                                      child: MembershipPackAvatar(
-                                                                          userId: s.userId,
-                                                                          size: 48,
-                                                                          speaking: speaking.contains(s.userId),
-                                                                          child: EquippedAvatar(
-                                                                          userId: s.userId,
-                                                                          size: 48,
-                                                                          speaking: speaking.contains(s.userId),
-                                                                          child: NimzoAvatar(
-                                                                            name:
-                                                                                p?.displayName ?? 'N',
-                                                                            size:
-                                                                                48,
-                                                                            url: p?.avatarPath == null
-                                                                                ? null
-                                                                                : ref
-                                                                                    .read(
-                                                                                      supabaseProvider,
-                                                                                    )
-                                                                                    .storage
-                                                                                    .from(
-                                                                                      'avatars',
-                                                                                    )
-                                                                                    .getPublicUrl(
-                                                                                      p!.avatarPath!,
-                                                                                    ),
-                                                                          ))),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              const SizedBox(
-                                                                  height: 3),
-                                                              MembershipPackNameplate(
-                                                                  userId: s.userId,
-                                                                  child: EquippedIdentity(
-                                                                  userId:
-                                                                      s.userId ??
-                                                                          '',
-                                                                  child: Text(
-                                                                    p?.displayName ??
-                                                                        '$n',
-                                                                    maxLines: 1,
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      color: RoomTheme
-                                                                          .byId(
-                                                                        room.valueOrNull?.theme ??
-                                                                            'nimzo_white',
-                                                                      ).text.withValues(
-                                                                          alpha:
-                                                                              .88),
-                                                                    ),
-                                                                  ))),
-                                                              if (s.muted)
-                                                                Icon(
-                                                                  LucideIcons
-                                                                      .micOff,
-                                                                  size: 12,
-                                                                  color:
-                                                                      RoomTheme
-                                                                          .byId(
-                                                                    room.valueOrNull
-                                                                            ?.theme ??
-                                                                        'nimzo_white',
-                                                                  ).text,
-                                                                ),
-                                                            ],
-                                                          )),
-                                                        ]),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 14),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                    constraints: BoxConstraints(
-                                      maxWidth:
-                                          MediaQuery.sizeOf(context).width *
-                                              .85,
+                              enabled: membershipBackground == null ||
+                                  membershipBackground.kind !=
+                                      verifiedOwner?.packKind ||
+                                  membershipBackground.tier !=
+                                      verifiedOwner?.packTier,
+                              userId: room.valueOrNull?.ownerId,
+                              category: 'Party Theme',
+                              child: Column(
+                                children: [
+                                  MembershipPackRoomBanner(
+                                      ownerId: room.valueOrNull?.ownerId),
+                                  MembershipRoomBackgroundControls(
+                                      roomId: widget.roomId,
+                                      ownerId: room.valueOrNull?.ownerId),
+                                  if (joining) const LinearProgressIndicator(),
+                                  if (room.hasError)
+                                    DataFailure(
+                                      onRetry: () => ref.invalidate(
+                                          roomProvider(widget.roomId)),
                                     ),
+                                  if (seats.hasError)
+                                    DataFailure(
+                                      message: 'Seats could not be loaded.',
+                                      onRetry: () => ref.invalidate(
+                                          seatsProvider(widget.roomId)),
+                                    ),
+                                  if (failure != null)
+                                    DataFailure(
+                                        message: failure!, onRetry: join),
+                                  Padding(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 11,
-                                      vertical: 7,
+                                      vertical: 8,
+                                      horizontal: 10,
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: NimzoStyle.surface,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      room.valueOrNull?.rules?.isNotEmpty ==
-                                              true
-                                          ? room.valueOrNull!.rules!
-                                          : 'Please respect each other and chat in a decent manner.',
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Stack(
-                                  children: [
-                                    Positioned.fill(
-                                      child: AsyncContent(
-                                        value: ref.watch(
-                                          roomChatProvider(widget.roomId),
-                                        ),
-                                        onRetry: () => ref.invalidate(
-                                          roomChatProvider(widget.roomId),
-                                        ),
-                                        builder: (messages) => ListView(
-                                          reverse: true,
-                                          padding: const EdgeInsets.all(14),
-                                          children: [
-                                            // Server RLS uses joined_at. A phone clock cannot define this boundary.
-                                            for (final msg in messages)
-                                              Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: MembershipPackChatBubble(
-                                                    userId: msg.userId,
-                                                    child: EquippedCosmetic(
-                                                    userId: msg.userId,
-                                                    category: 'Chat Bubble',
-                                                    fit: BoxFit.fill,
-                                                    child: Container(
-                                                      constraints:
-                                                          BoxConstraints(
-                                                        maxWidth:
-                                                            MediaQuery.sizeOf(
-                                                                        context)
-                                                                    .width *
-                                                                .85,
-                                                      ),
-                                                      margin:
-                                                          const EdgeInsets.only(
-                                                        bottom: 6,
-                                                      ),
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                        horizontal: 11,
-                                                        vertical: 7,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        color: ref
-                                                                        .watch(storeVisualEquipmentProvider(msg
-                                                                            .userId))
-                                                                        .valueOrNull?[
-                                                                    'Chat Bubble'] ==
-                                                                null
-                                                            ? NimzoStyle.surface
-                                                            : Colors
-                                                                .transparent,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12),
-                                                      ),
-                                                      child: DecoratedBox(
-                                                          decoration: BoxDecoration(
-                                                              color: _hasChatBubble(
-                                                                      msg
-                                                                          .userId)
-                                                                  ? Colors.black
-                                                                      .withValues(
-                                                                          alpha:
-                                                                              .60)
-                                                                  : Colors
-                                                                      .transparent,
+                                    child: Column(
+                                      children: [
+                                        for (var row = 0;
+                                            row < MicSeat.rows;
+                                            row++)
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              bottom: row < MicSeat.rows - 1
+                                                  ? 8
+                                                  : 0,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                for (var col = 0;
+                                                    col < MicSeat.columns;
+                                                    col++)
+                                                  Expanded(
+                                                    child: Builder(
+                                                      builder: (c) {
+                                                        final n = row *
+                                                                    MicSeat
+                                                                        .columns +
+                                                                col +
+                                                                1,
+                                                            s = seats
+                                                                    .valueOrNull
+                                                                    ?.where(
+                                                                      (s) =>
+                                                                          s.seatNo ==
+                                                                          n,
+                                                                    )
+                                                                    .firstOrNull ??
+                                                                MicSeat(
+                                                                    seatNo: n),
+                                                            p = profiles[
+                                                                s.userId];
+                                                        return InkWell(
+                                                          onLongPress: joined &&
+                                                                  canModerate &&
+                                                                  seats.hasValue
+                                                              ? () => action(() =>
+                                                                  _showOpenSeatActions(
+                                                                      s))
+                                                              : null,
+                                                          onTap: !joined ||
+                                                                  !seats
+                                                                      .hasValue ||
+                                                                  (s.locked &&
+                                                                      s.userId ==
+                                                                          null &&
+                                                                      !canModerate)
+                                                              ? null
+                                                              : () => action(
+                                                                      () async {
+                                                                    if (s.userId ==
+                                                                        null) {
+                                                                      await _showOpenSeatActions(
+                                                                          s);
+                                                                    } else {
+                                                                      await showDialog<
+                                                                          void>(
+                                                                        context:
+                                                                            context,
+                                                                        builder:
+                                                                            (_) =>
+                                                                                Dialog(
+                                                                          backgroundColor:
+                                                                              Colors.transparent,
+                                                                          insetPadding:
+                                                                              const EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                18,
+                                                                            vertical:
+                                                                                24,
+                                                                          ),
+                                                                          child:
+                                                                              RoomUserSheet(
+                                                                            roomId:
+                                                                                widget.roomId,
+                                                                            userId:
+                                                                                s.userId!,
+                                                                            seatNo:
+                                                                                n,
+                                                                            muted:
+                                                                                s.muted,
+                                                                            onMention:
+                                                                                (name) {
+                                                                              final mention = '@$name ';
+                                                                              text.value = TextEditingValue(
+                                                                                text: mention + text.text,
+                                                                                selection: TextSelection.collapsed(
+                                                                                  offset: mention.length,
+                                                                                ),
+                                                                              );
+                                                                            },
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    }
+                                                                  }),
+                                                          child: Container(
+                                                            key: ValueKey(
+                                                                'room-mic-seat-$n'),
+                                                            height: 84,
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        1.5),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: const Color(
+                                                                  0x665e337e),
+                                                              border: Border.all(
+                                                                  color: const Color(
+                                                                      0x667c548d),
+                                                                  width: .8),
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
-                                                                          6)),
-                                                          child: Padding(
-                                                              padding: _hasChatBubble(
-                                                                      msg
-                                                                          .userId)
-                                                                  ? const EdgeInsets
-                                                                      .all(4)
-                                                                  : EdgeInsets
-                                                                      .zero,
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
+                                                                          5),
+                                                            ),
+                                                            child: Stack(
                                                                 children: [
-                                                                  EquippedIdentity(
-                                                                      userId: msg
-                                                                          .userId,
+                                                                  Positioned(
+                                                                    left: 3,
+                                                                    top: 3,
+                                                                    child:
+                                                                        Container(
+                                                                      padding: const EdgeInsets
+                                                                          .symmetric(
+                                                                          horizontal:
+                                                                              4,
+                                                                          vertical:
+                                                                              1),
+                                                                      decoration: BoxDecoration(
+                                                                          color: const Color(
+                                                                              0x666e4e86),
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(6)),
                                                                       child: Text(
-                                                                          profiles[msg.userId]?.displayName ??
-                                                                              'Nimzo user',
-                                                                          maxLines:
-                                                                              1,
-                                                                          overflow: TextOverflow
-                                                                              .ellipsis,
-                                                                          style:
-                                                                              TextStyle(
-                                                                            color: _hasChatBubble(msg.userId)
-                                                                                ? Colors.white
-                                                                                : NimzoStyle.primary,
-                                                                            fontSize:
-                                                                                12,
-                                                                            fontWeight:
-                                                                                FontWeight.w700,
-                                                                          ))),
-                                                                  Text(
-                                                                    msg.body,
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: _hasChatBubble(msg
-                                                                              .userId)
-                                                                          ? Colors
-                                                                              .white
-                                                                          : NimzoStyle
-                                                                              .ink,
+                                                                          '$n',
+                                                                          style: const TextStyle(
+                                                                              fontSize: 10,
+                                                                              color: Color(0xfff0d9ff))),
                                                                     ),
                                                                   ),
-                                                                ],
-                                                              ))),
-                                                    ))),
-                                              ),
-                                          ],
+                                                                  Center(
+                                                                      child:
+                                                                          Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      if (s.userId ==
+                                                                          null)
+                                                                        SizedBox(
+                                                                          width:
+                                                                              46,
+                                                                          height:
+                                                                              48,
+                                                                          child: showVip6Seats
+                                                                              ? Image.asset(
+                                                                                  s.locked ? 'assets/membership/tana-vip6-locked-seat.png' : 'assets/membership/tana-vip6-open-seat.png',
+                                                                                  width: 43,
+                                                                                  height: 43,
+                                                                                  fit: BoxFit.contain,
+                                                                                  errorBuilder: (_, __, ___) => const Icon(Icons.mic),
+                                                                                )
+                                                                              : s.locked
+                                                                                  ? const Icon(Icons.lock_outline_rounded, size: 30, color: Color(0xffd8b9e8))
+                                                                                  : const NimzoNavigationArt(index: 5, size: 43, color: Color(0xffd8b9e8)),
+                                                                        )
+                                                                      else
+                                                                        Stack(
+                                                                          clipBehavior:
+                                                                              Clip.none,
+                                                                          children: [
+                                                                            Container(
+                                                                              padding: const EdgeInsets.all(
+                                                                                2,
+                                                                              ),
+                                                                              decoration: BoxDecoration(
+                                                                                shape: BoxShape.circle,
+                                                                                border: Border.all(
+                                                                                  color: speaking.contains(
+                                                                                    s.userId,
+                                                                                  )
+                                                                                      ? NimzoStyle.primary
+                                                                                      : Colors.transparent,
+                                                                                  width: 2,
+                                                                                ),
+                                                                              ),
+                                                                              child: MembershipPackAvatar(
+                                                                                  userId: s.userId,
+                                                                                  size: 48,
+                                                                                  speaking: !s.muted && speaking.contains(s.userId),
+                                                                                  child: EquippedAvatar(
+                                                                                      userId: s.userId,
+                                                                                      size: 48,
+                                                                                      speaking: speaking.contains(s.userId),
+                                                                                      child: NimzoAvatar(
+                                                                                        name: p?.displayName ?? 'N',
+                                                                                        size: 48,
+                                                                                        url: p?.avatarPath == null
+                                                                                            ? null
+                                                                                            : ref
+                                                                                                .read(
+                                                                                                  supabaseProvider,
+                                                                                                )
+                                                                                                .storage
+                                                                                                .from(
+                                                                                                  'avatars',
+                                                                                                )
+                                                                                                .getPublicUrl(
+                                                                                                  p!.avatarPath!,
+                                                                                                ),
+                                                                                      ))),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      const SizedBox(
+                                                                          height:
+                                                                              3),
+                                                                      MembershipPackNameplate(
+                                                                          userId:
+                                                                              s.userId,
+                                                                          child: EquippedIdentity(
+                                                                              userId: s.userId ?? '',
+                                                                              child: Text(
+                                                                                p?.displayName ?? '$n',
+                                                                                maxLines: 1,
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12,
+                                                                                  color: RoomTheme.byId(
+                                                                                    room.valueOrNull?.theme ?? 'nimzo_white',
+                                                                                  ).text.withValues(alpha: .88),
+                                                                                ),
+                                                                              ))),
+                                                                      if (s
+                                                                          .muted)
+                                                                        Icon(
+                                                                          LucideIcons
+                                                                              .micOff,
+                                                                          size:
+                                                                              12,
+                                                                          color:
+                                                                              RoomTheme.byId(
+                                                                            room.valueOrNull?.theme ??
+                                                                                'nimzo_white',
+                                                                          ).text,
+                                                                        ),
+                                                                    ],
+                                                                  )),
+                                                                ]),
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Container(
+                                        constraints: BoxConstraints(
+                                          maxWidth:
+                                              MediaQuery.sizeOf(context).width *
+                                                  .85,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 11,
+                                          vertical: 7,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: NimzoStyle.surface,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          room.valueOrNull?.rules?.isNotEmpty ==
+                                                  true
+                                              ? room.valueOrNull!.rules!
+                                              : 'Please respect each other and chat in a decent manner.',
+                                          style: const TextStyle(fontSize: 14),
                                         ),
                                       ),
                                     ),
-                                    Positioned(
-                                      right: 10,
-                                      bottom: 12,
-                                      child: Column(
-                                        children: [
-                                          _artButton(
-                                            'chest',
-                                            () => showReferenceSheet(
-                                              context,
-                                              TreasureSheet(
-                                                  roomId: widget.roomId),
+                                  ),
+                                  Expanded(
+                                    child: Stack(
+                                      children: [
+                                        Positioned.fill(
+                                          child: AsyncContent(
+                                            value: ref.watch(
+                                              roomChatProvider(widget.roomId),
+                                            ),
+                                            onRetry: () => ref.invalidate(
+                                              roomChatProvider(widget.roomId),
+                                            ),
+                                            builder: (messages) => ListView(
+                                              reverse: true,
+                                              padding: const EdgeInsets.all(14),
+                                              children: [
+                                                // Server RLS uses joined_at. A phone clock cannot define this boundary.
+                                                for (final msg in messages)
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: MembershipPackChatBubble(
+                                                        userId: msg.userId,
+                                                        child: EquippedCosmetic(
+                                                            userId: msg.userId,
+                                                            category: 'Chat Bubble',
+                                                            fit: BoxFit.fill,
+                                                            child: Container(
+                                                              constraints:
+                                                                  BoxConstraints(
+                                                                maxWidth: MediaQuery.sizeOf(
+                                                                            context)
+                                                                        .width *
+                                                                    .85,
+                                                              ),
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                bottom: 6,
+                                                              ),
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                horizontal: 11,
+                                                                vertical: 7,
+                                                              ),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: ref.watch(storeVisualEquipmentProvider(msg.userId)).valueOrNull?['Chat Bubble'] ==
+                                                                            null &&
+                                                                        ref.watch(effectiveMembershipProvider(msg.userId)).valueOrNull?.hasSlot('Chat Bubble') !=
+                                                                            true
+                                                                    ? NimzoStyle
+                                                                        .surface
+                                                                    : Colors
+                                                                        .transparent,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            12),
+                                                              ),
+                                                              child:
+                                                                  DecoratedBox(
+                                                                      decoration: BoxDecoration(
+                                                                          color: _hasChatBubble(msg.userId)
+                                                                              ? Colors.black.withValues(alpha: .60)
+                                                                              : Colors.transparent,
+                                                                          borderRadius: BorderRadius.circular(6)),
+                                                                      child: Padding(
+                                                                          padding: _hasChatBubble(msg.userId) ? const EdgeInsets.all(4) : EdgeInsets.zero,
+                                                                          child: Column(
+                                                                            crossAxisAlignment:
+                                                                                CrossAxisAlignment.start,
+                                                                            children: [
+                                                                              EquippedIdentity(
+                                                                                  userId: msg.userId,
+                                                                                  child: Text(profiles[msg.userId]?.displayName ?? 'Nimzo user',
+                                                                                      maxLines: 1,
+                                                                                      overflow: TextOverflow.ellipsis,
+                                                                                      style: TextStyle(
+                                                                                        color: _hasChatBubble(msg.userId) ? Colors.white : NimzoStyle.primary,
+                                                                                        fontSize: 12,
+                                                                                        fontWeight: FontWeight.w700,
+                                                                                      ))),
+                                                                              Text(
+                                                                                msg.body,
+                                                                                style: TextStyle(
+                                                                                  color: _hasChatBubble(msg.userId) ? Colors.white : NimzoStyle.ink,
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ))),
+                                                            ))),
+                                                  ),
+                                              ],
                                             ),
                                           ),
-                                          const SizedBox(height: 10),
-                                          InkWell(
-                                            onTap: !joined
-                                                ? null
-                                                : () =>
-                                                    showModalBottomSheet<void>(
-                                                      context: context,
-                                                      isScrollControlled: true,
-                                                      backgroundColor:
-                                                          const Color(
-                                                              0xfff7faf7),
-                                                      barrierColor: Colors.black
-                                                          .withValues(
-                                                              alpha: .72),
-                                                      shape:
-                                                          const RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .vertical(
-                                                          top: Radius.circular(
-                                                              24),
-                                                        ),
-                                                      ),
-                                                      builder: (_) => SafeArea(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .fromLTRB(
-                                                                  0, 8, 0, 0),
-                                                          child:
-                                                              RoomRocketSheet(
+                                        ),
+                                        Positioned(
+                                          right: 10,
+                                          bottom: 12,
+                                          child: Column(
+                                            children: [
+                                              _artButton(
+                                                'chest',
+                                                () => showReferenceSheet(
+                                                  context,
+                                                  TreasureSheet(
+                                                      roomId: widget.roomId),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              InkWell(
+                                                onTap: !joined
+                                                    ? null
+                                                    : () =>
+                                                        showModalBottomSheet<
+                                                            void>(
+                                                          context: context,
+                                                          isScrollControlled:
+                                                              true,
+                                                          backgroundColor:
+                                                              const Color(
+                                                                  0xfff7faf7),
+                                                          barrierColor: Colors
+                                                              .black
+                                                              .withValues(
+                                                                  alpha: .72),
+                                                          shape:
+                                                              const RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .vertical(
+                                                              top: Radius
+                                                                  .circular(24),
+                                                            ),
+                                                          ),
+                                                          builder: (_) =>
+                                                              SafeArea(
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .fromLTRB(
+                                                                      0,
+                                                                      8,
+                                                                      0,
+                                                                      0),
+                                                              child: RoomRocketSheet(
                                                                   roomId: widget
                                                                       .roomId),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                child: Container(
+                                                  width: 46,
+                                                  height: 46,
+                                                  padding:
+                                                      const EdgeInsets.all(4),
+                                                  decoration: BoxDecoration(
+                                                    color: NimzoStyle.surface,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            14),
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Image.asset(
+                                                        'assets/room_rocket/posters/rocket_stage_${((joined ? ref.watch(roomDiamondStatusProvider(widget.roomId)).valueOrNull?.activeStage ?? 0 : 0) + 1)}.png',
+                                                        width: 22,
+                                                        height: 22,
+                                                        fit: BoxFit.contain,
+                                                      ),
+                                                      Text(
+                                                        'L' +
+                                                            ((joined
+                                                                        ? ref
+                                                                                .watch(
+                                                                                  roomDiamondStatusProvider(widget.roomId),
+                                                                                )
+                                                                                .valueOrNull
+                                                                                ?.activeStage ??
+                                                                            0
+                                                                        : 0) +
+                                                                    1)
+                                                                .toString(),
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          fontSize: 9,
                                                         ),
                                                       ),
-                                                    ),
-                                            child: Container(
-                                              width: 46,
-                                              height: 46,
-                                              padding: const EdgeInsets.all(4),
-                                              decoration: BoxDecoration(
-                                                color: NimzoStyle.surface,
-                                                borderRadius:
-                                                    BorderRadius.circular(14),
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Image.asset(
-                                                    'assets/room_rocket/posters/rocket_stage_${((joined ? ref.watch(roomDiamondStatusProvider(widget.roomId)).valueOrNull?.activeStage ?? 0 : 0) + 1)}.png',
-                                                    width: 22,
-                                                    height: 22,
-                                                    fit: BoxFit.contain,
-                                                  ),
-                                                  Text(
-                                                    'L' +
-                                                        ((joined
-                                                                    ? ref
-                                                                            .watch(
-                                                                              roomDiamondStatusProvider(widget.roomId),
-                                                                            )
-                                                                            .valueOrNull
-                                                                            ?.activeStage ??
-                                                                        0
-                                                                    : 0) +
-                                                                1)
-                                                            .toString(),
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w900,
-                                                      fontSize: 9,
-                                                    ),
-                                                  ),
-                                                ],
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        top: BorderSide(color: NimzoStyle.line),
+                                      ),
+                                    ),
+                                    padding: EdgeInsets.only(
+                                      left: 10,
+                                      right: 10,
+                                      bottom: MediaQuery.viewInsetsOf(context)
+                                                  .bottom >
+                                              0
+                                          ? 0
+                                          : 8,
+                                    ),
+                                    child: IconButtonTheme(
+                                      data: IconButtonThemeData(
+                                        style: IconButton.styleFrom(
+                                          foregroundColor: palette.text,
+                                          disabledForegroundColor: palette.text
+                                              .withValues(alpha: .35),
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: const Size(30, 34),
+                                          maximumSize: const Size(30, 34),
+                                          iconSize: 20,
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          IconButton(
+                                            tooltip: 'Party Tools',
+                                            onPressed: () => showPartyTools(
+                                              context,
+                                              roomId: widget.roomId,
+                                            ),
+                                            icon: const ReferenceIcon('grid'),
+                                          ),
+                                          IconButton(
+                                            tooltip: 'Voice and Effect',
+                                            onPressed: () => showReferenceSheet(
+                                              context,
+                                              VoiceEffectsSheet(
+                                                micEnabled: mic,
+                                                onMic: !connected || micBusy
+                                                    ? null
+                                                    : toggleMic,
                                               ),
                                             ),
+                                            icon: const ReferenceIcon('spk'),
+                                          ),
+                                          Expanded(
+                                            child: TextField(
+                                              controller: text,
+                                              maxLength: 500,
+                                              onSubmitted: (_) =>
+                                                  !joined || chatBusy
+                                                      ? null
+                                                      : sendMessage(),
+                                              decoration: InputDecoration(
+                                                suffixIconConstraints:
+                                                    const BoxConstraints
+                                                        .tightFor(
+                                                  width: 30,
+                                                  height: 34,
+                                                ),
+                                                suffixIcon: IconButton(
+                                                  tooltip: 'Send',
+                                                  onPressed: !joined || chatBusy
+                                                      ? null
+                                                      : sendMessage,
+                                                  icon: const ReferenceIcon(
+                                                    'send',
+                                                    size: 18,
+                                                    color: NimzoStyle.primary,
+                                                  ),
+                                                ),
+                                                hintText: 'Say hi…',
+                                                counterText: '',
+                                                contentPadding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 14,
+                                                  vertical: 8,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            tooltip: 'Microphone',
+                                            onPressed: !connected || micBusy
+                                                ? null
+                                                : toggleMic,
+                                            icon: Icon(
+                                              mic
+                                                  ? LucideIcons.mic
+                                                  : LucideIcons.micOff,
+                                            ),
+                                          ),
+                                          IconButton(
+                                            tooltip: 'Games',
+                                            onPressed: () => showRoomGamesSheet(
+                                              context,
+                                              widget.roomId,
+                                              onSelected: (slug) => gameHost
+                                                  .currentState
+                                                  ?.open(slug),
+                                            ),
+                                            icon: const ReferenceIcon('game'),
+                                          ),
+                                          IconButton(
+                                            key: const ValueKey(
+                                                'room-reactions-button'),
+                                            tooltip: 'Reactions',
+                                            onPressed: joined
+                                                ? _showRoomReactions
+                                                : null,
+                                            icon: const Icon(
+                                                Icons.emoji_emotions_rounded,
+                                                color: Color(0xffa74be7)),
+                                          ),
+                                          IconButton(
+                                            tooltip: 'Gift',
+                                            onPressed: !joined || me == null
+                                                ? null
+                                                : () async {
+                                                    final recipients = [
+                                                      me,
+                                                      ...profiles.keys.where(
+                                                        (k) => k != me,
+                                                      ),
+                                                    ];
+                                                    final id =
+                                                        await showModalBottomSheet<
+                                                            String>(
+                                                      context: context,
+                                                      builder: (c) => SafeArea(
+                                                        child: ListView(
+                                                          shrinkWrap: true,
+                                                          children: [
+                                                            for (final id
+                                                                in recipients)
+                                                              ListTile(
+                                                                title: Text(
+                                                                  id == me
+                                                                      ? 'Myself'
+                                                                      : profiles[id]
+                                                                              ?.displayName ??
+                                                                          'Nimzo user',
+                                                                ),
+                                                                onTap: () =>
+                                                                    Navigator
+                                                                        .pop(
+                                                                  c,
+                                                                  id,
+                                                                ),
+                                                              ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                    if (id != null &&
+                                                        context.mounted)
+                                                      showRoomGiftSheet(
+                                                        context,
+                                                        widget.roomId,
+                                                        id,
+                                                      );
+                                                  },
+                                            icon: const Icon(
+                                                Icons.card_giftcard_rounded,
+                                                color: NimzoStyle.pink),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                decoration: const BoxDecoration(
-                                  border: Border(
-                                    top: BorderSide(color: NimzoStyle.line),
                                   ),
-                                ),
-                                padding: EdgeInsets.only(
-                                  left: 10,
-                                  right: 10,
-                                  bottom:
-                                      MediaQuery.viewInsetsOf(context).bottom >
-                                              0
-                                          ? 0
-                                          : 8,
-                                ),
-                                child: IconButtonTheme(
-                                  data: IconButtonThemeData(
-                                    style: IconButton.styleFrom(
-                                      foregroundColor: palette.text,
-                                      disabledForegroundColor:
-                                          palette.text.withValues(alpha: .35),
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: const Size(30, 34),
-                                      maximumSize: const Size(30, 34),
-                                      iconSize: 20,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      IconButton(
-                                        tooltip: 'Party Tools',
-                                        onPressed: () => showPartyTools(
-                                          context,
-                                          roomId: widget.roomId,
-                                        ),
-                                        icon: const ReferenceIcon('grid'),
-                                      ),
-                                      IconButton(
-                                        tooltip: 'Voice and Effect',
-                                        onPressed: () => showReferenceSheet(
-                                          context,
-                                          VoiceEffectsSheet(
-                                            micEnabled: mic,
-                                            onMic: !connected || micBusy
-                                                ? null
-                                                : toggleMic,
-                                          ),
-                                        ),
-                                        icon: const ReferenceIcon('spk'),
-                                      ),
-                                      Expanded(
-                                        child: TextField(
-                                          controller: text,
-                                          maxLength: 500,
-                                          onSubmitted: (_) =>
-                                              !joined || chatBusy
-                                                  ? null
-                                                  : sendMessage(),
-                                          decoration: InputDecoration(
-                                            suffixIconConstraints:
-                                                const BoxConstraints.tightFor(
-                                              width: 30,
-                                              height: 34,
-                                            ),
-                                            suffixIcon: IconButton(
-                                              tooltip: 'Send',
-                                              onPressed: !joined || chatBusy
-                                                  ? null
-                                                  : sendMessage,
-                                              icon: const ReferenceIcon(
-                                                'send',
-                                                size: 18,
-                                                color: NimzoStyle.primary,
-                                              ),
-                                            ),
-                                            hintText: 'Say hi…',
-                                            counterText: '',
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                              horizontal: 14,
-                                              vertical: 8,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      IconButton(
-                                        tooltip: 'Microphone',
-                                        onPressed: !connected || micBusy
-                                            ? null
-                                            : toggleMic,
-                                        icon: Icon(
-                                          mic
-                                              ? LucideIcons.mic
-                                              : LucideIcons.micOff,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        tooltip: 'Games',
-                                        onPressed: () => showRoomGamesSheet(
-                                          context,
-                                          widget.roomId,
-                                          onSelected: (slug) =>
-                                              gameHost.currentState?.open(slug),
-                                        ),
-                                        icon: const ReferenceIcon('game'),
-                                      ),
-                                      IconButton(
-                                        key: const ValueKey(
-                                            'room-reactions-button'),
-                                        tooltip: 'Reactions',
-                                        onPressed:
-                                            joined ? _showRoomReactions : null,
-                                        icon: const Icon(
-                                            Icons.emoji_emotions_rounded,
-                                            color: Color(0xffa74be7)),
-                                      ),
-                                      IconButton(
-                                        tooltip: 'Gift',
-                                        onPressed: !joined || me == null
-                                            ? null
-                                            : () async {
-                                                final recipients = [
-                                                  me,
-                                                  ...profiles.keys.where(
-                                                    (k) => k != me,
-                                                  ),
-                                                ];
-                                                final id =
-                                                    await showModalBottomSheet<
-                                                        String>(
-                                                  context: context,
-                                                  builder: (c) => SafeArea(
-                                                    child: ListView(
-                                                      shrinkWrap: true,
-                                                      children: [
-                                                        for (final id
-                                                            in recipients)
-                                                          ListTile(
-                                                            title: Text(
-                                                              id == me
-                                                                  ? 'Myself'
-                                                                  : profiles[id]
-                                                                          ?.displayName ??
-                                                                      'Nimzo user',
-                                                            ),
-                                                            onTap: () =>
-                                                                Navigator.pop(
-                                                              c,
-                                                              id,
-                                                            ),
-                                                          ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                                if (id != null &&
-                                                    context.mounted)
-                                                  showRoomGiftSheet(
-                                                    context,
-                                                    widget.roomId,
-                                                    id,
-                                                  );
-                                              },
-                                        icon: const Icon(
-                                            Icons.card_giftcard_rounded,
-                                            color: NimzoStyle.pink),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ))),
+                                ],
+                              ))),
                     )),
               ),
               if (joined)
                 Positioned.fill(
                     child: RoomCosmeticEntrance(roomId: widget.roomId)),
-              if (joined)
-                const Positioned.fill(child: VerifiedOwnMembershipEntrance()),
               if (joined)
                 Positioned.fill(
                   child: VerifiedGiftBroadcast(

@@ -6,6 +6,7 @@ import '../../core/services/approved_media_bytes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 import 'store_purchase_keys.dart';
+import '../premium/membership_identity.dart';
 
 import 'store_visual_equipment.dart';
 import 'store_purchase_repository.dart';
@@ -107,7 +108,9 @@ class NimzoStoreSnapshot {
   final bool offline;
 
   factory NimzoStoreSnapshot.fromRows(Map<String, dynamic> payload,
-      {bool offline = false, DateTime? now}) {
+      {bool offline = false,
+      DateTime? now,
+      Set<String> maskedSlots = const {}}) {
     final current = (now ?? DateTime.now()).toUtc();
     final items = (payload['catalog'] as List)
         .map((e) =>
@@ -149,6 +152,7 @@ class NimzoStoreSnapshot {
           for (final e in payload['equipped'] as List)
             if (e is Map &&
                 e['category'] is String &&
+                !maskedSlots.contains(e['category']) &&
                 expiry.containsKey(e['item_id']))
               e['category'] as String: e['item_id'] as String,
         });
@@ -215,7 +219,12 @@ final nimzoStoreProvider =
     payload = Map<String, dynamic>.from(cached);
     offline = true;
   }
-  final snapshot = NimzoStoreSnapshot.fromRows(payload, offline: offline);
+  final membership = ref.watch(effectiveMembershipProvider(id));
+  final snapshot = NimzoStoreSnapshot.fromRows(payload,
+      offline: offline,
+      maskedSlots: membership.hasError
+          ? const {}
+          : membership.valueOrNull?.packSlots ?? const {});
   final dates = snapshot.expiresAt.values.whereType<DateTime>().toList()
     ..sort();
   final refresh = dates.isEmpty
@@ -326,6 +335,7 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
       ref.invalidate(nimzoStoreProvider);
       ref.invalidate(walletProvider);
       ref.invalidate(storeVisualEquipmentProvider);
+      ref.invalidate(effectiveMembershipProvider);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(result.status == 'already_owned'
               ? '${request.itemName} is already in your Backpack. No coins charged.'
@@ -530,6 +540,7 @@ class _NimzoLiveStoreState extends ConsumerState<NimzoLiveStore> {
       }
       ref.invalidate(nimzoStoreProvider);
       ref.invalidate(storeVisualEquipmentProvider);
+      ref.invalidate(effectiveMembershipProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(equipped

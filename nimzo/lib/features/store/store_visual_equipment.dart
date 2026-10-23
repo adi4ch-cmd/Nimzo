@@ -98,14 +98,16 @@ class EquippedCosmetic extends ConsumerWidget {
     required this.category,
     required this.child,
     this.fit = BoxFit.cover,
+    this.enabled = true,
   });
   final String? userId;
   final String category;
   final Widget child;
   final BoxFit fit;
+  final bool enabled;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (userId == null || userId!.isEmpty) return child;
+    if (!enabled || userId == null || userId!.isEmpty) return child;
     final media =
         ref.watch(storeVisualEquipmentProvider(userId!)).valueOrNull?[category];
     if (media == null) return child;

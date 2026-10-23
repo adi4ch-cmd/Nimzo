@@ -69,6 +69,7 @@ flutter:
     - assets/membership/voku/
     - assets/membership/remix/
     - assets/membership/hafla/
+    - assets/membership/packs/
     - assets/membership/tana-vip6-room-bg.webp
     - assets/membership/tana-vip6-locked-seat.png
     - assets/membership/tana-vip6-open-seat.png

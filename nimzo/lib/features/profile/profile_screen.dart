@@ -126,10 +126,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               verifiedMembership.hasError
                   ? null
                   : verifiedMembership.valueOrNull);
-          final packProfileCard = packTheme == null
+          final packProfileCard = packTheme == null ||
+                  verifiedMembership.valueOrNull?.hasSlot('Profile Card') !=
+                      true
               ? null
-              : MembershipPackInventory.forTier(
-                  packTheme.kind, packTheme.tier)[6].path;
+              : MembershipPackInventory.profileCard(
+                      packTheme.kind, packTheme.tier)
+                  .path;
           final hasProfileCard = ref
                   .watch(storeVisualEquipmentProvider(id))
                   .valueOrNull
@@ -159,14 +162,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             // uses original art of this verified VIP tier.
                             image: hasProfileCard
                                 ? null
-                                : cover != null
+                                : packProfileCard != null
                                     ? DecorationImage(
-                                        image: NetworkImage(cover),
+                                        image: AssetImage(packProfileCard),
                                         fit: BoxFit.cover,
                                       )
-                                    : packProfileCard != null
+                                    : cover != null
                                         ? DecorationImage(
-                                            image: AssetImage(packProfileCard),
+                                            image: NetworkImage(cover),
                                             fit: BoxFit.cover,
                                           )
                                         : null,
@@ -218,6 +221,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                         Positioned(
+                            top: 55,
+                            left: 80,
+                            right: 24,
+                            height: 65,
+                            child: MembershipPackProfileDecoration(userId: id)),
+                        Positioned(
                           top: 90,
                           left: 16,
                           child: Container(
@@ -231,24 +240,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 userId: id,
                                 size: 70,
                                 child: EquippedAvatar(
-                                userId: id,
-                                size: 70,
-                                child: NimzoEquippedAvatarFrame(
-                                  mediaId: null,
-                                  variant: id == me &&
-                                          ref.watch(
-                                                  nimzoOwnAvatarMediaProvider) ==
-                                              null
-                                      ? ref.watch(nimzoOwnAvatarFrameProvider)
-                                      : null,
-                                  avatar: NimzoAvatar(
-                                    name: p.displayName ?? p.username ?? 'N',
-                                    url: image('avatars', p.avatarPath),
+                                    userId: id,
                                     size: 70,
-                                    backgroundColor: NimzoStyle.ink,
-                                    online: id == me,
-                                  ),
-                                ))),
+                                    child: NimzoEquippedAvatarFrame(
+                                      mediaId: null,
+                                      variant: id == me &&
+                                              ref.watch(
+                                                      nimzoOwnAvatarMediaProvider) ==
+                                                  null
+                                          ? ref.watch(
+                                              nimzoOwnAvatarFrameProvider)
+                                          : null,
+                                      avatar: NimzoAvatar(
+                                        name:
+                                            p.displayName ?? p.username ?? 'N',
+                                        url: image('avatars', p.avatarPath),
+                                        size: 70,
+                                        backgroundColor: NimzoStyle.ink,
+                                        online: id == me,
+                                      ),
+                                    ))),
                           ),
                         ),
                       ],
@@ -268,16 +279,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: EquippedIdentity(
+                          child: MembershipPackNameplate(
                               userId: id,
-                              child: Text(
-                                  p.displayName ?? p.username ?? 'Nimzo user',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.w700,
-                                  ))),
+                              child: EquippedIdentity(
+                                  userId: id,
+                                  child: Text(
+                                      p.displayName ??
+                                          p.username ??
+                                          'Nimzo user',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w700,
+                                      )))),
                         ),
                         if (p.dateOfBirth != null)
                           Container(

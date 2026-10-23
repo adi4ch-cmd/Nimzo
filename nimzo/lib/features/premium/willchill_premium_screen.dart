@@ -8,6 +8,7 @@ import '../../core/providers/supabase_provider.dart';
 import '../../core/services/nimzo_content_sync.dart';
 import 'membership_catalog.dart';
 import 'membership_pack_gallery.dart';
+import 'membership_pack_controls.dart';
 import 'membership_media_view.dart';
 import 'membership_status.dart';
 import 'membership_purchase_keys.dart';
@@ -260,6 +261,8 @@ class _WillChillPremiumScreenState extends ConsumerState<WillChillPremiumScreen>
       backgroundColor: const Color(0xff0b1021),
       appBar: AppBar(
           title: const Text('NIMZO Membership'),
+          titleTextStyle: const TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
           centerTitle: true,
           backgroundColor: emerald,
           foregroundColor: Colors.white),
@@ -468,7 +471,10 @@ class _WillChillPremiumScreenState extends ConsumerState<WillChillPremiumScreen>
     final benefits = row.benefits;
     return Card(
         clipBehavior: Clip.antiAlias,
-        color: Colors.white,
+        color: const Color(0xff141d32),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: Color(0xff51452e))),
         child: Column(children: [
           SizedBox(
               height: 280,
@@ -540,12 +546,17 @@ class _WillChillPremiumScreenState extends ConsumerState<WillChillPremiumScreen>
                     style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
-                        color: emerald)),
+                        color: gold)),
                 Text(owned == row.tier ? 'Your active tier' : 'Tier details',
-                    style: const TextStyle(color: Color(0xff668273))),
+                    style: const TextStyle(color: Color(0xffb7c3d4))),
+                const SizedBox(height: 10),
+                MembershipPackControls(kind: row.kind, tier: row.tier),
+                const SizedBox(height: 18),
+                MembershipPackGallery(presentation: row, inline: true),
                 const SizedBox(height: 10),
                 TextButton.icon(
                   key: ValueKey('membership-view-set-${row.kind}-${row.tier}'),
+                  style: TextButton.styleFrom(foregroundColor: gold),
                   icon: const Icon(Icons.grid_view_rounded),
                   label: Text('View ${row.kind.toUpperCase()} ${row.tier} set'),
                   onPressed: () => showModalBottomSheet<void>(
@@ -590,9 +601,12 @@ class _WillChillPremiumScreenState extends ConsumerState<WillChillPremiumScreen>
 
   Widget _benefit(IconData icon, String title, String description) => ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: emerald),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-      subtitle: Text(description));
+      leading: Icon(icon, color: gold),
+      title: Text(title,
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w700)),
+      subtitle:
+          Text(description, style: const TextStyle(color: Color(0xffa9b8ca))));
 
   Widget _reward(MembershipStatus status) {
     final vip = _group == 'vip';

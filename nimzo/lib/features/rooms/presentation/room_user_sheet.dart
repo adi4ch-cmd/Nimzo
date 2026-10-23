@@ -1,4 +1,5 @@
 import '../../premium/membership_identity.dart';
+import '../../premium/membership_pack_runtime.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -226,17 +227,20 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                           children: [
                             InkWell(
                               onTap: openProfile,
-                              child: NimzoAvatar(
-                                name: p.displayName ?? 'N',
-                                size: 66,
-                                url: p.avatarPath == null
-                                    ? null
-                                    : ref
-                                        .read(supabaseProvider)
-                                        .storage
-                                        .from('avatars')
-                                        .getPublicUrl(p.avatarPath!),
-                              ),
+                              child: MembershipPackAvatar(
+                                  userId: p.id,
+                                  size: 66,
+                                  child: NimzoAvatar(
+                                    name: p.displayName ?? 'N',
+                                    size: 66,
+                                    url: p.avatarPath == null
+                                        ? null
+                                        : ref
+                                            .read(supabaseProvider)
+                                            .storage
+                                            .from('avatars')
+                                            .getPublicUrl(p.avatarPath!),
+                                  )),
                             ),
                             const SizedBox(width: 12),
                             Expanded(

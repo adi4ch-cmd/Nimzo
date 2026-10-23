@@ -15,14 +15,33 @@ import 'package:nimzo/features/store/room_cosmetic_entrance.dart';
 import 'package:nimzo/features/rooms/presentation/room_controller.dart';
 
 void main() {
+  testWidgets(
+      'explicit membership room wallpaper keeps Store theme out of that surface',
+      (tester) async {
+    const theme = CosmeticMedia('theme', 'Party Theme', 'Theme',
+        'assets/membership/tana-vip6-room-bg.webp', CosmeticMediaKind.image);
+    await tester.pumpWidget(ProviderScope(
+        overrides: [
+          storeVisualEquipmentProvider('owner')
+              .overrideWith((_) async => {'Party Theme': theme}),
+        ],
+        child: const MaterialApp(
+            home: EquippedCosmetic(
+                userId: 'owner',
+                category: 'Party Theme',
+                enabled: false,
+                child: Text('Room buttons remain visible')))));
+    await tester.pump();
+    expect(find.byType(Image), findsNothing);
+    expect(find.text('Room buttons remain visible'), findsOneWidget);
+  });
   setUp(() => SharedPreferences.setMockInitialValues({}));
   test('equipment RPC rejects unknown IDs and mismatched categories', () async {
     final db = SupabaseClient('https://example.supabase.co', 'test',
         httpClient: MockClient((request) async {
       if (request.url.path.endsWith('/nimzo_cosmetic_media')) {
         return http.Response('[]', 200,
-            request: request,
-            headers: {'content-type': 'application/json'});
+            request: request, headers: {'content-type': 'application/json'});
       }
       expect(request.url.path, endsWith('/rpc/nimzo_store_visual_equipment'));
       expect(jsonDecode(request.body), {
@@ -55,25 +74,32 @@ void main() {
     expect(result['Avatar Frame']?.id, 'nimzo-media-frame-gold-circle');
   });
 
-  test('approved remote equipment maps to a real network media asset', () async {
+  test('approved remote equipment maps to a real network media asset',
+      () async {
     final db = SupabaseClient('https://example.supabase.co', 'test',
         httpClient: MockClient((request) async {
       final path = request.url.path;
       if (path.endsWith('/rpc/nimzo_store_visual_equipment')) {
-        return http.Response(jsonEncode([
-          {'item_id': 'dynamic-frame-1', 'category': 'Avatar Frame'}
-        ]), 200, request: request,
+        return http.Response(
+            jsonEncode([
+              {'item_id': 'dynamic-frame-1', 'category': 'Avatar Frame'}
+            ]),
+            200,
+            request: request,
             headers: {'content-type': 'application/json'});
       }
       expect(path, endsWith('/nimzo_cosmetic_media'));
-      return http.Response(jsonEncode([
-        {
-          'item_id': 'dynamic-frame-1',
-          'thumbnail_url': 'https://cdn.example/thumb.png',
-          'asset_url': 'https://cdn.example/live-frame.svga',
-          'media_kind': 'svga'
-        }
-      ]), 200, request: request,
+      return http.Response(
+          jsonEncode([
+            {
+              'item_id': 'dynamic-frame-1',
+              'thumbnail_url': 'https://cdn.example/thumb.png',
+              'asset_url': 'https://cdn.example/live-frame.svga',
+              'media_kind': 'svga'
+            }
+          ]),
+          200,
+          request: request,
           headers: {'content-type': 'application/json'});
     }), authOptions: const AuthClientOptions(autoRefreshToken: false));
     final container = ProviderContainer(overrides: [
@@ -115,7 +141,7 @@ void main() {
     ));
     await tester.pump();
     final image = tester.widget<PublishedImage>(find.byType(PublishedImage));
-    expect(image.url,'https://cdn.example.com/room.png');
+    expect(image.url, 'https://cdn.example.com/room.png');
     expect(find.text('Original room body'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });

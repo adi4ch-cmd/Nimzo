@@ -1,7 +1,7 @@
 name: NIMZO v3 Source and Backend QA (No APK)
 on:
   push:
-    branches: [integration/nimzo-v3-dynamic-20261021]
+    branches: [integration/nimzo-v3-dynamic-20261021, feature/vip-svip-every-tier-packs-20261023]
   workflow_dispatch: {}
 permissions:
   contents: read
@@ -36,6 +36,7 @@ jobs:
       - name: Verify source lock and Python build guards
         run: |
           python3 tools/verify_nimzo_feature_lock.py
+          python3 tools/verify_membership_pack_assets.py
           python3 -m unittest discover -s tools/tests -p '*test.py'
           python3 -m unittest discover -s tools -p test_validate_vivox_sdk.py
       - name: Restore locked Flutter packages
@@ -63,6 +64,7 @@ jobs:
           python3 tools/test_membership_refresh_catalog.py --container "$SQL_CONTAINER" --fixture drive_expanded_ci --database membership_refresh_ci
           python3 tools/test_store_ownership_expiry.py --container "$SQL_CONTAINER" --database store_expiry_ci
           python3 tools/test_dynamic_memberships.py --container "$SQL_CONTAINER" --database membership_dynamic_ci
+          python3 tools/test_membership_equipment.py --container "$SQL_CONTAINER" --database membership_equip_ci
           python3 tools/test_dynamic_event_images.py --container "$SQL_CONTAINER" --database event_images_ci
           python3 tools/test_room_treasure.py --container "$SQL_CONTAINER" --database treasure_escrow_ci
           python3 tools/test_game_receipt_recovery.py --container "$SQL_CONTAINER" --database game_receipt_ci
