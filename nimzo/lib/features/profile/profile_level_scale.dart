@@ -8,24 +8,25 @@ class ProfileLevelScale {
   static const labels = ['Wealth', 'Charm', 'Active'];
   static const units = ['coins sent', 'diamonds received', 'activity points'];
   static const thresholds = [10000, 100, 20];
+  static const maxLevels = [270, 270, 140];
 
   static int levelFor(int kind, int total) {
     final n = math.max(0, total);
     final base = math.sqrt(n / thresholds[kind]).floor() + 1;
-    return base.clamp(1, 120);
+    return base.clamp(1, maxLevels[kind]);
   }
 
   static int requiredFor(int kind, int level) {
-    final n = (level - 1).clamp(0, 119);
+    final n = (level - 1).clamp(0, maxLevels[kind] - 1);
     return n * n * thresholds[kind];
   }
 
   static int nextRequirement(int kind, int level) =>
-      level >= 120 ? requiredFor(kind, 120)
+      level >= maxLevels[kind] ? requiredFor(kind, maxLevels[kind])
           : level * level * thresholds[kind];
 
   static double fraction(int kind, int level, int total) {
-    if (level >= 120) return 1;
+    if (level >= maxLevels[kind]) return 1;
     final start = requiredFor(kind, level);
     final end = nextRequirement(kind, level);
     if (end <= start) return 0;
@@ -48,7 +49,7 @@ class ProfileLevelScale {
   }
 
   static Color color(int kind, int level) {
-    if (level < 1 || level > 120 || kind < 0 || kind > 2) {
+    if (kind < 0 || kind > 2 || level < 1 || level > maxLevels[kind]) {
       return const Color(0xff64748b);
     }
     return _wealthColors[(band(level) + const [0, 2, 4][kind]) % 6];
