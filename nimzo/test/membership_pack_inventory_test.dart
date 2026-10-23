@@ -55,7 +55,15 @@ void main() {
       expect(svip[2].available, isFalse);
       expect(svip[3].available, tier <= 8,
           reason: 'Available image is a static same-tier entry icon');
-      for (final i in [4, 5, 6, 7]) {
+      expect(svip[5].available, tier >= 3 && tier <= 6,
+          reason: 'Orii offers original same-tier animated mic waves for SVIP 3–6');
+      if (svip[5].available) {
+        expect(svip[5].animated, isTrue);
+        expect(svip[5].sourceTier, tier);
+        expect(svip[5].sourceKind, 'svip');
+        expect(svip[5].thumbnail, isNotNull);
+      }
+      for (final i in [4, 6, 7]) {
         expect(svip[i].available, isFalse);
       }
     }
@@ -74,6 +82,10 @@ void main() {
           if (part.otherSide != null) {
             expect(paths, contains(part.otherSide),
                 reason: '$kind $tier: missing second nameplate image');
+          }
+          if (part.thumbnail != null) {
+            expect(paths, contains(part.thumbnail),
+                reason: '$kind $tier: missing original media thumbnail');
           }
         }
       }
