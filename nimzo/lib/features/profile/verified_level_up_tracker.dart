@@ -21,7 +21,7 @@ class VerifiedLevelUpTracker {
     if (old == null) return const [];
     return [
       for (var kind = 0; kind < 3; kind++)
-        if (clean[kind] > old[kind] && old[kind] > 0)
+        if (clean[kind] > old[kind])
           VerifiedLevelIncrease(kind: kind, from: old[kind], to: clean[kind]),
     ];
   }
