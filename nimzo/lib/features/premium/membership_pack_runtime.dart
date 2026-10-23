@@ -317,3 +317,34 @@ class MembershipPackRoomBanner extends StatelessWidget {
     ),
   );
 }
+
+/// Room-owner color atmosphere: a lightweight, transparent branded layer
+/// that leaves the existing room wallpaper and touch targets intact.
+class MembershipPackRoomAtmosphere extends StatelessWidget {
+  const MembershipPackRoomAtmosphere({
+    super.key, required this.ownerId, required this.child,
+  });
+  final String? ownerId;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => VerifiedMembershipPack(
+    userId: ownerId,
+    fallback: child,
+    builder: (theme) => DecoratedBox(
+      key: ValueKey('membership-pack-atmosphere-${theme.kind}-${theme.tier}'),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.dark.withValues(alpha: .17),
+            Colors.transparent,
+            theme.light.withValues(alpha: .11),
+          ],
+        ),
+      ),
+      child: child,
+    ),
+  );
+}
