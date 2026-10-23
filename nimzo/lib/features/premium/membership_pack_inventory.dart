@@ -4,7 +4,7 @@
 class MembershipPackArtwork {
   const MembershipPackArtwork._(
     this.title, this.path, this.source, this.sourceKind, this.sourceTier,
-    {this.otherSide});
+    {this.otherSide, this.thumbnail, this.format = 'image'});
 
   /// Validates provenance even in release builds (not just Dart asserts).
   factory MembershipPackArtwork.matching({
@@ -16,6 +16,8 @@ class MembershipPackArtwork {
     required String path,
     required String source,
     String? otherSide,
+    String? thumbnail,
+    String format = 'image',
   }) {
     if (targetKind != sourceKind || targetTier != sourceTier) {
       throw StateError(
@@ -23,12 +25,15 @@ class MembershipPackArtwork {
           '$sourceKind $sourceTier cannot be used for $targetKind $targetTier');
     }
     return MembershipPackArtwork._(
-        title, path, source, sourceKind, sourceTier, otherSide: otherSide);
+        title, path, source, sourceKind, sourceTier,
+        otherSide: otherSide, thumbnail: thumbnail, format: format);
   }
 
   const MembershipPackArtwork.missing(this.title)
       : path = null,
         otherSide = null,
+        thumbnail = null,
+        format = 'image',
         source = 'No same-kind, same-tier original found',
         sourceKind = null,
         sourceTier = null;
@@ -36,6 +41,9 @@ class MembershipPackArtwork {
   final String title;
   final String? path;
   final String? otherSide;
+  final String? thumbnail;
+  final String format;
+  bool get animated => format == 'svga';
   final String source;
   final String? sourceKind;
   final int? sourceTier;
@@ -52,7 +60,7 @@ class MembershipPackInventory {
     'ID nameplate',
     'Entry visual (static)',
     'Chat bubble',
-    'Mic visual (static)',
+    'Mic effect / visual',
     'Profile decoration',
     'Room background',
   ];
@@ -71,6 +79,26 @@ class MembershipPackInventory {
     final vipArt = vip && tier <= 7;
     final svipArt = !vip && tier <= 8;
     final suffix = tier == 1 ? '' : '_v$tier';
+    // Orii source media is verified in expanded Drive catalog and names its
+    // exact SVIP tier; only those four tiers get this animated mic asset.
+    const svipMic = <int, (String, String)>{
+      3: (
+        'assets/drive_catalog_expanded/096e6ca992bb1ff8761f2b0fc6844375d46b01c0af8295592dd991a1d8d4d80f.svga',
+        'assets/drive_catalog_expanded/eeb418e8623ef24fc16d9752f1103c45042f4a425194e55d994b9438c20f120e.png',
+      ),
+      4: (
+        'assets/drive_catalog_expanded/2af1763a40b7510780820cfd2f25e039bf621e46df0f5427fb0caef31ebd6b1d.svga',
+        'assets/drive_catalog_expanded/c2380fff578b5f27a48c6c09f117d248993d174ee59a6d56499cf1bac03c46.png',
+      ),
+      5: (
+        'assets/drive_catalog_expanded/c1cc37dc26d4f78b5c3626021f95ee12423c5e6494199b124a6194d6f09f7292.svga',
+        'assets/drive_catalog_expanded/7b6a8b48920537247d8a78fb12dd35a571de36a7b92f12f0e91afd98c9e2bf54.png',
+      ),
+      6: (
+        'assets/drive_catalog_expanded/e05d78c6b7ca7c384828c4fd240c2fb5a8e55ddd345c8afc82929030f58ce377.svga',
+        'assets/drive_catalog_expanded/eaf13245e23e2be50b4601ae3af9a27fb8e9f78d92d56ff80ed71c696c47034b.png',
+      ),
+    };
 
     MembershipPackArtwork pick(String title, String? path, {String? otherSide}) {
       if (path == null) return MembershipPackArtwork.missing(title);
@@ -96,8 +124,19 @@ class MembershipPackInventory {
           : null),
       pick('Chat bubble',
         vipFull ? '$root/vip/icon_vip${tier}_4.png' : null),
-      pick('Mic visual (static)',
-        vipFull ? '$root/vip/icon_vip${tier}_5.png' : null),
+      if (!vip && svipMic.containsKey(tier))
+        MembershipPackArtwork.matching(
+          title: 'Mic effect / visual',
+          targetKind: kind, targetTier: tier,
+          sourceKind: 'svip', sourceTier: tier,
+          source: 'Orii SVIP $tier original mic_wave_svip$tier.svga',
+          path: svipMic[tier]!.$1,
+          thumbnail: svipMic[tier]!.$2,
+          format: 'svga',
+        )
+      else
+        pick('Mic effect / visual',
+          vipFull ? '$root/vip/icon_vip${tier}_5.png' : null),
       pick('Profile decoration',
         vipFull ? '$root/vip/icon_vip${tier}_6.${tier == 1 ? 'webp' : 'png'}' : null),
       const MembershipPackArtwork.missing('Room background'),
