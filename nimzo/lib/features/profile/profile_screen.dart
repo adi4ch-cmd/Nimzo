@@ -1,4 +1,5 @@
 import '../premium/membership_identity.dart';
+import '../premium/membership_pack_runtime.dart';
 import '../store/store_visual_equipment.dart';
 import '../../core/widgets/master_ui.dart';
 
@@ -206,7 +207,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               color: Colors.white,
                               shape: BoxShape.circle,
                             ),
-                            child: EquippedAvatar(
+                            child: MembershipPackAvatar(
+                                userId: id,
+                                size: 70,
+                                child: EquippedAvatar(
                                 userId: id,
                                 size: 70,
                                 child: NimzoEquippedAvatarFrame(
@@ -224,7 +228,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     backgroundColor: NimzoStyle.ink,
                                     online: id == me,
                                   ),
-                                )),
+                                ))),
                           ),
                         ),
                       ],
