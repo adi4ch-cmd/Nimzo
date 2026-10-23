@@ -10,7 +10,6 @@ permissions:
   contents: write
 jobs:
   import:
-    if: ${{ !startsWith(github.event.head_commit.message, 'chore(levels): persist original Falla') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
