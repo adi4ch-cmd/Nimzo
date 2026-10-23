@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,7 @@ import '../../core/theme/app_theme.dart';
 import 'profile_repository.dart';
 import 'profile_screen.dart';
 import 'profile_level_scale.dart';
+import 'verified_level_up_tracker.dart';
 
 /// Tingle-reference wealth/charm/activity presentation with NIMZO data.
 /// Level, earned progress and the next threshold remain server-derived.
@@ -24,10 +27,64 @@ class LevelsScreen extends ConsumerStatefulWidget {
 
 class _LevelState extends ConsumerState<LevelsScreen> {
   late int selected;
+  Timer? _refreshTimer;
+  final _verifiedUpdates = VerifiedLevelUpTracker();
+
   @override
   void initState() {
     super.initState();
     selected = widget.initialKind;
+    // The existing profile provider is a FutureProvider, not a live stream.
+    // Poll only while this screen is visible; every response is read from
+    // authoritative Supabase counters and never grants XP from the client.
+    _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (!mounted || ModalRoute.of(context)?.isCurrent == false) return;
+      final id = widget.userId ?? ref.read(currentUserIdProvider);
+      if (id != null) ref.invalidate(profileProvider(id));
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  void _showVerifiedIncrease(VerifiedLevelIncrease upgrade) {
+    if (!mounted) return;
+    final title = tabs[upgrade.kind];
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: const Color(0xff152143),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        title: const Text('LEVEL UP!',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Color(0xffffda72),
+                fontSize: 26, fontWeight: FontWeight.w900)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(child: LevelBadge(kind: upgrade.kind, level: upgrade.to)),
+            const SizedBox(height: 18),
+            Text('$title Level ${upgrade.to}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white,
+                    fontSize: 21, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 7),
+            Text('Level ${upgrade.from} → ${upgrade.to}',
+                style: const TextStyle(color: Color(0xffd1d9eb))),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Continue',
+                  style: TextStyle(color: Color(0xffffda72)))),
+        ],
+      ),
+    );
   }
 
   static const bands = <({int from, int to, String label, Color color})>[
@@ -112,6 +169,18 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                 value: ref.watch(profileProvider(id)),
                 onRetry: () => ref.invalidate(profileProvider(id)),
                 builder: (p) {
+                  final verifiedLevels = [
+                    p.wealthLevel, p.charmLevel, p.activeLevel,
+                  ];
+                  final verifiedIncreases = _verifiedUpdates.observe(
+                    id, verifiedLevels,
+                  );
+                  if (id == ref.read(currentUserIdProvider) &&
+                      verifiedIncreases.isNotEmpty) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _showVerifiedIncrease(verifiedIncreases.first);
+                    });
+                  }
                   final level = [
                     p.wealthLevel,
                     p.charmLevel,
@@ -239,6 +308,43 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                     fontSize: 15,
                     color: Color(0xff2b243c),
                     fontWeight: FontWeight.w900)),
+            const SizedBox(height: 8),
+            const Text(
+              'Level 0–100 badge catalog. Badges unlock automatically from verified progress.',
+              style: TextStyle(color: Color(0xff84798e), fontSize: 12),
+            ),
+            const SizedBox(height: 12),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 101,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 1.18,
+                crossAxisSpacing: 7,
+                mainAxisSpacing: 7,
+              ),
+              itemBuilder: (context, index) => Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 7),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FittedBox(child: LevelBadge(kind: selected, level: index)),
+                      const SizedBox(height: 5),
+                      Text('Lv. $index',
+                        style: const TextStyle(fontSize: 10,
+                            fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text('Level color bands',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
             const SizedBox(height: 12),
             for (final band in bands)
               Container(
