@@ -1,0 +1,36 @@
+name: NIMZO Verified Levels QA (no APK)
+
+on:
+  push:
+    branches:
+      - feature/falla-levels-verified-20261024
+  pull_request:
+    paths:
+      - 'nimzo/lib/features/profile/**'
+      - 'nimzo/test/**'
+      - '.github/workflows/nimzo-levels-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verified-levels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Install Flutter dependencies
+        working-directory: nimzo
+        run: flutter pub get
+      - name: Static analysis
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Progress and verified level-up unit tests
+        working-directory: nimzo
+        run: flutter test --reporter expanded test/profile_level_scale_test.dart test/verified_level_up_tracker_test.dart
