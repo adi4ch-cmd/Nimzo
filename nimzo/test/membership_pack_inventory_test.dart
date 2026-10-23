@@ -78,6 +78,9 @@ void main() {
   test('all selected genuine assets resolve in Flutter asset manifest', () async {
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
     final paths = manifest.listAssets().toSet();
+    expect(paths, contains('assets/membership/tana-vip6-locked-seat.png'));
+    expect(paths, contains('assets/membership/tana-vip6-open-seat.png'));
+    expect(paths, contains('assets/membership/tana-vip6-room-bg.webp'));
     for (final kind in ['vip', 'svip']) {
       for (var tier = 1; tier <= 10; tier++) {
         for (final part in MembershipPackInventory.forTier(kind, tier)) {
