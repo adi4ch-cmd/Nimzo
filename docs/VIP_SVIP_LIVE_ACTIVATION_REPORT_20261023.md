@@ -16,6 +16,8 @@ PR #44 continues the existing integration branch; existing purchases, membership
 
 21 locally available authorized archives were scanned again, including102040 nested entries. Prior extraction inventories were checked first.105 selected original slot records have exact source kind/tier, package/source paths and SHA-256 checksums.39 previously unbundled original files were added, reusing all duplicate bytes already in the repository. Original bytes remain unchanged; transparent source-canvas crop metadata positions the frame correctly over the avatar.
 
+Previous-branch audit additionally covered69 remote refs,51 source inventory/catalog blobs and six embedded archives. No additional source-verified gap fillers were found. See `membership-previous-branches-audit-20261023.md`. Generic Store assets, static entry badges, screenshots and unlabeled media were not relabeled as missing membership originals.
+
 Sources: WillChill VIP1–5 frames/bubbles; YoHo VIP6–10 frames and VIP1–10 medals/nameplates; Voku original empty SVIP1–10 frames; Hafla VIP1–6 entrances and SVIP medals/nameplates; Orii VIP1–6 cards/mic waves, SVIP1–6 entrances/decorative strips and SVIP3–6 mic waves; Falla SVIP7–10 mic waves; BGChat VIP6 bubble; Tana VIP6 room wallpaper. Existing YoHo/Falla hero/badge presentations are retained.
 
 All105 original records were decoded/rendered in Flutter host tests;32 SVGA animations were checked on every frame for visible, changing pixels. This establishes **host rendering**, not Android playback or a real voice-room end-to-end test. Static images are reported as originals, not animations. Perk portraits, static entrance icons, Hilo throne graphics and membership-page backgrounds were rejected as substitutes for other roles.
@@ -71,13 +73,13 @@ Post-deployment security advisors show no missing RLS policy on either new table
 
 ## Validation and release gate
 
-- Local full Flutter suite:587 passed on the implementation snapshot; later room-theme/realtime and inline-preview refinements have focused regression coverage. Exact final committed source is also sent to the full CI suite.
-- Full analyzer:0 errors,0 warnings;65 informational style notices.
+- Full GitHub workflow40025834526 passed on72f5832:588 Flutter tests,34 Python checks, all SQL suites and105 original-media records. Later refinements have focused regression coverage and are sent to the same full CI workflow.
+- Full analyzer:0 errors,0 warnings; informational style notices remain.
 - Python build/source checks:34 passed; original checksum validator105/105.
 - Existing membership SQL suites: restored memberships, presentation policy, checked purchase/replay, animated presentation schema all passed.
 - New SQL: all20 exact-tier apply/read/remove, owner/observer reads, mismatched/inactive/blocked/anonymous denial, no direct client writes, expiry, manual slot overrides, owner wallpaper permission and later Store theme switching passed.
 - Concurrent Apply versus individual Store equip serializes under the same transaction lock. All20 selections survive independent connections/account changes.
-- Flutter controls: all20 Apply/Remove requests and server-confirmed state changes tested. Entitlement without Apply stays unequipped. Revocation during delayed entrance catalog lookup prevents playback; active removal stops playback. Real original mic motion/lifecycle test passed.
+- Flutter controls: all20 Apply/Remove requests, server-confirmed state changes and actual avatar/chat wrapper activation/removal tested. Entitlement without Apply stays unequipped. Revocation during delayed entrance catalog lookup prevents playback; active removal stops playback. Real original mic motion/lifecycle test passed.
 - Android tests for this branch: **Not tested**. No new app/test APK built, following the final-build gate. Earlier1.0.41 Android15 install testing does not verify these new features.
 - Release blockers: genuine original-media gaps above; authenticated two-user Android profile/room/chat/restart/speech/expiry acceptance. Vivox remains owner-deferred. There is no final-complete APK or new download URL for this branch.
 

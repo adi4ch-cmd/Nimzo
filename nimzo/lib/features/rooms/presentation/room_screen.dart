@@ -479,15 +479,16 @@ class _State extends ConsumerState<RoomScreen> {
       });
 
   bool _hasChatBubble(String userId) =>
-      ref
-              .watch(effectiveMembershipProvider(userId))
-              .valueOrNull
-              ?.hasSlot('Chat Bubble') ==
-          true ||
+      _hasMembershipSlot(userId, 'Chat Bubble') ||
       ref
               .watch(storeVisualEquipmentProvider(userId))
               .valueOrNull?['Chat Bubble'] !=
           null;
+
+  bool _hasMembershipSlot(String userId, String slot) {
+    final state = ref.watch(effectiveMembershipProvider(userId));
+    return !state.hasError && state.valueOrNull?.hasSlot(slot) == true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -505,9 +506,11 @@ class _State extends ConsumerState<RoomScreen> {
     final membershipBackground =
         ref.watch(membershipRoomBackgroundProvider(widget.roomId)).valueOrNull;
     final ownerId = room.valueOrNull?.ownerId;
-    final verifiedOwner = ownerId == null
+    final ownerState = ownerId == null
         ? null
-        : ref.watch(effectiveMembershipProvider(ownerId)).valueOrNull;
+        : ref.watch(effectiveMembershipProvider(ownerId));
+    final verifiedOwner =
+        ownerState?.hasError == true ? null : ownerState?.valueOrNull;
     final showVip6Seats = verifiedOwner?.packKind == 'vip' &&
         verifiedOwner?.packTier == 6 &&
         roomTheme == 'nimzo_white';
@@ -1067,8 +1070,10 @@ class _State extends ConsumerState<RoomScreen> {
                                                                   BoxDecoration(
                                                                 color: ref.watch(storeVisualEquipmentProvider(msg.userId)).valueOrNull?['Chat Bubble'] ==
                                                                             null &&
-                                                                        ref.watch(effectiveMembershipProvider(msg.userId)).valueOrNull?.hasSlot('Chat Bubble') !=
-                                                                            true
+                                                                        !_hasMembershipSlot(
+                                                                            msg
+                                                                                .userId,
+                                                                            'Chat Bubble')
                                                                     ? NimzoStyle
                                                                         .surface
                                                                     : Colors

@@ -42,6 +42,8 @@ void main() {
                   ...state,
                   'pack_kind': kind,
                   'pack_tier': tier,
+                  'primary_kind': kind,
+                  'primary_tier': tier,
                   'pack_slots': slots
                 };
               } else if (request.url.path.endsWith('remove_full_set')) {
@@ -49,6 +51,8 @@ void main() {
                   ...state,
                   'pack_kind': null,
                   'pack_tier': 0,
+                  'primary_kind': 'svip',
+                  'primary_tier': tier,
                   'pack_slots': []
                 };
               } else {
@@ -68,15 +72,31 @@ void main() {
             ],
             child: MaterialApp(
                 home: Scaffold(
-                    body: MembershipPackControls(kind: kind, tier: tier)))));
+                    body: Column(children: [
+              MembershipPackControls(kind: kind, tier: tier),
+              const MembershipPackAvatar(
+                  userId: 'member',
+                  size: 64,
+                  child: CircleAvatar(child: Text('Actual avatar'))),
+              const MembershipPackChatBubble(
+                  userId: 'member', child: Text('Real message')),
+            ])))));
         await tester.pumpAndSettle();
         await tester.tap(find.byKey(ValueKey('apply-full-$kind-$tier')));
         await tester.pumpAndSettle();
         expect(find.widgetWithText(FilledButton, 'Applied'), findsOneWidget);
+        expect(find.byKey(ValueKey('membership-pack-avatar-$kind-$tier')),
+            findsOneWidget);
+        expect(find.byKey(ValueKey('membership-pack-chat-$kind-$tier')),
+            findsOneWidget);
         await tester
             .tap(find.byKey(const ValueKey('remove-full-membership-set')));
         await tester.pumpAndSettle();
         expect(find.text('Ready to apply'), findsOneWidget);
+        expect(find.byKey(ValueKey('membership-pack-avatar-$kind-$tier')),
+            findsNothing);
+        expect(find.byKey(ValueKey('membership-pack-chat-$kind-$tier')),
+            findsNothing);
         expect(calls, [
           '/rest/v1/rpc/nimzo_membership_apply_full_set',
           '/rest/v1/rpc/nimzo_membership_remove_full_set'
