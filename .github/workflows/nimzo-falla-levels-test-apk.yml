@@ -291,10 +291,10 @@ jobs:
                       inside='assets/flutter_assets/'+rel
                       src=Path('nimzo')/rel
                       assert apk.read(inside)==src.read_bytes(), f'APK missing or changed: {inside}'
-          for cat in ('wealth','charm','active'):
-              for suffix in ('','_icon_bg'):
-                  rel=f'assets/falla_levels/level_up/{cat}{suffix}.webp'
-                  assert apk.read('assets/flutter_assets/'+rel)==(Path('nimzo')/rel).read_bytes()
+              for cat in ('wealth','charm','active'):
+                  for suffix in ('','_icon_bg'):
+                      rel=f'assets/falla_levels/level_up/{cat}{suffix}.webp'
+                      assert apk.read('assets/flutter_assets/'+rel)==(Path('nimzo')/rel).read_bytes()
           print('APK PASS: 683 original level badges + 6 Falla level-up images embedded')
           PY
       - name: Build and verify smaller ARM64 APK
