@@ -232,7 +232,7 @@ class MembershipPackEntranceBanner extends StatelessWidget {
                   ? progress / .18
                   : progress > .82
                       ? (1 - progress) / .18
-                      : 1).clamp(0.0, 1.0),
+                      : 1).clamp(0.0, 1.0).toDouble(),
           child: Transform.translate(
             offset: Offset(0, 25 * (1 - progress) - 24 * progress),
             child: child,
