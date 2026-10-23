@@ -101,7 +101,7 @@ class RoomRepository {
   }
 
   /// Room creation is performed by the SECURITY DEFINER RPC so the owner,
-  /// fifteen mic seats and membership are initialized atomically server-side.
+  /// ten mic seats and membership are initialized atomically server-side.
   Future<String> create(
     String name, {
     String? country,
