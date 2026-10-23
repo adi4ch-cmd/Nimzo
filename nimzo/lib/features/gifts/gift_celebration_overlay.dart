@@ -1,3 +1,4 @@
+import '../../core/services/approved_media_bytes.dart';
 import 'private_animal_gifts.dart';
 import 'hall_of_fame_vap_overlay.dart';
 
@@ -8,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'gift_artwork.dart';
 import 'nimzo_gift_control_art.dart';
 import 'gift_svga_overlay.dart';
+import 'remote_gift_svga_overlay.dart';
+import 'gift_repository.dart';
 import 'gift_video_overlay.dart';
 import '../../core/utils/formatters.dart';
 
@@ -23,11 +26,15 @@ class NimzoGiftCelebration extends StatefulWidget {
     required this.unitPrice,
     required this.onFinished,
     this.assetPath,
+    this.thumbnailPublication,
+    this.requiresThumbnailPublication = false,
     this.scope = 'room',
   });
   final String giftName, sender, recipient, scope;
   final int quantity, unitPrice;
   final String? assetPath;
+  final ApprovedMediaPublication? thumbnailPublication;
+  final bool requiresThumbnailPublication;
   final VoidCallback onFinished;
 
   @override
@@ -45,20 +52,19 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
     final milliseconds = widget.unitPrice >= 5000000
         ? 4700
         : widget.unitPrice >= 1000000
-        ? 3700
-        : widget.unitPrice >= 10000
-        ? 2600
-        : 1700;
-    _controller =
-        AnimationController(
-          vsync: this,
-          duration: Duration(milliseconds: milliseconds),
-        )..addStatusListener((status) {
-          if (status == AnimationStatus.completed && !_finished) {
-            _finished = true;
-            widget.onFinished();
-          }
-        });
+            ? 3700
+            : widget.unitPrice >= 10000
+                ? 2600
+                : 1700;
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: milliseconds),
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed && !_finished) {
+          _finished = true;
+          widget.onFinished();
+        }
+      });
     _controller.forward();
   }
 
@@ -74,10 +80,10 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
     final accent = widget.unitPrice >= 5000000
         ? const Color(0xfff6c868)
         : premium
-        ? const Color(0xffd79bfa)
-        : widget.unitPrice >= 10000
-        ? const Color(0xff79d5e9)
-        : const Color(0xffb0edb9);
+            ? const Color(0xffd79bfa)
+            : widget.unitPrice >= 10000
+                ? const Color(0xff79d5e9)
+                : const Color(0xffb0edb9);
     final narrow = MediaQuery.sizeOf(context).width < 360;
     return IgnorePointer(
       child: Material(
@@ -90,8 +96,8 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
               final fade = t < .14
                   ? t / .14
                   : t > .87
-                  ? (1 - t) / .13
-                  : 1.0;
+                      ? (1 - t) / .13
+                      : 1.0;
               final scale = .72 + .28 * Curves.easeOutCubic.transform(t);
               return Opacity(
                 opacity: fade.clamp(0.0, 1.0),
@@ -186,6 +192,10 @@ class _NimzoGiftCelebrationState extends State<NimzoGiftCelebration>
                                         child: GiftArtwork(
                                           name: widget.giftName,
                                           assetPath: widget.assetPath,
+                                          publication:
+                                              widget.thumbnailPublication,
+                                          requiresPublication: widget
+                                              .requiresThumbnailPublication,
                                         ),
                                       ),
                                       const Positioned(
@@ -305,11 +315,20 @@ void showSettledPersonalGiftCelebration(
   required int quantity,
   required int unitPrice,
   String? assetPath,
+  ApprovedMediaPublication? thumbnailPublication,
+  bool requiresThumbnailPublication = false,
   String? recipientName,
   String? videoUrl,
+  GiftPlaybackMedia? media,
+  bool requiresAnimation = false,
 }) {
   final protectedGift = privateAnimalGiftIdForName(giftName) != null;
-  if (protectedGift && videoUrl == null) return;
+  final source = media?.url ?? videoUrl;
+  final originalSvga = freeGiftAnimationForName(giftName);
+  if (protectedGift && source == null) return;
+  if (requiresAnimation && source == null && originalSvga == null) return;
+  if (media != null && !const {'svga', 'vap', 'mp4'}.contains(media.kind))
+    return;
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return;
   late OverlayEntry entry;
@@ -325,44 +344,63 @@ void showSettledPersonalGiftCelebration(
   final recipient = verifiedRecipient != null && verifiedRecipient.isNotEmpty
       ? verifiedRecipient
       : 'a member';
-  final originalSvga = freeGiftAnimationForName(giftName);
-  entry = OverlayEntry(
-    builder: (_) => protectedGift && videoUrl != null
-        ? HallOfFameVapOverlay(
-            source: videoUrl,
-            sender: 'You',
-            recipient: recipient,
-            giftName: giftName,
-            quantity: quantity,
-            onFinished: dismiss,
-          )
-        : videoUrl != null
-        ? GiftVideoOverlay(
-            source: videoUrl,
-            sender: 'You',
-            recipient: recipient,
-            giftName: '$giftName × $quantity',
-            muted: true,
-            onFinished: dismiss,
-          )
-        : originalSvga != null
-        ? FreeGiftSvgaOverlay(
-            source: originalSvga,
-            giftName: giftName,
-            sender: 'You',
-            recipient: recipient,
-            quantity: quantity,
-            onFinished: dismiss,
-          )
-        : NimzoGiftCelebration(
-            giftName: giftName,
-            sender: 'You',
-            recipient: recipient,
-            quantity: quantity,
-            unitPrice: unitPrice,
-            assetPath: assetPath,
-            onFinished: dismiss,
-          ),
-  );
+  entry = OverlayEntry(builder: (_) {
+    if (source != null && media?.kind == 'svga') {
+      return RemoteGiftSvgaOverlay(
+        source: source,
+        publication: media!.publication,
+        soundEnabled: media.soundEnabled,
+        giftName: giftName,
+        sender: 'You',
+        recipient: recipient,
+        quantity: quantity,
+        onFinished: dismiss,
+      );
+    }
+    if (source != null && (protectedGift || media?.kind == 'vap')) {
+      return HallOfFameVapOverlay(
+        source: source,
+        publication: media?.publication,
+        muted: media?.publication != null && !(media?.soundEnabled ?? false),
+        sender: 'You',
+        recipient: recipient,
+        giftName: giftName,
+        quantity: quantity,
+        onFinished: dismiss,
+      );
+    }
+    if (source != null) {
+      return GiftVideoOverlay(
+        source: source,
+        publication: media?.publication,
+        sender: 'You',
+        recipient: recipient,
+        giftName: '$giftName × $quantity',
+        muted: !(media?.soundEnabled ?? false),
+        onFinished: dismiss,
+      );
+    }
+    if (originalSvga != null) {
+      return FreeGiftSvgaOverlay(
+        source: originalSvga,
+        giftName: giftName,
+        sender: 'You',
+        recipient: recipient,
+        quantity: quantity,
+        onFinished: dismiss,
+      );
+    }
+    return NimzoGiftCelebration(
+      giftName: giftName,
+      sender: 'You',
+      recipient: recipient,
+      quantity: quantity,
+      unitPrice: unitPrice,
+      assetPath: assetPath,
+      thumbnailPublication: thumbnailPublication,
+      requiresThumbnailPublication: requiresThumbnailPublication,
+      onFinished: dismiss,
+    );
+  });
   overlay.insert(entry);
 }

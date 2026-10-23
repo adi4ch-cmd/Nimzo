@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'tingle_video_ui_test.dart' show capture;
 
@@ -119,6 +120,7 @@ class FixtureVoice implements VoiceService {
 }
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   PackageInfo.setMockInitialValues(
     appName: 'Nimzo',
     packageName: 'io.nimzo.app',

@@ -36,7 +36,7 @@ void main() {
     )));
     await tester.pumpAndSettle();
     expect(find.textContaining('Static artwork'), findsOneWidget);
-    expect(find.text('View artwork again'), findsOneWidget);
+    expect(find.byKey(const ValueKey('nimzo-preview-replay')), findsNothing);
     expect(find.text('Replay animation'), findsNothing);
   });
 }

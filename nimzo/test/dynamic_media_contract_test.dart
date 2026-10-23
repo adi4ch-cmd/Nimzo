@@ -37,23 +37,32 @@ void main() {
   test('Dynamic banner validates date window, active flag and URL path', () {
     final now = DateTime.utc(2026, 10, 21);
     Map<String, dynamic> row(String path) => {
-      'id': 'banner-1', 'title': 'Hello', 'image_path': path,
-      'active': true, 'start_at': '2026-10-20T00:00:00Z',
-      'end_at': '2026-10-22T00:00:00Z',
-    };
+          'id': 'banner-1',
+          'title': 'Hello',
+          'image_path': path,
+          'active': true,
+          'start_at': '2026-10-20T00:00:00Z',
+          'end_at': '2026-10-22T00:00:00Z',
+        };
     NimzoEventBanner? parse(Map<String, dynamic> data) =>
         NimzoEventBanner.fromRow(data,
-          resolveStorage: (path) => 'https://cdn.example.com/$path',
-          now: now);
+            resolveStorage: (path) => 'https://cdn.example.com/$path',
+            now: now);
     expect(parse(row('campaign.jpg'))?.imageUrl,
         'https://cdn.example.com/campaign.jpg');
     expect(parse(row('https://cdn.example.com/promo.jpg'))?.title, 'Hello');
     expect(parse(row('../../secrets')), isNull);
+    expect(parse(row('%2e%2e/private')), isNull);
+    expect(parse(row('campaign.jpg?override=x')), isNull);
+    expect(parse({...row('campaign.jpg'), 'start_at': 'invalid'}), isNull);
+    expect(parse({...row('campaign.jpg'), 'end_at': 'invalid'}), isNull);
+    expect(parse({...row('campaign.jpg'), 'title': 42}), isNull);
+    expect(parse({...row('campaign.jpg'), 'target': <String>[]}), isNull);
     expect(parse(row('http://remote.bad/item')), isNull);
     expect(parse({...row('campaign.jpg'), 'active': false}), isNull);
-    expect(parse({...row('campaign.jpg'),
-      'end_at': '2026-10-20T00:00:00Z'}), isNull);
-    expect(parse({...row('campaign.jpg'),
-      'start_at': '2026-10-22T00:00:00Z'}), isNull);
+    expect(parse({...row('campaign.jpg'), 'end_at': '2026-10-20T00:00:00Z'}),
+        isNull);
+    expect(parse({...row('campaign.jpg'), 'start_at': '2026-10-22T00:00:00Z'}),
+        isNull);
   });
 }

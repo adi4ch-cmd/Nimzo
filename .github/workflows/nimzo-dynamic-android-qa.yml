@@ -18,6 +18,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Enforce combined v3 APK build hold
+        run: python3 tools/verify_prebuild_acceptance.py --voice-disabled-workflow
+
       - name: Verify NIMZO FEATURES lock before building
         run: python3 tools/verify_nimzo_feature_lock.py
 

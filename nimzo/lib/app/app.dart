@@ -1,3 +1,4 @@
+import '../core/services/approved_media_bytes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,15 +34,21 @@ class NimzoApp extends ConsumerWidget {
     ref.listen(nimzoContentRevisionsProvider, (previous, next) {
       final rows = next.valueOrNull;
       if (rows == null) return;
-      final changed = changedContentChannels(previous?.valueOrNull, rows);
+      final changed =
+          ref.read(nimzoContentRevisionTrackerProvider).accept(rows);
       if (changed.contains('gifts')) ref.invalidate(giftCatalogProvider);
       if (changed.contains('store')) {
         ref.invalidate(nimzoStoreProvider);
         ref.invalidate(storeVisualEquipmentProvider);
       }
-      if (changed.contains('settings')) ref.invalidate(nimzoRemoteSettingsProvider);
-      if (changed.contains('banners')) ref.invalidate(nimzoEventBannersProvider);
+      if (changed.contains('settings'))
+        ref.invalidate(nimzoRemoteSettingsProvider);
+      if (changed.contains('banners'))
+        ref.invalidate(nimzoEventBannersProvider);
       if (changed.contains('games')) ref.invalidate(nimzoLiveGameFlagsProvider);
+    });
+    ref.listen(currentUserIdProvider, (previous, next) {
+      if (previous != next) ApprovedMediaBytes.clearCache();
     });
     final id = ref.watch(currentUserIdProvider);
     if (id != null) {

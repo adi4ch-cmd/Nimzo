@@ -1,3 +1,4 @@
+import 'package:nimzo/core/services/nimzo_content_sync.dart';
 import 'package:nimzo/features/store/store_visual_equipment.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -37,7 +38,7 @@ class PreviewVoice implements VoiceService {
 
 void main() {
   for (final width in [320.0, 360.0, 390.0]) {
-    testWidgets('audio room sheets and ten seats fit ${width}dp',
+    testWidgets('audio room sheets and fifteen seats fit ${width}dp',
         (tester) async {
       tester.view.physicalSize = Size(width, width * 2400 / 1080);
       tester.view.devicePixelRatio = 1;
@@ -52,6 +53,7 @@ void main() {
       await tester.pumpWidget(ProviderScope(
           overrides: [
             supabaseProvider.overrideWithValue(db),
+            nimzoContentRevisionsProvider.overrideWith((_) => const Stream.empty()),
             verifiedGiftAnimationProvider
                 .overrideWith((ref, args) => const Stream.empty()),
             roomDiamondStatusProvider('room').overrideWith(
@@ -65,7 +67,7 @@ void main() {
             roomRepositoryProvider.overrideWithValue(ReconnectRepository(db)),
             roomProvider('room').overrideWith((_) async => room),
             seatsProvider('room').overrideWith((_) =>
-                Stream.value(List.generate(10, (i) => MicSeat(seatNo: i + 1)))),
+                Stream.value(List.generate(15, (i) => MicSeat(seatNo: i + 1)))),
             roomSeatProfilesProvider('room').overrideWith((_) async => {}),
             onlineCountProvider('room')
                 .overrideWith((_) => const Stream.empty()),
@@ -93,7 +95,7 @@ void main() {
           IconButtonTheme.of(toolsContext).style?.foregroundColor?.resolve({}),
           const Color(0xfff7ebff),
           reason: 'Room controls contrast with Royal Plum');
-      for (var n = 1; n <= 10; n++) {
+      for (var n = 1; n <= 15; n++) {
         expect(find.byKey(ValueKey('room-mic-seat-$n')), findsOneWidget);
       }
       expect(tester.takeException(), isNull);

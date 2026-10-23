@@ -119,6 +119,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           String? image(String bucket, String? path) =>
               path == null ? null : db.storage.from(bucket).getPublicUrl(path);
           final cover = image('covers', p.coverPath);
+          final hasProfileCard = ref
+                  .watch(storeVisualEquipmentProvider(id))
+                  .valueOrNull
+                  ?.containsKey('Profile Card') ??
+              false;
           return ListView(
             children: [
               EquippedCosmetic(
@@ -133,8 +138,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           height: 130,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            gradient: NimzoStyle.heroGradient,
-                            image: cover == null
+                            color: hasProfileCard
+                                ? Colors.black.withValues(alpha: .20)
+                                : null,
+                            gradient:
+                                hasProfileCard ? null : NimzoStyle.heroGradient,
+                            image: hasProfileCard || cover == null
                                 ? null
                                 : DecorationImage(
                                     image: NetworkImage(cover),

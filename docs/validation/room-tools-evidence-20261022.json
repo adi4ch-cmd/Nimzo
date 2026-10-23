@@ -1,0 +1,157 @@
+{
+  "date": "2026-10-22",
+  "scope": "Source/backend only; authenticated Android, native media/audio and original full task acceptance incomplete",
+  "flutter_passed": 541,
+  "python_passed": 19,
+  "app_source_sha256": "7cb8a6f8fa94e9c9b252b9e2fc267a9a6b63698d205ef60df1a4f0479f23022e",
+  "logs": {
+    "room-tools-full-final.log": {
+      "sha256": "0acaae12c2d212764911766f52dcf5b8722a1461267b44e52edcbf3ae7bc3fa0",
+      "bytes": 76714,
+      "tail": [
+        "03:05 +534: /workspace/Nimzo-v3/nimzo/test/tingle_friends_screen_test.dart: Friends, Following and Followers tabs never invent people",
+        "03:05 +535: /workspace/Nimzo-v3/nimzo/test/tingle_friends_screen_test.dart: Friends, Following and Followers tabs never invent people",
+        "03:05 +536: /workspace/Nimzo-v3/nimzo/test/bychance_ui_smoke_test.dart: Tingle-reference Games gallery keeps approved catalog visible",
+        "03:06 +537: /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart: imported frame renders its real image in Store and Backpack",
+        "03:06 +538: /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart: imported frame renders its real image in Store and Backpack",
+        "03:06 +539: /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart: imported frame renders its real image in Store and Backpack",
+        "03:06 +540: /workspace/Nimzo-v3/nimzo/test/store_actual_media_test.dart: full preview resolves the same item media",
+        "03:06 +541: All tests passed!"
+      ]
+    },
+    "room-tools-analyze-reviewed.log": {
+      "sha256": "4b1be1f8708d6fbdbfd744e824ee2f3e18e720ca7b53e706c4f661fdcc24e005",
+      "bytes": 12647,
+      "tail": [
+        "   info \u2022 Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation \u2022 lib/features/store/store_live_catalog.dart:740:18 \u2022 prefer_const_constructors",
+        "   info \u2022 Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation \u2022 test/dynamic_membership_screen_test.dart:68:47 \u2022 prefer_const_constructors",
+        "   info \u2022 Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation \u2022 test/mobile_otp_login_test.dart:24:18 \u2022 prefer_const_constructors",
+        "   info \u2022 The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/services.dart'. Try removing the import directive \u2022 test/renderable_media_test.dart:2:8 \u2022 unnecessary_import",
+        "   info \u2022 Unnecessary braces in a string interpolation. Try removing the braces \u2022 test/rocket_unified_gifts_contract_test.dart:14:61 \u2022 unnecessary_brace_in_string_interps",
+        "   info \u2022 Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation \u2022 test/store_paid_checkout_ui_test.dart:68:52 \u2022 prefer_const_constructors",
+        "",
+        "58 issues found. (ran in 13.4s)"
+      ]
+    },
+    "rooms-tools-python-final.log": {
+      "sha256": "0aa8a8adebdc18378681a7961b3fbfa2c9d6b46c6b6d02f012d584966ba0c81b",
+      "bytes": 450,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 19 tests in 0.806s",
+        "",
+        "OK",
+        "Android toolchain: AGP 8.11.1 / Kotlin 2.2.20 / Gradle 8.14.3",
+        "Android toolchain: AGP 8.11.1 / Kotlin 2.2.20 / Gradle 8.14.3",
+        "NIMZO FCM Android configured: Gradle plugin, package ID, Android 13 permission and Firebase client JSON",
+        "NIMZO FCM Android configured: Gradle plugin, package ID, Android 13 permission and Firebase client JSON"
+      ]
+    },
+    "treasure-sql-reviewed.log": {
+      "sha256": "6dfbd7770b918890f813918e9fe30ce469b8e786097fe7df98b7863dc1b2c142",
+      "bytes": 276,
+      "tail": [
+        "PASS: funded treasure, exact split, eligibility, replay, escrow conservation, expiry/refund and grants",
+        "PASS: concurrent funding, duplicate claims and competing final slots conserve coins",
+        "PASS: claim rechecks expiry after lock contention; concurrent refund workers credit once"
+      ]
+    },
+    "game-receipt-sql-reviewed.log": {
+      "sha256": "6ab1762ea597936265a53b98a7655fe5a0c763ade530ea32221fe33c2ec16224",
+      "bytes": 128,
+      "tail": [
+        "PASS: original real settlement recovered after room departure/catalog deactivation; scope, payload, auth and balances preserved"
+      ]
+    },
+    "polls-sql-reviewed.log": {
+      "sha256": "07a9696f726d5892b32b2cae72d085bb24fac8c30c97865699e60714a1db2c0f",
+      "bytes": 197,
+      "tail": [
+        "PASS: real poll creation, normalized options, counts, one-vote replay, close, membership/account authorization and RLS",
+        "PASS: competing poll creation and simultaneous changed votes serialize safely"
+      ]
+    },
+    "poll-create-key-green.log": {
+      "sha256": "06bc4a9da685984346ef718436031132c5d02ebe1d7967e1cfbb8c276106ef51",
+      "bytes": 714,
+      "tail": [
+        "00:00 +0: loading /workspace/Nimzo-v3/nimzo/test/room_poll_sheet_test.dart",
+        "00:00 +0: /workspace/Nimzo-v3/nimzo/test/room_poll_sheet_test.dart: confirmed creation rotates the key for a new poll after closure",
+        "00:02 +1: /workspace/Nimzo-v3/nimzo/test/room_poll_sheet_test.dart: room poll casts the selected choice and displays real server counts",
+        "00:02 +2: /workspace/Nimzo-v3/nimzo/test/room_poll_sheet_test.dart: roomless poll has no fake voting or create controls",
+        "00:02 +3: loading /workspace/Nimzo-v3/nimzo/test/room_gift_calculator_test.dart",
+        "00:12 +3: /workspace/Nimzo-v3/nimzo/test/room_gift_calculator_test.dart: gift calculator computes exact total and clears without a wallet call",
+        "00:16 +4: All tests passed!"
+      ]
+    },
+    "rooms-tools-gifts-regression.log": {
+      "sha256": "6b6329a11fadec832f5f7eff584a681267c51a12d43f2102446b6e56a0d7a88a",
+      "bytes": 1570,
+      "tail": [
+        "SET",
+        "{\"total\": 10, \"status\": \"replayed\", \"diamonds\": 4}",
+        "RESET",
+        "DO",
+        "ROLLBACK",
+        "",
+        "PASS: concurrent duplicate/legacy/cross-scope retries; exact single settlement; catalog row lock; stale post-update rejection",
+        "PASS: disposable SQL assertions on nimzo-postgres-test/gift_checked_tools_final"
+      ]
+    },
+    "rooms-tools-rocket-regression.log": {
+      "sha256": "fd22c6ec01d845de80b11d363f5a92741d2bce7732756348359edc4f1bbec1cc",
+      "bytes": 909,
+      "tail": [
+        "RESET",
+        "",
+        "",
+        "PASS: 33 historical milestones retained; config permissions/validation; pinning/publication/deactivation; actual settled progress; dynamic labels/VAP; rollover; idempotency; membership",
+        "ROLLBACK",
+        "",
+        "PASS: concurrent initialization/gifts pin one version and settle once; concurrent publication preserves remaining milestone; rollback no pin/event leak; new cycle uses successor",
+        "PASS: dynamic Rocket disposable SQL on nimzo-membership-test/rocket_dynamic_tools_final"
+      ]
+    },
+    "rooms-tools-store-regression.log": {
+      "sha256": "1a981a7a5c1db75b8355fe6a73f024a1947ff7f4d94f8178aeef4fdd2b2dc5c9",
+      "bytes": 329,
+      "tail": [
+        "PASS: lifetime preservation, durations, expiry rendering/RLS, renewals, receipts, price/media/auth safety and free-claim guards",
+        "PASS: concurrent duplicate sends and distinct renewal keys settle once; catalog duration lock serializes updates",
+        "PASS: isolated Store lifecycle checks on nimzo-membership-test/store_expiry_tools_final"
+      ]
+    },
+    "rooms-tools-membership-regression.log": {
+      "sha256": "f2c3a2bc72530fc01d84641fd055928ace49341add5d75021a1a472de1faf34b",
+      "bytes": 169,
+      "tail": [
+        "PASS: restored_memberships",
+        "PASS: dynamic_membership_presentation",
+        "PASS: membership_checked_purchase",
+        "PASS: isolated membership rules, artwork RLS, price and replay safety"
+      ]
+    },
+    "rooms-tools-events-regression.log": {
+      "sha256": "354f9938eb6bc901e8d3534e4d1d90e66258ac15a61eaee593f251c24606fe0b",
+      "bytes": 94,
+      "tail": [
+        "PASS: legacy campaigns preserved; staged approvals, hash, size and new active guards verified"
+      ]
+    }
+  },
+  "live_readback": {
+    "wallets": 4,
+    "coins": 4795975,
+    "diamonds": 22003875,
+    "rocket_history_rows": 34,
+    "qa_boxes_created": 0,
+    "qa_polls_created": 0,
+    "all_four_new_tables_rls": true,
+    "refund_cron_active": true
+  },
+  "migrations": {
+    "20261022172335_room_polls.sql": "b475ccb278f22b661d0652744e1a3c38a56a83117db7056383d793c4832e9471",
+    "20261022171213_room_treasure_escrow.sql": "33c38f19f15ef37991770220a67b1e9b4e0cdaa334e152bfd31f8f12219c9c4e",
+    "20261022171412_recover_confirmed_game_receipts.sql": "565f36df2c966bc24b7e593fffb4725b2482061bdf9e024f1f5f2507c967c058"
+  }
+}

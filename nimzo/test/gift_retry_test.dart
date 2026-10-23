@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,6 +17,7 @@ class UncertainGiftRepository extends GiftRepository {
     required String giftId,
     required int qty,
     required String key,
+    int? expectedTotal,
   }) async {
     requests.add((giftId: giftId, qty: qty, key: key));
     if (requests.length == 1) throw StateError('Response lost after send');
@@ -23,6 +25,7 @@ class UncertainGiftRepository extends GiftRepository {
 }
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   testWidgets('uncertain gift retries preserve quantity and idempotency key', (
     tester,
   ) async {
@@ -38,7 +41,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          currentUserIdProvider.overrideWithValue(null),
+          currentUserIdProvider.overrideWithValue('sender'),
           giftRepositoryProvider.overrideWithValue(repo),
           giftCatalogProvider.overrideWith(
             (_) async => [const Gift('g', 'Coffee', 'Classic', 500, null)],

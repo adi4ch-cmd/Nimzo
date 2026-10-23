@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "build_authorized": false,
+  "app_source_sha256": "42930c47777e444abc96c5ff030befd86f0d603744ad3f694b81b9deefc5a9a9",
+  "voice_enabled": false,
+  "open_blockers": [
+    "Final Vivox integration deferred by owner",
+    "Authenticated Android purchases/claims and physical-device audio remain unverified",
+    "Complete original-task acceptance remains incomplete",
+    "Requested20 additional diverse gifts:7 suitable selected,13 missing"
+  ],
+  "checks": {
+    "gifts": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "memberships": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "store_backpack": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "voice_rooms_15": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "games": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "progression": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "premium_ui": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "room_rocket": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "dynamic_audit": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "dynamic_models": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "dynamic_sync": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "financial_security": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "vivox_sdk": {
+      "status": "OWNER_DEFERRED",
+      "evidence": [
+        "docs/validation/v3-codespace-voice-access.md"
+      ]
+    },
+    "source_tests": {
+      "status": "BLOCKED",
+      "evidence": []
+    }
+  },
+  "qa_build_authorized": true,
+  "qa_open_blockers": [],
+  "voice_status": "OWNER_DEFERRED",
+  "qa_scope": "Owner-authorized1.0.41 TEST APK:34 active gifts/73Store,20 YoHo/Falla presentations;134 native originals verified,84 immutable objects read back, existing finances/ownership preserved. Requested20 extra diverse gifts remain13 short. Vivox and authenticated physical-device checkout deferred/unverified.",
+  "owner_authorization": "Dynamic systam complete kar ke apk test ke kiy build kar skty ho",
+  "qa_checks": {
+    "dynamic_audit": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "dynamic_models": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "dynamic_sync": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "financial_security": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json",
+        "docs/validation/ROOM_TOOLS_DELIVERY_20261022.md",
+        "docs/validation/WALLET_RECOVERY_20261022.md",
+        "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
+        "docs/validation/expanded-drive-device-proof-20261023.json",
+        "docs/validation/expanded-drive-preservation-20261023.json",
+        "docs/validation/expanded-source-ci-20261023.json",
+        "docs/validation/MEMBERSHIP_REFRESH_20261023.md",
+        "docs/validation/membership-refresh-device-proof-20261023.json",
+        "docs/validation/membership-refresh-publication-preservation-20261023.json",
+        "docs/validation/membership-refresh-storage-readback-20261023.json"
+      ]
+    },
+    "gifts": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json",
+        "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
+        "docs/validation/expanded-drive-device-proof-20261023.json",
+        "docs/validation/expanded-drive-preservation-20261023.json",
+        "docs/validation/expanded-source-ci-20261023.json",
+        "docs/validation/MEMBERSHIP_REFRESH_20261023.md",
+        "docs/validation/membership-refresh-device-proof-20261023.json",
+        "docs/validation/membership-refresh-publication-preservation-20261023.json",
+        "docs/validation/membership-refresh-storage-readback-20261023.json"
+      ]
+    },
+    "memberships": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json",
+        "docs/validation/MEMBERSHIP_REFRESH_20261023.md",
+        "docs/validation/membership-refresh-device-proof-20261023.json",
+        "docs/validation/membership-refresh-publication-preservation-20261023.json",
+        "docs/validation/membership-refresh-storage-readback-20261023.json"
+      ]
+    },
+    "progression": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "room_rocket": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json"
+      ]
+    },
+    "source_tests": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json",
+        "docs/validation/room-tools-evidence-20261022.json",
+        "docs/validation/wallet-recovery-evidence-20261022.json",
+        "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
+        "docs/validation/expanded-drive-device-proof-20261023.json",
+        "docs/validation/expanded-drive-preservation-20261023.json",
+        "docs/validation/expanded-source-ci-20261023.json",
+        "docs/validation/MEMBERSHIP_REFRESH_20261023.md",
+        "docs/validation/membership-refresh-device-proof-20261023.json",
+        "docs/validation/membership-refresh-publication-preservation-20261023.json",
+        "docs/validation/membership-refresh-storage-readback-20261023.json"
+      ]
+    },
+    "store_backpack": {
+      "status": "PASS",
+      "evidence": [
+        "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
+        "docs/validation/v3-evidence/verified-results.json",
+        "docs/validation/v3-evidence/backend-deployment.json",
+        "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
+        "docs/validation/expanded-drive-device-proof-20261023.json",
+        "docs/validation/expanded-drive-preservation-20261023.json",
+        "docs/validation/expanded-source-ci-20261023.json"
+      ]
+    }
+  }
+}

@@ -1,3 +1,7 @@
+import '../treasure/treasure_sheet.dart';
+import '../polls/room_poll_sheet.dart';
+import 'room_gift_calculator.dart';
+export '../treasure/treasure_sheet.dart' show TreasureSheet;
 import 'room_music_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,8 +11,6 @@ import 'package:lucide_flutter/lucide_flutter.dart';
 import '../../../core/widgets/master_ui.dart';
 import '../../../core/widgets/reference_widgets.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/utils/formatters.dart';
-import '../../wallet/wallet_screen.dart';
 import '../domain/room.dart';
 import 'room_controller.dart';
 import '../diamond/room_diamond_widgets.dart';
@@ -71,7 +73,11 @@ Future<void> showPartyTools(BuildContext context, {String? roomId}) async {
   );
   if (tool == null || !context.mounted) return;
   if (tool == 6) {
-    await showReferenceSheet(context, const TreasureSheet());
+    await showReferenceSheet(context, TreasureSheet(roomId: roomId));
+    return;
+  }
+  if (tool == 9) {
+    await showReferenceSheet(context, RoomPollSheet(roomId: roomId));
     return;
   }
   if (tool == 10) {
@@ -110,11 +116,13 @@ Future<void> showPartyTools(BuildContext context, {String? roomId}) async {
 
 class RoomToolForm extends StatefulWidget {
   final String tool;
+  final String? roomId;
   final Future<void> Function(String)? onAnnounce;
   final Future<void> Function()? onClear;
   const RoomToolForm({
     super.key,
     required this.tool,
+    this.roomId,
     this.onAnnounce,
     this.onClear,
   });
@@ -176,7 +184,13 @@ class _ToolFormState extends State<RoomToolForm> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) => tool=='Calculator'
+      ? const RoomGiftCalculator()
+      : tool=='Vote'
+          ? widget.roomId==null
+              ? const Text('Join a room to create or vote in a poll.')
+              : RoomPollSheet(roomId:widget.roomId)
+          : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -224,17 +238,6 @@ class _ToolFormState extends State<RoomToolForm> {
                 hintText: 'Prize, for example 100K coins',
               ),
             ),
-          if (tool == 'Vote')
-            for (final label in [
-              'Question',
-              'Option 1',
-              'Option 2',
-              'Option 3 (optional)',
-            ])
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: TextField(decoration: InputDecoration(hintText: label)),
-              ),
           if (tool == 'Mora') ...[
             ReferenceTabs(
               labels: const ['Rock', 'Paper', 'Scissors'],
@@ -244,8 +247,6 @@ class _ToolFormState extends State<RoomToolForm> {
             ),
             const EmptyContent('Choose one · scores unavailable'),
           ],
-          if (tool == 'Calculator')
-            const EmptyContent('Gift totals unavailable'),
           if (tool == 'Wheel')
             Container(
               height: 190,
@@ -296,102 +297,6 @@ class _ToolFormState extends State<RoomToolForm> {
             ),
           ),
         ],
-      );
-}
-
-class TreasureSheet extends ConsumerStatefulWidget {
-  const TreasureSheet({super.key});
-  @override
-  ConsumerState<TreasureSheet> createState() => _TreasureState();
-}
-
-class _TreasureState extends ConsumerState<TreasureSheet> {
-  int world = 0, total = 0, quantity = 0, condition = 0;
-  @override
-  Widget build(BuildContext context) {
-    final balance = ref.watch(walletProvider).valueOrNull;
-    final amounts = world == 0
-        ? [10000, 50000, 100000, 200000]
-        : [500000, 1000000, 5000000, 10000000];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                balance == null
-                    ? 'Balance unavailable'
-                    : '${balance.coins} coins',
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
-            const ReferenceArtwork('chest', 0, size: 72),
-          ],
-        ),
-        ReferenceTabs(
-          labels: const ['Room', 'World'],
-          selected: world,
-          onSelected: (i) => setState(() {
-            world = i;
-            total = 0;
-            condition = 0;
-          }),
-          pills: true,
-        ),
-        _label('Total'),
-        ReferenceTabs(
-          labels: amounts.map(compactNumber).toList(),
-          selected: total,
-          onSelected: (i) => setState(() => total = i),
-          pills: true,
-        ),
-        _label('Quantity'),
-        ReferenceTabs(
-          labels: const ['6', '10', '20', '30'],
-          selected: quantity,
-          onSelected: (i) => setState(() => quantity = i),
-          pills: true,
-        ),
-        _label('Condition'),
-        ReferenceTabs(
-          labels: world == 0
-              ? const ['All', 'Fans', 'On mic']
-              : const ['All', 'Fans'],
-          selected: condition,
-          onSelected: (i) => setState(() => condition = i),
-          pills: true,
-        ),
-        const SizedBox(height: 14),
-        const SizedBox(
-          width: double.infinity,
-          child: GradientButton(
-            onPressed: null,
-            foreground: Color(0xff78350f),
-            gradient: LinearGradient(
-              colors: [Color(0xfffbbf24), Color(0xfff59e0b)],
-            ),
-            child: Text('Send'),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 14),
-          child: Text(
-            'The undelivered golds will be refunded after 24 hours. Rule?',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: NimzoStyle.muted, fontSize: 12),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _label(String text) => Padding(
-        padding: const EdgeInsets.fromLTRB(0, 12, 0, 6),
-        child: Text(
-          text,
-          style: const TextStyle(color: NimzoStyle.muted, fontSize: 12),
-        ),
       );
 }
 

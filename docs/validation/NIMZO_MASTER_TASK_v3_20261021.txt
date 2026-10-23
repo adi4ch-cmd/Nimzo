@@ -1,0 +1,224 @@
+NIMZO — CODEX / WORK MODE MASTER TASK (SHORT)
+
+GOAL: Finish a real, premium, fully functional NIMZO Android app using the best legally authorized materials from ALL accessible APK/APKS/XAPK/ZIP files in my connected Google Drive. I have permission from the relevant owners to extract/use approved assets; verify and respect permission scope. Mix compatible assets from different apps when one source is incomplete. Do not just copy screenshots or show fake functionality.
+
+SOURCE: https://github.com/adi4ch-cmd/Nimzo
+Check the newest commits/releases, all relevant branches (including release/nimzo-unified and feature/willchill-premium-assets-20261020), open PRs, nimzo/FEATURES.lock.json, pubspec.yaml, existing migrations, tests, and Codespace uncommitted changes. Previous build baseline: 1.0.36+136; NEVER downgrade, reset, wipe, or overwrite newer work. Create backup + safe integration branch. Reuse already integrated gifts/assets/features.
+
+DRIVE AUDIT: Recursively inspect all accessible authorized app packages and media, including Yalla, Hafla, StarChat, Hawa, Falla, Hello Yo, YoHo, Ahlan, SoulChill, Hago, Ayome, Lama, 4Fun, Sawa, Tana, Vani, DangLive, WithU, Orii, and every other voice-chat APK found. Extract and classify usable images/icons, frames, SVGA/PAG/Lottie/VAP, videos, audio, layouts and game assets. Track filename, source, rights, compatibility, completeness, dependencies, duplicates and chosen NIMZO destination. Do not extract private data, tokens, or credentials. APK assets alone do NOT supply a working backend.
+
+BUILD / INTEGRATE THESE COMPLETE SYSTEMS:
+1. GIFTS: premium gifts, real full-screen room playback + synced audio, preview, sending, combos, wallet deduction/credit, daily/weekly/monthly/all-time sender/receiver rankings, polished gift panel and ranking UI.
+2. VIP/SVIP: real tiers, benefits, badges, animated effects, purchase/expiry, exclusive items and attractive complete membership UI.
+3. STORE + BACKPACK: frames, avatar decorations, entry effects, cars, chat bubbles, nameplates, backgrounds, room themes, inventory/icons, previews, purchase, equip/unequip, persistence/expiry. Store items belong in Store; VIP items in VIP/SVIP. No duplicates/fake buttons.
+4. VOICE ROOM: polished original UI with 15 mic seats (3x5), room DP/ID/level/gifting, working mic/host/moderation/lock/mute/kick/ban/settings, banners, announcements, gifts, events, treasure/reward boxes, room rewards/rankings/levels and actual voice connectivity.
+5. GAMES: best permitted game art/UI/sounds plus ACTUAL playable Jackpot, Fruit Party, Lucky Wheel, Teen Patti and existing NIMZO games where implementable; room + Games tab integration, secure server-side outcomes/transactions and compliance checks for wager-like games.
+6. PROGRESSION: user, gifting, room and game levels with tasteful colorful compact level icons; XP, rankings, honor medals, achievements, awards and real eligibility rules.
+7. COMPLETE UI: unified premium NIMZO green/white design throughout Home, Games, Moments, Messages, Profile, Room, Store and VIP. Preserve the locked bottom tabs and existing working features; no unrelated branding or watermarks.
+8. ROOM ROCK / ROCKET SYSTEM + UI: Deep-audit existing NIMZO Rock/Rocket implementation and approved APK references; determine whether “Room Rock” is a separate feature from Rocket rather than assuming they are identical. Complete its real in-room flow: polished Rock/Rocket button, progress/status bar, contribution tracking, milestone stages, rocket launch/blast full-screen animation with synchronized sound, countdown/cooldown where required, real-time room notifications, rankings/contributor display, claimable rewards/treasure-box linkage only where rules require, history, permissions and responsive room UI. Trigger and progress must be based on verified room events/transactions using secure Supabase logic, not just an animated graphic. Prevent duplicate triggers/reward claims; keep rocket effects from blocking microphone, chat or gift controls. Preserve and fix prior Rocket work rather than replacing it blindly.
+
+BACKEND: Audit connected NIMZO Supabase Auth, Storage, Realtime, RLS, tables, RPCs and migrations. Repair verified schema/permissions/gift/wallet/room/ranking issues. Use transaction-safe, server-authoritative logic. Preserve user accounts, balances, assets and data. Never publish secrets or make destructive DB changes.
+
+QUALITY GATE: No placeholders, fake gifts, static animations advertised as working, broken previews, mock rankings, or UI-only purchases. If a source has only partial assets, implement the missing system with original NIMZO code or mark the item BLOCKED; do not falsely claim completion. Preserve copyrights and use only rights-cleared materials.
+
+WORKFLOW: Work autonomously without routine questions. Audit -> inventory/best-source map -> implement/merge -> automated tests -> emulator/device startup, login, gift, purchase/equip, VIP, room, mic, rankings, reward box, Room Rock/Rocket progress, blast playback, ranking/reward safety, level and game tests -> fix defects -> build signed/testable APK using available permitted signing setup -> publish APK via GitHub Actions/Release and supply REAL link plus commit/PR and concise PASS/FAIL/blocker report. Build LAST, after integration/testing. Do not claim a verified APK unless installed/launched successfully. If blocked by access, signing or missing server/API, give exact blocker and complete all possible work without destructive shortcuts.
+
+
+======================================================================
+MANDATORY ADDENDUM — DYNAMIC UPDATE SYSTEM + STRICT APK BUILD LOCK
+======================================================================
+
+THIS ADDENDUM IS PART OF THE SAME MASTER TASK, NOT A NEW OR SEPARATE TASK.
+The original task above remains in force IN FULL, including the detailed
+Room Rock/Rocket requirements. Complete BOTH the original A-to-Z task and
+this Dynamic Update System before building ANY new APK/AAB. Do not claim
+completion based only on new screens, database tables, passing source tests,
+or media thumbnails.
+
+9. COMPLETE DYNAMIC UPDATE SYSTEM — SERVER-DRIVEN CONTENT, REAL FEATURES
+
+GOAL: After the fully integrated app is first installed, the owner must be
+able to add/remove/activate/deactivate/update supported content in Supabase
+without a new APK each time, as long as the app already supports the
+corresponding decoder, feature and UI. NIMZO must fetch the approved latest
+content and display it in its correct category automatically. NO separate
+Admin Panel or Admin Bot is required at this stage. Secure owner-authorized
+backend actions can be administered through ChatGPT/connected tools later.
+
+9A. AUDIT EXISTING WORK FIRST — PRESERVE CODEx AND CHATGPT WORK
+- Inspect CURRENT live GitHub branches, PRs, Codex Codespace worktrees and
+  uncommitted changes, release workflows, build provenance, migrations, RLS,
+  real Storage objects, registered asset paths and config. The previous
+  baseline in the original brief was 1.0.36+136; a later development branch
+  was at 1.0.37+137. Trust current verified pubspec and commits, not an
+  old version number.
+- Specifically review Draft PR #40:
+  https://github.com/adi4ch-cmd/Nimzo/pull/40
+  branch: feature/dynamic-content-sync-20261021
+  base at creation: feature/retire-unused-store-gifts-20261021
+  IMPORTANT: Verify latest status, contents, conflicts, tests and whether
+  other Codex branches have progressed before integrating any code.
+- Examine all added migrations before applying. Several dynamic-content
+  migrations were ALREADY applied to live Supabase; DO NOT duplicate them,
+  overwrite newer schema or run migrations blindly.
+- Inspect the existing dynamic code for Realtime revision streaming, safe
+  room backgrounds, event banners, game flags, paid Store purchase RPC,
+  approved Store media/equipment, Gift MP4/VAP/SVGA playback, idempotency,
+  RLS and rollback protection. REUSE/FIX/FINISH these rather than rewriting
+  from scratch or copying older branches over new work.
+- Preserve the current Codespace and all local uncommitted files; fetch into
+  separate safe worktree or create a non-destructive integration branch. Do
+  not use git reset --hard, git clean, delete/reset Codespace, or overwrite
+  the ongoing original Codex task. Do not merge conflicting changes blindly.
+- Today's cleanup intentionally retired incomplete legacy Gift/Store and
+  VIP/SVIP pieces. DO NOT resurrect deleted/fake legacy pages merely to
+  make a stale feature-lock test pass. Update contracts to match intentionally
+  retired features, while retaining real working functionality. For VIP/SVIP,
+  implement NEW complete dynamic memberships as required by the original
+  task, safely and separately from retired old structures.
+
+9B. DYNAMIC CONTENT MODELS + STORAGE
+- Gifts: IDs, names, category, thumbnail, full animation, codec (MP4/VAP/
+  SVGA and already-supported variants), audio, duration, aspect ratio,
+  transparency, coin price, eligibility, priority, activity, availability,
+  version, checksum and source/rights records. Publish only fully verified
+  media; gift price and send authorization must come from the server.
+- Store/Backpack: remotely approved frames, room themes/backgrounds, avatar
+  decorations, entrance effects, cars, bubbles, nameplates and other
+  implemented categories with thumbnails, FULL playable preview, real
+  equip/unequip effects, prices, ownership, expiry, ordering and proper
+  destinations. Store items STAY in Store; VIP/SVIP items STAY inside their
+  separate membership areas. Support real inventory and restore on login.
+- VIP/SVIP: new backend-driven tier catalog and artwork, purchase rules,
+  server-verified coins/payment, benefits, starts/expiry, renewals,
+  achievements, permissions, badges, effects, and entitlements for real
+  users. Effects may update without APK only after their renderer exists.
+- Rooms: remotely configured approved themes, backgrounds, banners,
+  announcements, room ranking/reward presentation and per-room eligibility.
+  Never let untrusted remote JSON override room ownership, microphone roles,
+  kick/ban powers, user balances, or voice token validation.
+- Room Rock/Rocket: dynamic milestones/thresholds, display assets, effects,
+  UI and notifications only through SERVER-AUTHORIZED configuration; all
+  progress, contribution, launch events and rewards must be derived from
+  verified actual server room events. Handle missed Realtime messages,
+  idempotent claims, and audio/video coexistence.
+- Games: remotely configure activation, art, rules/version metadata and
+  availability for already shipped playable game engines. DO NOT pretend
+  to ship a new executable game engine using JSON. Secure game rounds,
+  outcomes, wagers/coins and legal compliance remain server-authoritative.
+- Home/Events: dynamic ranked room lists, campaign banners, featured
+  events and supported approved UI assets with time-window activation.
+- Progression: data-driven approved level styles and achievements, but
+  server-authoritative XP calculation and rank/reward eligibility.
+
+9C. CLIENT SYNC — NO REPEATED APK FOR CONTENT CHANGES
+- Use existing Supabase tables where practical. Implement missing additive,
+  versioned migrations, strict RLS and authorization policies, limited
+  authenticated SELECT exposure, controlled writes and audited revisions.
+- Supabase Realtime (revision/change feed) triggers targeted Riverpod/cache
+  invalidation. Support reconnect, logout/login, app resume, offline usage,
+  periodic fallback refresh, pagination, caching and safe media fallbacks.
+- A new published item must appear in the correct screen, gift sheet or
+  room without rebuilding/reinstalling an APK. Deactivation, price updates,
+  availability and expiry must propagate correctly; no stale fake items.
+- Validate MIME, magic bytes, sizes, checksums, URLs, codec support,
+  alpha/audio compatibility and decode/playback. Use approved HTTPS media,
+  bounded downloads, safe retry and cache busting via immutable hashed URLs.
+  Stage inactive first, then only approve after asset/device verification.
+- If an online asset is missing/corrupt, show an honest unavailable state,
+  automatically avoid charging, preserve the app and retain working local
+  fallback only where an actual equivalent media asset exists.
+- Do NOT embed credentials, service-role keys or reusable upload secrets in
+  APK, GitHub commits, client assets or log output.
+
+9D. FINANCIAL, ROOM AND ENTITLEMENT SECURITY
+- All coin debit/credit, paid gift settlement, VIP/SVIP purchases,
+  Store purchases and game rewards must use verified backend transactions,
+  user-identity checks, atomic ledger/ownership updates, server prices,
+  idempotency keys, account locks/unique constraints and RLS.
+- Test duplicate sends/purchases, lost response/retry, insufficient coins,
+  unapproved media, price changes, concurrent requests, refund/rollback,
+  owned-items, expiry and failed equipment. No double charges or fake awards.
+- Existing nimzo_store_purchase RPC and gift media guards may already exist;
+  review them before changing. Never modify real balances for QA. Use test
+  accounts/test fixtures or transactions that ROLLBACK; leave no test rows.
+- Dynamic changes must never require a developer manually editing Dart code
+  for ordinary new approved media, package prices, UI banners, availability,
+  room background selection or existing feature configuration.
+
+9E. LOCAL CODESPACE VIVOX SDK (DO NOT DISCARD)
+- Owner confirms the Vivox SDK is already in the existing GitHub Codespace.
+  Locate and validate the ACTUAL Codespace SDK files: Vxc.h, AAR and native
+  .so by ABI, match the existing JNI bridge and package them correctly.
+- GitHub Actions hosted runners do NOT automatically see Codespace files;
+  an old GitHub Release Vivox SDK URL may return 404. Do not assume the
+  voice SDK is absent, do not disable voice in final NIMZO, and do not
+  publish proprietary SDK bytes publicly.
+- The repo now includes tools/build_codespace_vivox_dynamic.py and
+  docs/CODESPACE_VIVOX_DYNAMIC_APK_20261021.md as local-build helpers.
+  Verify scripts against the actual Codespace. Those helpers are NOT proof
+  that a real voice-enabled APK has been built or tested. Use the correct
+  ABI, authenticated Vivox token/SDK, microphone permissions and audio
+  routing. Protect any existing Codespace uncommitted work.
+
+10. STRICT BUILD ORDER — NO APK UNTIL THE WHOLE ORIGINAL TASK IS FINISHED
+
+**ABSOLUTE INSTRUCTION FROM OWNER:**
+- First finish ALL instructions in the UPLOADED ORIGINAL MASTER TASK above,
+  including full Rooms, 15 mic seats specified there, Room Rock/Rocket,
+  Gifts, VIP/SVIP, Store/Backpack, actual supported Games, Progression,
+  Home/Moments/Messages/Profile UI, complete Supabase backend and verified
+  media integration. Do not silently change that original 15-seat spec.
+  If older releases have 10 seats, identify and resolve migration/layout/
+  capacity differences as part of the task instead of dropping either.
+- In parallel, complete ALL of the Dynamic Update System in sections 9A–9E
+  ON THE SAME CODEBASE, and preserve all verified older functionality.
+- DO NOT build any APK/AAB/IPA, even a debug/checkpoint/test APK, BEFORE
+  BOTH the original task AND dynamic system implementation are complete,
+  unit/integration/source checks pass, migrations/security are verified,
+  working assets are packaged or hosted, and release blockers resolved.
+- Before then, use no-APK Flutter analyzer, Dart/unit/widget tests,
+  backend SQL transaction rollback tests, native-source checks and media
+  inspection. Build exactly one integrated, tested final Android QA APK
+  when pre-build acceptance passes. If that reveals runtime issues, fix and
+  rebuild as needed for final acceptance; no unnecessary feature-by-feature
+  or progress APKs. Once verified, publish the final deliverable through
+  the authorized GitHub Actions/Release path with digest and source commit.
+- A dynamic content update should NOT need a future APK unless Flutter UI,
+  native code, SDK, engine, codec, permission or other compiled functionality
+  changes. State this technical limit clearly; dynamic updates do NOT
+  magically install new app code on devices.
+- Never call an incomplete app "done" or publish a fake/voice-disabled APK as
+  a final NIMZO release. If dependencies or access make any required part
+  impossible, finish all other work, report the exact blocker, and HOLD
+  the APK rather than silently skipping the feature.
+
+11. ACCEPTANCE / FINAL DELIVERABLE — ALL MUST BE VERIFIED
+
+- Produce an auditable feature checklist: original task sections 1–8 plus
+  Dynamic System 9A–9E, each marked PASS/FAIL/BLOCKED with real evidence.
+- Verify fresh install and cold start (no black screen), signup/login,
+  persistence, logout/login, microphone/voice join/leave, 15 mic layout,
+  room moderation, Gift full-screen synchronized audio, wallet settlement,
+  Store purchase/equip, VIP/SVIP purchase/expiry, Room Rock and Rocket real
+  progress/launch, levels/rankings, usable Games, tab/navigation and media.
+- Verify adding a NEW rights-cleared Gift and Store item to staging,
+  approving it, content appearing in the ALREADY installed app, playing and
+  equipping correctly, price changes, deactivation, offline/reconnect and
+  rollback WITHOUT rebuilding the APK. Repeat for supported room/banner,
+  membership and game configs. Demonstrate DB and app behavior, not UI mocks.
+- Compare APK assets against expected checksums and test actual native VAP,
+  SVGA, MP4, Vivox in an Android emulator and where possible a real device.
+  Preserve proper signed APK identity, update behavior and user accounts.
+- Confirm production migrations, RLS, transactions, secrets protection,
+  license approvals, and source provenance; no fabricated outcomes or
+  untested item activation.
+- Only after all acceptance checks pass, build and publish an installable
+  unified APK and give version, exact commit/branch, actual Release/download
+  URL, SHA256, detailed PASS/FAIL list and any remaining limitations.
+- The old and the new task are ONE deliverable. Do not stop after pushing
+  partial PRs, running tests, or writing a plan. Do not repeatedly ask for
+  routine decisions; keep work safe and make the best practical progress.
+
+FINAL OWNER RULE: COMPLETE PREVIOUS MASTER TASK + DYNAMIC UPDATE SYSTEM
+FIRST. APK BUILD IS THE VERY LAST STEP. DO NOT BUILD EARLY.

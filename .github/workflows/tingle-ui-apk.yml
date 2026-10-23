@@ -29,6 +29,9 @@ jobs:
             echo "::error::Keep 10 microphones, finish reference screens and full regression/device QA first."
             exit 1
           fi
+      - name: Enforce combined v3 APK build hold
+        run: python3 tools/verify_prebuild_acceptance.py
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

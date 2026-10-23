@@ -1,3 +1,4 @@
+import '../../../core/widgets/published_image.dart';
 import '../../premium/membership_identity.dart';
 import '../../store/store_visual_equipment.dart';
 import '../../store/room_cosmetic_entrance.dart';
@@ -475,6 +476,12 @@ class _State extends ConsumerState<RoomScreen> {
         }
       });
 
+  bool _hasChatBubble(String userId) =>
+      ref
+          .watch(storeVisualEquipmentProvider(userId))
+          .valueOrNull?['Chat Bubble'] !=
+      null;
+
   @override
   Widget build(BuildContext context) {
     final room = ref.watch(roomProvider(widget.roomId)),
@@ -494,6 +501,10 @@ class _State extends ConsumerState<RoomScreen> {
           const <String, Map<String, dynamic>>{},
       roomTheme,
     );
+    final backgroundPublication = nimzoApprovedRoomBackgroundPublication(
+        ref.watch(nimzoRemoteSettingsProvider).valueOrNull ??
+            const <String, Map<String, dynamic>>{},
+        roomTheme);
     ref.listen(voiceConnectedProvider, (previous, next) {
       if (next.valueOrNull == true) {
         // The SDK may restore media automatically after a short network drop.
@@ -650,16 +661,9 @@ class _State extends ConsumerState<RoomScreen> {
                     child: SizedBox.shrink(),
                   ),
                 ),
-                body: DecoratedBox(
-                    decoration: BoxDecoration(
-                      image: backgroundUrl == null
-                          ? null
-                          : DecorationImage(
-                              image: NetworkImage(backgroundUrl),
-                              fit: BoxFit.cover,
-                              onError: (_, __) {},
-                            ),
-                    ),
+                body: PublishedBackground(
+                    url: backgroundUrl,
+                    publication: backgroundPublication,
                     child: SafeArea(
                       child: EquippedCosmetic(
                           userId: room.valueOrNull?.ownerId,
@@ -1045,42 +1049,68 @@ class _State extends ConsumerState<RoomScreen> {
                                                             BorderRadius
                                                                 .circular(12),
                                                       ),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          EquippedIdentity(
-                                                              userId:
-                                                                  msg.userId,
-                                                              child: Text(
-                                                                  profiles[msg.userId]
-                                                                          ?.displayName ??
-                                                                      'Nimzo user',
-                                                                  maxLines: 1,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    color: NimzoStyle
-                                                                        .primary,
-                                                                    fontSize:
-                                                                        12,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700,
-                                                                  ))),
-                                                          Text(
-                                                            msg.body,
-                                                            style:
-                                                                const TextStyle(
-                                                              color: NimzoStyle
-                                                                  .ink,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                      child: DecoratedBox(
+                                                          decoration: BoxDecoration(
+                                                              color: _hasChatBubble(
+                                                                      msg
+                                                                          .userId)
+                                                                  ? Colors.black
+                                                                      .withValues(
+                                                                          alpha:
+                                                                              .60)
+                                                                  : Colors
+                                                                      .transparent,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          6)),
+                                                          child: Padding(
+                                                              padding: _hasChatBubble(
+                                                                      msg
+                                                                          .userId)
+                                                                  ? const EdgeInsets
+                                                                      .all(4)
+                                                                  : EdgeInsets
+                                                                      .zero,
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  EquippedIdentity(
+                                                                      userId: msg
+                                                                          .userId,
+                                                                      child: Text(
+                                                                          profiles[msg.userId]?.displayName ??
+                                                                              'Nimzo user',
+                                                                          maxLines:
+                                                                              1,
+                                                                          overflow: TextOverflow
+                                                                              .ellipsis,
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color: _hasChatBubble(msg.userId)
+                                                                                ? Colors.white
+                                                                                : NimzoStyle.primary,
+                                                                            fontSize:
+                                                                                12,
+                                                                            fontWeight:
+                                                                                FontWeight.w700,
+                                                                          ))),
+                                                                  Text(
+                                                                    msg.body,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: _hasChatBubble(msg
+                                                                              .userId)
+                                                                          ? Colors
+                                                                              .white
+                                                                          : NimzoStyle
+                                                                              .ink,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ))),
                                                     )),
                                               ),
                                           ],
@@ -1096,7 +1126,8 @@ class _State extends ConsumerState<RoomScreen> {
                                             'chest',
                                             () => showReferenceSheet(
                                               context,
-                                              const TreasureSheet(),
+                                              TreasureSheet(
+                                                  roomId: widget.roomId),
                                             ),
                                           ),
                                           const SizedBox(height: 10),
@@ -1109,7 +1140,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                       isScrollControlled: true,
                                                       backgroundColor:
                                                           const Color(
-                                                              0xff0c1728),
+                                                              0xfff7faf7),
                                                       barrierColor: Colors.black
                                                           .withValues(
                                                               alpha: .72),
@@ -1126,8 +1157,8 @@ class _State extends ConsumerState<RoomScreen> {
                                                         child: Padding(
                                                           padding:
                                                               const EdgeInsets
-                                                                  .fromLTRB(17,
-                                                                  18, 17, 12),
+                                                                  .fromLTRB(
+                                                                  0, 8, 0, 0),
                                                           child:
                                                               RoomRocketSheet(
                                                                   roomId: widget

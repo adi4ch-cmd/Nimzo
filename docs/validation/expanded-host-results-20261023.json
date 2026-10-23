@@ -1,0 +1,34 @@
+{
+  "app_source_sha256": "cc26030ad9912403050e4ab1e85815fb113aa5046e3fe17c6c7e5eb20b0dfc62",
+  "flutter_tests_passed": 558,
+  "analyzer_errors": 0,
+  "analyzer_warnings": 0,
+  "analyzer_infos": 59,
+  "python_guard_tests_passed": 19,
+  "sdk_validation_tests": 10,
+  "sdk_validation_expected_skips": 1,
+  "new_gifts": 20,
+  "new_store": 28,
+  "storage_objects_verified": 77,
+  "postgres_exact_debit": 190000,
+  "native_status": "PASS: all57 media onAndroid35; fullworkflow and previewcollection successful",
+  "logs": {
+    "flutter": {
+      "sha256": "a302985630684846b026b3c7012df9f025956f2b6b98f4233692926a5f0da879",
+      "workspace_path": "/workspace/nimzo-audit/expanded-full-io-fixed.log"
+    },
+    "analyzer": {
+      "sha256": "ec713f60cb9b20e8f8db35c266f49c45e721e4499406bc5ae79a8221c9433df6",
+      "workspace_path": "/workspace/nimzo-audit/expanded-final-analyze.log"
+    },
+    "postgres": {
+      "sha256": "b25cc8d2f6ffc5c388183e2763bc9d1ac8d9161c79a731579f66b04d71942eed",
+      "workspace_path": "/workspace/nimzo-audit/expanded-fixture-chain.log"
+    }
+  },
+  "native_workflow": "https://github.com/adi4ch-cmd/Nimzo/actions/runs/39909844929",
+  "live_totals": {
+    "gifts": 27,
+    "store": 73
+  }
+}

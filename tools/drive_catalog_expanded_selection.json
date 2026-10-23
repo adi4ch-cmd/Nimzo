@@ -1,0 +1,386 @@
+[
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/assets/room_trophy_ic.svga",
+    "name": "Ruby Trophy",
+    "category": "gift",
+    "coin_price": 1500,
+    "sha256": "1fbde44aca3fcc75cd057c9af03492bca67611d037dc46ef6eb64eff6fd1ea3b"
+  },
+  {
+    "package": "BazmiVoiceChat-1.0.8.apks",
+    "source": "base.apk!/assets/flutter_assets/assets/animations/crowns/level_1.svga",
+    "name": "Emerald Crown",
+    "category": "gift",
+    "coin_price": 10000,
+    "sha256": "9b8346cf8ed2ef355a1210d7e56827a00ac9f60a6cbe1a58bf2fdaf3ccd23b56"
+  },
+  {
+    "package": "BazmiVoiceChat-1.0.8.apks",
+    "source": "base.apk!/assets/flutter_assets/assets/animations/diamond_packs/2.svga",
+    "name": "Sapphire Jewels",
+    "category": "gift",
+    "coin_price": 2500,
+    "sha256": "00f33c2a511b4b5bce5e6a53d2a31c9776f488d0aa5bdb9a8efeb5cb39a81a91"
+  },
+  {
+    "package": "BazmiVoiceChat-1.0.8.apks",
+    "source": "base.apk!/assets/flutter_assets/assets/animations/diamond_packs/3.svga",
+    "name": "Sapphire Hoard",
+    "category": "gift",
+    "coin_price": 7500,
+    "sha256": "f9ee14f518ce9fabd86e9b5da0a1b77f0f76c9990c49f6ee06eea8cec5accd26"
+  },
+  {
+    "package": "BazmiVoiceChat-1.0.8.apks",
+    "source": "base.apk!/assets/flutter_assets/assets/animations/diamond_packs/4.svga",
+    "name": "Sapphire Treasure Sack",
+    "category": "gift",
+    "coin_price": 15000,
+    "sha256": "f1e0d2e111edf21cc76cb581aa06d50d79f00225198f4985f0a8c7e6a35d1f6f"
+  },
+  {
+    "package": "StarChat-8.41.3.apks",
+    "source": "base.apk!/assets/svga_source/crystal/blue_explosion.svga",
+    "name": "Blue Diamond Burst",
+    "category": "gift",
+    "coin_price": 1000,
+    "sha256": "424a2cdd6e869676ae943603d7d4542dfef21ecebe7662b6b62d335fb21d74f1"
+  },
+  {
+    "package": "StarChat-8.41.3.apks",
+    "source": "base.apk!/assets/svga_source/crystal/gold_explosion.svga",
+    "name": "Golden Diamond Burst",
+    "category": "gift",
+    "coin_price": 2000,
+    "sha256": "dbe6935d5855069d3f9762e20912b3076ad862150fbe981f00258afceef7cfc6"
+  },
+  {
+    "package": "StarChat-8.41.3.apks",
+    "source": "base.apk!/assets/svga_source/crystal/green_explosion.svga",
+    "name": "Emerald Diamond Burst",
+    "category": "gift",
+    "coin_price": 3000,
+    "sha256": "e3bb6d3e674ee3fbf22cbaba40f5b6a828810aaeb85022a36bb632b56f65bed6"
+  },
+  {
+    "package": "StarChat-8.41.3.apks",
+    "source": "base.apk!/assets/svga_source/crystal/purple_explosion.svga",
+    "name": "Amethyst Diamond Burst",
+    "category": "gift",
+    "coin_price": 4000,
+    "sha256": "2cf4193aa696c0cd51064f28d8a63e34fe175b3f7d2d6516de7759fcc9744426"
+  },
+  {
+    "package": "StarChat-8.41.3.apks",
+    "source": "base.apk!/assets/svga_source/crystal/red_explosion.svga",
+    "name": "Ruby Diamond Burst",
+    "category": "gift",
+    "coin_price": 5000,
+    "sha256": "e7891975b09f1b491d7548b58a690f6e7013a5d9cae7b3a72eebe11e9d8eaeff"
+  },
+  {
+    "package": "WithU-1.6.5.apks",
+    "source": "base.apk!/assets/withu/box_light_firework.svga",
+    "name": "Grand Fireworks",
+    "category": "gift",
+    "coin_price": 1500,
+    "sha256": "c6d00f871e394d68d8c26e4f71fc51c762aa180b01a21d8760c2bb161fc2b6a0"
+  },
+  {
+    "package": "4FunLite-7.77.apks",
+    "source": "base.apk!/assets/sign_reward_box.svga",
+    "name": "Treasure Chest",
+    "category": "gift",
+    "coin_price": 5000,
+    "sha256": "93f59e0f963bbffb87a95f01aaeac7a07a08441fe8712ba9de53ad0dfdbe3740"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/assets/treasure_box_icon.svga",
+    "name": "Pink Gem Burst",
+    "category": "gift",
+    "coin_price": 1000,
+    "sha256": "58dd09579fed95d978ca9083a2b81bb3808b10ad8b268147be2fa23264d94676"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/assets/xiyouhezi_chai.svga",
+    "name": "Mystery Gift",
+    "category": "gift",
+    "coin_price": 7500,
+    "sha256": "df3bc998e03640f58426b8a77e79efc6b84c09f55ff7e06b3eb31b558fcb9bbd"
+  },
+  {
+    "package": "Falla-V9.23.0.apks",
+    "source": "base.apk!/assets/svga/lottery_prize_draw.svga",
+    "name": "Golden Fountain",
+    "category": "gift",
+    "coin_price": 10000,
+    "sha256": "9ef1d82dad8e04bfe7edf1bce0a8ba8d0801286e07c49f5fccefc66f0678101e"
+  },
+  {
+    "package": "Hafla-1.7.2.apks",
+    "source": "base.apk!/assets/svga/svga_left_balloon.svga",
+    "name": "Celebration Balloons",
+    "category": "gift",
+    "coin_price": 500,
+    "sha256": "a8ddeaf83dbf3f53061174a6baae2d7191c30b6d950fdb0ead4d49a2085b71f7"
+  },
+  {
+    "package": "Hafla-1.7.2.apks",
+    "source": "base.apk!/assets/svga/vote_end_flower.svga",
+    "name": "Rainbow Fireworks",
+    "category": "gift",
+    "coin_price": 2500,
+    "sha256": "2e8cb11e551e018fa9e3a336a7fbcad2a2e3b33d2ee4661b40d752f56294e155"
+  },
+  {
+    "package": "StarChat-8.41.3.apks",
+    "source": "base.apk!/assets/svga_source/rebate/svga_rebate_gift_ball.svga",
+    "name": "Golden Orb",
+    "category": "gift",
+    "coin_price": 5000,
+    "sha256": "72bdb4f53016d2d1d3dee7539c6537c9f90ebdc55abfcb5d2093dd0e77915a4d"
+  },
+  {
+    "package": "StarChat-8.41.3.apks",
+    "source": "base.apk!/assets/svga_source/rebate/svga_rebate_gift_bomb.svga",
+    "name": "Coin Shower",
+    "category": "gift",
+    "coin_price": 2500,
+    "sha256": "bc37a7dccae05f840747305d842a6a6c777afe2e7bc0bcf640e02a0dc748519c"
+  },
+  {
+    "package": "WithU-1.6.5.apks",
+    "source": "base.apk!/assets/withu/box_light_diamond.svga",
+    "name": "Amethyst Rain",
+    "category": "gift",
+    "coin_price": 2000,
+    "sha256": "233dc04da3379bd53bb7e68972b9613fd675b6b60c0213695433352b20225ece"
+  },
+  {
+    "package": "BazmiVoiceChat-1.0.8.apks",
+    "source": "base.apk!/assets/flutter_assets/assets/animations/mic_ee/1.svga",
+    "name": "Arcane Lightning",
+    "category": "Mic Wave",
+    "coin_price": 5000,
+    "sha256": "e6d230bc8f9adf4bf0972422f4d9e0f7d3a6009aa0d0775c800e7d33ef70c6c0"
+  },
+  {
+    "package": "BazmiVoiceChat-1.0.8.apks",
+    "source": "base.apk!/assets/flutter_assets/assets/animations/mic_ee/2.svga",
+    "name": "Solar Portal",
+    "category": "Mic Wave",
+    "coin_price": 5000,
+    "sha256": "c196a3011eae478d33c38889048eba74e6b6a09cba3247db86ef6f2ff1028ea7"
+  },
+  {
+    "package": "BazmiVoiceChat-1.0.8.apks",
+    "source": "base.apk!/assets/flutter_assets/assets/animations/mic_ee/3.svga",
+    "name": "Golden Runes",
+    "category": "Mic Wave",
+    "coin_price": 5000,
+    "sha256": "d8e5787320b886e0ff13622b8b19ba5ce4592860e78bebc94ee958c8039af558"
+  },
+  {
+    "package": "Hafla-1.7.2.apks",
+    "source": "base.apk!/assets/svga/v6_wave.svga",
+    "name": "Rainbow Blossom",
+    "category": "Mic Wave",
+    "coin_price": 5000,
+    "sha256": "ad911ebb9f7ca39b27b80ce0a74a5553a13e911a557ea5d5d2b3d53e6d1e93e1"
+  },
+  {
+    "package": "Hafla-1.7.2.apks",
+    "source": "base.apk!/assets/svga/v7_wave.svga",
+    "name": "Golden Sound Orbit",
+    "category": "Mic Wave",
+    "coin_price": 5000,
+    "sha256": "08ca11a9f0f11406f288602126833d4cb5d4235a3e3f0adc9e06c58e833a1050"
+  },
+  {
+    "package": "Orii-1.0.15.apks",
+    "source": "base.apk!/assets/mic_wave_svip3.svga",
+    "name": "Violet Electric Halo",
+    "category": "Mic Wave",
+    "coin_price": 5000,
+    "sha256": "096e6ca992bb1ff8761f2b0fc6844375d46b01c0af8295592dd991a1d8d4d80f"
+  },
+  {
+    "package": "Orii-1.0.15.apks",
+    "source": "base.apk!/assets/mic_wave_svip4.svga",
+    "name": "Amber Star Pulse",
+    "category": "Mic Wave",
+    "coin_price": 5000,
+    "sha256": "2af1763a40b7510780820cfd2f25e039bf621e46df0f5427fb0caef31ebd6b1d"
+  },
+  {
+    "package": "Orii-1.0.15.apks",
+    "source": "base.apk!/assets/mic_wave_svip5.svga",
+    "name": "Crimson Star Pulse",
+    "category": "Mic Wave",
+    "coin_price": 5000,
+    "sha256": "c1cc37dc26d4f78b5c3626021f95ee12423c5e6494199b124a6194d6f09f7292"
+  },
+  {
+    "package": "Orii-1.0.15.apks",
+    "source": "base.apk!/assets/mic_wave_svip6.svga",
+    "name": "Prismatic Star Pulse",
+    "category": "Mic Wave",
+    "coin_price": 5000,
+    "sha256": "e05d78c6b7ca7c384828c4fd240c2fb5a8e55ddd345c8afc82929030f58ce377"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_1.webp",
+    "name": "Cupid Hearts",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "f07fcfb17cba018362d42cfdc5b95148e16ddcf2e3f71bc415940098a6f99f2c"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_10.webp",
+    "name": "Sapphire Dragon",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "9bfbb37b35e77e3a1857a9cd38b9b7b1cd96188224e8eea381f5cd356e2e41ad"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_11.webp",
+    "name": "Crimson Lion",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "55d8587c73c7eb87ff570a5c1d01d98e3e5ba88698e64026816d3b7a9203aeff"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_12.webp",
+    "name": "Emerald Masquerade",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "9dc92a803d6709410cbfe137fc1f4851fd984a3a521e3b1f36b315e2d3298e1c"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_13.webp",
+    "name": "Emerald Treasure",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "0603a5a0c29c4495e90f02eae6259c5a0fe686496b77ba0397f2ffa2bf0b9d4b"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_14.webp",
+    "name": "Golden Zodiac",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "a103911f42534fcbda8451a3d48c454fdac2cfbf0cec81ba1b414510f585d01b"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_2.webp",
+    "name": "Aqua Ribbon",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "6ab74d8a6025be35e86e2fb2440b33365815eadb2a5d9529d701e1ade13dca58"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_3.webp",
+    "name": "Moonlit Crystal",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "0cd99456f43ae88ff21697c18e7e8099c8f5fb513b5ea408e2d0dc0d019731d2"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_4.webp",
+    "name": "Arctic Aurora",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "654dad7baf8f5278e807a533479e2b7795c18b125b9a802d609bfaa5bf217465"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_5.webp",
+    "name": "Cosmic Rocket",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "b382814ed6d3761b7ccb69b36e5aacc09461f8690962ba97581728c2a5f11608"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_6.webp",
+    "name": "Neon Music",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "fa19e36c1b70fda09fafc8e1d8878710869adeddbd33ee9a5111a4b2659437c4"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_7.webp",
+    "name": "Sweet Letters",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "6fd43802ee80cad66533b936c39638975de0ed5338f489dc31c1475590810731"
+  },
+  {
+    "package": "BGChat-3.0.6.apks",
+    "source": "base.apk!/res/drawable/bubble_8.webp",
+    "name": "Amethyst Crown",
+    "category": "Chat Bubble",
+    "coin_price": 2000,
+    "sha256": "602c7adb245636a1926d0838635d9e8bf944db30552bacffa5b64f901e7aef78"
+  },
+  {
+    "package": "BazmiVoiceChat-1.0.8.apks",
+    "source": "base.apk!/assets/flutter_assets/assets/images/profile_header_palace_bg.png",
+    "name": "Moonlit Palace",
+    "category": "Party Theme",
+    "coin_price": 5000,
+    "sha256": "d00f0073310e68c554c01a9907c56ac2bc9e5cef9f0c21fce17c1ca74dbf864a"
+  },
+  {
+    "package": "Orii-1.0.15.apks",
+    "source": "base.apk!/res/drawable/vip1_profilecardbg.png",
+    "name": "Jade Bear",
+    "category": "Profile Card",
+    "coin_price": 5000,
+    "sha256": "8bec7620ab50b287621094e1a34a0cb0fb46c696416542ec2b010ee703987190"
+  },
+  {
+    "package": "Orii-1.0.15.apks",
+    "source": "base.apk!/res/drawable/vip2_profilecardbg.png",
+    "name": "Sapphire Wolf",
+    "category": "Profile Card",
+    "coin_price": 5000,
+    "sha256": "8c8d9e72c40cf2cb2536f8940c21b2b293c8e01c1a9d0f94456670a425ac01b7"
+  },
+  {
+    "package": "Orii-1.0.15.apks",
+    "source": "base.apk!/res/drawable/vip3_profilecardbg.png",
+    "name": "Violet Eagle",
+    "category": "Profile Card",
+    "coin_price": 5000,
+    "sha256": "b0be190d0a52adbccdffa213440cfbb6a274b4e4e5d8176b2d172cdeae301392"
+  },
+  {
+    "package": "Orii-1.0.15.apks",
+    "source": "base.apk!/res/drawable/vip4_profilecardbg.png",
+    "name": "Golden Lion",
+    "category": "Profile Card",
+    "coin_price": 5000,
+    "sha256": "089423147c0410da9c26e138bcca5f7f5f676f5889897b45046b81b02e9e1498"
+  },
+  {
+    "package": "Orii-1.0.15.apks",
+    "source": "base.apk!/res/drawable/vip5_profilecardbg.png",
+    "name": "Amber Dragon",
+    "category": "Profile Card",
+    "coin_price": 5000,
+    "sha256": "90c5a63767f8b76151fdfaa6f533cb486226f4436d052e2a75eea906c3fb0b5b"
+  }
+]

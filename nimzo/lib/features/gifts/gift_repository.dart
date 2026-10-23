@@ -1,3 +1,8 @@
+import 'dart:async';
+import '../../core/services/renderable_media.dart';
+import '../../core/services/media_publication.dart';
+import '../../core/services/catalog_snapshot_cache.dart';
+import '../../core/services/approved_media_bytes.dart';
 import 'private_animal_gifts.dart';
 import 'hall_of_fame_gift.dart';
 import '../../core/providers/supabase_provider.dart';
@@ -12,24 +17,62 @@ class Gift {
   final String id, name, category;
   final int price;
   final String? assetPath;
-  const Gift(this.id, this.name, this.category, this.price, this.assetPath);
+  const Gift(this.id, this.name, this.category, this.price, this.assetPath,
+      {this.requiresApprovedMedia = false,
+      this.playbackKind,
+      this.offline = false,
+      this.thumbnailPublication,
+      this.requiresThumbnailPublication = false});
+  final bool requiresApprovedMedia;
+  final bool requiresThumbnailPublication;
+  final String? playbackKind;
+  final bool offline;
+  final ApprovedMediaPublication? thumbnailPublication;
 }
 
 /// Server-approved playback record, never permission to send or spend coins.
 class GiftPlaybackMedia {
-  const GiftPlaybackMedia({required this.url, required this.kind});
+  const GiftPlaybackMedia(
+      {required this.url,
+      required this.kind,
+      this.publication,
+      this.soundEnabled = false});
   final String url;
   final String kind;
+  final ApprovedMediaPublication? publication;
+  final bool soundEnabled;
 
   static GiftPlaybackMedia? fromRow(Map<String, dynamic> row) {
     final raw = row['video_url'];
     final kind = row['media_kind'];
-    if (raw is! String || kind is! String ||
+    if (raw is! String ||
+        kind is! String ||
         !const {'mp4', 'vap', 'svga'}.contains(kind)) return null;
     final uri = Uri.tryParse(raw);
-    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty ||
+    if (uri == null ||
+        uri.scheme != 'https' ||
+        uri.host.isEmpty ||
         uri.userInfo.isNotEmpty) return null;
-    return GiftPlaybackMedia(url: uri.toString(), kind: kind);
+    ApprovedMediaPublication? publication;
+    if (row['sha256'] != null ||
+        row['byte_size'] != null ||
+        row['mime_type'] != null) {
+      if (row['sha256'] is! String ||
+          row['byte_size'] is! int ||
+          row['mime_type'] is! String) return null;
+      publication = ApprovedMediaPublication(
+          sha256Hex: row['sha256'] as String,
+          byteLength: row['byte_size'] as int,
+          mimeType: row['mime_type'] as String,
+          codec: kind);
+      if (!publication.isValid || !uri.path.contains(publication.sha256Hex))
+        return null;
+    }
+    return GiftPlaybackMedia(
+        url: uri.toString(),
+        kind: kind,
+        publication: publication,
+        soundEnabled: row['sound_enabled'] == true);
   }
 }
 
@@ -104,20 +147,22 @@ class GiftRepository {
   Future<GiftPlaybackMedia?> approvedAnimationMedia(String giftId) async {
     if (privateAnimalVapGiftIds.contains(giftId)) {
       final url = await privateMediaUrl(giftId, kind: 'animation');
-      return url == null
-          ? null
-          : GiftPlaybackMedia(url: url, kind: 'vap');
+      return url == null ? null : GiftPlaybackMedia(url: url, kind: 'vap');
     }
     final rows = await _db
         .from('gift_animation_media')
-        .select('video_url,media_kind')
+        .select()
         .eq('gift_id', giftId)
         .eq('approved', true)
         .limit(1);
     if (rows.isEmpty) return null;
     final media = GiftPlaybackMedia.fromRow(rows.first);
     if (media != null && giftId == hallOfFameGiftId) {
-      return GiftPlaybackMedia(url: media.url, kind: 'vap');
+      return GiftPlaybackMedia(
+          url: media.url,
+          kind: 'vap',
+          publication: media.publication,
+          soundEnabled: media.soundEnabled);
     }
     return media;
   }
@@ -130,7 +175,8 @@ class GiftRepository {
   Future<bool> privateMediaReady(String giftId) async {
     if (!privateAnimalVapGiftIds.contains(giftId)) return false;
     final response = await _db.functions.invoke(
-      'gift-media', body: {'gift_id': giftId, 'kind': 'ready'},
+      'gift-media',
+      body: {'gift_id': giftId, 'kind': 'ready'},
     );
     final body = response.data;
     return body is Map && body['ready'] == true;
@@ -142,7 +188,8 @@ class GiftRepository {
   Future<String?> qaGiftAnimationUrl(String giftId) async {
     if (!privateAnimalVapGiftIds.contains(giftId)) return null;
     final response = await _db.functions.invoke(
-      'gift-media', body: {'gift_id': giftId, 'kind': 'qa_animation'},
+      'gift-media',
+      body: {'gift_id': giftId, 'kind': 'qa_animation'},
     );
     final body = response.data;
     final url = body is Map ? body['url'] as String? : null;
@@ -174,18 +221,16 @@ class GiftRepository {
   Future<Map<String, String>> participantNamesForVerifiedEvent(
     Map<String, dynamic> event,
   ) async {
-    final ids =
-        <String>{
-              if (event['sender_id'] is String) event['sender_id'] as String,
-              if (event['receiver_id'] is String)
-                event['receiver_id'] as String,
-            }
-            .where(
-              (id) => RegExp(
-                r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
-              ).hasMatch(id),
-            )
-            .toList();
+    final ids = <String>{
+      if (event['sender_id'] is String) event['sender_id'] as String,
+      if (event['receiver_id'] is String) event['receiver_id'] as String,
+    }
+        .where(
+          (id) => RegExp(
+            r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+          ).hasMatch(id),
+        )
+        .toList();
     if (ids.isEmpty) return const {};
     try {
       final rows = await _db
@@ -203,10 +248,10 @@ class GiftRepository {
         final name = display != null && display.isNotEmpty
             ? display
             : username != null && username.isNotEmpty
-            ? username
-            : number is num
-            ? 'ID ${number.toString()}'
-            : '';
+                ? username
+                : number is num
+                    ? 'ID ${number.toString()}'
+                    : '';
         if (name.isNotEmpty) names[id] = name;
       }
       return names;
@@ -217,26 +262,115 @@ class GiftRepository {
   }
 
   Future<List<Gift>> catalog() async {
+    final account = _db.auth.currentUser?.id;
+    List<Gift> parse(List rows, {bool offline = false}) => rows
+            .where((j) => giftIsAvailable(Map<String, dynamic>.from(j)))
+            .map((j) {
+          String? kind = j['media_kind'] as String?;
+          final media = j['gift_animation_media'];
+          var verifiedAnimation = false;
+          if (media is List) {
+            for (final row in media) {
+              if (row is Map && row['approved'] == true) {
+                kind = row['media_kind'] as String?;
+                verifiedAnimation = verifiedAnimation || row['sha256'] != null;
+              }
+            }
+          }
+          return Gift(j['id'], j['name'], j['category'],
+              (j['coin_price'] as num).toInt(), j['asset_path'] as String?,
+              requiresApprovedMedia: j['requires_approved_media'] == true,
+              requiresThumbnailPublication:
+                  verifiedAnimation || j['requires_approved_media'] == true,
+              playbackKind: kind,
+              offline: offline,
+              thumbnailPublication: parseMediaPublication(
+                  Map<String, dynamic>.from(j),
+                  kind: 'image',
+                  prefix: 'thumbnail_'));
+        }).toList();
     try {
-      final r = await _db
-          .from('gifts')
-          .select()
-          .eq('active', true)
-          .order('coin_price');
-      return r
-          .map(
-            (j) => Gift(
-              j['id'],
-              j['name'],
-              j['category'],
-              (j['coin_price'] as num).toInt(),
-              j['asset_path'] as String?,
-            ),
-          )
-          .toList();
+      final rows = <Map<String, dynamic>>[];
+      for (var offset = 0; offset < 5000; offset += 200) {
+        final page = await _db
+            .from('gifts')
+            .select('*,gift_animation_media(*)')
+            .eq('active', true)
+            .order('priority', ascending: false)
+            .order('coin_price')
+            .order('id')
+            .range(offset, offset + 199)
+            .timeout(const Duration(seconds: 8));
+        rows.addAll(page);
+        if (page.length < 200) break;
+        if (offset == 4800)
+          throw StateError(
+              'Gift catalog exceeds the supported publication limit');
+      }
+      final parsed = parse(rows);
+      if (account != null)
+        await CatalogSnapshotCache.save(account, 'gifts', rows);
+      return parsed;
     } catch (e) {
+      final cached = account == null
+          ? null
+          : await CatalogSnapshotCache.read(account, 'gifts');
+      if (cached is List) return parse(cached, offline: true);
       throw mapError(e);
     }
+  }
+
+  /// Preflight presentation before a charge. Postgres separately verifies live
+  /// activity, account, price, publication, ownership, ledger and replay keys.
+  Future<void> verifyBeforeSending(String giftId) async {
+    final rows = await _db
+        .from('gifts')
+        .select('id,requires_approved_media,available_from,available_until')
+        .eq('id', giftId)
+        .eq('active', true)
+        .limit(1);
+    if (rows.isEmpty || !giftIsAvailable(rows.first))
+      throw StateError('This gift is unavailable. No new request submitted.');
+    if (rows.first['requires_approved_media'] != true) return;
+    final media = await approvedAnimationMedia(giftId);
+    if (media == null || media.publication == null) {
+      throw StateError(
+          'Gift animation is unavailable. No new request submitted.');
+    }
+    try {
+      final bytes = await ApprovedMediaBytes.fetch(media.url,
+          publication: media.publication);
+      await validateRenderableMedia(bytes, media.publication!);
+    } catch (_) {
+      throw StateError(
+          'Gift animation could not be verified. No new request submitted.');
+    }
+  }
+
+  Future<bool> recoverReceipt(
+      {required String scope,
+      String? context,
+      required String receiverId,
+      required String giftId,
+      required int qty,
+      required String key,
+      required int expectedTotal}) async {
+    final receipt = await _db.rpc('gift_send_receipt_checked', params: {
+      'p_scope': scope,
+      'p_context': context,
+      'p_receiver': receiverId,
+      'p_gift': giftId,
+      'p_qty': qty,
+      'p_key': key,
+      'p_expected_total': expectedTotal,
+    });
+    if (receipt == null) return false;
+    if (receipt is! Map ||
+        receipt['status'] != 'replayed' ||
+        receipt['total'] != expectedTotal) {
+      throw StateError('Gift receipt could not be verified');
+    }
+    return true;
   }
 
   Future<void> sendProfile({
@@ -244,16 +378,32 @@ class GiftRepository {
     required String giftId,
     required int qty,
     required String key,
+    int? expectedTotal,
   }) async {
     _validateGiftRequest(receiverId, giftId, qty, key);
+    final account = _db.auth.currentUser?.id;
     try {
+      if (expectedTotal != null &&
+          await recoverReceipt(
+              scope: 'profile',
+              receiverId: receiverId,
+              giftId: giftId,
+              qty: qty,
+              key: key,
+              expectedTotal: expectedTotal)) return;
+      await verifyBeforeSending(giftId);
+      if (_db.auth.currentUser?.id != account)
+        throw StateError('Account changed before gift submission');
       await _db.rpc(
-        'send_profile_gift',
+        expectedTotal == null
+            ? 'send_profile_gift'
+            : 'send_profile_gift_checked',
         params: {
           'p_receiver': receiverId,
           'p_gift': giftId,
           'p_qty': qty,
           'p_key': key,
+          if (expectedTotal != null) 'p_expected_total': expectedTotal,
         },
       );
     } catch (e) {
@@ -269,20 +419,35 @@ class GiftRepository {
     required String giftId,
     required int qty,
     required String key,
+    int? expectedTotal,
   }) async {
     if (roomId.trim().isEmpty) {
       throw ArgumentError.value(roomId, 'roomId', 'Room is required.');
     }
     _validateGiftRequest(receiverId, giftId, qty, key);
+    final account = _db.auth.currentUser?.id;
     try {
+      if (expectedTotal != null &&
+          await recoverReceipt(
+              scope: 'room',
+              context: roomId,
+              receiverId: receiverId,
+              giftId: giftId,
+              qty: qty,
+              key: key,
+              expectedTotal: expectedTotal)) return;
+      await verifyBeforeSending(giftId);
+      if (_db.auth.currentUser?.id != account)
+        throw StateError('Account changed before gift submission');
       await _db.rpc(
-        'send_gift',
+        expectedTotal == null ? 'send_gift' : 'send_gift_checked',
         params: {
           'p_room': roomId,
           'p_receiver': receiverId,
           'p_gift': giftId,
           'p_qty': qty,
           'p_key': key,
+          if (expectedTotal != null) 'p_expected_total': expectedTotal,
         },
       );
     } catch (e) {
@@ -318,28 +483,40 @@ class GiftRepository {
 final giftRepositoryProvider = Provider(
   (ref) => GiftRepository(ref.watch(sessionSupabaseProvider).client),
 );
-final giftCatalogProvider = FutureProvider(
-  (ref) => ref.watch(giftRepositoryProvider).catalog(),
+bool giftIsAvailable(Map<String, dynamic> row, {DateTime? now}) {
+  final current = (now ?? DateTime.now()).toUtc();
+  final from = row['available_from'], until = row['available_until'];
+  if ((from != null && (from is! String || DateTime.tryParse(from) == null)) ||
+      (until != null && (until is! String || DateTime.tryParse(until) == null)))
+    return false;
+  final start = from == null ? null : DateTime.parse(from as String).toUtc();
+  final end = until == null ? null : DateTime.parse(until as String).toUtc();
+  return (start == null || !current.isBefore(start)) &&
+      (end == null || current.isBefore(end));
+}
+
+final giftCatalogProvider = FutureProvider((ref) {
+  final timer = Timer(const Duration(minutes: 1), ref.invalidateSelf);
+  ref.onDispose(timer.cancel);
+  return ref.watch(giftRepositoryProvider).catalog();
+});
+final roomGiftEventProvider =
+    StreamProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
+  (ref, roomId) =>
+      ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
 );
-final roomGiftEventProvider = StreamProvider.autoDispose
-    .family<List<Map<String, dynamic>>, String>(
-      (ref, roomId) =>
-          ref.watch(giftRepositoryProvider).watchRoomGiftEvents(roomId),
-    );
 
 final verifiedGiftAnimationProvider = StreamProvider.autoDispose
     .family<List<Map<String, dynamic>>, ({String roomId, String countryCode})>(
-      (ref, args) => ref
-          .watch(giftRepositoryProvider)
-          .watchVerifiedAnimations(
-            roomId: args.roomId,
-            countryCode: args.countryCode,
-          ),
-    );
+  (ref, args) => ref.watch(giftRepositoryProvider).watchVerifiedAnimations(
+        roomId: args.roomId,
+        countryCode: args.countryCode,
+      ),
+);
 
-final privateGiftThumbnailProvider = FutureProvider.autoDispose
-    .family<String?, String>(
-      (ref, giftId) => ref
-          .watch(giftRepositoryProvider)
-          .privateMediaUrl(giftId, kind: 'thumbnail'),
-    );
+final privateGiftThumbnailProvider =
+    FutureProvider.autoDispose.family<String?, String>(
+  (ref, giftId) => ref
+      .watch(giftRepositoryProvider)
+      .privateMediaUrl(giftId, kind: 'thumbnail'),
+);

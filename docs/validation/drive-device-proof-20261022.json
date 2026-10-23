@@ -1,0 +1,75 @@
+{
+  "source_commit": "052957859a73971e33d77ae4129416a9f3e63052",
+  "device": "Android35 GoogleAPIs x86_64 emulator",
+  "test_passed": true,
+  "test_completed_at": "2026-10-22T18:55:47.906975Z",
+  "workflow_run": "https://github.com/adi4ch-cmd/Nimzo/actions/runs/39834701067",
+  "workflow_conclusion": "failure",
+  "workflow_failure": "Post-test preview tar collection assumed cache directory; media test passed all9; collector path being corrected",
+  "log_sha256": "f6a979c39d962be3a6d756832337236aa9ccf86f02754d4191a2fbecfc24af22",
+  "records": {
+    "c4fcd5bb-f4c6-5871-af3d-213e56109799": {
+      "sha256": "93d60191fbfc8e331132ee388d4739a63c2aff5e7ae6a19790256d66861fc045",
+      "frames": 79,
+      "fps": 15,
+      "distinct": 78,
+      "visible": 79
+    },
+    "92a89064-62f8-5f14-bc39-80e1f33aba98": {
+      "sha256": "66c8c4fa8cfa9f238bed13b34e6bff6a8d26fa0dd9861350e0e4d308aaf1e8b6",
+      "frames": 90,
+      "fps": 30,
+      "distinct": 90,
+      "visible": 90
+    },
+    "nimzo-drive-amethyst-crown": {
+      "sha256": "0dd433b58a00448c82c2eb3275220d12439e0149d6a8aae078faf879f19465d4",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-azure-crown": {
+      "sha256": "6b3f66d633474f1d02027ec92b10cd4dada4e0448abad84a883ccbdae235d854",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-orchid-crown": {
+      "sha256": "2c1de320397227b862c5045779efe7e7e22e561093a0d2b5e4dae753499450cb",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-crimson-crown": {
+      "sha256": "717c44cb0f0e2f85a2578c5c5d097fe8446760a1449b6715ef998a1b5ddb74d7",
+      "frames": 45,
+      "fps": 20,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-rose-id-plate": {
+      "sha256": "9f156c347545d6a371afee6a270ff0b2c4a4454f929e3427064e1ec5b63db3c9",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 56,
+      "visible": 80
+    },
+    "nimzo-drive-violet-id-plate": {
+      "sha256": "1c34aafc448c2d4c848700f10a9bfdb409f8676fd5157751405a83c825384461",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 56,
+      "visible": 80
+    },
+    "nimzo-drive-gold-id-plate": {
+      "sha256": "95742d9e8ceb2bea1c32927a222f84839d7129998d75212711f52699c4f919fe",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 56,
+      "visible": 80
+    }
+  }
+}

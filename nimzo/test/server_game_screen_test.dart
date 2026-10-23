@@ -20,6 +20,11 @@ void main() {
             'https://example.supabase.co', 'key',
             authOptions: const AuthClientOptions(autoRefreshToken: false),
             httpClient: MockClient((request) async {
+          if (request.url.path.endsWith('/rpc/my_game_receipt')) {
+            return http.Response('{"status":"missing"}', 200,
+                request: request,
+                headers: {'content-type': 'application/json'});
+          }
           requests.add(jsonDecode(request.body) as Map<String, dynamic>);
           if (requests.length == 1)
             return http.Response('{"message":"temporarily unavailable"}', 503,

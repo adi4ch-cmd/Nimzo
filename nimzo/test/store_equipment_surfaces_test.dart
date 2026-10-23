@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nimzo/core/widgets/published_image.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +15,7 @@ import 'package:nimzo/features/store/room_cosmetic_entrance.dart';
 import 'package:nimzo/features/rooms/presentation/room_controller.dart';
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   test('equipment RPC rejects unknown IDs and mismatched categories', () async {
     final db = SupabaseClient('https://example.supabase.co', 'test',
         httpClient: MockClient((request) async {
@@ -111,11 +114,8 @@ void main() {
       ),
     ));
     await tester.pump();
-    final images = tester.widgetList<Image>(find.byType(Image));
-    expect(images.any((image) =>
-      image.image is NetworkImage &&
-      (image.image as NetworkImage).url ==
-        'https://cdn.example.com/room.png'), isTrue);
+    final image = tester.widget<PublishedImage>(find.byType(PublishedImage));
+    expect(image.url,'https://cdn.example.com/room.png');
     expect(find.text('Original room body'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });

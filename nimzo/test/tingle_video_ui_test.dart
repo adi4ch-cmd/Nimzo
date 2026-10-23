@@ -1,3 +1,6 @@
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nimzo/features/store/store_live_catalog.dart';
+import 'package:nimzo/core/services/nimzo_content_sync.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -79,6 +82,7 @@ Future<void> loadReviewFonts() async {
 }
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   for (final width in [320.0, 360.0, 390.0]) {
     testWidgets('walkthrough surfaces and privilege navigation fit ${width}dp',
         (tester) async {
@@ -140,6 +144,8 @@ void main() {
             key: ValueKey(entry.key),
             overrides: [
               supabaseProvider.overrideWithValue(db),
+              nimzoContentRevisionsProvider.overrideWith((_) => const Stream.empty()),
+              nimzoStoreProvider.overrideWith((_) async => const NimzoStoreSnapshot(items:[],owned:{},equipped:{})),
               familyDirectoryProvider.overrideWith((_) async => []),
               currentUserIdProvider.overrideWithValue('review'),
               profileProvider('review').overrideWith((_) async => account),

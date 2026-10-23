@@ -1,0 +1,146 @@
+[
+  {
+    "id": "c4fcd5bb-f4c6-5871-af3d-213e56109799",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/93d60191fbfc8e331132ee388d4739a63c2aff5e7ae6a19790256d66861fc045.svga",
+    "bytes": 3422808,
+    "sha256": "93d60191fbfc8e331132ee388d4739a63c2aff5e7ae6a19790256d66861fc045",
+    "mime_type": "application/x-svga",
+    "verified": true
+  },
+  {
+    "id": "c4fcd5bb-f4c6-5871-af3d-213e56109799",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/fe4d60df70e61dcbcb17fd01081ed9b169735db63f5ed8fcde120937db2a6019.png",
+    "bytes": 26317,
+    "sha256": "fe4d60df70e61dcbcb17fd01081ed9b169735db63f5ed8fcde120937db2a6019",
+    "mime_type": "image/png",
+    "verified": true
+  },
+  {
+    "id": "92a89064-62f8-5f14-bc39-80e1f33aba98",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/66c8c4fa8cfa9f238bed13b34e6bff6a8d26fa0dd9861350e0e4d308aaf1e8b6.svga",
+    "bytes": 412101,
+    "sha256": "66c8c4fa8cfa9f238bed13b34e6bff6a8d26fa0dd9861350e0e4d308aaf1e8b6",
+    "mime_type": "application/x-svga",
+    "verified": true
+  },
+  {
+    "id": "92a89064-62f8-5f14-bc39-80e1f33aba98",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/854cdd2075a70493b29ae7c6f28b1aece51b196d17dd43077ef2ffdf5c6acf2e.png",
+    "bytes": 11956,
+    "sha256": "854cdd2075a70493b29ae7c6f28b1aece51b196d17dd43077ef2ffdf5c6acf2e",
+    "mime_type": "image/png",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-amethyst-crown",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/0dd433b58a00448c82c2eb3275220d12439e0149d6a8aae078faf879f19465d4.svga",
+    "bytes": 1904931,
+    "sha256": "0dd433b58a00448c82c2eb3275220d12439e0149d6a8aae078faf879f19465d4",
+    "mime_type": "application/x-svga",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-amethyst-crown",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/f08329861c47dbfdffd813393f9e2a2423a930272231133471ecb6f7c529be44.png",
+    "bytes": 38109,
+    "sha256": "f08329861c47dbfdffd813393f9e2a2423a930272231133471ecb6f7c529be44",
+    "mime_type": "image/png",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-azure-crown",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/6b3f66d633474f1d02027ec92b10cd4dada4e0448abad84a883ccbdae235d854.svga",
+    "bytes": 2011306,
+    "sha256": "6b3f66d633474f1d02027ec92b10cd4dada4e0448abad84a883ccbdae235d854",
+    "mime_type": "application/x-svga",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-azure-crown",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/a484f71e1e183718530e0d7b7142d4ddd15b3de6b761843e0b5b12dfb92594f9.png",
+    "bytes": 42984,
+    "sha256": "a484f71e1e183718530e0d7b7142d4ddd15b3de6b761843e0b5b12dfb92594f9",
+    "mime_type": "image/png",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-orchid-crown",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/2c1de320397227b862c5045779efe7e7e22e561093a0d2b5e4dae753499450cb.svga",
+    "bytes": 2072171,
+    "sha256": "2c1de320397227b862c5045779efe7e7e22e561093a0d2b5e4dae753499450cb",
+    "mime_type": "application/x-svga",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-orchid-crown",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/cec2e778488b37bbe895ca22b4b11fbc0866e66d2cda33868df821b13bc22809.png",
+    "bytes": 43228,
+    "sha256": "cec2e778488b37bbe895ca22b4b11fbc0866e66d2cda33868df821b13bc22809",
+    "mime_type": "image/png",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-crimson-crown",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/717c44cb0f0e2f85a2578c5c5d097fe8446760a1449b6715ef998a1b5ddb74d7.svga",
+    "bytes": 2285273,
+    "sha256": "717c44cb0f0e2f85a2578c5c5d097fe8446760a1449b6715ef998a1b5ddb74d7",
+    "mime_type": "application/x-svga",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-crimson-crown",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/9a1b2e6c7aec9dd9108f0a9d7f7b38ac44bdcb7c390ad511492d0db4953a4702.png",
+    "bytes": 44895,
+    "sha256": "9a1b2e6c7aec9dd9108f0a9d7f7b38ac44bdcb7c390ad511492d0db4953a4702",
+    "mime_type": "image/png",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-rose-id-plate",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/9f156c347545d6a371afee6a270ff0b2c4a4454f929e3427064e1ec5b63db3c9.svga",
+    "bytes": 48683,
+    "sha256": "9f156c347545d6a371afee6a270ff0b2c4a4454f929e3427064e1ec5b63db3c9",
+    "mime_type": "application/x-svga",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-rose-id-plate",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/05d2b88d3f18d4e3ba2b13ae0f55dd78574c28ced2ca8260d5787698c953db22.png",
+    "bytes": 3625,
+    "sha256": "05d2b88d3f18d4e3ba2b13ae0f55dd78574c28ced2ca8260d5787698c953db22",
+    "mime_type": "image/png",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-violet-id-plate",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/1c34aafc448c2d4c848700f10a9bfdb409f8676fd5157751405a83c825384461.svga",
+    "bytes": 47764,
+    "sha256": "1c34aafc448c2d4c848700f10a9bfdb409f8676fd5157751405a83c825384461",
+    "mime_type": "application/x-svga",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-violet-id-plate",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/10ebd5a63cc4980c52ac22bab2956decca1f6dfc2f86bfd138f44d23af9cf182.png",
+    "bytes": 3634,
+    "sha256": "10ebd5a63cc4980c52ac22bab2956decca1f6dfc2f86bfd138f44d23af9cf182",
+    "mime_type": "image/png",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-gold-id-plate",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/95742d9e8ceb2bea1c32927a222f84839d7129998d75212711f52699c4f919fe.svga",
+    "bytes": 47347,
+    "sha256": "95742d9e8ceb2bea1c32927a222f84839d7129998d75212711f52699c4f919fe",
+    "mime_type": "application/x-svga",
+    "verified": true
+  },
+  {
+    "id": "nimzo-drive-gold-id-plate",
+    "url": "https://kvqvlpozqokwarovwmwv.supabase.co/storage/v1/object/public/nimzo-drive-catalog/fa7ad72c0d5e8da666cec06d1e0d4f0d49c942d75d0fd8de83e51ff2999c7ac4.png",
+    "bytes": 3526,
+    "sha256": "fa7ad72c0d5e8da666cec06d1e0d4f0d49c942d75d0fd8de83e51ff2999c7ac4",
+    "mime_type": "image/png",
+    "verified": true
+  }
+]

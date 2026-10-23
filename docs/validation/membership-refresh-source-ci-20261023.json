@@ -1,0 +1,10 @@
+{
+  "source_commit": "b92056ea45527e3cad2de59079d6d40f4e9d22c8",
+  "workflow_run": "https://github.com/adi4ch-cmd/Nimzo/actions/runs/39981108215",
+  "job_id": 120508300599,
+  "conclusion": "success",
+  "flutter_tests": 564,
+  "python_tests": 34,
+  "sql_tests": "actual published20-presentation/7-gift migration preserves old rows;7 sends/replays debit5000000 once; existing fixtures pass",
+  "raw_log_sha256": "363d08a1b9dc9a509153477f775c0d3bab73b500a5079939e6f32ae470d83fcd"
+}

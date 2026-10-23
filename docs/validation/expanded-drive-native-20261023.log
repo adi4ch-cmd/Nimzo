@@ -1,0 +1,1023 @@
+﻿2026-10-23T06:09:55.6425887Z Current runner version: '2.338.0'
+2026-10-23T06:09:55.6445095Z ##[group]Runner Image Provisioner
+2026-10-23T06:09:55.6445932Z Hosted Compute Agent
+2026-10-23T06:09:55.6446416Z Version: 20261012.601
+2026-10-23T06:09:55.6447012Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-23T06:09:55.6447646Z Build Date: 2026-10-12T17:48:21Z
+2026-10-23T06:09:55.6448263Z Worker ID: {19df6af1-b44c-4b01-bd64-c9a29b7bfc37}
+2026-10-23T06:09:55.6448996Z Region: westus3
+2026-10-23T06:09:55.6449540Z Cloud: Azure
+2026-10-23T06:09:55.6450087Z ##[endgroup]
+2026-10-23T06:09:55.6451328Z ##[group]Operating System
+2026-10-23T06:09:55.6451906Z Ubuntu
+2026-10-23T06:09:55.6452712Z 24.04.5
+2026-10-23T06:09:55.6453231Z LTS
+2026-10-23T06:09:55.6453758Z ##[endgroup]
+2026-10-23T06:09:55.6454300Z ##[group]Runner Image
+2026-10-23T06:09:55.6454843Z Image: ubuntu-24.04
+2026-10-23T06:09:55.6455835Z Version: 20261012.334.1
+2026-10-23T06:09:55.6457049Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-23T06:09:55.6458563Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-23T06:09:55.6459478Z ##[endgroup]
+2026-10-23T06:09:55.6460631Z ##[group]GITHUB_TOKEN Permissions
+2026-10-23T06:09:55.6462939Z Contents: read
+2026-10-23T06:09:55.6463653Z Metadata: read
+2026-10-23T06:09:55.6464209Z ##[endgroup]
+2026-10-23T06:09:55.6466195Z Secret source: Actions
+2026-10-23T06:09:55.6467123Z Cache mode: write
+2026-10-23T06:09:55.6467780Z Prepare workflow directory
+2026-10-23T06:09:55.6753774Z Prepare all required actions
+2026-10-23T06:09:55.6798013Z Getting action download info
+2026-10-23T06:09:56.0856053Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-23T06:09:56.1950606Z Download action repository 'actions/setup-java@v4' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
+2026-10-23T06:09:57.0834089Z Download action repository 'subosito/flutter-action@v2' (SHA:1a449444c387b1966244ae4d4f8c696479add0b2)
+2026-10-23T06:09:57.4740366Z Download action repository 'reactivecircus/android-emulator-runner@v2' (SHA:a421e43855164a8197daf9d8d40fe71c6996bb0d)
+2026-10-23T06:09:58.1338032Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-23T06:09:58.3619797Z Getting action download info
+2026-10-23T06:09:58.4855580Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+2026-10-23T06:09:58.7185875Z Complete job name: android-render
+2026-10-23T06:09:58.7723515Z ##[group]Run actions/checkout@v4
+2026-10-23T06:09:58.7724036Z with:
+2026-10-23T06:09:58.7724364Z   repository: adi4ch-cmd/Nimzo
+2026-10-23T06:09:58.7726756Z   token: ***
+2026-10-23T06:09:58.7727059Z   ssh-strict: true
+2026-10-23T06:09:58.7727368Z   ssh-user: git
+2026-10-23T06:09:58.7727706Z   persist-credentials: true
+2026-10-23T06:09:58.7728032Z   clean: true
+2026-10-23T06:09:58.7728379Z   sparse-checkout-cone-mode: true
+2026-10-23T06:09:58.7728759Z   fetch-depth: 1
+2026-10-23T06:09:58.7729097Z   fetch-tags: false
+2026-10-23T06:09:58.7729414Z   show-progress: true
+2026-10-23T06:09:58.7729928Z   lfs: false
+2026-10-23T06:09:58.7730232Z   submodules: false
+2026-10-23T06:09:58.7730540Z   set-safe-directory: true
+2026-10-23T06:09:58.7730863Z   allow-unsafe-pr-checkout: false
+2026-10-23T06:09:58.7731315Z ##[endgroup]
+2026-10-23T06:09:58.8606517Z Syncing repository: adi4ch-cmd/Nimzo
+2026-10-23T06:09:58.8608673Z ##[group]Getting Git version info
+2026-10-23T06:09:58.8609502Z Working directory is '/home/runner/work/Nimzo/Nimzo'
+2026-10-23T06:09:58.8610483Z [command]/usr/bin/git version
+2026-10-23T06:09:58.8639628Z git version 2.55.0
+2026-10-23T06:09:58.8658094Z ##[endgroup]
+2026-10-23T06:09:58.8669071Z Temporarily overriding HOME='/home/runner/work/_temp/bd38080e-556b-48af-8a3e-7540c4dfeb31' before making global git config changes
+2026-10-23T06:09:58.8670408Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-23T06:09:58.8672595Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Nimzo/Nimzo
+2026-10-23T06:09:58.8712033Z Deleting the contents of '/home/runner/work/Nimzo/Nimzo'
+2026-10-23T06:09:58.8719638Z ##[group]Initializing the repository
+2026-10-23T06:09:58.8720404Z [command]/usr/bin/git init /home/runner/work/Nimzo/Nimzo
+2026-10-23T06:09:58.8800073Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-23T06:09:58.8801255Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-23T06:09:58.8802156Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-23T06:09:58.8803055Z hint: call:
+2026-10-23T06:09:58.8803517Z hint:
+2026-10-23T06:09:58.8804069Z hint: 	git config --global init.defaultBranch <name>
+2026-10-23T06:09:58.8804723Z hint:
+2026-10-23T06:09:58.8805350Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-23T06:09:58.8806244Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-23T06:09:58.8806990Z hint:
+2026-10-23T06:09:58.8807470Z hint: 	git branch -m <name>
+2026-10-23T06:09:58.8807984Z hint:
+2026-10-23T06:09:58.8808604Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-23T06:09:58.8813030Z Initialized empty Git repository in /home/runner/work/Nimzo/Nimzo/.git/
+2026-10-23T06:09:58.8821634Z [command]/usr/bin/git remote add origin https://github.com/adi4ch-cmd/Nimzo
+2026-10-23T06:09:58.8862093Z ##[endgroup]
+2026-10-23T06:09:58.8863023Z ##[group]Disabling automatic garbage collection
+2026-10-23T06:09:58.8866354Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-23T06:09:58.8891130Z ##[endgroup]
+2026-10-23T06:09:58.8891668Z ##[group]Setting up auth
+2026-10-23T06:09:58.8897933Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-23T06:09:58.8924079Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-23T06:09:58.9206908Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-23T06:09:58.9234046Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-23T06:09:58.9408613Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-23T06:09:58.9443818Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-23T06:09:58.9607054Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-23T06:09:58.9636001Z ##[endgroup]
+2026-10-23T06:09:58.9636719Z ##[group]Fetching the repository
+2026-10-23T06:09:58.9643959Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +fc0904b95e02d4723ceb41f085498467ccb2ab01:refs/remotes/origin/integration/nimzo-v3-dynamic-20261021
+2026-10-23T06:10:03.4580477Z From https://github.com/adi4ch-cmd/Nimzo
+2026-10-23T06:10:03.4581632Z  * [new ref]         fc0904b95e02d4723ceb41f085498467ccb2ab01 -> origin/integration/nimzo-v3-dynamic-20261021
+2026-10-23T06:10:03.4585221Z ##[endgroup]
+2026-10-23T06:10:03.4586010Z ##[group]Determining the checkout info
+2026-10-23T06:10:03.4587956Z ##[endgroup]
+2026-10-23T06:10:03.4594388Z [command]/usr/bin/git sparse-checkout disable
+2026-10-23T06:10:03.4640040Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-23T06:10:03.4666028Z ##[group]Checking out the ref
+2026-10-23T06:10:03.4671193Z [command]/usr/bin/git checkout --progress --force -B integration/nimzo-v3-dynamic-20261021 refs/remotes/origin/integration/nimzo-v3-dynamic-20261021
+2026-10-23T06:10:03.8104507Z Switched to a new branch 'integration/nimzo-v3-dynamic-20261021'
+2026-10-23T06:10:03.8106173Z branch 'integration/nimzo-v3-dynamic-20261021' set up to track 'origin/integration/nimzo-v3-dynamic-20261021'.
+2026-10-23T06:10:03.8132915Z ##[endgroup]
+2026-10-23T06:10:03.8173596Z [command]/usr/bin/git log -1 --format=%H
+2026-10-23T06:10:03.8185805Z fc0904b95e02d4723ceb41f085498467ccb2ab01
+2026-10-23T06:10:03.8365384Z ##[group]Run python3 tools/verify_prebuild_acceptance.py --dynamic-qa
+2026-10-23T06:10:03.8366177Z [36;1mpython3 tools/verify_prebuild_acceptance.py --dynamic-qa[0m
+2026-10-23T06:10:03.8509212Z shell: /usr/bin/bash -e {0}
+2026-10-23T06:10:03.8509586Z ##[endgroup]
+2026-10-23T06:10:04.0592613Z Dynamic QA acceptance PASS; TEST APK only, voice as recorded
+2026-10-23T06:10:04.0755836Z ##[group]Run actions/setup-java@v4
+2026-10-23T06:10:04.0756242Z with:
+2026-10-23T06:10:04.0756553Z   distribution: temurin
+2026-10-23T06:10:04.0756875Z   java-version: 17
+2026-10-23T06:10:04.0757193Z   java-package: jdk
+2026-10-23T06:10:04.0757529Z   check-latest: false
+2026-10-23T06:10:04.0757878Z   server-id: github
+2026-10-23T06:10:04.0758188Z   server-username: GITHUB_ACTOR
+2026-10-23T06:10:04.0758521Z   server-password: GITHUB_TOKEN
+2026-10-23T06:10:04.0758892Z   overwrite-settings: true
+2026-10-23T06:10:04.0759310Z   job-status: success
+2026-10-23T06:10:04.0761996Z   token: ***
+2026-10-23T06:10:04.0762424Z ##[endgroup]
+2026-10-23T06:10:04.2209635Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+2026-10-23T06:10:04.2219544Z ##[group]Installed distributions
+2026-10-23T06:10:04.2374897Z Resolved Java 17.0.20+1 from tool-cache
+2026-10-23T06:10:04.2375559Z Setting Java 17.0.20+1 as the default
+2026-10-23T06:10:04.2383361Z (node:2099) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-23T06:10:04.2384339Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-23T06:10:04.2385847Z Creating toolchains.xml for JDK version 17 from temurin
+2026-10-23T06:10:04.2440854Z Writing to /home/runner/.m2/toolchains.xml
+2026-10-23T06:10:04.2441382Z 
+2026-10-23T06:10:04.2441733Z Java configuration:
+2026-10-23T06:10:04.2442188Z   Distribution: temurin
+2026-10-23T06:10:04.2442885Z   Version: 17.0.20+1
+2026-10-23T06:10:04.2443439Z   Path: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:04.2443824Z 
+2026-10-23T06:10:04.2444385Z ##[endgroup]
+2026-10-23T06:10:04.2460499Z Creating settings.xml with server-id: github
+2026-10-23T06:10:04.2478492Z Writing to /home/runner/.m2/settings.xml
+2026-10-23T06:10:04.2739267Z ##[group]Run subosito/flutter-action@v2
+2026-10-23T06:10:04.2739775Z with:
+2026-10-23T06:10:04.2740177Z   flutter-version: 3.47.6
+2026-10-23T06:10:04.2740627Z   channel: stable
+2026-10-23T06:10:04.2741126Z   cache: true
+2026-10-23T06:10:04.2741590Z   architecture: X64
+2026-10-23T06:10:04.2742027Z   pub-cache-path: default
+2026-10-23T06:10:04.2742859Z   dry-run: false
+2026-10-23T06:10:04.2743393Z   git-source: https://github.com/flutter/flutter.git
+2026-10-23T06:10:04.2744104Z env:
+2026-10-23T06:10:04.2745126Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:04.2746099Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:04.2746727Z ##[endgroup]
+2026-10-23T06:10:04.2813825Z ##[start-action display=Make yq tool available on Windows runners;id=__subosito_flutter-action.__run]
+2026-10-23T06:10:04.2822879Z ##[end-action id=__subosito_flutter-action.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-23T06:10:04.2825103Z ##[start-action display=Make setup script executable;id=__subosito_flutter-action.__run_2]
+2026-10-23T06:10:04.2848964Z ##[group]Run chmod +x "$GITHUB_ACTION_PATH/setup.sh"
+2026-10-23T06:10:04.2849368Z [36;1mchmod +x "$GITHUB_ACTION_PATH/setup.sh"[0m
+2026-10-23T06:10:04.2890142Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-23T06:10:04.2890499Z env:
+2026-10-23T06:10:04.2890918Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:04.2891525Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:04.2891987Z ##[endgroup]
+2026-10-23T06:10:04.2964061Z ##[end-action id=__subosito_flutter-action.__run_2;outcome=success;conclusion=success;duration_ms=13]
+2026-10-23T06:10:04.2966786Z ##[start-action display=Set action inputs;id=__subosito_flutter-action.flutter-action]
+2026-10-23T06:10:04.3002998Z ##[group]Run $GITHUB_ACTION_PATH/setup.sh -p \
+2026-10-23T06:10:04.3003397Z [36;1m$GITHUB_ACTION_PATH/setup.sh -p \[0m
+2026-10-23T06:10:04.3003795Z [36;1m  -n '3.47.6' \[0m
+2026-10-23T06:10:04.3004071Z [36;1m  -f '' \[0m
+2026-10-23T06:10:04.3004346Z [36;1m  -a 'X64' \[0m
+2026-10-23T06:10:04.3004626Z [36;1m  -k '' \[0m
+2026-10-23T06:10:04.3004865Z [36;1m  -c '' \[0m
+2026-10-23T06:10:04.3005141Z [36;1m  -l '' \[0m
+2026-10-23T06:10:04.3005406Z [36;1m  -d 'default' \[0m
+2026-10-23T06:10:04.3005743Z [36;1m  -g 'https://github.com/flutter/flutter.git' \[0m
+2026-10-23T06:10:04.3006139Z [36;1m  stable[0m
+2026-10-23T06:10:04.3032939Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-23T06:10:04.3033352Z env:
+2026-10-23T06:10:04.3033741Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:04.3034225Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:04.3034598Z ##[endgroup]
+2026-10-23T06:10:04.4824482Z ##[end-action id=__subosito_flutter-action.flutter-action;outcome=success;conclusion=success;duration_ms=185]
+2026-10-23T06:10:04.4829365Z ##[start-action display=Cache Flutter;id=__subosito_flutter-action.cache-flutter]
+2026-10-23T06:10:04.4875867Z ##[group]Run actions/cache@v5
+2026-10-23T06:10:04.4876170Z with:
+2026-10-23T06:10:04.4876478Z   path: /opt/hostedtoolcache/flutter/stable-3.47.6-x64
+2026-10-23T06:10:04.4876951Z   key: flutter-linux-stable-3.47.6-x64-5fc346839b5d0eef006ed8404392afb4dfae428d
+2026-10-23T06:10:04.4877384Z   enableCrossOsArchive: false
+2026-10-23T06:10:04.4877702Z   fail-on-cache-miss: false
+2026-10-23T06:10:04.4877983Z   lookup-only: false
+2026-10-23T06:10:04.4878257Z   save-always: false
+2026-10-23T06:10:04.4878520Z env:
+2026-10-23T06:10:04.4878844Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:04.4879295Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:04.4879694Z ##[endgroup]
+2026-10-23T06:10:04.7936961Z Cache hit for: flutter-linux-stable-3.47.6-x64-5fc346839b5d0eef006ed8404392afb4dfae428d
+2026-10-23T06:10:06.0147208Z Received 41943040 of 1721750443 (2.4%), 40.0 MBs/sec
+2026-10-23T06:10:07.0153543Z Received 213909504 of 1721750443 (12.4%), 101.9 MBs/sec
+2026-10-23T06:10:08.0194019Z Received 398458880 of 1721750443 (23.1%), 126.6 MBs/sec
+2026-10-23T06:10:09.0183925Z Received 545259520 of 1721750443 (31.7%), 130.0 MBs/sec
+2026-10-23T06:10:10.0164356Z Received 713031680 of 1721750443 (41.4%), 135.9 MBs/sec
+2026-10-23T06:10:11.0166446Z Received 876609536 of 1721750443 (50.9%), 139.3 MBs/sec
+2026-10-23T06:10:12.0174882Z Received 1035993088 of 1721750443 (60.2%), 141.1 MBs/sec
+2026-10-23T06:10:13.0215296Z Received 1199570944 of 1721750443 (69.7%), 142.9 MBs/sec
+2026-10-23T06:10:14.0183034Z Received 1337982976 of 1721750443 (77.7%), 141.7 MBs/sec
+2026-10-23T06:10:15.0179006Z Received 1468006400 of 1721750443 (85.3%), 139.9 MBs/sec
+2026-10-23T06:10:16.0185726Z Received 1598029824 of 1721750443 (92.8%), 138.5 MBs/sec
+2026-10-23T06:10:17.0191814Z Received 1711276032 of 1721750443 (99.4%), 135.9 MBs/sec
+2026-10-23T06:10:17.4715135Z Received 1721750443 of 1721750443 (100.0%), 131.8 MBs/sec
+2026-10-23T06:10:17.4718669Z Cache Size: ~1642 MB (1721750443 B)
+2026-10-23T06:10:17.4849517Z [command]/usr/bin/tar -xf /home/runner/work/_temp/bbd77859-e851-4a00-8cc8-fa4a9d46712c/cache.tzst -P -C /home/runner/work/Nimzo/Nimzo --use-compress-program unzstd
+2026-10-23T06:10:27.3484608Z Cache restored successfully
+2026-10-23T06:10:27.4120913Z Cache restored from key: flutter-linux-stable-3.47.6-x64-5fc346839b5d0eef006ed8404392afb4dfae428d
+2026-10-23T06:10:27.4189966Z ##[end-action id=__subosito_flutter-action.cache-flutter;outcome=success;conclusion=success;duration_ms=22935]
+2026-10-23T06:10:27.4193155Z ##[start-action display=Cache pub dependencies;id=__subosito_flutter-action.cache-pub]
+2026-10-23T06:10:27.7716611Z ##[group]Run actions/cache@v5
+2026-10-23T06:10:27.7716920Z with:
+2026-10-23T06:10:27.7717252Z   path: /home/runner/.pub-cache
+2026-10-23T06:10:27.7717935Z   key: flutter-pub-linux-stable-3.47.6-x64-5fc346839b5d0eef006ed8404392afb4dfae428d-e7ccaed035b941aaa0d5f4f8756f0c1a70e25a5cce45a9f400e6c44a7ad91edb
+2026-10-23T06:10:27.7718583Z   enableCrossOsArchive: false
+2026-10-23T06:10:27.7718934Z   fail-on-cache-miss: false
+2026-10-23T06:10:27.7719212Z   lookup-only: false
+2026-10-23T06:10:27.7719503Z   save-always: false
+2026-10-23T06:10:27.7719753Z env:
+2026-10-23T06:10:27.7720131Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:27.7720627Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:27.7721016Z ##[endgroup]
+2026-10-23T06:10:28.0906176Z Cache hit for: flutter-pub-linux-stable-3.47.6-x64-5fc346839b5d0eef006ed8404392afb4dfae428d-e7ccaed035b941aaa0d5f4f8756f0c1a70e25a5cce45a9f400e6c44a7ad91edb
+2026-10-23T06:10:29.4576251Z Received 20971520 of 142842541 (14.7%), 18.0 MBs/sec
+2026-10-23T06:10:30.4583898Z Received 130023424 of 142842541 (91.0%), 58.7 MBs/sec
+2026-10-23T06:10:31.4577703Z Received 130023424 of 142842541 (91.0%), 39.9 MBs/sec
+2026-10-23T06:10:32.4575703Z Received 134453933 of 142842541 (94.1%), 31.2 MBs/sec
+2026-10-23T06:10:33.4577795Z Received 138648237 of 142842541 (97.1%), 25.9 MBs/sec
+2026-10-23T06:10:33.8516857Z Received 142842541 of 142842541 (100.0%), 24.7 MBs/sec
+2026-10-23T06:10:33.8518842Z Cache Size: ~136 MB (142842541 B)
+2026-10-23T06:10:33.8550967Z [command]/usr/bin/tar -xf /home/runner/work/_temp/de8d47eb-0a77-4304-af54-bc84770b7cbc/cache.tzst -P -C /home/runner/work/Nimzo/Nimzo --use-compress-program unzstd
+2026-10-23T06:10:34.6748269Z Cache restored successfully
+2026-10-23T06:10:34.6861978Z Cache restored from key: flutter-pub-linux-stable-3.47.6-x64-5fc346839b5d0eef006ed8404392afb4dfae428d-e7ccaed035b941aaa0d5f4f8756f0c1a70e25a5cce45a9f400e6c44a7ad91edb
+2026-10-23T06:10:34.6920856Z ##[end-action id=__subosito_flutter-action.cache-pub;outcome=success;conclusion=success;duration_ms=7272]
+2026-10-23T06:10:34.6924034Z ##[start-action display=Run setup script;id=__subosito_flutter-action.__run_3]
+2026-10-23T06:10:34.7435726Z ##[group]Run $GITHUB_ACTION_PATH/setup.sh \
+2026-10-23T06:10:34.7436154Z [36;1m$GITHUB_ACTION_PATH/setup.sh \[0m
+2026-10-23T06:10:34.7436477Z [36;1m  -n '3.47.6' \[0m
+2026-10-23T06:10:34.7436763Z [36;1m  -a 'x64' \[0m
+2026-10-23T06:10:34.7437161Z [36;1m  -c '/opt/hostedtoolcache/flutter/stable-3.47.6-x64' \[0m
+2026-10-23T06:10:34.7437529Z [36;1m  -d '/home/runner/.pub-cache' \[0m
+2026-10-23T06:10:34.7437920Z [36;1m  stable[0m
+2026-10-23T06:10:34.7472687Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-23T06:10:34.7473103Z env:
+2026-10-23T06:10:34.7473478Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:34.7473972Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:34.7474404Z ##[endgroup]
+2026-10-23T06:10:34.9965628Z ##[end-action id=__subosito_flutter-action.__run_3;outcome=success;conclusion=success;duration_ms=304]
+2026-10-23T06:10:35.0696251Z ##[group]Run flutter create . --no-pub --platforms=android --project-name nimzo_media_device_qa
+2026-10-23T06:10:35.0697222Z [36;1mflutter create . --no-pub --platforms=android --project-name nimzo_media_device_qa[0m
+2026-10-23T06:10:35.0697911Z [36;1mmkdir -p assets[0m
+2026-10-23T06:10:35.0698351Z [36;1mcp -r ../../nimzo/assets/drive_catalog assets/[0m
+2026-10-23T06:10:35.0698995Z [36;1mcp -r ../../nimzo/assets/drive_catalog_expanded assets/[0m
+2026-10-23T06:10:35.0699717Z [36;1mpython3 ../configure_android_gradle.py android[0m
+2026-10-23T06:10:35.0700253Z [36;1mflutter pub get[0m
+2026-10-23T06:10:35.0737086Z shell: /usr/bin/bash -e {0}
+2026-10-23T06:10:35.0737427Z env:
+2026-10-23T06:10:35.0737868Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:35.0738399Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:35.0739029Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.47.6-x64/flutter
+2026-10-23T06:10:35.0739430Z   PUB_CACHE: /home/runner/.pub-cache
+2026-10-23T06:10:35.0739777Z ##[endgroup]
+2026-10-23T06:10:36.0080649Z Recreating project ....
+2026-10-23T06:10:36.0481349Z   lib/main.dart (created)
+2026-10-23T06:10:36.0579239Z   android/app/src/profile/AndroidManifest.xml (created)
+2026-10-23T06:10:36.0584006Z   android/app/src/main/res/values-night/styles.xml (created)
+2026-10-23T06:10:36.0587711Z   android/app/src/main/res/mipmap-mdpi/ic_launcher.png (created)
+2026-10-23T06:10:36.0591400Z   android/app/src/main/res/drawable-v21/launch_background.xml (created)
+2026-10-23T06:10:36.0594340Z   android/app/src/main/res/drawable/launch_background.xml (created)
+2026-10-23T06:10:36.0597538Z   android/app/src/main/res/values/styles.xml (created)
+2026-10-23T06:10:36.0600661Z   android/app/src/main/res/mipmap-hdpi/ic_launcher.png (created)
+2026-10-23T06:10:36.0604579Z   android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png (created)
+2026-10-23T06:10:36.0606697Z   android/app/src/main/res/mipmap-xhdpi/ic_launcher.png (created)
+2026-10-23T06:10:36.0609800Z   android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png (created)
+2026-10-23T06:10:36.0612810Z   android/app/src/main/AndroidManifest.xml (created)
+2026-10-23T06:10:36.0622437Z   android/app/src/debug/AndroidManifest.xml (created)
+2026-10-23T06:10:36.0626489Z   android/.gitignore (created)
+2026-10-23T06:10:36.0629233Z   android/settings.gradle.kts (created)
+2026-10-23T06:10:36.0634154Z   android/gradle.properties (created)
+2026-10-23T06:10:36.0637534Z   android/gradle/wrapper/gradle-wrapper.properties (created)
+2026-10-23T06:10:36.0642713Z   .gitignore (created)
+2026-10-23T06:10:36.0647301Z   android/nimzo_media_device_qa_android.iml (created)
+2026-10-23T06:10:36.0654159Z   android/app/build.gradle.kts (created)
+2026-10-23T06:10:36.0663814Z   android/app/src/main/kotlin/com/example/nimzo_media_device_qa/MainActivity.kt (created)
+2026-10-23T06:10:36.0760688Z   android/build.gradle.kts (created)
+2026-10-23T06:10:36.0870396Z   README.md (created)
+2026-10-23T06:10:36.0876405Z   .idea/modules.xml (created)
+2026-10-23T06:10:36.0882391Z   .idea/libraries/KotlinJavaRuntime.xml (created)
+2026-10-23T06:10:36.0886305Z   .idea/libraries/Dart_SDK.xml (created)
+2026-10-23T06:10:36.0892897Z   .idea/runConfigurations/main_dart.xml (created)
+2026-10-23T06:10:36.0896875Z   .idea/workspace.xml (created)
+2026-10-23T06:10:36.0901437Z   nimzo_media_device_qa.iml (created)
+2026-10-23T06:10:36.0905298Z   analysis_options.yaml (created)
+2026-10-23T06:10:36.0914129Z   test/widget_test.dart (created)
+2026-10-23T06:10:36.1700279Z Wrote 34 files.
+2026-10-23T06:10:36.1700559Z 
+2026-10-23T06:10:36.1700823Z All done!
+2026-10-23T06:10:36.1718332Z You can find general documentation for Flutter at: https://docs.flutter.dev/
+2026-10-23T06:10:36.1719133Z Detailed API documentation is available at: https://api.flutter.dev/
+2026-10-23T06:10:36.1719970Z If you prefer video documentation, consider: https://www.youtube.com/c/flutterdev
+2026-10-23T06:10:36.1720469Z 
+2026-10-23T06:10:36.1720930Z In order to run your application, type:
+2026-10-23T06:10:36.1721222Z 
+2026-10-23T06:10:36.1721459Z   $ flutter run
+2026-10-23T06:10:36.1721678Z 
+2026-10-23T06:10:36.1721857Z Your application code is in ./lib/main.dart.
+2026-10-23T06:10:36.1722176Z 
+2026-10-23T06:10:37.1747237Z Android toolchain: AGP 8.11.1 / Kotlin 2.2.20 / Gradle 8.14.3
+2026-10-23T06:10:37.2968289Z Resolving dependencies...
+2026-10-23T06:10:37.5135431Z Downloading packages...
+2026-10-23T06:10:37.7179515Z + archive 4.5.2
+2026-10-23T06:10:37.7180105Z + args 2.7.0
+2026-10-23T06:10:37.7180442Z + async 2.13.1
+2026-10-23T06:10:37.7180803Z + audioplayers 6.8.1
+2026-10-23T06:10:37.7181315Z + audioplayers_android 5.3.0
+2026-10-23T06:10:37.7181728Z + audioplayers_darwin 6.5.0
+2026-10-23T06:10:37.7182132Z + audioplayers_linux 4.3.0
+2026-10-23T06:10:37.7182742Z + audioplayers_platform_interface 7.2.0
+2026-10-23T06:10:37.7183103Z + audioplayers_web 5.3.0
+2026-10-23T06:10:37.7183479Z + audioplayers_windows 4.4.1
+2026-10-23T06:10:37.7183809Z + boolean_selector 2.1.2
+2026-10-23T06:10:37.7184220Z   characters 1.4.1 (from direct dependency to transitive dependency)
+2026-10-23T06:10:37.7184660Z + clock 1.1.3
+2026-10-23T06:10:37.7184979Z + code_assets 1.2.1 (2.1.0 available)
+2026-10-23T06:10:37.7185405Z   collection 1.19.1 (from direct dependency to transitive dependency)
+2026-10-23T06:10:37.7185805Z + crypto 3.0.7
+2026-10-23T06:10:37.7186085Z + fake_async 1.3.3
+2026-10-23T06:10:37.7186358Z + ffi 2.2.0
+2026-10-23T06:10:37.7186770Z + file 7.0.1
+2026-10-23T06:10:37.7187029Z + fixnum 1.1.1
+2026-10-23T06:10:37.7187355Z + flutter 0.0.0 from sdk flutter
+2026-10-23T06:10:37.7187725Z + flutter_driver 0.0.0 from sdk flutter
+2026-10-23T06:10:37.7188117Z + flutter_svga 0.0.13 (0.0.14 available)
+2026-10-23T06:10:37.7188458Z + flutter_test 0.0.0 from sdk flutter
+2026-10-23T06:10:37.7188792Z + flutter_web_plugins 0.0.0 from sdk flutter
+2026-10-23T06:10:37.7189204Z + fuchsia_remote_debug_protocol 0.0.0 from sdk flutter
+2026-10-23T06:10:37.7189620Z + hooks 2.0.2 (2.2.0 available)
+2026-10-23T06:10:37.7190082Z + http 1.6.0
+2026-10-23T06:10:37.7190434Z + http_parser 4.1.2
+2026-10-23T06:10:37.7190784Z + integration_test 0.0.0 from sdk flutter
+2026-10-23T06:10:37.7191297Z + jni 1.1.0
+2026-10-23T06:10:37.7191654Z + jni_flutter 1.0.4+1
+2026-10-23T06:10:37.7192076Z + jni_util 1.0.0
+2026-10-23T06:10:37.7192561Z + leak_tracker 11.0.2
+2026-10-23T06:10:37.7192944Z + leak_tracker_flutter_testing 3.0.10
+2026-10-23T06:10:37.7193390Z + leak_tracker_testing 3.0.2
+2026-10-23T06:10:37.7193769Z + logging 1.3.0
+2026-10-23T06:10:37.7194118Z + matcher 0.12.20
+2026-10-23T06:10:37.7194792Z   material_color_utilities 0.13.0 (from direct dependency to transitive dependency) (0.13.1 available)
+2026-10-23T06:10:37.7195597Z   meta 1.18.3 (from direct dependency to transitive dependency) (1.19.0 available)
+2026-10-23T06:10:37.7196215Z + objective_c 9.5.0 (9.6.2 available)
+2026-10-23T06:10:37.7196615Z + package_config 3.0.0
+2026-10-23T06:10:37.7196980Z + path 1.9.1
+2026-10-23T06:10:37.7197342Z + path_drawing 1.0.1
+2026-10-23T06:10:37.7197724Z + path_parsing 1.1.0
+2026-10-23T06:10:37.7198156Z + path_provider 2.1.6
+2026-10-23T06:10:37.7198578Z + path_provider_android 2.3.1
+2026-10-23T06:10:37.7199362Z + path_provider_foundation 2.6.0
+2026-10-23T06:10:37.7199927Z + path_provider_linux 2.2.2
+2026-10-23T06:10:37.7200549Z + path_provider_platform_interface 2.1.3
+2026-10-23T06:10:37.7201017Z + path_provider_windows 2.3.0
+2026-10-23T06:10:37.7201631Z + platform 3.2.0
+2026-10-23T06:10:37.7202146Z + plugin_platform_interface 2.1.8
+2026-10-23T06:10:37.7203095Z + posix 6.5.2
+2026-10-23T06:10:37.7203624Z + process 5.0.6
+2026-10-23T06:10:37.7204130Z + protobuf 6.1.0
+2026-10-23T06:10:37.7204793Z + pub_semver 2.2.1
+2026-10-23T06:10:37.7205109Z + record_use 0.6.0 (1.1.1 available)
+2026-10-23T06:10:37.7205604Z + sky_engine 0.0.0 from sdk flutter
+2026-10-23T06:10:37.7205933Z + source_span 1.10.2
+2026-10-23T06:10:37.7206216Z + stack_trace 1.12.2
+2026-10-23T06:10:37.7206519Z + stream_channel 2.1.4
+2026-10-23T06:10:37.7206983Z + string_scanner 1.4.1
+2026-10-23T06:10:37.7207331Z + sync_http 0.3.1
+2026-10-23T06:10:37.7207590Z + synchronized 3.5.0
+2026-10-23T06:10:37.7208024Z + term_glyph 1.2.2
+2026-10-23T06:10:37.7208329Z + test_api 0.7.12 (0.7.15 available)
+2026-10-23T06:10:37.7208642Z + typed_data 1.4.0
+2026-10-23T06:10:37.7208962Z + uuid 4.6.0
+2026-10-23T06:10:37.7209321Z   vector_math 2.4.0 (from direct dependency to transitive dependency) (2.4.3 available)
+2026-10-23T06:10:37.7209798Z + vm_service 15.4.0
+2026-10-23T06:10:37.7210151Z + web 1.1.2
+2026-10-23T06:10:37.7210431Z + webdriver 3.2.0
+2026-10-23T06:10:37.7210717Z + xdg_directories 1.1.0
+2026-10-23T06:10:37.7210985Z + yaml 3.1.4
+2026-10-23T06:10:37.7211304Z Changed 75 dependencies!
+2026-10-23T06:10:37.7211689Z 9 packages have newer versions incompatible with dependency constraints.
+2026-10-23T06:10:37.7212150Z Try `flutter pub outdated` for more information.
+2026-10-23T06:10:37.8534152Z ##[group]Run echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+2026-10-23T06:10:37.8534940Z [36;1mecho 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules[0m
+2026-10-23T06:10:37.8535530Z [36;1msudo udevadm control --reload-rules[0m
+2026-10-23T06:10:37.8535909Z [36;1msudo udevadm trigger --name-match=kvm[0m
+2026-10-23T06:10:37.8571277Z shell: /usr/bin/bash -e {0}
+2026-10-23T06:10:37.8571708Z env:
+2026-10-23T06:10:37.8572075Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:37.8572893Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:37.8573391Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.47.6-x64/flutter
+2026-10-23T06:10:37.8573830Z   PUB_CACHE: /home/runner/.pub-cache
+2026-10-23T06:10:37.8574175Z ##[endgroup]
+2026-10-23T06:10:37.8676875Z KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"
+2026-10-23T06:10:37.8951243Z ##[group]Run reactivecircus/android-emulator-runner@v2
+2026-10-23T06:10:37.8951603Z with:
+2026-10-23T06:10:37.8951866Z   api-level: 35
+2026-10-23T06:10:37.8952163Z   target: google_apis
+2026-10-23T06:10:37.8952608Z   arch: x86_64
+2026-10-23T06:10:37.8952911Z   disable-animations: true
+2026-10-23T06:10:37.8953230Z   working-directory: tools/media_device_qa
+2026-10-23T06:10:37.8953589Z   script: bash run_android_verification.sh
+2026-10-23T06:10:37.8953935Z   cores: 2
+2026-10-23T06:10:37.8954338Z   avd-name: test
+2026-10-23T06:10:37.8954646Z   force-avd-creation: true
+2026-10-23T06:10:37.8955002Z   emulator-boot-timeout: 600
+2026-10-23T06:10:37.8955320Z   emulator-port: 5554
+2026-10-23T06:10:37.8955812Z   emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+2026-10-23T06:10:37.8956263Z   disable-spellchecker: false
+2026-10-23T06:10:37.8956607Z   disable-linux-hw-accel: auto
+2026-10-23T06:10:37.8956934Z   enable-hw-keyboard: false
+2026-10-23T06:10:37.8957312Z   channel: stable
+2026-10-23T06:10:37.8957565Z env:
+2026-10-23T06:10:37.8957916Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:37.8958445Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:10:37.8958934Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.47.6-x64/flutter
+2026-10-23T06:10:37.8959343Z   PUB_CACHE: /home/runner/.pub-cache
+2026-10-23T06:10:37.8959676Z ##[endgroup]
+2026-10-23T06:10:37.9446780Z ##[group]Configure emulator
+2026-10-23T06:10:37.9447847Z API level: 35
+2026-10-23T06:10:37.9448408Z System image API level: 35
+2026-10-23T06:10:37.9448926Z target: google_apis
+2026-10-23T06:10:37.9460582Z CPU architecture: x86_64
+2026-10-23T06:10:37.9461346Z Hardware profile: 
+2026-10-23T06:10:37.9461773Z Cores: 2
+2026-10-23T06:10:37.9462879Z RAM size: 
+2026-10-23T06:10:37.9463455Z Heap size: 
+2026-10-23T06:10:37.9464090Z SD card path or size: 
+2026-10-23T06:10:37.9464595Z Disk size: 
+2026-10-23T06:10:37.9465220Z AVD name: test
+2026-10-23T06:10:37.9465600Z force avd creation: true
+2026-10-23T06:10:37.9466098Z Emulator boot timeout: 600
+2026-10-23T06:10:37.9466540Z emulator port: 5554
+2026-10-23T06:10:37.9467167Z emulator options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+2026-10-23T06:10:37.9467928Z disable animations: true
+2026-10-23T06:10:37.9468373Z disable spellchecker: false
+2026-10-23T06:10:37.9468828Z disable Linux hardware acceleration: false
+2026-10-23T06:10:37.9469371Z enable hardware keyboard: false
+2026-10-23T06:10:37.9470052Z custom working directory: tools/media_device_qa
+2026-10-23T06:10:37.9470605Z Channel: 0 (stable)
+2026-10-23T06:10:37.9470942Z Script:
+2026-10-23T06:10:37.9471304Z bash run_android_verification.sh
+2026-10-23T06:10:37.9471771Z Pre emulator launch script:
+2026-10-23T06:10:37.9472868Z ##[endgroup]
+2026-10-23T06:10:37.9473516Z ##[group]Install Android SDK
+2026-10-23T06:10:37.9539736Z [command]/usr/bin/sh -c \yes | sdkmanager --licenses > /dev/null
+2026-10-23T06:10:44.0691547Z Installing latest build tools, platform tools, and platform.
+2026-10-23T06:10:44.0704455Z [command]/usr/bin/sh -c \sdkmanager --install 'build-tools;37.0.0' platform-tools 'platforms;android-35'> /dev/null
+2026-10-23T06:10:45.1595800Z Installing latest emulator.
+2026-10-23T06:10:45.1607923Z [command]/usr/bin/sh -c \sdkmanager --install emulator --channel=0 > /dev/null
+2026-10-23T06:10:59.7427327Z Installing system images.
+2026-10-23T06:10:59.7438792Z [command]/usr/bin/sh -c \sdkmanager --install 'system-images;android-35;google_apis;x86_64' --channel=0 > /dev/null
+2026-10-23T06:11:35.5022412Z ##[endgroup]
+2026-10-23T06:11:35.5023618Z ##[group]Create AVD
+2026-10-23T06:11:35.5024155Z Creating AVD.
+2026-10-23T06:11:35.5037540Z [command]/usr/bin/sh -c \echo no | avdmanager create avd --force -n test --package 'system-images;android-35;google_apis;x86_64'
+2026-10-23T06:11:36.1309741Z Loading local repository...                                                     
+2026-10-23T06:11:36.1311212Z [=========                              ] 25% Loading local repository...       
+2026-10-23T06:11:36.1320719Z [=========                              ] 25% Fetch remote repository...        
+2026-10-23T06:11:36.1321744Z [=======================================] 100% Fetch remote repository...       
+2026-10-23T06:11:36.2962438Z Auto-selecting single ABI x86_64
+2026-10-23T06:11:36.3662003Z Do you wish to create a custom hardware profile? [no] [command]/usr/bin/sh -c \printf 'hw.cpu.ncore=2\n' >> /home/runner/.android/avd/test.avd/config.ini
+2026-10-23T06:11:36.3679448Z ##[endgroup]
+2026-10-23T06:11:36.3680901Z ##[group]Launch Emulator
+2026-10-23T06:11:36.3681186Z Starting emulator.
+2026-10-23T06:11:36.3691789Z [command]/usr/bin/sh -c \/usr/local/lib/android/sdk/emulator/emulator -port 5554 -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim &
+2026-10-23T06:11:36.3785495Z INFO         | Android emulator version 37.2.12.0 (build_id 16428233) (CL:N/A)
+2026-10-23T06:11:36.3786169Z INFO         | Graphics backend: gfxstream
+2026-10-23T06:11:36.3786704Z INFO         | Found systemPath /usr/local/lib/android/sdk/system-images/android-35/google_apis/x86_64/
+2026-10-23T06:11:36.4160951Z INFO         | Saving last run QEMU version for the AVD to 2
+2026-10-23T06:11:36.4161756Z INFO         | Increasing RAM size to 2560MB
+2026-10-23T06:11:36.4162460Z ##############################################################################
+2026-10-23T06:11:36.4163168Z ##                        WARNING - ACTION REQUIRED                         ##
+2026-10-23T06:11:36.4163909Z ##  Consider using the '-metrics-collection' flag to help improve the       ##
+2026-10-23T06:11:36.4164811Z ##  emulator by sending anonymized usage data. Or use the '-no-metrics'     ##
+2026-10-23T06:11:36.4165582Z ##  flag to bypass this warning and turn off the metrics collection.        ##
+2026-10-23T06:11:36.4166359Z ##  In a future release this warning will turn into a one-time blocking     ##
+2026-10-23T06:11:36.4167180Z ##  prompt to ask for explicit user input regarding metrics collection.     ##
+2026-10-23T06:11:36.4167859Z ##                                                                          ##
+2026-10-23T06:11:36.4168616Z ##  Please see '-help-metrics-collection' for more details. You can use     ##
+2026-10-23T06:11:36.4169395Z ##  '-metrics-to-file' or '-metrics-to-console' flags to see what type of   ##
+2026-10-23T06:11:36.4170253Z ##  data is being collected by emulator as part of usage statistics.        ##
+2026-10-23T06:11:36.4170863Z ##############################################################################
+2026-10-23T06:11:36.4171624Z INFO         | Guest GLES Driver: Auto (ext controls)
+2026-10-23T06:11:36.4172523Z INFO         | emuglConfig_init: vulkan_mode_selected:swiftshader gles_mode_selected:swiftshader
+2026-10-23T06:11:36.4173216Z INFO         | Checking system compatibility:
+2026-10-23T06:11:36.4173776Z INFO         |   Checking: hasSufficientDiskSpace
+2026-10-23T06:11:36.4174344Z INFO         |      Ok: Disk space requirements to run avd: `test` are met
+2026-10-23T06:11:36.4174998Z INFO         |   Checking: hasSufficientHwGpu
+2026-10-23T06:11:36.4175556Z INFO         |      Ok: Hardware GPU compatibility checks are not required
+2026-10-23T06:11:36.4176139Z INFO         |   Checking: hasSufficientSystem
+2026-10-23T06:11:36.4176694Z INFO         |      Ok: System requirements to run avd: `test` are met
+2026-10-23T06:11:36.4177785Z WARNING      | Feature QuickbootFileBacked is disabled due to stability issues, if you really want that, the environment variable ANDROID_EMU_FORCE_QUICKBOOT_FILE_BACKED need to set to 1
+2026-10-23T06:11:36.9901200Z ERROR        | Unable to connect to adb daemon on port: 5037
+2026-10-23T06:11:36.9902441Z INFO         | Storing crashdata in: /tmp/android-runner/emu-crash-37.2.12.db, detection is enabled for process: 2777
+2026-10-23T06:11:36.9903272Z INFO         | Initializing gfxstream backend
+2026-10-23T06:11:36.9911337Z INFO         | startOpenglesRendererImpl: gpu info
+2026-10-23T06:11:36.9912156Z INFO         | 
+2026-10-23T06:11:36.9913112Z INFO         | initIcdPaths: ICD set to 'swiftshader', using Swiftshader ICD
+2026-10-23T06:11:36.9914043Z INFO         | Setting ICD filenames for the loader = /usr/local/lib/android/sdk/emulator/lib64/vulkan/vk_swiftshader_icd.json
+2026-10-23T06:11:36.9915234Z INFO         | SharedLibrary::open for [/usr/local/lib/android/sdk/emulator/qemu/linux-x86_64/lib64/vulkan/libvulkan.so]
+2026-10-23T06:11:36.9916424Z INFO         | SharedLibrary::open for [/usr/local/lib/android/sdk/emulator/qemu/linux-x86_64/lib64/vulkan/libvulkan.so.1]
+2026-10-23T06:11:36.9917465Z INFO         | SharedLibrary::open for [/usr/local/lib/android/sdk/emulator/lib64/vulkan/libvulkan.so]
+2026-10-23T06:11:36.9918364Z INFO         | Added library: /usr/local/lib/android/sdk/emulator/lib64/vulkan/libvulkan.so
+2026-10-23T06:11:36.9953063Z INFO         | Selecting Vulkan device: SwiftShader Device (Subzero), Version: 1.3.0
+2026-10-23T06:11:36.9953986Z INFO         | Using Vulkan externalMemoryMode: OpaqueFd for VkEmulation
+2026-10-23T06:11:37.0151946Z INFO         | Format VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16 does not support YCbCr sampler conversion
+2026-10-23T06:11:37.0174936Z INFO         | SharedLibrary::open for [libX11]
+2026-10-23T06:11:37.0175894Z WARNING      | Could not open libX11.so, try libX11.so.6
+2026-10-23T06:11:37.0176469Z INFO         | SharedLibrary::open for [libX11.so.6]
+2026-10-23T06:11:37.0177275Z INFO         | SharedLibrary::open for [libX11-xcb]
+2026-10-23T06:11:37.0177960Z WARNING      | Could not open libX11-xcb.so, try libX11-xcb.so.1
+2026-10-23T06:11:37.0178698Z INFO         | SharedLibrary::open for [libX11-xcb.so.1]
+2026-10-23T06:11:37.0307945Z INFO         | Initializing VkEmulation features:
+2026-10-23T06:11:37.0308488Z INFO         |     glInteropSupported: false
+2026-10-23T06:11:37.0308879Z INFO         |     useDeferredCommands: true
+2026-10-23T06:11:37.0309264Z INFO         |     createResourceWithRequirements: true
+2026-10-23T06:11:37.0309705Z INFO         |     useVulkanComposition: false
+2026-10-23T06:11:37.0310109Z INFO         |     useVulkanNativeSwapchain: false
+2026-10-23T06:11:37.0310533Z INFO         |     enable guestRenderDoc: false
+2026-10-23T06:11:37.0310978Z INFO         |     ASTC LDR emulation mode: Gpu
+2026-10-23T06:11:37.0311473Z INFO         |     enable ETC2 emulation: true
+2026-10-23T06:11:37.0311971Z INFO         |     enable Ycbcr emulation: false
+2026-10-23T06:11:37.0312584Z INFO         |     guestVulkanOnly: false
+2026-10-23T06:11:37.0313495Z INFO         |     useDedicatedAllocations: false
+2026-10-23T06:11:37.0314033Z INFO         |     guestVulkanMaxApiVersion: 1.3.0
+2026-10-23T06:11:37.0314528Z INFO         |     enableProtectedMemoryEmulation: false
+2026-10-23T06:11:37.0315086Z INFO         | Graphics Adapter Vendor Google (Google Inc.)
+2026-10-23T06:11:37.0315609Z INFO         | Graphics Adapter Android Emulator OpenGL ES Translator (Google SwiftShader)
+2026-10-23T06:11:37.0316181Z INFO         | Graphics API Version OpenGL ES 3.0 (OpenGL ES 3.0 SwiftShader 4.0.0.1)
+2026-10-23T06:11:37.0318038Z INFO         | Graphics API Extensions GL_OES_EGL_sync GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_depth24 GL_OES_depth32 GL_OES_element_index_uint GL_OES_texture_float GL_OES_texture_float_linear GL_OES_compressed_paletted_texture GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth_texture GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_packed_depth_stencil GL_OES_vertex_half_float GL_OES_standard_derivatives GL_OES_texture_npot GL_OES_rgb8_rgba8 GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_texture_format_BGRA8888 GL_APPLE_texture_format_BGRA8888 
+2026-10-23T06:11:37.0319784Z INFO         | Graphics Device Extensions N/A
+2026-10-23T06:11:37.0320214Z INFO         | Disabling sparse binding feature support
+2026-10-23T06:11:37.0361733Z INFO         | Sending adb public key [QAAAADHkaxsvC9NA24GNWazWyamzo0mRRWag1bVrqwEIBq7w9iuLxVk4U7yN4NXPMF/R/hTaA2eE0wqbX1nvnGXz7wZ0A2KpylhbARjthfj4EmOX7O/u4dDBDxvT9qeD4hRQJQdhSqCkFqMRZqqOTTSUM7E/0N2Fn7sgL6F1TJ/pU8WRmdC72PDU4POrS7djJ+KYuJurrgDFzmdj4ElFPdNHADfOo9T3sY2RMbkusuq5g9XFRymPlTI48JHPuN75JzXTN13D+k3ZG6EqaHN5ORedc43dcKSe+M33vZkOWpHZa/3m9U+k4IjcQgylD4dF6KDXYW2F06OvWe36HpOz0O5wY7sKBX+rudD3woRIWm7AghIHkevafluohAWACkAK/jAVJ/Gi3VrJWaYH1b/+a4IRvk6LY6xUQ1JzuWgaYtFYPk9sh8L0DwOa5/Kk30ce3ZEBQSvmNUax00E8pEnFv8L69Vqv4qcxWEFjfKjakuV9Skx+jxoYVggosySKIvfKgcsqOXBlYn/u2IFxsUUugshf4R1709j37LhFxVxMyR9qlnsBmZ569KuYbx5kQLV854DczZxCm6Czb2Nw4Ls+h9sJKGJnpgtSrDLnkdZd31a5CxZ9CQizt7pD0sgggJlo4z0b2PTZuedQ2SgSkVRuFF6KqP9MWSe/rZYMfdhMyEjq001cf+DbVAEAAQA= runner@unknown]
+2026-10-23T06:11:37.0366785Z INFO         | Userspace boot properties:
+2026-10-23T06:11:37.0367882Z INFO         |   androidboot.boot_devices=pci0000:00/0000:00:03.0 pci0000:00/0000:00:06.0
+2026-10-23T06:11:37.0368772Z INFO         |   androidboot.dalvik.vm.heapsize=576m
+2026-10-23T06:11:37.0369655Z INFO         |   androidboot.debug.hwui.renderer=skiagl
+2026-10-23T06:11:37.0370563Z INFO         |   androidboot.debug.sf.nobootanimation=1
+2026-10-23T06:11:37.0371462Z INFO         |   androidboot.hardware=ranchu
+2026-10-23T06:11:37.0372389Z INFO         |   androidboot.hardware.gltransport=pipe
+2026-10-23T06:11:37.0373206Z INFO         |   androidboot.hardware.vulkan=ranchu
+2026-10-23T06:11:37.0373884Z INFO         |   androidboot.logcat=*:V
+2026-10-23T06:11:37.0374538Z INFO         |   androidboot.opengles.version=196608
+2026-10-23T06:11:37.0375257Z INFO         |   androidboot.qemu=1
+2026-10-23T06:11:37.0378664Z INFO         |   androidboot.qemu.adb.pubkey=QAAAADHkaxsvC9NA24GNWazWyamzo0mRRWag1bVrqwEIBq7w9iuLxVk4U7yN4NXPMF/R/hTaA2eE0wqbX1nvnGXz7wZ0A2KpylhbARjthfj4EmOX7O/u4dDBDxvT9qeD4hRQJQdhSqCkFqMRZqqOTTSUM7E/0N2Fn7sgL6F1TJ/pU8WRmdC72PDU4POrS7djJ+KYuJurrgDFzmdj4ElFPdNHADfOo9T3sY2RMbkusuq5g9XFRymPlTI48JHPuN75JzXTN13D+k3ZG6EqaHN5ORedc43dcKSe+M33vZkOWpHZa/3m9U+k4IjcQgylD4dF6KDXYW2F06OvWe36HpOz0O5wY7sKBX+rudD3woRIWm7AghIHkevafluohAWACkAK/jAVJ/Gi3VrJWaYH1b/+a4IRvk6LY6xUQ1JzuWgaYtFYPk9sh8L0DwOa5/Kk30ce3ZEBQSvmNUax00E8pEnFv8L69Vqv4qcxWEFjfKjakuV9Skx+jxoYVggosySKIvfKgcsqOXBlYn/u2IFxsUUugshf4R1709j37LhFxVxMyR9qlnsBmZ569KuYbx5kQLV854DczZxCm6Czb2Nw4Ls+h9sJKGJnpgtSrDLnkdZd31a5CxZ9CQizt7pD0sgggJlo4z0b2PTZuedQ2SgSkVRuFF6KqP9MWSe/rZYMfdhMyEjq001cf+DbVAEAAQA= runner@unknown
+2026-10-23T06:11:37.0381845Z INFO         |   androidboot.qemu.avd_name=test
+2026-10-23T06:11:37.0382724Z INFO         |   androidboot.qemu.camera_hq_edge_processing=0
+2026-10-23T06:11:37.0383605Z INFO         |   androidboot.qemu.camera_protocol_ver=1
+2026-10-23T06:11:37.0384311Z INFO         |   androidboot.qemu.cpuvulkan.version=4206592
+2026-10-23T06:11:37.0385324Z INFO         |   androidboot.qemu.gltransport.drawFlushInterval=800
+2026-10-23T06:11:37.0386006Z INFO         |   androidboot.qemu.gltransport.name=pipe
+2026-10-23T06:11:37.0386712Z INFO         |   androidboot.qemu.hwcodec.avcdec=2
+2026-10-23T06:11:37.0387472Z INFO         |   androidboot.qemu.hwcodec.hevcdec=2
+2026-10-23T06:11:37.0388231Z INFO         |   androidboot.qemu.hwcodec.vpxdec=2
+2026-10-23T06:11:37.0389149Z INFO         |   androidboot.qemu.settings.system.screen_off_timeout=2147483647
+2026-10-23T06:11:37.0389822Z INFO         |   androidboot.qemu.skin=320x640
+2026-10-23T06:11:37.0390622Z INFO         |   androidboot.qemu.virtiowifi=1
+2026-10-23T06:11:37.0391298Z INFO         |   androidboot.qemu.vsync=60
+2026-10-23T06:11:37.0392030Z INFO         |   androidboot.serialno=EMULATOR37X2X12X0
+2026-10-23T06:11:37.0393249Z INFO         |   androidboot.vbmeta.digest=b3271ba499104f4631ae3723913d5c12574e01715fce5b82d60beed097ead264
+2026-10-23T06:11:37.0394215Z INFO         |   androidboot.vbmeta.hash_alg=sha256
+2026-10-23T06:11:37.0395021Z INFO         |   androidboot.vbmeta.size=6720
+2026-10-23T06:11:37.0395860Z INFO         |   androidboot.veritymode=enforcing
+2026-10-23T06:11:37.0776571Z WARNING: cannnot unmap ptr 0x7fab0bc01000 as it is in the protected range from 0x7faa6bc00000 to 0x7fab0be00000
+2026-10-23T06:11:37.0961404Z INFO         | Monitoring duration of emulator setup.
+2026-10-23T06:11:38.0641182Z INFO         | Activated packet streamer for bluetooth emulation
+2026-10-23T06:11:38.0642103Z INFO         | Successfully initialized netsim WiFi
+2026-10-23T06:11:38.0675560Z INFO         | Setting display: 0 configuration to: 320x640, dpi: 160x160 
+2026-10-23T06:11:38.0676454Z INFO         | setDisplayActiveConfig: id:0, 320x640
+2026-10-23T06:11:38.0676925Z INFO         | emulatorSetupEnvironment: Environment scene is not required
+2026-10-23T06:11:38.0746825Z USER_INFO    | Emulator is performing a full startup. This may take upto two minutes, or more.
+2026-10-23T06:11:38.0748010Z WARNING      | Failed to process .ini file /home/runner/.android/emu-update-last-check.ini for reading.
+2026-10-23T06:11:38.3406831Z WARNING      | Failed to process .ini file /home/runner/.android/emu-update-last-check.ini for reading.
+2026-10-23T06:11:46.3741991Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:11:46.3767190Z * daemon not running; starting now at tcp:5037
+2026-10-23T06:11:46.5394882Z * daemon started successfully
+2026-10-23T06:11:46.5398411Z adb: device offline
+2026-10-23T06:11:46.5403885Z The process '/usr/local/lib/android/sdk/platform-tools/adb' failed with exit code 1
+2026-10-23T06:11:48.5442095Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:11:48.5613138Z 
+2026-10-23T06:11:50.5659952Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:11:50.5849472Z 
+2026-10-23T06:11:52.5946723Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:11:52.6171495Z 
+2026-10-23T06:11:54.6234282Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:11:54.6482845Z 
+2026-10-23T06:11:56.6508374Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:11:56.6805183Z 
+2026-10-23T06:11:58.6883968Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:11:58.7173676Z 
+2026-10-23T06:12:00.7216537Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:12:00.7608929Z 
+2026-10-23T06:12:02.7634117Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:12:02.7884402Z 
+2026-10-23T06:12:04.7931473Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:12:04.8193145Z 
+2026-10-23T06:12:06.8326509Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:12:06.8521970Z 
+2026-10-23T06:12:07.9499979Z INFO         | Boot completed in 31550 ms
+2026-10-23T06:12:07.9503851Z INFO         | Increasing screen off timeout, logcat buffer size to 2M.
+2026-10-23T06:12:08.8560428Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell getprop sys.boot_completed
+2026-10-23T06:12:08.8796484Z 1
+2026-10-23T06:12:08.8805692Z Emulator booted.
+2026-10-23T06:12:08.8815810Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell input keyevent 82
+2026-10-23T06:12:14.4655594Z Disabling animations.
+2026-10-23T06:12:14.4674153Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put global window_animation_scale 0.0
+2026-10-23T06:12:14.5116845Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put global transition_animation_scale 0.0
+2026-10-23T06:12:14.5589426Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put global animator_duration_scale 0.0
+2026-10-23T06:12:14.6050914Z ##[endgroup]
+2026-10-23T06:12:14.6075708Z [command]/usr/bin/sh -c bash run_android_verification.sh
+2026-10-23T06:12:14.8753972Z Resolving dependencies...
+2026-10-23T06:12:14.9485609Z Downloading packages...
+2026-10-23T06:12:14.9874771Z   code_assets 1.2.1 (2.1.0 available)
+2026-10-23T06:12:14.9899535Z   flutter_svga 0.0.13 (0.0.14 available)
+2026-10-23T06:12:14.9901045Z   hooks 2.0.2 (2.2.0 available)
+2026-10-23T06:12:14.9903132Z   material_color_utilities 0.13.0 (0.13.1 available)
+2026-10-23T06:12:14.9903707Z   meta 1.18.3 (1.19.0 available)
+2026-10-23T06:12:14.9904760Z   objective_c 9.5.0 (9.6.2 available)
+2026-10-23T06:12:14.9905334Z   record_use 0.6.0 (1.1.1 available)
+2026-10-23T06:12:14.9905903Z   test_api 0.7.12 (0.7.15 available)
+2026-10-23T06:12:14.9906450Z   vector_math 2.4.0 (2.4.3 available)
+2026-10-23T06:12:14.9906965Z Got dependencies!
+2026-10-23T06:12:14.9908639Z 9 packages have newer versions incompatible with dependency constraints.
+2026-10-23T06:12:14.9909638Z Try `flutter pub outdated` for more information.
+2026-10-23T06:13:55.5956936Z Running Gradle task 'assembleDebug'...                          
+2026-10-23T06:13:55.6005818Z Warning: Flutter support for your project's Gradle version (8.14.3) will soon be dropped. Please upgrade your Gradle version to a version of at least 9.1.0 soon.
+2026-10-23T06:13:55.6007294Z Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+2026-10-23T06:13:55.6007823Z 
+2026-10-23T06:13:55.6008709Z Potential fix: Your project's gradle version is typically defined in the gradle wrapper file. By default, this can be found at /home/runner/work/Nimzo/Nimzo/tools/media_device_qa/android/gradle/wrapper/gradle-wrapper.properties. 
+2026-10-23T06:13:55.6039953Z For more information, see https://docs.gradle.org/current/userguide/gradle_wrapper.html.
+2026-10-23T06:13:55.6062717Z 
+2026-10-23T06:13:55.6104068Z Warning: Flutter support for your project's Android Gradle Plugin version (Android Gradle Plugin version 8.11.1) will soon be dropped. Please upgrade your Android Gradle Plugin version to a version of at least Android Gradle Plugin version 9.0.1 soon.
+2026-10-23T06:13:55.6125507Z Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+2026-10-23T06:13:55.6126988Z 
+2026-10-23T06:13:55.6147510Z Potential fix: Your project's AGP version is typically defined in the plugins block of the `settings.gradle` file (/home/runner/work/Nimzo/Nimzo/tools/media_device_qa/android/settings.gradle), by a plugin with the id of com.android.application. 
+2026-10-23T06:13:55.6186582Z If you don't see a plugins block, your project was likely created with an older template version. In this case it is most likely defined in the top-level build.gradle file (/home/runner/work/Nimzo/Nimzo/tools/media_device_qa/android/build.gradle) by the following line in the dependencies block of the buildscript: "classpath 'com.android.tools.build:gradle:<version>'".
+2026-10-23T06:13:55.6191726Z 
+2026-10-23T06:13:55.6203916Z Warning: Flutter support for your project's Kotlin version (2.2.20) will soon be dropped. Please upgrade your Kotlin version to a version of at least 2.3.20 soon.
+2026-10-23T06:13:55.6206155Z Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+2026-10-23T06:13:55.6208072Z 
+2026-10-23T06:13:55.6209378Z Potential fix: Your project's KGP version is typically defined in the plugins block of the `settings.gradle` file (/home/runner/work/Nimzo/Nimzo/tools/media_device_qa/android/settings.gradle), by a plugin with the id of org.jetbrains.kotlin.android. 
+2026-10-23T06:13:55.6213516Z If you don't see a plugins block, your project was likely created with an older template version, in which case it is most likely defined in the top-level build.gradle file (/home/runner/work/Nimzo/Nimzo/tools/media_device_qa/android/build.gradle) by the ext.kotlin_version property.
+2026-10-23T06:13:55.6216550Z 
+2026-10-23T06:13:56.9881937Z Loading package information...                                                  
+2026-10-23T06:13:57.0872129Z Loading local repository...                                                     
+2026-10-23T06:13:57.0894194Z [                                       ] 3% Loading local repository...        
+2026-10-23T06:13:57.0900414Z [                                       ] 3% Fetch remote repository...         
+2026-10-23T06:13:57.2869947Z [=                                      ] 3% Fetch remote repository...         
+2026-10-23T06:13:57.2874091Z [=                                      ] 4% Fetch remote repository...         
+2026-10-23T06:13:57.3868927Z [=                                      ] 5% Fetch remote repository...         
+2026-10-23T06:13:57.3870722Z [==                                     ] 5% Fetch remote repository...         
+2026-10-23T06:13:57.4879166Z [==                                     ] 6% Fetch remote repository...         
+2026-10-23T06:13:57.4880148Z [==                                     ] 7% Fetch remote repository...         
+2026-10-23T06:13:57.4881043Z [==                                     ] 7% Computing updates...               
+2026-10-23T06:13:57.4882434Z [===                                    ] 8% Computing updates...               
+2026-10-23T06:13:57.4883406Z [===                                    ] 10% Computing updates...              
+2026-10-23T06:13:57.7868520Z [===                                    ] 10% Installing NDK (Side by side) 28.2
+2026-10-23T06:13:57.9868743Z [===                                    ] 10% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.0869371Z [====                                   ] 10% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.1870417Z [====                                   ] 11% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.2869085Z [====                                   ] 12% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.3868634Z [=====                                  ] 13% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.4870231Z [=====                                  ] 14% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.5869004Z [=====                                  ] 15% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.5869683Z [======                                 ] 15% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.6870193Z [======                                 ] 16% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.6870913Z [======                                 ] 17% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.7868879Z [=======                                ] 18% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.8869572Z [=======                                ] 19% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.8870824Z [=======                                ] 20% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.9868652Z [========                               ] 20% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:58.9874464Z [========                               ] 21% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.0867581Z [========                               ] 22% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.1871048Z [=========                              ] 23% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.1871949Z [=========                              ] 24% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.2867687Z [=========                              ] 25% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.2868449Z [==========                             ] 25% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.3868023Z [==========                             ] 26% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.4868196Z [==========                             ] 27% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.4868947Z [===========                            ] 28% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.5871075Z [===========                            ] 29% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.5871696Z [===========                            ] 30% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.6892758Z [============                           ] 30% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.6893441Z [============                           ] 31% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.7882137Z [============                           ] 32% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.7882996Z [============                           ] 33% Downloading android-ndk-r28c-linux
+2026-10-23T06:13:59.9877537Z [============                           ] 33% Unzipping...                      
+2026-10-23T06:13:59.9878542Z [============                           ] 33% Unzipping... android-ndk-r28c/    
+2026-10-23T06:13:59.9879531Z [============                           ] 33% Unzipping... android-ndk-r28c/READ
+2026-10-23T06:14:00.0868359Z [=============                          ] 33% Unzipping... android-ndk-r28c/READ
+2026-10-23T06:14:00.0893941Z [=============                          ] 33% Unzipping... android-ndk-r28c/meta
+2026-10-23T06:14:00.3868244Z [=============                          ] 33% Unzipping... android-ndk-r28c/shad
+2026-10-23T06:14:00.3869677Z [=============                          ] 33% Unzipping... android-ndk-r28c/ndk-
+2026-10-23T06:14:00.3870630Z [=============                          ] 33% Unzipping... android-ndk-r28c/wrap
+2026-10-23T06:14:00.3871533Z [=============                          ] 33% Unzipping... android-ndk-r28c/ndk-
+2026-10-23T06:14:00.7867308Z [=============                          ] 33% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:02.6867170Z [=============                          ] 34% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:03.4867041Z [=============                          ] 35% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:03.7867328Z [==============                         ] 35% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:04.1866691Z [==============                         ] 36% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:05.5867651Z [==============                         ] 37% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:07.0866835Z [===============                        ] 38% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:07.8867541Z [===============                        ] 39% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:08.1867227Z [===============                        ] 40% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:08.5867443Z [================                       ] 40% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:09.3867794Z [================                       ] 41% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:10.1869448Z [================                       ] 42% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:10.9867543Z [=================                      ] 43% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:11.7867228Z [=================                      ] 44% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:12.1867695Z [=================                      ] 45% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:12.6867377Z [==================                     ] 45% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:13.4867519Z [==================                     ] 46% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:14.1867339Z [==================                     ] 47% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:14.9867278Z [===================                    ] 48% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:15.6867249Z [===================                    ] 49% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:15.9868538Z [===================                    ] 50% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:16.3866936Z [====================                   ] 50% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:17.2867158Z [====================                   ] 51% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:17.6867360Z [====================                   ] 52% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:18.6867429Z [=====================                  ] 53% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:19.0887289Z [=====================                  ] 54% Unzipping... android-ndk-r28c/tool
+2026-10-23T06:14:19.1868364Z [=====================                  ] 54% Unzipping... android-ndk-r28c/buil
+2026-10-23T06:14:19.3867990Z [=====================                  ] 54% Unzipping... android-ndk-r28c/sour
+2026-10-23T06:14:19.3868956Z [=====================                  ] 54% Unzipping... android-ndk-r28c/NOTI
+2026-10-23T06:14:19.3870231Z [=====================                  ] 54% Unzipping... android-ndk-r28c/ndk-
+2026-10-23T06:14:19.3870975Z [=====================                  ] 54% Unzipping... android-ndk-r28c/NOTI
+2026-10-23T06:14:19.3871610Z [=====================                  ] 54% Unzipping... android-ndk-r28c/pyth
+2026-10-23T06:14:19.4867142Z [=====================                  ] 54% Unzipping... android-ndk-r28c/preb
+2026-10-23T06:14:19.4868228Z [=====================                  ] 54% Unzipping... android-ndk-r28c/ndk-
+2026-10-23T06:14:19.4869102Z [=====================                  ] 54% Unzipping... android-ndk-r28c/sour
+2026-10-23T06:14:19.4869754Z [=====================                  ] 54% Unzipping... android-ndk-r28c/simp
+2026-10-23T06:14:19.6868364Z [=====================                  ] 55% Unzipping... android-ndk-r28c/simp
+2026-10-23T06:14:19.6869807Z [=====================                  ] 55% Unzipping... android-ndk-r28c/CHAN
+2026-10-23T06:14:19.6870583Z [=======================================] 100% Unzipping... android-ndk-r28c/CHA
+2026-10-23T06:14:19.7865215Z 
+2026-10-23T06:15:53.1867686Z Checking the license for package CMake 3.22.1 in /usr/local/lib/android/sdk/licenses
+2026-10-23T06:15:53.1868546Z License for package CMake 3.22.1 accepted.
+2026-10-23T06:15:53.1868930Z Preparing "Install CMake 3.22.1 v.3.22.1".
+2026-10-23T06:15:54.2870425Z "Install CMake 3.22.1 v.3.22.1" ready.
+2026-10-23T06:15:54.2871668Z Installing CMake 3.22.1 in /usr/local/lib/android/sdk/cmake/3.22.1
+2026-10-23T06:15:54.2872760Z "Install CMake 3.22.1 v.3.22.1" complete.
+2026-10-23T06:15:54.3869397Z "Install CMake 3.22.1 v.3.22.1" finished.
+2026-10-23T06:16:07.9853395Z Running Gradle task 'assembleDebug'...                            232.5s
+2026-10-23T06:16:08.6164006Z ✓ Built build/app/outputs/flutter-apk/app-debug.apk
+2026-10-23T06:16:09.5637153Z Installing build/app/outputs/flutter-apk/app-debug.apk...          701ms
+2026-10-23T06:16:12.0027374Z I/Choreographer( 4080): Skipped 31 frames!  The application may be doing too much work on its main thread.
+2026-10-23T06:16:12.0195064Z D/FlutterJNI( 4080): Sending viewport metrics to the engine.
+2026-10-23T06:16:14.7229187Z VMServiceFlutterDriver: Connecting to Flutter application at http://127.0.0.1:40997/7CT2e1Gg_KU=/
+2026-10-23T06:16:14.8258291Z VMServiceFlutterDriver: Isolate found with number: 4133719294109175
+2026-10-23T06:16:14.8627206Z VMServiceFlutterDriver: Isolate 4133719294109175 is runnable.
+2026-10-23T06:16:14.8674109Z VMServiceFlutterDriver: Isolate is paused at start.
+2026-10-23T06:16:14.8678182Z VMServiceFlutterDriver: Attempting to resume isolate
+2026-10-23T06:16:15.0182989Z I/flutter ( 4080): 00:00 +0: Drive catalog contains complete, distinct media
+2026-10-23T06:16:15.2803983Z I/flutter ( 4080): RENDERING c4fcd5bb-f4c6-5871-af3d-213e56109799
+2026-10-23T06:16:15.3052080Z VMServiceFlutterDriver: Connected to Flutter application.
+2026-10-23T06:16:16.5269967Z D/FlutterJNI( 4080): Sending viewport metrics to the engine.
+2026-10-23T06:16:16.8465294Z D/ProfileInstaller( 4080): Installing profile for com.example.nimzo_media_device_qa
+2026-10-23T06:16:17.6281007Z D/EGL_emulation( 4080): app_time_stats: avg=44.64ms min=8.11ms max=1266.25ms count=51
+2026-10-23T06:16:18.1462040Z I/flutter ( 4080): VERIFIED c4fcd5bb-f4c6-5871-af3d-213e56109799 sha256=93d60191fbfc8e331132ee388d4739a63c2aff5e7ae6a19790256d66861fc045 frames=79 fps=15 distinct=78 visible=79 android=true
+2026-10-23T06:16:18.1752785Z I/flutter ( 4080): RENDERING 92a89064-62f8-5f14-bc39-80e1f33aba98
+2026-10-23T06:16:18.6295978Z D/EGL_emulation( 4080): app_time_stats: avg=20.73ms min=12.83ms max=160.63ms count=48
+2026-10-23T06:16:19.6426653Z D/EGL_emulation( 4080): app_time_stats: avg=21.09ms min=15.14ms max=30.71ms count=48
+2026-10-23T06:16:20.1814244Z I/flutter ( 4080): VERIFIED 92a89064-62f8-5f14-bc39-80e1f33aba98 sha256=66c8c4fa8cfa9f238bed13b34e6bff6a8d26fa0dd9861350e0e4d308aaf1e8b6 frames=90 fps=30 distinct=90 visible=90 android=true
+2026-10-23T06:16:20.1936870Z I/flutter ( 4080): RENDERING nimzo-drive-amethyst-crown
+2026-10-23T06:16:20.6435008Z D/EGL_emulation( 4080): app_time_stats: avg=21.75ms min=12.75ms max=134.94ms count=46
+2026-10-23T06:16:21.0794079Z I/flutter ( 4080): VERIFIED nimzo-drive-amethyst-crown sha256=0dd433b58a00448c82c2eb3275220d12439e0149d6a8aae078faf879f19465d4 frames=45 fps=15 distinct=45 visible=45 android=true
+2026-10-23T06:16:21.0935283Z I/flutter ( 4080): RENDERING nimzo-drive-azure-crown
+2026-10-23T06:16:21.6435655Z D/EGL_emulation( 4080): app_time_stats: avg=18.80ms min=13.54ms max=136.12ms count=53
+2026-10-23T06:16:21.9795142Z I/flutter ( 4080): VERIFIED nimzo-drive-azure-crown sha256=6b3f66d633474f1d02027ec92b10cd4dada4e0448abad84a883ccbdae235d854 frames=45 fps=15 distinct=45 visible=45 android=true
+2026-10-23T06:16:21.9946159Z I/flutter ( 4080): RENDERING nimzo-drive-orchid-crown
+2026-10-23T06:16:22.6593306Z D/EGL_emulation( 4080): app_time_stats: avg=19.11ms min=13.45ms max=135.83ms count=53
+2026-10-23T06:16:22.8958664Z I/flutter ( 4080): VERIFIED nimzo-drive-orchid-crown sha256=2c1de320397227b862c5045779efe7e7e22e561093a0d2b5e4dae753499450cb frames=45 fps=15 distinct=45 visible=45 android=true
+2026-10-23T06:16:22.9113402Z I/flutter ( 4080): RENDERING nimzo-drive-crimson-crown
+2026-10-23T06:16:23.6592733Z D/EGL_emulation( 4080): app_time_stats: avg=19.08ms min=13.37ms max=138.03ms count=52
+2026-10-23T06:16:23.8118826Z I/flutter ( 4080): VERIFIED nimzo-drive-crimson-crown sha256=717c44cb0f0e2f85a2578c5c5d097fe8446760a1449b6715ef998a1b5ddb74d7 frames=45 fps=20 distinct=45 visible=45 android=true
+2026-10-23T06:16:23.8274315Z I/flutter ( 4080): RENDERING nimzo-drive-rose-id-plate
+2026-10-23T06:16:24.6780523Z D/EGL_emulation( 4080): app_time_stats: avg=20.08ms min=4.92ms max=98.16ms count=50
+2026-10-23T06:16:25.3969205Z I/flutter ( 4080): VERIFIED nimzo-drive-rose-id-plate sha256=9f156c347545d6a371afee6a270ff0b2c4a4454f929e3427064e1ec5b63db3c9 frames=80 fps=20 distinct=56 visible=80 android=true
+2026-10-23T06:16:25.4085397Z I/flutter ( 4080): RENDERING nimzo-drive-violet-id-plate
+2026-10-23T06:16:25.6778096Z D/EGL_emulation( 4080): app_time_stats: avg=17.85ms min=11.43ms max=41.05ms count=56
+2026-10-23T06:16:26.6928490Z D/EGL_emulation( 4080): app_time_stats: avg=16.86ms min=14.59ms max=26.65ms count=60
+2026-10-23T06:16:26.8140365Z I/flutter ( 4080): VERIFIED nimzo-drive-violet-id-plate sha256=1c34aafc448c2d4c848700f10a9bfdb409f8676fd5157751405a83c825384461 frames=80 fps=20 distinct=56 visible=80 android=true
+2026-10-23T06:16:26.8275830Z I/flutter ( 4080): RENDERING nimzo-drive-gold-id-plate
+2026-10-23T06:16:27.7098011Z D/EGL_emulation( 4080): app_time_stats: avg=17.46ms min=13.32ms max=40.57ms count=58
+2026-10-23T06:16:28.2640008Z I/flutter ( 4080): VERIFIED nimzo-drive-gold-id-plate sha256=95742d9e8ceb2bea1c32927a222f84839d7129998d75212711f52699c4f919fe frames=80 fps=20 distinct=56 visible=80 android=true
+2026-10-23T06:16:28.2951718Z I/flutter ( 4080): 00:13 +1: Expanded catalog contains complete, distinct media
+2026-10-23T06:16:28.3270813Z I/flutter ( 4080): RENDERING 63958a62-4018-5654-b4d6-173c5dad1db0
+2026-10-23T06:16:28.7254896Z D/EGL_emulation( 4080): app_time_stats: avg=19.48ms min=8.68ms max=64.80ms count=52
+2026-10-23T06:16:29.2288150Z I/flutter ( 4080): VERIFIED 63958a62-4018-5654-b4d6-173c5dad1db0 sha256=1fbde44aca3fcc75cd057c9af03492bca67611d037dc46ef6eb64eff6fd1ea3b frames=48 fps=12 distinct=45 visible=48 android=true
+2026-10-23T06:16:29.2426174Z I/flutter ( 4080): RENDERING ebac2405-40a6-56c8-929a-d0debfc6be48
+2026-10-23T06:16:29.7423126Z D/EGL_emulation( 4080): app_time_stats: avg=17.17ms min=12.49ms max=36.23ms count=59
+2026-10-23T06:16:30.7558785Z D/EGL_emulation( 4080): app_time_stats: avg=16.54ms min=13.86ms max=20.04ms count=61
+2026-10-23T06:16:31.3122482Z I/flutter ( 4080): VERIFIED ebac2405-40a6-56c8-929a-d0debfc6be48 sha256=58dd09579fed95d978ca9083a2b81bb3808b10ad8b268147be2fa23264d94676 frames=121 fps=60 distinct=121 visible=120 android=true
+2026-10-23T06:16:31.3261044Z I/flutter ( 4080): RENDERING d08fa443-8899-5797-a185-1cbc9c41c21f
+2026-10-23T06:16:31.7610204Z D/EGL_emulation( 4080): app_time_stats: avg=17.46ms min=13.64ms max=37.47ms count=57
+2026-10-23T06:16:32.7749935Z D/EGL_emulation( 4080): app_time_stats: avg=16.56ms min=14.61ms max=19.03ms count=61
+2026-10-23T06:16:33.7926973Z D/EGL_emulation( 4080): app_time_stats: avg=16.59ms min=13.29ms max=19.17ms count=61
+2026-10-23T06:16:34.3949372Z I/flutter ( 4080): VERIFIED d08fa443-8899-5797-a185-1cbc9c41c21f sha256=df3bc998e03640f58426b8a77e79efc6b84c09f55ff7e06b3eb31b558fcb9bbd frames=180 fps=20 distinct=180 visible=180 android=true
+2026-10-23T06:16:34.4098176Z I/flutter ( 4080): RENDERING nimzo-drive2-cupid-hearts
+2026-10-23T06:16:34.4498287Z I/flutter ( 4080): VERIFIED nimzo-drive2-cupid-hearts sha256=f07fcfb17cba018362d42cfdc5b95148e16ddcf2e3f71bc415940098a6f99f2c frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.4516519Z I/flutter ( 4080): RENDERING nimzo-drive2-sapphire-dragon
+2026-10-23T06:16:34.4715141Z I/flutter ( 4080): VERIFIED nimzo-drive2-sapphire-dragon sha256=9bfbb37b35e77e3a1857a9cd38b9b7b1cd96188224e8eea381f5cd356e2e41ad frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.4717204Z I/flutter ( 4080): RENDERING nimzo-drive2-crimson-lion
+2026-10-23T06:16:34.4855239Z I/flutter ( 4080): VERIFIED nimzo-drive2-crimson-lion sha256=55d8587c73c7eb87ff570a5c1d01d98e3e5ba88698e64026816d3b7a9203aeff frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.4856996Z I/flutter ( 4080): RENDERING nimzo-drive2-emerald-masquerade
+2026-10-23T06:16:34.5028196Z I/flutter ( 4080): VERIFIED nimzo-drive2-emerald-masquerade sha256=9dc92a803d6709410cbfe137fc1f4851fd984a3a521e3b1f36b315e2d3298e1c frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.5032966Z I/flutter ( 4080): RENDERING nimzo-drive2-emerald-treasure
+2026-10-23T06:16:34.5169621Z I/flutter ( 4080): VERIFIED nimzo-drive2-emerald-treasure sha256=0603a5a0c29c4495e90f02eae6259c5a0fe686496b77ba0397f2ffa2bf0b9d4b frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.5177039Z I/flutter ( 4080): RENDERING nimzo-drive2-golden-zodiac
+2026-10-23T06:16:34.5305379Z I/flutter ( 4080): VERIFIED nimzo-drive2-golden-zodiac sha256=a103911f42534fcbda8451a3d48c454fdac2cfbf0cec81ba1b414510f585d01b frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.5309765Z I/flutter ( 4080): RENDERING nimzo-drive2-aqua-ribbon
+2026-10-23T06:16:34.5589028Z I/flutter ( 4080): VERIFIED nimzo-drive2-aqua-ribbon sha256=6ab74d8a6025be35e86e2fb2440b33365815eadb2a5d9529d701e1ade13dca58 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.5589913Z I/flutter ( 4080): RENDERING nimzo-drive2-moonlit-crystal
+2026-10-23T06:16:34.6027326Z I/flutter ( 4080): VERIFIED nimzo-drive2-moonlit-crystal sha256=0cd99456f43ae88ff21697c18e7e8099c8f5fb513b5ea408e2d0dc0d019731d2 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.6028587Z I/flutter ( 4080): RENDERING nimzo-drive2-arctic-aurora
+2026-10-23T06:16:34.6398938Z I/flutter ( 4080): VERIFIED nimzo-drive2-arctic-aurora sha256=654dad7baf8f5278e807a533479e2b7795c18b125b9a802d609bfaa5bf217465 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.6400351Z I/flutter ( 4080): RENDERING nimzo-drive2-cosmic-rocket
+2026-10-23T06:16:34.6797269Z I/flutter ( 4080): VERIFIED nimzo-drive2-cosmic-rocket sha256=b382814ed6d3761b7ccb69b36e5aacc09461f8690962ba97581728c2a5f11608 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.6799905Z I/flutter ( 4080): RENDERING nimzo-drive2-neon-music
+2026-10-23T06:16:34.7098242Z I/flutter ( 4080): VERIFIED nimzo-drive2-neon-music sha256=fa19e36c1b70fda09fafc8e1d8878710869adeddbd33ee9a5111a4b2659437c4 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.7107608Z I/flutter ( 4080): RENDERING nimzo-drive2-sweet-letters
+2026-10-23T06:16:34.7468042Z I/flutter ( 4080): VERIFIED nimzo-drive2-sweet-letters sha256=6fd43802ee80cad66533b936c39638975de0ed5338f489dc31c1475590810731 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.7475417Z I/flutter ( 4080): RENDERING nimzo-drive2-amethyst-crown
+2026-10-23T06:16:34.7648075Z I/flutter ( 4080): VERIFIED nimzo-drive2-amethyst-crown sha256=602c7adb245636a1926d0838635d9e8bf944db30552bacffa5b64f901e7aef78 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:34.7649886Z I/flutter ( 4080): RENDERING 9fe05324-ef7b-57db-8a77-863194b56e9a
+2026-10-23T06:16:34.8142058Z D/EGL_emulation( 4080): app_time_stats: avg=26.85ms min=14.83ms max=405.74ms count=38
+2026-10-23T06:16:35.8424681Z D/EGL_emulation( 4080): app_time_stats: avg=26.34ms min=15.14ms max=34.36ms count=39
+2026-10-23T06:16:35.8747175Z I/flutter ( 4080): VERIFIED 9fe05324-ef7b-57db-8a77-863194b56e9a sha256=9b8346cf8ed2ef355a1210d7e56827a00ac9f60a6cbe1a58bf2fdaf3ccd23b56 frames=40 fps=10 distinct=40 visible=40 android=true
+2026-10-23T06:16:35.8894319Z I/flutter ( 4080): RENDERING 363ac433-1683-5702-ba8a-33a6518acf41
+2026-10-23T06:16:36.8855251Z D/EGL_emulation( 4080): app_time_stats: avg=35.61ms min=9.12ms max=64.19ms count=29
+2026-10-23T06:16:37.8891372Z D/EGL_emulation( 4080): app_time_stats: avg=37.09ms min=31.40ms max=49.66ms count=27
+2026-10-23T06:16:38.1205946Z I/flutter ( 4080): VERIFIED 363ac433-1683-5702-ba8a-33a6518acf41 sha256=00f33c2a511b4b5bce5e6a53d2a31c9776f488d0aa5bdb9a8efeb5cb39a81a91 frames=60 fps=15 distinct=60 visible=60 android=true
+2026-10-23T06:16:38.1258647Z I/flutter ( 4080): RENDERING 47eef0cf-ee87-5fb4-a7dd-c247275f9dc9
+2026-10-23T06:16:38.9263841Z D/EGL_emulation( 4080): app_time_stats: avg=41.42ms min=14.00ms max=85.94ms count=25
+2026-10-23T06:16:39.9696674Z D/EGL_emulation( 4080): app_time_stats: avg=65.20ms min=52.54ms max=71.09ms count=16
+2026-10-23T06:16:40.9950085Z D/EGL_emulation( 4080): app_time_stats: avg=73.20ms min=62.14ms max=90.69ms count=14
+2026-10-23T06:16:42.0402375Z D/EGL_emulation( 4080): app_time_stats: avg=80.03ms min=57.75ms max=86.84ms count=13
+2026-10-23T06:16:42.1233198Z I/flutter ( 4080): VERIFIED 47eef0cf-ee87-5fb4-a7dd-c247275f9dc9 sha256=f9ee14f518ce9fabd86e9b5da0a1b77f0f76c9990c49f6ee06eea8cec5accd26 frames=60 fps=15 distinct=60 visible=60 android=true
+2026-10-23T06:16:42.1407564Z I/flutter ( 4080): RENDERING 61db920d-549c-52da-b4a1-68187063930c
+2026-10-23T06:16:43.0921381Z D/EGL_emulation( 4080): app_time_stats: avg=34.01ms min=14.43ms max=90.94ms count=31
+2026-10-23T06:16:44.1344538Z D/EGL_emulation( 4080): app_time_stats: avg=65.13ms min=50.41ms max=77.04ms count=16
+2026-10-23T06:16:45.1440631Z D/EGL_emulation( 4080): app_time_stats: avg=63.07ms min=31.30ms max=70.91ms count=16
+2026-10-23T06:16:45.1563461Z I/flutter ( 4080): VERIFIED 61db920d-549c-52da-b4a1-68187063930c sha256=f1e0d2e111edf21cc76cb581aa06d50d79f00225198f4985f0a8c7e6a35d1f6f frames=60 fps=15 distinct=60 visible=60 android=true
+2026-10-23T06:16:45.1727643Z I/flutter ( 4080): RENDERING nimzo-drive2-arcane-lightning
+2026-10-23T06:16:45.8447712Z I/flutter ( 4080): VERIFIED nimzo-drive2-arcane-lightning sha256=e6d230bc8f9adf4bf0972422f4d9e0f7d3a6009aa0d0775c800e7d33ef70c6c0 frames=30 fps=30 distinct=30 visible=30 android=true
+2026-10-23T06:16:45.8605390Z I/flutter ( 4080): RENDERING nimzo-drive2-solar-portal
+2026-10-23T06:16:46.1617449Z D/EGL_emulation( 4080): app_time_stats: avg=24.15ms min=12.01ms max=172.39ms count=42
+2026-10-23T06:16:46.8802529Z I/flutter ( 4080): VERIFIED nimzo-drive2-solar-portal sha256=c196a3011eae478d33c38889048eba74e6b6a09cba3247db86ef6f2ff1028ea7 frames=40 fps=30 distinct=40 visible=40 android=true
+2026-10-23T06:16:46.8924204Z I/flutter ( 4080): RENDERING nimzo-drive2-golden-runes
+2026-10-23T06:16:47.1721914Z D/EGL_emulation( 4080): app_time_stats: avg=22.38ms min=10.66ms max=89.22ms count=45
+2026-10-23T06:16:47.7469730Z I/flutter ( 4080): VERIFIED nimzo-drive2-golden-runes sha256=d8e5787320b886e0ff13622b8b19ba5ce4592860e78bebc94ee958c8039af558 frames=43 fps=30 distinct=43 visible=43 android=true
+2026-10-23T06:16:47.7601589Z I/flutter ( 4080): RENDERING nimzo-drive2-moonlit-palace
+2026-10-23T06:16:48.1531758Z I/flutter ( 4080): VERIFIED nimzo-drive2-moonlit-palace sha256=d00f0073310e68c554c01a9907c56ac2bc9e5cef9f0c21fce17c1ca74dbf864a frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:16:48.1533120Z I/flutter ( 4080): RENDERING a9e4ad2b-95f8-51f3-beee-01cf687d3e96
+2026-10-23T06:16:48.2482808Z D/EGL_emulation( 4080): app_time_stats: avg=31.51ms min=14.52ms max=489.52ms count=34
+2026-10-23T06:16:48.6974884Z I/flutter ( 4080): VERIFIED a9e4ad2b-95f8-51f3-beee-01cf687d3e96 sha256=424a2cdd6e869676ae943603d7d4542dfef21ecebe7662b6b62d335fb21d74f1 frames=26 fps=20 distinct=26 visible=26 android=true
+2026-10-23T06:16:48.7106670Z I/flutter ( 4080): RENDERING 544b7366-0d83-5729-b007-b709cd21c79b
+2026-10-23T06:16:49.1445179Z I/flutter ( 4080): VERIFIED 544b7366-0d83-5729-b007-b709cd21c79b sha256=dbe6935d5855069d3f9762e20912b3076ad862150fbe981f00258afceef7cfc6 frames=20 fps=20 distinct=20 visible=20 android=true
+2026-10-23T06:16:49.1563728Z I/flutter ( 4080): RENDERING e8e3f1f1-84af-524e-bc74-597bb57a4516
+2026-10-23T06:16:49.2600018Z D/EGL_emulation( 4080): app_time_stats: avg=19.42ms min=11.87ms max=70.13ms count=52
+2026-10-23T06:16:49.6778361Z I/flutter ( 4080): VERIFIED e8e3f1f1-84af-524e-bc74-597bb57a4516 sha256=e3bb6d3e674ee3fbf22cbaba40f5b6a828810aaeb85022a36bb632b56f65bed6 frames=26 fps=20 distinct=26 visible=26 android=true
+2026-10-23T06:16:49.6937228Z I/flutter ( 4080): RENDERING b97a98a1-f7d0-5f74-b976-5fd7101d4bca
+2026-10-23T06:16:50.2491645Z I/flutter ( 4080): VERIFIED b97a98a1-f7d0-5f74-b976-5fd7101d4bca sha256=2cf4193aa696c0cd51064f28d8a63e34fe175b3f7d2d6516de7759fcc9744426 frames=26 fps=20 distinct=26 visible=26 android=true
+2026-10-23T06:16:50.2585887Z I/flutter ( 4080): RENDERING ca09e7da-bb3d-55d3-bfd0-34ac1e5089fa
+2026-10-23T06:16:50.3142008Z D/EGL_emulation( 4080): app_time_stats: avg=19.49ms min=12.52ms max=88.64ms count=54
+2026-10-23T06:16:50.6639628Z I/flutter ( 4080): VERIFIED ca09e7da-bb3d-55d3-bfd0-34ac1e5089fa sha256=e7891975b09f1b491d7548b58a690f6e7013a5d9cae7b3a72eebe11e9d8eaeff frames=20 fps=20 distinct=20 visible=20 android=true
+2026-10-23T06:16:50.6762781Z I/flutter ( 4080): RENDERING d99ca184-ef05-56ba-8e83-beed00894e66
+2026-10-23T06:16:51.3238903Z D/EGL_emulation( 4080): app_time_stats: avg=17.04ms min=7.36ms max=29.95ms count=59
+2026-10-23T06:16:52.3403612Z D/EGL_emulation( 4080): app_time_stats: avg=16.60ms min=14.80ms max=18.64ms count=61
+2026-10-23T06:16:52.3606573Z I/flutter ( 4080): VERIFIED d99ca184-ef05-56ba-8e83-beed00894e66 sha256=72bdb4f53016d2d1d3dee7539c6537c9f90ebdc55abfcb5d2093dd0e77915a4d frames=99 fps=20 distinct=50 visible=99 android=true
+2026-10-23T06:16:52.3759989Z I/flutter ( 4080): RENDERING a473acf3-1f5e-56cc-8fe9-414c850f6a19
+2026-10-23T06:16:53.0617526Z I/flutter ( 4080): VERIFIED a473acf3-1f5e-56cc-8fe9-414c850f6a19 sha256=bc37a7dccae05f840747305d842a6a6c777afe2e7bc0bcf640e02a0dc748519c frames=36 fps=20 distinct=36 visible=36 android=true
+2026-10-23T06:16:53.0748785Z I/flutter ( 4080): RENDERING 181755ca-8c98-59c0-993f-e2d44021c972
+2026-10-23T06:16:53.3413301Z D/EGL_emulation( 4080): app_time_stats: avg=19.22ms min=12.98ms max=70.19ms count=52
+2026-10-23T06:16:53.7448522Z I/flutter ( 4080): VERIFIED 181755ca-8c98-59c0-993f-e2d44021c972 sha256=c6d00f871e394d68d8c26e4f71fc51c762aa180b01a21d8760c2bb161fc2b6a0 frames=35 fps=20 distinct=35 visible=35 android=true
+2026-10-23T06:16:53.7572716Z I/flutter ( 4080): RENDERING aa344b47-33c1-5396-bf05-0106288f46c6
+2026-10-23T06:16:54.3577978Z D/EGL_emulation( 4080): app_time_stats: avg=16.84ms min=14.19ms max=27.57ms count=60
+2026-10-23T06:16:55.0095660Z I/flutter ( 4080): VERIFIED aa344b47-33c1-5396-bf05-0106288f46c6 sha256=233dc04da3379bd53bb7e68972b9613fd675b6b60c0213695433352b20225ece frames=72 fps=24 distinct=56 visible=55 android=true
+2026-10-23T06:16:55.0247559Z I/flutter ( 4080): RENDERING 8f354993-9da4-58c8-9aff-a702398ec67c
+2026-10-23T06:16:55.3583773Z D/EGL_emulation( 4080): app_time_stats: avg=19.95ms min=14.34ms max=130.11ms count=50
+2026-10-23T06:16:56.3747941Z D/EGL_emulation( 4080): app_time_stats: avg=16.59ms min=14.63ms max=18.78ms count=61
+2026-10-23T06:16:56.5283394Z I/flutter ( 4080): VERIFIED 8f354993-9da4-58c8-9aff-a702398ec67c sha256=93f59e0f963bbffb87a95f01aaeac7a07a08441fe8712ba9de53ad0dfdbe3740 frames=80 fps=20 distinct=65 visible=80 android=true
+2026-10-23T06:16:56.5436585Z I/flutter ( 4080): RENDERING d6033e3d-1398-55be-bdd2-b266b19cb9ed
+2026-10-23T06:16:57.2616607Z I/flutter ( 4080): VERIFIED d6033e3d-1398-55be-bdd2-b266b19cb9ed sha256=9ef1d82dad8e04bfe7edf1bce0a8ba8d0801286e07c49f5fccefc66f0678101e frames=40 fps=20 distinct=39 visible=40 android=true
+2026-10-23T06:16:57.2734141Z I/flutter ( 4080): RENDERING 3010d672-8a7b-5af1-a78b-a6a68872ab46
+2026-10-23T06:16:57.3764734Z D/EGL_emulation( 4080): app_time_stats: avg=18.16ms min=13.88ms max=72.46ms count=55
+2026-10-23T06:16:58.3766917Z D/EGL_emulation( 4080): app_time_stats: avg=18.44ms min=14.63ms max=31.29ms count=54
+2026-10-23T06:16:58.4656075Z I/flutter ( 4080): VERIFIED 3010d672-8a7b-5af1-a78b-a6a68872ab46 sha256=a8ddeaf83dbf3f53061174a6baae2d7191c30b6d950fdb0ead4d49a2085b71f7 frames=60 fps=15 distinct=60 visible=60 android=true
+2026-10-23T06:16:58.4739039Z I/flutter ( 4080): RENDERING addebbdd-0451-5d52-8dcc-12b593219c16
+2026-10-23T06:16:59.3901429Z D/EGL_emulation( 4080): app_time_stats: avg=17.38ms min=13.39ms max=33.31ms count=58
+2026-10-23T06:16:59.3949168Z I/flutter ( 4080): VERIFIED addebbdd-0451-5d52-8dcc-12b593219c16 sha256=2e8cb11e551e018fa9e3a336a7fbcad2a2e3b33d2ee4661b40d752f56294e155 frames=52 fps=15 distinct=44 visible=52 android=true
+2026-10-23T06:16:59.4076810Z I/flutter ( 4080): RENDERING nimzo-drive2-rainbow-blossom
+2026-10-23T06:17:00.2303169Z I/flutter ( 4080): VERIFIED nimzo-drive2-rainbow-blossom sha256=ad911ebb9f7ca39b27b80ce0a74a5553a13e911a557ea5d5d2b3d53e6d1e93e1 frames=45 fps=15 distinct=44 visible=43 android=true
+2026-10-23T06:17:00.2410309Z I/flutter ( 4080): RENDERING nimzo-drive2-golden-sound-orbit
+2026-10-23T06:17:00.4105505Z D/EGL_emulation( 4080): app_time_stats: avg=19.10ms min=10.89ms max=92.15ms count=53
+2026-10-23T06:17:01.4138096Z D/EGL_emulation( 4080): app_time_stats: avg=24.44ms min=15.56ms max=47.38ms count=41
+2026-10-23T06:17:01.7973200Z I/flutter ( 4080): VERIFIED nimzo-drive2-golden-sound-orbit sha256=08ca11a9f0f11406f288602126833d4cb5d4235a3e3f0adc9e06c58e833a1050 frames=60 fps=15 distinct=60 visible=60 android=true
+2026-10-23T06:17:01.8084876Z I/flutter ( 4080): RENDERING nimzo-drive2-violet-electric-halo
+2026-10-23T06:17:02.4460073Z D/EGL_emulation( 4080): app_time_stats: avg=28.31ms min=6.49ms max=80.07ms count=36
+2026-10-23T06:17:03.4797481Z D/EGL_emulation( 4080): app_time_stats: avg=31.23ms min=19.49ms max=35.64ms count=33
+2026-10-23T06:17:04.3048263Z I/flutter ( 4080): VERIFIED nimzo-drive2-violet-electric-halo sha256=096e6ca992bb1ff8761f2b0fc6844375d46b01c0af8295592dd991a1d8d4d80f frames=80 fps=20 distinct=80 visible=80 android=true
+2026-10-23T06:17:04.3219577Z I/flutter ( 4080): RENDERING nimzo-drive2-amber-star-pulse
+2026-10-23T06:17:04.4799878Z D/EGL_emulation( 4080): app_time_stats: avg=30.01ms min=9.86ms max=80.87ms count=33
+2026-10-23T06:17:05.4827071Z D/EGL_emulation( 4080): app_time_stats: avg=32.24ms min=18.80ms max=37.60ms count=31
+2026-10-23T06:17:06.4946632Z D/EGL_emulation( 4080): app_time_stats: avg=31.71ms min=19.02ms max=36.25ms count=32
+2026-10-23T06:17:06.9515697Z I/flutter ( 4080): VERIFIED nimzo-drive2-amber-star-pulse sha256=2af1763a40b7510780820cfd2f25e039bf621e46df0f5427fb0caef31ebd6b1d frames=80 fps=20 distinct=80 visible=80 android=true
+2026-10-23T06:17:06.9596160Z I/flutter ( 4080): RENDERING nimzo-drive2-crimson-star-pulse
+2026-10-23T06:17:07.4960020Z D/EGL_emulation( 4080): app_time_stats: avg=33.06ms min=7.55ms max=77.43ms count=30
+2026-10-23T06:17:08.5289221Z D/EGL_emulation( 4080): app_time_stats: avg=33.30ms min=25.91ms max=42.09ms count=31
+2026-10-23T06:17:09.5615813Z D/EGL_emulation( 4080): app_time_stats: avg=33.29ms min=27.60ms max=36.27ms count=31
+2026-10-23T06:17:09.7091171Z I/flutter ( 4080): VERIFIED nimzo-drive2-crimson-star-pulse sha256=c1cc37dc26d4f78b5c3626021f95ee12423c5e6494199b124a6194d6f09f7292 frames=80 fps=20 distinct=80 visible=80 android=true
+2026-10-23T06:17:09.7241753Z I/flutter ( 4080): RENDERING nimzo-drive2-prismatic-star-pulse
+2026-10-23T06:17:10.5648135Z D/EGL_emulation( 4080): app_time_stats: avg=35.56ms min=10.90ms max=117.25ms count=28
+2026-10-23T06:17:11.5826995Z D/EGL_emulation( 4080): app_time_stats: avg=33.96ms min=30.31ms max=47.32ms count=30
+2026-10-23T06:17:12.5257901Z I/flutter ( 4080): VERIFIED nimzo-drive2-prismatic-star-pulse sha256=e05d78c6b7ca7c384828c4fd240c2fb5a8e55ddd345c8afc82929030f58ce377 frames=80 fps=20 distinct=80 visible=80 android=true
+2026-10-23T06:17:12.5401850Z I/flutter ( 4080): RENDERING nimzo-drive2-jade-bear
+2026-10-23T06:17:12.6268322Z I/flutter ( 4080): VERIFIED nimzo-drive2-jade-bear sha256=8bec7620ab50b287621094e1a34a0cb0fb46c696416542ec2b010ee703987190 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:17:12.6291739Z I/flutter ( 4080): RENDERING nimzo-drive2-sapphire-wolf
+2026-10-23T06:17:12.6999370Z I/flutter ( 4080): VERIFIED nimzo-drive2-sapphire-wolf sha256=8c8d9e72c40cf2cb2536f8940c21b2b293c8e01c1a9d0f94456670a425ac01b7 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:17:12.7013867Z I/flutter ( 4080): RENDERING nimzo-drive2-violet-eagle
+2026-10-23T06:17:12.7749878Z I/flutter ( 4080): VERIFIED nimzo-drive2-violet-eagle sha256=b0be190d0a52adbccdffa213440cfbb6a274b4e4e5d8176b2d172cdeae301392 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:17:12.7757184Z I/flutter ( 4080): RENDERING nimzo-drive2-golden-lion
+2026-10-23T06:17:12.8500373Z I/flutter ( 4080): VERIFIED nimzo-drive2-golden-lion sha256=089423147c0410da9c26e138bcca5f7f5f676f5889897b45046b81b02e9e1498 frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:17:12.8514148Z I/flutter ( 4080): RENDERING nimzo-drive2-amber-dragon
+2026-10-23T06:17:12.9227535Z I/flutter ( 4080): VERIFIED nimzo-drive2-amber-dragon sha256=90c5a63767f8b76151fdfaa6f533cb486226f4436d052e2a75eea906c3fb0b5b frames=1 fps=1 distinct=1 visible=1 android=true
+2026-10-23T06:17:12.9259315Z I/flutter ( 4080): 00:57 +2: (tearDownAll)
+2026-10-23T06:17:12.9286394Z D/EGL_emulation( 4080): app_time_stats: avg=44.85ms min=26.32ms max=389.26ms count=30
+2026-10-23T06:17:12.9332189Z I/flutter ( 4080): 00:57 +3: All tests passed!
+2026-10-23T06:17:12.9406574Z All tests passed.
+2026-10-23T06:17:12.9543943Z Leaving the application running.
+2026-10-23T06:17:13.2423623Z Collected all57 actual Android render previews
+2026-10-23T06:17:13.2469559Z ##[group]Terminate Emulator
+2026-10-23T06:17:13.2485249Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 emu kill
+2026-10-23T06:17:13.2516839Z OK: killing emulator, bye bye
+2026-10-23T06:17:13.2517598Z OK
+2026-10-23T06:17:13.2520670Z ##[endgroup]
+2026-10-23T06:17:13.2521764Z INFO         | Wait for emulator (pid 2777) 20 seconds to shutdown gracefully before kill;you can set environment variable ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL(in seconds) to change the default value (20 seconds)
+2026-10-23T06:17:13.2522823Z 
+2026-10-23T06:17:13.2597739Z USER_INFO    | Snapshots have been disabled by the user, save request is ignored.
+2026-10-23T06:17:13.2598753Z INFO         | Saving snapshot 'default_boot' took 0 ms
+2026-10-23T06:17:14.2335812Z ERROR        | stop: Not implemented
+2026-10-23T06:17:14.2336452Z WARNING      | Emulator client has not yet been configured.. Call configure me first!
+2026-10-23T06:17:14.2449591Z INFO         | removeAll
+2026-10-23T06:17:14.2798219Z WARNING      | Netsim Wifi dns:///localhost:33147 is gone due to Stream removed (CANCELLED)
+2026-10-23T06:17:14.7090259Z ##[group]Run actions/upload-artifact@v4
+2026-10-23T06:17:14.7090519Z with:
+2026-10-23T06:17:14.7090731Z   name: drive-catalog-android-previews
+2026-10-23T06:17:14.7090990Z   path: tools/media_device_qa/artifacts/
+2026-10-23T06:17:14.7091245Z   if-no-files-found: error
+2026-10-23T06:17:14.7091460Z   compression-level: 6
+2026-10-23T06:17:14.7091652Z   overwrite: false
+2026-10-23T06:17:14.7091851Z   include-hidden-files: false
+2026-10-23T06:17:14.7092059Z env:
+2026-10-23T06:17:14.7092444Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:17:14.7092861Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-10-23T06:17:14.7093277Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.47.6-x64/flutter
+2026-10-23T06:17:14.7093601Z   PUB_CACHE: /home/runner/.pub-cache
+2026-10-23T06:17:14.7093852Z   ANDROID_AVD_HOME: /home/runner/.android/avd
+2026-10-23T06:17:14.7094092Z ##[endgroup]
+2026-10-23T06:17:14.8594475Z (node:4200) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-23T06:17:14.8595069Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-23T06:17:14.8709902Z With the provided path, there will be 57 files uploaded
+2026-10-23T06:17:14.8732073Z Artifact name is valid!
+2026-10-23T06:17:14.8732704Z Root directory input is valid!
+2026-10-23T06:17:15.2346361Z Beginning upload of artifact content to blob storage
+2026-10-23T06:17:15.4655115Z (node:4200) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-23T06:17:16.1568336Z Uploaded bytes 6866047
+2026-10-23T06:17:16.2130509Z Finished uploading artifact content to blob storage!
+2026-10-23T06:17:16.2131289Z SHA256 digest of uploaded artifact zip is 4e966a9deaeb20ae19068b758e63afa9c9b2187832ed3d8862daa001c306897c
+2026-10-23T06:17:16.2133362Z Finalizing artifact upload
+2026-10-23T06:17:16.6845664Z Artifact drive-catalog-android-previews.zip successfully finalized. Artifact ID 12481789462
+2026-10-23T06:17:16.6847496Z Artifact drive-catalog-android-previews has been successfully uploaded! Final size is 6866047 bytes. Artifact ID is 12481789462
+2026-10-23T06:17:16.6852059Z Artifact download URL: https://github.com/adi4ch-cmd/Nimzo/actions/runs/39909844929/artifacts/12481789462
+2026-10-23T06:17:16.7065797Z Post job cleanup.
+2026-10-23T06:17:16.7069408Z ##[start-action display=Cache pub dependencies;id=__2881c3e5-8c9b-4be6-bbcf-ad0eead43abd.cache-pub]
+2026-10-23T06:17:17.0246869Z Post job cleanup.
+2026-10-23T06:17:17.1423884Z Cache hit occurred on the primary key flutter-pub-linux-stable-3.47.6-x64-5fc346839b5d0eef006ed8404392afb4dfae428d-e7ccaed035b941aaa0d5f4f8756f0c1a70e25a5cce45a9f400e6c44a7ad91edb, not saving cache.
+2026-10-23T06:17:17.1464773Z ##[end-action id=__2881c3e5-8c9b-4be6-bbcf-ad0eead43abd.cache-pub;outcome=success;conclusion=success;duration_ms=439]
+2026-10-23T06:17:17.1467903Z ##[start-action display=Cache Flutter;id=__2881c3e5-8c9b-4be6-bbcf-ad0eead43abd.cache-flutter]
+2026-10-23T06:17:17.1510088Z Post job cleanup.
+2026-10-23T06:17:17.2506512Z Cache hit occurred on the primary key flutter-linux-stable-3.47.6-x64-5fc346839b5d0eef006ed8404392afb4dfae428d, not saving cache.
+2026-10-23T06:17:17.2546800Z ##[end-action id=__2881c3e5-8c9b-4be6-bbcf-ad0eead43abd.cache-flutter;outcome=success;conclusion=success;duration_ms=107]
+2026-10-23T06:17:17.2601786Z Post job cleanup.
+2026-10-23T06:17:17.3762563Z (node:4241) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-23T06:17:17.3763187Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-23T06:17:17.3875393Z Post job cleanup.
+2026-10-23T06:17:17.4614157Z [command]/usr/bin/git version
+2026-10-23T06:17:17.4647552Z git version 2.55.0
+2026-10-23T06:17:17.4680826Z Temporarily overriding HOME='/home/runner/work/_temp/797b7053-4c22-49c9-ae10-a6dd331097c7' before making global git config changes
+2026-10-23T06:17:17.4682119Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-23T06:17:17.4686937Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Nimzo/Nimzo
+2026-10-23T06:17:17.4717149Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-23T06:17:17.4743423Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-23T06:17:17.4946267Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-23T06:17:17.4965601Z http.https://github.com/.extraheader
+2026-10-23T06:17:17.4979622Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-23T06:17:17.5006565Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-23T06:17:17.5192924Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-23T06:17:17.5219426Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-23T06:17:17.5508769Z Cleaning up orphan processes
+2026-10-23T06:17:17.5863425Z Terminate orphan process: pid (2881) (adb)
+2026-10-23T06:17:17.5936774Z Terminate orphan process: pid (3072) (java)
+2026-10-23T06:17:17.6044064Z Terminate orphan process: pid (3319) (java)
+2026-10-23T06:17:17.6107399Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-java@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

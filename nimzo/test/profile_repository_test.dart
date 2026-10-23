@@ -186,6 +186,7 @@ void main() {
       'profile gift forwards recipient and stable key without room or client price',
       () async {
     final db = await signedClient((request) {
+      if (request.method=='GET' && request.url.path.endsWith('/gifts')) return http.Response('[{"id":"gift","requires_approved_media":false}]',200);
       expect(request.url.path, '/rest/v1/rpc/send_profile_gift');
       expect(jsonDecode(request.body), {
         'p_receiver': 'other',

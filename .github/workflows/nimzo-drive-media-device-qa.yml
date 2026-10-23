@@ -1,0 +1,61 @@
+name: NIMZO Drive catalog Android render verification
+on:
+  push:
+    branches: [integration/nimzo-v3-dynamic-20261021]
+    paths:
+      - nimzo/assets/drive_catalog/**
+      - nimzo/assets/drive_catalog_expanded/**
+      - nimzo/assets/membership/remix/**
+      - nimzo/assets/drive_catalog_premium/**
+      - tools/media_device_qa/**
+      - .github/workflows/nimzo-drive-media-device-qa.yml
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  android-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce owner-authorized dynamic QA acceptance
+        run: python3 tools/verify_prebuild_acceptance.py --dynamic-qa
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Prepare isolated renderer (no wallets, accounts or voice SDK)
+        working-directory: tools/media_device_qa
+        run: |
+          flutter create . --no-pub --platforms=android --project-name nimzo_media_device_qa
+          mkdir -p assets
+          cp -r ../../nimzo/assets/drive_catalog assets/
+          cp -r ../../nimzo/assets/drive_catalog_expanded assets/
+          cp -r ../../nimzo/assets/drive_catalog_premium assets/
+          mkdir -p assets/membership
+          cp -r ../../nimzo/assets/membership/remix assets/membership/
+          python3 ../configure_android_gradle.py android
+          flutter pub get
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          working-directory: tools/media_device_qa
+          script: bash run_android_verification.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: drive-catalog-android-previews
+          path: tools/media_device_qa/artifacts/
+          if-no-files-found: error

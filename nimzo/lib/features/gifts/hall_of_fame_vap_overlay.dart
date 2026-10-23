@@ -1,3 +1,5 @@
+import '../../core/services/approved_media_bytes.dart';
+import '../../core/services/verified_media_file.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -15,11 +17,15 @@ class HallOfFameVapOverlay extends StatefulWidget {
     required this.quantity,
     required this.onFinished,
     this.giftName = 'Hall of Fame',
+    this.publication,
+    this.muted = false,
   });
 
   final String source, sender, recipient, giftName;
   final int quantity;
   final VoidCallback onFinished;
+  final ApprovedMediaPublication? publication;
+  final bool muted;
 
   @override
   State<HallOfFameVapOverlay> createState() => _HallOfFameVapOverlayState();
@@ -27,6 +33,7 @@ class HallOfFameVapOverlay extends StatefulWidget {
 
 class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
   VapPlayerController? _controller;
+  VerifiedMediaFile? _verifiedFile;
   StreamSubscription<dynamic>? _events;
   Timer? _watchdog;
   bool _ready = false;
@@ -36,28 +43,45 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
   @override
   void initState() {
     super.initState();
-    final uri = Uri.tryParse(widget.source);
-    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
-      scheduleMicrotask(() => _fail('Gift video URL is invalid'));
-      return;
+    _watchdog =
+        Timer(const Duration(seconds: 35), () => _fail('Gift video timed out'));
+    unawaited(_initialize());
+  }
+
+  Future<void> _initialize() async {
+    try {
+      if (!ApprovedMediaBytes.isSafeUrl(widget.source)) {
+        _fail('Gift video URL is invalid');
+        return;
+      }
+      if (widget.publication != null) {
+        final file =
+            await VerifiedMediaFile.create(widget.source, widget.publication!);
+        if (!mounted || _finished) {
+          await file.dispose();
+          return;
+        }
+        _verifiedFile = file;
+      }
+      if (!mounted || _finished) return;
+      final options = VapPlayerOptions(
+          viewType: VapViewType.textureView,
+          scaleType: VapScaleType.centerCrop,
+          repeatCount: 0,
+          mute: widget.muted);
+      final controller = _verifiedFile != null
+          ? VapPlayerController.file(_verifiedFile!.file, options: options)
+          : VapPlayerController.networkUrl(Uri.parse(widget.source),
+              options: options);
+      _controller = controller;
+      _events = controller.events.listen((event) {
+        if (event is VapCompletedEvent) _finish();
+        if (event is VapErrorEvent) _fail('Native VAP player failed');
+      }, onError: (Object _) => _fail('Native VAP event stream error'));
+      await _start();
+    } catch (_) {
+      _fail('VAP media could not be verified');
     }
-    final controller = VapPlayerController.networkUrl(
-      uri,
-      options: const VapPlayerOptions(
-        viewType: VapViewType.textureView,
-        scaleType: VapScaleType.centerCrop,
-        repeatCount: 0,
-        mute: false,
-      ),
-    );
-    _controller = controller;
-    _events = controller.events.listen((event) {
-      if (event is VapCompletedEvent) _finish();
-      if (event is VapErrorEvent) _fail('Native VAP player failed');
-    }, onError: (Object _) => _fail('Native VAP event stream error'));
-    _watchdog = Timer(const Duration(seconds: 22),
-        () => _fail('Gift video timed out'));
-    unawaited(_start());
   }
 
   Future<void> _start() async {
@@ -96,7 +120,14 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
     _watchdog?.cancel();
     unawaited(_events?.cancel());
     final controller = _controller;
-    if (controller != null) unawaited(controller.dispose());
+    final file = _verifiedFile;
+    if (controller != null) {
+      unawaited(controller.dispose().whenComplete(() async {
+        await file?.dispose();
+      }));
+    } else {
+      unawaited(file?.dispose());
+    }
     super.dispose();
   }
 
@@ -114,10 +145,11 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
           Positioned.fill(
             child: IgnorePointer(
               child: _failure != null
-                  ? Center(child: DecoratedBox(
+                  ? Center(
+                      child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: const Color(0xdd24152b),
-                        borderRadius: BorderRadius.circular(14)),
+                          color: const Color(0xdd24152b),
+                          borderRadius: BorderRadius.circular(14)),
                       child: Padding(
                         padding: const EdgeInsets.all(18),
                         child: Text(
@@ -129,13 +161,13 @@ class _HallOfFameVapOverlayState extends State<HallOfFameVapOverlay> {
                       ),
                     ))
                   : _ready
-                  ? SizedBox.expand(child: VapPlayer(_controller!))
-                  : const Center(
-                      child: Text(
-                        'Loading gift animation…',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
+                      ? SizedBox.expand(child: VapPlayer(_controller!))
+                      : const Center(
+                          child: Text(
+                            'Loading gift animation…',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
             ),
           ),
           Positioned(

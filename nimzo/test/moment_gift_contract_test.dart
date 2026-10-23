@@ -16,6 +16,7 @@ void main() {
         'test-key',
         authOptions: const AuthClientOptions(autoRefreshToken: false),
         httpClient: MockClient((r) async {
+          if (r.method=='GET' && r.url.path.endsWith('/gifts')) return http.Response('[{"id":"gift","requires_approved_media":false}]',200,request:r,headers:{'content-type':'application/json'});
           calls++;
           expect(r.url.path, '/rest/v1/rpc/send_moment_gift');
           expect(jsonDecode(r.body), {

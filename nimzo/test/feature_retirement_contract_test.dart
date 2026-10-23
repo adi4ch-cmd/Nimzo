@@ -48,7 +48,8 @@ void main() {
     expect(store, isNot(contains("'Medals'")));
     expect(store, isNot(contains('nimzo_store_buy')));
     expect(gifts, isNot(contains('NewGiftPreviewCollection')));
-    expect(gifts, contains("'Cars'"));
+    expect(gifts, contains('gift.category'));
+    expect(gifts, contains('giftCatalogProvider'));
   });
 
   test('SQL disables all but Sports Car and removes medal entitlements '

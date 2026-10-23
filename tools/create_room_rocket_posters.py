@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 MEDIA = ROOT / "nimzo/assets/room_rocket"
@@ -68,16 +68,14 @@ def create_poster(stage: int) -> Path:
     rocket = rocket.crop(bounds)
     rocket.thumbnail((410, 430), Image.Resampling.LANCZOS)
 
-    canvas = Image.new("RGBA", (480, 480), "#0b1930")
-    glow = Image.new("RGBA", (480, 480), (0, 0, 0, 0))
-    pen = ImageDraw.Draw(glow)
-    pen.ellipse((32, 62, 448, 448), fill=(39, 102, 146, 65))
-    canvas = Image.alpha_composite(canvas, glow.filter(ImageFilter.GaussianBlur(25)))
+    # Preserve the original VAP alpha. An opaque background here becomes a
+    # conspicuous rectangle on light room sheets and hides the real silhouette.
+    canvas = Image.new("RGBA", (480, 480), (0, 0, 0, 0))
     canvas.alpha_composite(
         rocket, ((480 - rocket.width) // 2, (480 - rocket.height) // 2)
     )
     result = OUTPUT / f"rocket_stage_{stage}.png"
-    canvas.convert("RGB").save(result, optimize=True)
+    canvas.save(result, optimize=True)
     if result.stat().st_size < 20_000:
         raise ValueError(f"Rocket thumbnail {stage} suspiciously small")
     print(f"Rocket stage {stage}: original fly clip composited: {result.stat().st_size} bytes")

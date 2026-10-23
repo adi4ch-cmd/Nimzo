@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/features/premium/membership_identity.dart';
 import 'package:nimzo/features/premium/membership_status.dart';
+import 'package:nimzo/features/premium/membership_catalog.dart';
 
 void main() {
   testWidgets(
@@ -13,6 +14,8 @@ void main() {
       await tester.pumpWidget(ProviderScope(
         key: ValueKey(tier),
         overrides: [
+          membershipPresentationsProvider.overrideWith((_) async => []),
+          membershipBundledPresentationsProvider.overrideWith((_) async => []),
           effectiveMembershipProvider('member').overrideWith((_) async =>
               MembershipStatus.fromJson({'vip_level': tier, 'svip_level': 0}))
         ],
@@ -29,12 +32,15 @@ void main() {
       (tester) async {
     await tester.pumpWidget(ProviderScope(
         overrides: [
+          membershipPresentationsProvider.overrideWith((_) async => []),
+          membershipBundledPresentationsProvider.overrideWith((_) async => []),
           currentUserIdProvider.overrideWithValue('member'),
           effectiveMembershipProvider('member').overrideWith((_) async =>
               MembershipStatus.fromJson({'vip_level': 0, 'svip_level': 10})),
         ],
         child: const MaterialApp(
             home: Scaffold(body: VerifiedOwnMembershipEntrance()))));
+    await tester.pump();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
     final opacity = tester.widget<Opacity>(find.byType(Opacity).last);

@@ -5,10 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'game_catalog.dart';
+import '../../core/storage/pending_confirmation_store.dart';
 
 class GameRepository {
   final SupabaseClient db;
-  GameRepository(this.db);
+  final String? expectedUserId;
+  GameRepository(this.db, {this.expectedUserId});
   Future<Map<String, dynamic>> play({
     required String? roomId,
     required String game,
@@ -22,14 +24,31 @@ class GameRepository {
         bet > 500000 ||
         (key.trim().isEmpty || key.length > 200))
       throw StateError('Invalid game request');
+    final account = expectedUserId ?? db.auth.currentUser?.id;
+    if (account == null) throw StateError('Sign in before submitting a round');
+    final receipt = Map<String, dynamic>.from(await db.rpc(
+      'my_game_receipt',
+      params: {'p_room': roomId, 'p_game': game, 'p_bet': bet, 'p_key': key},
+    ));
+    if (receipt['status'] != 'missing') {
+      if (receipt['duplicate'] != true ||
+          !{'won', 'lost'}.contains(receipt['status']) ||
+          receipt['bet_id'] is! String ||
+          receipt['payout'] is! int ||
+          receipt['payout'] < 0) {
+        throw StateError('Game receipt could not be verified');
+      }
+      return receipt;
+    }
     return Map<String, dynamic>.from(
       await db.rpc(
-        'play_game',
+        'play_game_checked',
         params: {
           'p_room': roomId,
           'p_game_slug': game,
           'p_bet_amount': bet,
           'p_client_key': key,
+          'p_expected_user': account,
         },
       ),
     );
@@ -58,6 +77,9 @@ class GameRetrySession {
   int? get pendingBet => _request?.bet;
   bool _busy = false;
   bool _restored = false;
+  int? _attempt;
+  String get _encoded =>
+      jsonEncode({'bet': _request!.bet, 'key': _request!.key});
 
   Future<void> restore() async {
     if (_restored) return;
@@ -83,19 +105,14 @@ class GameRetrySession {
 
   Future<void> _save() async {
     if (scope == null) return;
-    final prefs = await SharedPreferences.getInstance();
-    final request = _request!;
-    if (!await prefs.setString(scope!.storageKey,
-        jsonEncode({'bet': request.bet, 'key': request.key}))) {
-      throw StateError('Round must be saved before spending coins');
-    }
+    _attempt =
+        await PendingConfirmationStore.prepare(scope!.storageKey, _encoded);
   }
 
   Future<void> _clear() async {
     if (scope != null) {
-      final prefs = await SharedPreferences.getInstance();
-      if (!await prefs.remove(scope!.storageKey))
-        throw StateError('Round receipt could not be saved');
+      await PendingConfirmationStore.complete(
+          scope!.storageKey, _encoded, _attempt!);
     }
     _request = null;
   }

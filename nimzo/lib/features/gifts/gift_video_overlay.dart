@@ -1,3 +1,5 @@
+import '../../core/services/approved_media_bytes.dart';
+import '../../core/services/verified_media_file.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -17,6 +19,7 @@ class GiftVideoOverlay extends StatefulWidget {
     required this.giftName,
     required this.onFinished,
     this.muted = false,
+    this.publication,
   });
 
   final String source;
@@ -25,6 +28,7 @@ class GiftVideoOverlay extends StatefulWidget {
   final String giftName;
   final VoidCallback onFinished;
   final bool muted;
+  final ApprovedMediaPublication? publication;
 
   @override
   State<GiftVideoOverlay> createState() => _GiftVideoOverlayState();
@@ -32,6 +36,7 @@ class GiftVideoOverlay extends StatefulWidget {
 
 class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
   VideoPlayerController? _controller;
+  VerifiedMediaFile? _verifiedFile;
   bool _finished = false;
   String? _error;
   Timer? _watchdog;
@@ -57,15 +62,34 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
       return;
     }
     if (!mounted || _finished) return;
-    final controller = source.startsWith('assets/')
-        ? VideoPlayerController.asset(
-            source,
-            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-          )
-        : VideoPlayerController.networkUrl(
-            uri!,
-            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-          );
+    if (!source.startsWith('assets/') && widget.publication != null) {
+      try {
+        final verified =
+            await VerifiedMediaFile.create(source, widget.publication!);
+        if (!mounted || _finished) {
+          await verified.dispose();
+          return;
+        }
+        _verifiedFile = verified;
+      } catch (_) {
+        if (mounted && !_finished)
+          setState(() => _error = 'Gift video could not be verified');
+        _finish();
+        return;
+      }
+    }
+    final controller = _verifiedFile != null
+        ? VideoPlayerController.file(_verifiedFile!.file,
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
+        : source.startsWith('assets/')
+            ? VideoPlayerController.asset(
+                source,
+                videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+              )
+            : VideoPlayerController.networkUrl(
+                uri!,
+                videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+              );
     _controller = controller;
     controller.addListener(_onPlaybackChanged);
     try {
@@ -141,7 +165,14 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
     _controller?.removeListener(_onPlaybackChanged);
     final controller = _controller;
     _controller = null;
-    if (controller != null) unawaited(controller.dispose());
+    final file = _verifiedFile;
+    if (controller != null) {
+      unawaited(controller.dispose().whenComplete(() async {
+        await file?.dispose();
+      }));
+    } else {
+      unawaited(file?.dispose());
+    }
     super.dispose();
   }
 
@@ -157,7 +188,8 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
     // A portrait MP4 is opaque video, not a transparent flying effect.
     // Keep the complete original frame but avoid covering an entire live room,
     // its ten mic seats, chat composer, and interaction controls.
-    final maxVideoHeight = size.height * (size.height >= size.width ? .48 : .58);
+    final maxVideoHeight =
+        size.height * (size.height >= size.width ? .48 : .58);
     final maxVideoWidth = size.width * .78;
     final videoHeight = math.min(maxVideoHeight, maxVideoWidth / aspect);
     final videoWidth = videoHeight * aspect;
@@ -186,7 +218,8 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFCF9F45).withValues(alpha: .28),
+                              color: const Color(0xFFCF9F45)
+                                  .withValues(alpha: .28),
                               blurRadius: 25,
                               spreadRadius: 2,
                             ),
@@ -223,7 +256,9 @@ class _GiftVideoOverlayState extends State<GiftVideoOverlay> {
                         children: [
                           _control(
                             icon: _muted ? Icons.volume_off : Icons.volume_up,
-                            tooltip: _muted ? 'Enable gift sound' : 'Mute gift sound',
+                            tooltip: _muted
+                                ? 'Enable gift sound'
+                                : 'Mute gift sound',
                             onPressed: _finished
                                 ? null
                                 : () {

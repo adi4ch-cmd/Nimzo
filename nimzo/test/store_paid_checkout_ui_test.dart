@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -9,14 +10,39 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/features/store/premium_cosmetics.dart';
 import 'package:nimzo/features/store/store_live_catalog.dart';
+import 'package:nimzo/features/store/store_purchase_repository.dart';
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   testWidgets('Paid Store Buy button confirms actual server debit',
       (tester) async {
     var requests = 0;
     final db = (await tester.runAsync(() async =>
         SupabaseClient('https://example.supabase.co', 'test',
             httpClient: MockClient((request) async {
+          if (request.url.path.endsWith('/store_purchase_receipt')) {
+            return http.Response('null', 200,
+                request: request,
+                headers: {'content-type': 'application/json'});
+          }
+          if (request.url.path.endsWith('/nimzo_cosmetic_media')) {
+            return http.Response(
+                jsonEncode([
+                  {
+                    'asset_url': 'https://cdn.example.com/${'a' * 64}.svga',
+                    'media_kind': 'svga',
+                    'sha256': 'a' * 64,
+                    'byte_size': 8,
+                    'mime_type': 'application/x-svga',
+                    'rights_reference': 'authorized-source',
+                    'verified_at': '2026-10-21T00:00:00Z',
+                    'device_verified_at': '2026-10-21T00:00:00Z'
+                  }
+                ]),
+                200,
+                request: request,
+                headers: {'content-type': 'application/json'});
+          }
           requests++;
           expect(request.url.path, endsWith('/rpc/nimzo_store_purchase'));
           final payload = jsonDecode(request.body) as Map<String, dynamic>;
@@ -35,6 +61,8 @@ void main() {
         }), authOptions: const AuthClientOptions(autoRefreshToken: false))))!;
     addTearDown(() => tester.runAsync(db.dispose));
     await tester.pumpWidget(ProviderScope(overrides: [
+      nimzoStorePurchaseRepositoryProvider.overrideWithValue(
+          NimzoStorePurchaseRepository(db, verifyBytes: (_, __) async {})),
       sessionSupabaseProvider
           .overrideWithValue((client: db, userId: 'test-user')),
       nimzoStoreProvider.overrideWith((_) async => NimzoStoreSnapshot(
