@@ -360,7 +360,7 @@ def main() -> None:
     out = Path(args.output_dir).expanduser().resolve()
     out.mkdir(parents=True, exist_ok=True)
     pubspec = (app / "pubspec.yaml").read_text()
-    match = re.search(r"(?m)^version:\\s*(\\d+\\.\\d+\\.\\d+)\\+\\d+\\s*$", pubspec)
+    match = re.search(r"(?m)^version:\s*(\d+\.\d+\.\d+)\+\d+\s*$", pubspec)
     if match is None:
         raise RuntimeError("Cannot determine NIMZO app version from pubspec.yaml")
     target = out / f"NIMZO_{match.group(1)}_VIVOX528_ARM64_QA_{commit[:10]}.apk"
