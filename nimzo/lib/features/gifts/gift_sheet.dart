@@ -530,10 +530,12 @@ class _State extends ConsumerState<GiftSheet> {
       // starts only after the server confirms debit and gifting. Room gifts
       // are animated for all listeners by VerifiedGiftBroadcast instead.
       if (mounted && widget.roomId == null) {
-        String? personalVideo;
-        if (privateAnimalVapGiftIds.contains(g.id)) {
+        GiftPlaybackMedia? personalMedia;
+        if (g.requiresApprovedMedia || privateAnimalVapGiftIds.contains(g.id)) {
           try {
-            personalVideo = await r.approvedAnimationUrl(g.id);
+            personalMedia = await r
+                .approvedAnimationMedia(g.id)
+                .timeout(const Duration(seconds: 12));
           } catch (_) {}
         }
         if (!mounted || ref.read(currentUserIdProvider) != me) return;
@@ -546,7 +548,8 @@ class _State extends ConsumerState<GiftSheet> {
           thumbnailPublication: g.thumbnailPublication,
           requiresThumbnailPublication:
               g.requiresApprovedMedia || g.requiresThumbnailPublication,
-          videoUrl: personalVideo,
+          media: personalMedia,
+          requiresAnimation: g.requiresApprovedMedia,
           recipientName:
               ref.read(profileProvider(receiverId)).valueOrNull?.displayName ??
                   ref.read(profileProvider(receiverId)).valueOrNull?.username,

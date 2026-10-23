@@ -231,6 +231,22 @@ jobs:
 
       - name: Verify exact v3 compiled media bytes
         run: python3 tools/verify_v3_apk_assets.py nimzo/build/app/outputs/flutter-apk/app-release.apk
+      - name: Verify new Drive gift and Store originals in compiled APK
+        run: |
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          from zipfile import ZipFile
+          root=Path('nimzo')
+          manifest=json.loads((root/'assets/drive_catalog/manifest.json').read_text())
+          with ZipFile('nimzo/build/app/outputs/flutter-apk/app-release.apk') as z:
+              for item in manifest['items']:
+                  for field,hash_field in [('asset','sha256'),('thumbnail','thumbnail_sha256')]:
+                      data=z.read('assets/flutter_assets/'+item[field])
+                      assert data==(root/item[field]).read_bytes(),item['id']
+                      assert hashlib.sha256(data).hexdigest()==item[hash_field],item['id']
+          print('PASS: exact original bytes for9 Drive animations and9 matching thumbnails')
+          PY
       - name: Verify compiled shared_preferences native startup ABI
         run: |
           python3 tools/test_shared_preferences_abi_policy.py
@@ -280,7 +296,7 @@ jobs:
       - name: Prepare installable APKs and checksums
         run: |
           mkdir -p premium-test-apk
-          cp nimzo/build/app/outputs/flutter-apk/app-release.apk premium-test-apk/NIMZO_1.0.39_Universal_NO_VIVOX_TEST.apk
+          cp nimzo/build/app/outputs/flutter-apk/app-release.apk premium-test-apk/NIMZO_1.0.40_Universal_NO_VIVOX_TEST.apk
           printf '%s\n' "$GITHUB_SHA" > premium-test-apk/SOURCE_SHA.txt
           cp release/acceptance.json premium-test-apk/ACCEPTANCE.json
           cp android-launch-diagnostics/result.txt premium-test-apk/STARTUP_TEST.txt
@@ -289,7 +305,7 @@ jobs:
       - name: Upload verified release-mode APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: NIMZO-PREMIUM-STORE-1-0-39-NO-VIVOX-TEST
+          name: NIMZO-PREMIUM-STORE-1-0-40-NO-VIVOX-TEST
           path: premium-test-apk/
           if-no-files-found: error
           retention-days: 14
@@ -297,11 +313,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "nimzo-v3-dynamic-1.0.39-${GITHUB_RUN_ID}" \
+          gh release create "nimzo-v3-dynamic-1.0.40-${GITHUB_RUN_ID}" \
             premium-test-apk/*.apk premium-test-apk/SHA256SUMS.txt premium-test-apk/SOURCE_SHA.txt premium-test-apk/README.txt premium-test-apk/ACCEPTANCE.json premium-test-apk/STARTUP_TEST.txt \
             --target "$GITHUB_SHA" \
-            --title "NIMZO 1.0.39 Integration Test - Voice Disabled" \
-            --notes "Owner-requested Android integration TEST build. Dynamic content source/backend acceptance and Android installation/startup checked. Vivox deferred by owner. Complete 10 VIP + 10 SVIP image sets, cycle-pinned Rocket configuration, verified media, persistent purchase recovery, Store expiry and dynamic presentation. Development signing; authenticated device purchases, native media/audio and full original-task acceptance remain unverified. No automatic update manifest is published." \
+            --title "NIMZO 1.0.40 Integration Test - Voice Disabled" \
+            --notes "Owner-requested Android integration TEST build. Dynamic content source/backend acceptance and Android installation/startup checked. Vivox deferred by owner. Includes2 new live Drive gifts and7 live Store items, corrected ID plate fitting, personal dynamic gift playback, funded room tools and durable transaction recovery. Android35 renderer checks passed for all9 imported animations. Development signing; authenticated device purchases, native media/audio and full original-task acceptance remain unverified. No automatic update manifest is published." \
             --prerelease
       - name: Upload launch diagnostics
         if: always()

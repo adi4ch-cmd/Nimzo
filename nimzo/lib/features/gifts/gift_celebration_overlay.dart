@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'gift_artwork.dart';
 import 'nimzo_gift_control_art.dart';
 import 'gift_svga_overlay.dart';
+import 'remote_gift_svga_overlay.dart';
+import 'gift_repository.dart';
 import 'gift_video_overlay.dart';
 import '../../core/utils/formatters.dart';
 
@@ -317,9 +319,16 @@ void showSettledPersonalGiftCelebration(
   bool requiresThumbnailPublication = false,
   String? recipientName,
   String? videoUrl,
+  GiftPlaybackMedia? media,
+  bool requiresAnimation = false,
 }) {
   final protectedGift = privateAnimalGiftIdForName(giftName) != null;
-  if (protectedGift && videoUrl == null) return;
+  final source = media?.url ?? videoUrl;
+  final originalSvga = freeGiftAnimationForName(giftName);
+  if (protectedGift && source == null) return;
+  if (requiresAnimation && source == null && originalSvga == null) return;
+  if (media != null && !const {'svga', 'vap', 'mp4'}.contains(media.kind))
+    return;
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return;
   late OverlayEntry entry;
@@ -335,46 +344,63 @@ void showSettledPersonalGiftCelebration(
   final recipient = verifiedRecipient != null && verifiedRecipient.isNotEmpty
       ? verifiedRecipient
       : 'a member';
-  final originalSvga = freeGiftAnimationForName(giftName);
-  entry = OverlayEntry(
-    builder: (_) => protectedGift && videoUrl != null
-        ? HallOfFameVapOverlay(
-            source: videoUrl,
-            sender: 'You',
-            recipient: recipient,
-            giftName: giftName,
-            quantity: quantity,
-            onFinished: dismiss,
-          )
-        : videoUrl != null
-            ? GiftVideoOverlay(
-                source: videoUrl,
-                sender: 'You',
-                recipient: recipient,
-                giftName: '$giftName × $quantity',
-                muted: true,
-                onFinished: dismiss,
-              )
-            : originalSvga != null
-                ? FreeGiftSvgaOverlay(
-                    source: originalSvga,
-                    giftName: giftName,
-                    sender: 'You',
-                    recipient: recipient,
-                    quantity: quantity,
-                    onFinished: dismiss,
-                  )
-                : NimzoGiftCelebration(
-                    giftName: giftName,
-                    sender: 'You',
-                    recipient: recipient,
-                    quantity: quantity,
-                    unitPrice: unitPrice,
-                    assetPath: assetPath,
-                    thumbnailPublication: thumbnailPublication,
-                    requiresThumbnailPublication: requiresThumbnailPublication,
-                    onFinished: dismiss,
-                  ),
-  );
+  entry = OverlayEntry(builder: (_) {
+    if (source != null && media?.kind == 'svga') {
+      return RemoteGiftSvgaOverlay(
+        source: source,
+        publication: media!.publication,
+        soundEnabled: media.soundEnabled,
+        giftName: giftName,
+        sender: 'You',
+        recipient: recipient,
+        quantity: quantity,
+        onFinished: dismiss,
+      );
+    }
+    if (source != null && (protectedGift || media?.kind == 'vap')) {
+      return HallOfFameVapOverlay(
+        source: source,
+        publication: media?.publication,
+        muted: media?.publication != null && !(media?.soundEnabled ?? false),
+        sender: 'You',
+        recipient: recipient,
+        giftName: giftName,
+        quantity: quantity,
+        onFinished: dismiss,
+      );
+    }
+    if (source != null) {
+      return GiftVideoOverlay(
+        source: source,
+        publication: media?.publication,
+        sender: 'You',
+        recipient: recipient,
+        giftName: '$giftName × $quantity',
+        muted: !(media?.soundEnabled ?? false),
+        onFinished: dismiss,
+      );
+    }
+    if (originalSvga != null) {
+      return FreeGiftSvgaOverlay(
+        source: originalSvga,
+        giftName: giftName,
+        sender: 'You',
+        recipient: recipient,
+        quantity: quantity,
+        onFinished: dismiss,
+      );
+    }
+    return NimzoGiftCelebration(
+      giftName: giftName,
+      sender: 'You',
+      recipient: recipient,
+      quantity: quantity,
+      unitPrice: unitPrice,
+      assetPath: assetPath,
+      thumbnailPublication: thumbnailPublication,
+      requiresThumbnailPublication: requiresThumbnailPublication,
+      onFinished: dismiss,
+    );
+  });
   overlay.insert(entry);
 }
