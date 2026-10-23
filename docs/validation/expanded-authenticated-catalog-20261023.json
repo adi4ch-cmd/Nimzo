@@ -1,0 +1,11 @@
+{
+  "project_id": "kvqvlpozqokwarovwmwv",
+  "transport": "Live database read-only assertions after SET LOCAL ROLE authenticated with a fictional UID; no user session or financial writes",
+  "verified_current_user": "authenticated",
+  "active_gifts_visible": 27,
+  "active_store_visible": 73,
+  "new_approved_store_media_visible": 28,
+  "rls_assertions_passed": true,
+  "authenticated_http_checkout_tested": false,
+  "note": "Public gift metadata can be read anonymously; Store and embedded media require authentication. Existing access restrictions were preserved."
+}
