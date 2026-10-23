@@ -1,5 +1,6 @@
 import '../../../core/widgets/published_image.dart';
 import '../../premium/membership_identity.dart';
+import '../../premium/membership_pack_runtime.dart';
 import '../../store/store_visual_equipment.dart';
 import '../../store/room_cosmetic_entrance.dart';
 // ignore_for_file: prefer_interpolation_to_compose_strings
@@ -886,7 +887,10 @@ class _State extends ConsumerState<RoomScreen> {
                                                                               2,
                                                                         ),
                                                                       ),
-                                                                      child: EquippedAvatar(
+                                                                      child: MembershipPackAvatar(
+                                                                          userId: s.userId,
+                                                                          size: 48,
+                                                                          child: EquippedAvatar(
                                                                           userId: s.userId,
                                                                           size: 48,
                                                                           speaking: speaking.contains(s.userId),
@@ -908,13 +912,15 @@ class _State extends ConsumerState<RoomScreen> {
                                                                                     .getPublicUrl(
                                                                                       p!.avatarPath!,
                                                                                     ),
-                                                                          )),
+                                                                          ))),
                                                                     ),
                                                                   ],
                                                                 ),
                                                               const SizedBox(
                                                                   height: 3),
-                                                              EquippedIdentity(
+                                                              MembershipPackNameplate(
+                                                                  userId: s.userId,
+                                                                  child: EquippedIdentity(
                                                                   userId:
                                                                       s.userId ??
                                                                           '',
@@ -937,7 +943,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                                           alpha:
                                                                               .88),
                                                                     ),
-                                                                  )),
+                                                                  ))),
                                                               if (s.muted)
                                                                 Icon(
                                                                   LucideIcons
@@ -1013,7 +1019,9 @@ class _State extends ConsumerState<RoomScreen> {
                                             for (final msg in messages)
                                               Align(
                                                 alignment: Alignment.centerLeft,
-                                                child: EquippedCosmetic(
+                                                child: MembershipPackChatBubble(
+                                                    userId: msg.userId,
+                                                    child: EquippedCosmetic(
                                                     userId: msg.userId,
                                                     category: 'Chat Bubble',
                                                     fit: BoxFit.fill,
@@ -1111,7 +1119,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                                   ),
                                                                 ],
                                                               ))),
-                                                    )),
+                                                    ))),
                                               ),
                                           ],
                                         ),
