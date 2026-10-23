@@ -15,6 +15,19 @@ A screenshot of "SVIP Supreme 1–9" was provided as a design **reference**, not
 - The local `WillChillMembershipShowcase` has icon placeholders and a generic fallback for higher tiers; it is not evidence of complete sets.
 - The Voku manifest explicitly marks its contents unapproved. Do not activate it unless its conditions are satisfied.
 
+## HARD RULE: EXACT CATEGORY + EXACT LEVEL (2026-10-23 correction)
+
+The user's final requirement overrides previous cross-level mixing:
+
+- **VIP 6 can use ONLY VIP 6 originals**; **SVIP 6 can use ONLY SVIP 6 originals**.
+- It is fine to combine a VIP 6 frame from APK A, a VIP 6 entrance from APK B, and a VIP 6 card from APK C. The original source app need not match.
+- It is **not** fine to put VIP 2 art into SVIP 5 or use SVIP 4 art as SVIP 6 and relabel it.
+- Original art must have a documented `sourceKind` and `sourceTier` matching the target. The Dart `MembershipPackArtwork.matching` constructor throws on mismatches even in release builds.
+- If matching-kind-and-tier originals are not available, show **Not provided** and use a clearly NIMZO-native tier design. Never silently fill gaps from different levels.
+- A static `entry_level_ic.webp` is an entry ICON, not evidence of an animated entrance. Animation needs its own asset and playback QA.
+- The 20 membership hero/badge/card sets from YoHo/Mizah/Falla already align to the same kind and number; their source APKs may differ without breaking this rule. Unapproved other packs must remain unapproved.
+- Server membership and related purchases stay authoritative and unchanged.
+
 ## Per-tier acceptance checklist
 
 For **every** tier (VIP *n* and SVIP *n*) verify the following distinct assets and behaviors:
