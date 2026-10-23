@@ -1,0 +1,339 @@
+name: NIMZO Falla 683 Levels 1.0.43 TEST APK (Voice Disabled)
+on:
+  push:
+    branches:
+      - feature/falla-levels-v142-20261024
+    paths:
+      - '.github/workflows/nimzo-falla-levels-test-apk.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  android-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify NIMZO FEATURES lock before building
+        run: python3 tools/verify_nimzo_feature_lock.py
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Verify native auth key policy against SDK PKCE key
+        run: python3 tools/test_native_auth_storage_key_policy.py
+
+      - name: Flutter stable
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.7"
+          channel: stable
+          cache: true
+
+      - name: Generate Android project
+        working-directory: nimzo
+        run: |
+          flutter create . --no-pub --platforms=android --project-name nimzo
+          git restore --source=HEAD -- pubspec.lock
+
+      - name: Configure API 36 compatible Android toolchain
+        working-directory: nimzo
+        run: python3 ../tools/configure_android_gradle.py android
+
+      - name: Prepare minimal Android activity without Vivox SDK
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p android/app/src/main/java/io/nimzo/app android/app/src/main/res/drawable
+          cp native/vivox/android/nimzo_launcher.xml android/app/src/main/res/drawable/nimzo_launcher.xml
+          cp assets/brand/nimzo_purple_gold.png android/app/src/main/res/drawable/nimzo_brand_icon.png
+          cp native/vivox/android/NimzoUpdate.java android/app/src/main/java/io/nimzo/app/NimzoUpdate.java
+          cp native/voice_disabled/android/MainActivity.java android/app/src/main/java/io/nimzo/app/MainActivity.java
+
+      - name: Configure Android ID permissions and OAuth callback
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          gradle = Path("android/app/build.gradle.kts")
+          if not gradle.exists():
+              gradle = Path("android/app/build.gradle")
+          s = gradle.read_text()
+
+          if gradle.suffix == ".kts":
+              s = re.sub(r'namespace\s*=\s*"[^"]+"', 'namespace = "io.nimzo.app"', s, count=1)
+              s = re.sub(r'applicationId\s*=\s*"[^"]+"', 'applicationId = "io.nimzo.app"', s, count=1)
+          gradle.write_text(s)
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          m = manifest.read_text()
+          m = re.sub(r'android:label="[^"]+"', 'android:label="Nimzo"', m, count=1)
+          m = re.sub(r'android:icon="[^"]+"', 'android:icon="@drawable/nimzo_launcher"', m, count=1)
+          if "xmlns:tools=" not in m:
+              m = m.replace("<manifest", '<manifest xmlns:tools="http://schemas.android.com/tools"', 1)
+
+          for perm in [
+              "android.permission.REQUEST_INSTALL_PACKAGES",
+              "android.permission.INTERNET",
+              "android.permission.RECORD_AUDIO",
+              "android.permission.MODIFY_AUDIO_SETTINGS",
+              "android.permission.BLUETOOTH",
+              "android.permission.BLUETOOTH_CONNECT",
+              "android.permission.BLUETOOTH_SCAN",
+          ]:
+              tag = f'<uses-permission android:name="{perm}" />'
+              if perm not in m:
+                  m = m.replace("<application", tag + "\n    <application", 1)
+
+          m = re.sub(
+              r'<meta-data\s+android:name="flutter_deeplinking_enabled"\s+android:value="(?:true|false)"\s*/>',
+              '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />',
+              m,
+          )
+
+          activity = re.search(
+              r'<activity\b[^>]*android:name="[^"]*MainActivity[^"]*"[^>]*>(.*?)</activity>',
+              m,
+              re.DOTALL,
+          )
+          if not activity:
+              raise SystemExit("MainActivity block not found")
+
+          block = activity.group(0)
+          opening = re.match(r'<activity\b[^>]*>', block).group(0)
+          opening = re.sub(r'\sandroid:exported="[^"]*"', '', opening)
+          opening = re.sub(r'\sandroid:launchMode="[^"]*"', '', opening)
+          opening = opening[:-1] + ' android:exported="true" android:launchMode="singleTask">'
+          body = block[len(re.match(r'<activity\b[^>]*>', block).group(0)):]
+          if 'android:scheme="io.nimzo.app"' not in body:
+              body = body.replace("</activity>", '''<intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <data android:scheme="io.nimzo.app" android:host="login-callback" />
+          </intent-filter>
+          </activity>''')
+          if 'android:name="flutter_deeplinking_enabled"' not in body:
+              body = body.replace("</activity>", '<meta-data android:name="flutter_deeplinking_enabled" android:value="false" />\n</activity>')
+          m = m[:activity.start()] + opening + body + m[activity.end():]
+
+          if 'tools:replace="android:name"' not in m:
+              m = m.replace("<application", '<application tools:replace="android:name"', 1)
+
+          if 'android:name="flutter_deeplinking_enabled"' not in m:
+              m = m.replace(
+                  "<application",
+                  '<application',
+                  1,
+              )
+              app_end = m.find(">", m.find("<application"))
+              m = m[:app_end+1] + '\n        <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />' + m[app_end+1:]
+
+          provider = '''<provider android:name="androidx.core.content.FileProvider" android:authorities="io.nimzo.app.apk_updates" android:exported="false" android:grantUriPermissions="true"><meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/nimzo_apk_paths" /></provider>'''
+          m = m.replace("</application>", provider + "\n</application>")
+          paths = Path("android/app/src/main/res/xml/nimzo_apk_paths.xml")
+          paths.parent.mkdir(parents=True, exist_ok=True)
+          paths.write_text('<paths xmlns:android="http://schemas.android.com/apk/res/android"><cache-path name="nimzo_updates" path="nimzo_updates/" /></paths>')
+          manifest.write_text(m)
+
+          # Fail fast: verify the exact OAuth contract that Supabase expects.
+          final = manifest.read_text()
+          assert 'application tools:replace="android:name"' in final
+          assert 'android:scheme="io.nimzo.app" android:host="login-callback"' in final
+          assert 'android:exported="true"' in final
+          assert 'android:launchMode="singleTask"' in final
+          activity_final = re.search(r'<activity\b[^>]*>.*?</activity>', final, re.DOTALL).group(0)
+          assert 'android:name="flutter_deeplinking_enabled" android:value="false"' in activity_final
+          print("OAuth manifest verification: PASS")
+          PY
+
+      - name: Preserve original Vivox SDK integration files untouched
+        run: |
+          test -s nimzo/native/vivox/android/MainActivity.java
+          test -s nimzo/native/vivox/android/NimzoVivox.java
+          test -s nimzo/native/vivox/android/vivox_bridge.cpp
+          test -s nimzo/native/vivox/android/CMakeLists.txt
+          echo "Vivox source retained, SDK deferred for this test APK"
+
+      - name: Enable core library desugaring for Android notifications
+        working-directory: nimzo
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >> android/app/build.gradle.kts <<'GRADLE'
+          // flutter_local_notifications requires Java 8+ API desugaring.
+          android {
+              compileOptions {
+                  isCoreLibraryDesugaringEnabled = true
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+          }
+          dependencies {
+              coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+          }
+          GRADLE
+      - name: Protect native shared_preferences Kotlin coroutine ABI in release
+        working-directory: nimzo
+        run: |
+          set -euo pipefail
+          cp native/voice_disabled/android/sharedpreferences-r8-rules.pro android/app/sharedpreferences-r8-rules.pro
+          cat >> android/app/build.gradle.kts <<'GRADLE'
+          // R8 must preserve JNI-reflected Kotlin coroutine signatures.
+          android {
+              buildTypes {
+                  getByName("release") {
+                      proguardFiles("sharedpreferences-r8-rules.pro")
+                      // Temporary TEST build: disable R8 until all Flutter
+                      // JNI-reflected Kotlin classes survive release builds.
+                      // Vivox stays deferred; user data/signing stays untouched.
+                      isMinifyEnabled = false
+                      isShrinkResources = false
+                  }
+              }
+          }
+          GRADLE
+
+      - name: Flutter dependencies
+        working-directory: nimzo
+        run: |
+          rm -f test/widget_test.dart
+          flutter pub get --enforce-lockfile
+      - name: Check original 441 premium assets and SVIP 1-8
+        run: python3 tools/verify_willchill_premium.py
+
+      - name: Analyze Flutter code
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Test Store membership room profile gift startup and voice service
+        working-directory: nimzo
+        run: flutter test test/store_equipment_surfaces_test.dart test/store_actual_media_test.dart test/store_live_contract_test.dart test/store_full_preview_test.dart test/store_category_preview_ui_test.dart test/membership_layout_test.dart test/membership_retirement_test.dart test/willchill_membership_showcase_test.dart test/willchill_membership_badges_test.dart test/room_reconnect_test.dart test/issue15_room_walkthrough_test.dart test/verified_gift_broadcast_test.dart test/car_only_gift_contract_test.dart test/private_gift_readiness_test.dart test/profile_content_test.dart test/profile_gift_refresh_test.dart test/profile_membership_levels_test.dart test/startup_bootstrap_contract_test.dart test/voice/vivox_voice_service_test.dart
+      - name: Verify all 683 actual Falla badges and level math before build
+        working-directory: nimzo
+        run: |
+          set -euo pipefail
+          flutter test --reporter expanded test/profile_level_scale_test.dart test/verified_level_up_tracker_test.dart
+          python3 - <<'PY'
+          from pathlib import Path
+          for cat, maximum in [('wealth',270),('charm',270),('active',140)]:
+              for level in range(maximum+1):
+                  file=Path('assets/falla_levels')/cat/f'{level}.webp'
+                  assert file.is_file() and file.stat().st_size>40,file
+          print('SOURCE PASS: 683 original Falla level images present')
+          PY
+      - name: Build premium APK without Vivox
+        working-directory: nimzo
+        run: flutter build apk --release
+
+      - name: Verify compiled shared_preferences native startup ABI
+        run: |
+          python3 tools/test_shared_preferences_abi_policy.py
+          python3 tools/verify_shared_preferences_android_abi.py nimzo/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Verify every original WillChill asset in compiled APK
+        run: |
+          python3 tools/verify_willchill_apk_bundle.py nimzo/build/app/outputs/flutter-apk/app-release.apk
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          p='nimzo/build/app/outputs/flutter-apk/app-release.apk'
+          with ZipFile(p) as z:
+              assert z.testzip() is None, 'APK has invalid ZIP content'
+              names=z.namelist()
+              assert not any('libvivox_bridge.so' in n for n in names), 'Unexpected native Vivox bridge'
+              assert not any('libvivox-sdk.so' in n or 'libvivoxsdk.so' in n for n in names), 'Unexpected Vivox SDK'
+          print('SDK-free Android build, original premium assets: PASS')
+          PY
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import re
+          root=Path('nimzo')
+          registry=(root/'lib/features/store/premium_cosmetics.dart').read_text()
+          paths=set(re.findall(r"'(assets/premium_store/[^']+)'",registry))
+          with ZipFile('nimzo/build/app/outputs/flutter-apk/app-release.apk') as z:
+              for path in paths:
+                  assert z.read('assets/flutter_assets/'+path)==(root/path).read_bytes(),path
+          print('Verified pinned Store media in compiled APK:',len(paths))
+          PYCODE
+          ATOOL="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          "$ATOOL" verify --verbose nimzo/build/app/outputs/flutter-apk/app-release.apk
+      - name: Verify all 683 Falla badges are embedded byte-for-byte in APK
+        run: |
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          from pathlib import Path
+          p='nimzo/build/app/outputs/flutter-apk/app-release.apk'
+          with ZipFile(p) as apk:
+              for cat, top in [('wealth',270),('charm',270),('active',140)]:
+                  for level in range(top+1):
+                      rel=f'assets/falla_levels/{cat}/{level}.webp'
+                      inside='assets/flutter_assets/'+rel
+                      src=Path('nimzo')/rel
+                      assert apk.read(inside)==src.read_bytes(), f'APK missing or changed: {inside}'
+          print('APK PASS: all 683 exact Falla WEBP assets embedded')
+          PY
+      - name: Build and verify smaller ARM64 APK
+        working-directory: nimzo
+        run: |
+          flutter build apk --release --split-per-abi --target-platform android-arm64
+          ATOOL="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          "$ATOOL" verify --verbose build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+      - name: Enable KVM for Android launch smoke test
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install and launch release APK
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          target: default
+          disable-animations: true
+          script: python3 tools/verify_android_launch.py nimzo/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Prepare installable APKs and checksums
+        run: |
+          mkdir -p premium-test-apk
+          cp nimzo/build/app/outputs/flutter-apk/app-release.apk premium-test-apk/NIMZO_1.0.43_Universal_NO_VIVOX_TEST.apk
+          cp nimzo/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk premium-test-apk/NIMZO_1.0.43_ARM64_NO_VIVOX_TEST.apk
+          printf '%s\n' "$GITHUB_SHA" > premium-test-apk/SOURCE_SHA.txt
+          echo 'Android test build, development signing. Vivox voice disabled because the SDK release download is unavailable. 683 original Falla Wealth/Charm/Active levels included; XP still uses NIMZO's verified progression curve, not unverified Falla XP thresholds; server membership purchasing remains disabled.' > premium-test-apk/README.txt
+          (cd premium-test-apk && sha256sum *.apk > SHA256SUMS.txt)
+      - name: Upload verified release-mode APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NIMZO-FALLA-LEVELS-1-0-43-683-NO-VIVOX-TEST
+          path: premium-test-apk/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Publish direct APK download links
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "nimzo-premium-store-1.0.43-${GITHUB_RUN_ID}" \
+            premium-test-apk/*.apk premium-test-apk/SHA256SUMS.txt premium-test-apk/SOURCE_SHA.txt premium-test-apk/README.txt \
+            --target "$GITHUB_SHA" \
+            --title "NIMZO 1.0.43 Falla 683 Levels - TEST - Voice Disabled" \
+            --notes "Owner-requested Android TEST build with all 683 original Falla Wealth/Charm/Active level assets and verified progress display. Exact Falla XP formula was not available; the existing NIMZO XP formula was extended to 270/270/140. Vivox voice is disabled: its SDK release download returns 404. Source bridge retained. Package signatures, compiled assets and unauthenticated Android emulator startup checked. Development signing; no authenticated voice/purchase or physical-device validation. Membership purchasing remains disabled by the server." \
+            --prerelease
+      - name: Upload launch diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimzo-premium-no-vivox-launch-diagnostics
+          path: android-launch-diagnostics/
+          if-no-files-found: ignore
