@@ -58,7 +58,7 @@ class MembershipPackInventory {
     'Tier background',
     'Avatar frame',
     'ID nameplate',
-    'Entry visual (static)',
+    'Room entry effect / visual',
     'Chat bubble',
     'Mic effect / visual',
     'Profile decoration',
@@ -78,6 +78,7 @@ class MembershipPackInventory {
     final vipFull = vip && tier <= 5;
     final vipArt = vip && tier <= 7;
     final svipArt = !vip && tier <= 8;
+    final haflaSvip = !vip && tier <= 10;
     final suffix = tier == 1 ? '' : '_v$tier';
     // Orii source media is verified in expanded Drive catalog and names its
     // exact SVIP tier; only those four tiers get this animated mic asset.
@@ -118,18 +119,44 @@ class MembershipPackInventory {
     }
 
     return <MembershipPackArtwork>[
-      pick('Tier background',
-        vipArt ? '$root/vip/bg_vip${tier}_top_bg_res.webp'
-          : svipArt ? '$root/svip/bg_svip${tier}_frosted.webp' : null),
+      if (haflaSvip)
+        MembershipPackArtwork.matching(
+          title: 'Tier background',
+          targetKind: kind, targetTier: tier,
+          sourceKind: 'svip', sourceTier: tier,
+          path: 'assets/membership/hafla/svip$tier-tier-background.png',
+          source: 'Hafla SVIP$tier bg_top_svip$tier.png',
+        )
+      else
+        pick('Tier background',
+          vipArt ? '$root/vip/bg_vip${tier}_top_bg_res.webp' : null),
       pick('Avatar frame',
         vipFull ? '$root/vip/icon_vip${tier}_2.png' : null),
-      pick('ID nameplate',
-        vipArt ? '$root/vip/voiceroom_icon_vip_id_left$suffix.png' : null,
-        otherSide: vipArt
-          ? '$root/vip/voiceroom_icon_vip_id_right$suffix.png' : null),
-      pick('Entry visual (static)',
-        vipFull ? '$root/vip/icon_vip${tier}_3.png'
-          : svipArt ? '$root/svip/voiceroom_svip${tier}_entry_level_ic.webp'
+      if (haflaSvip)
+        MembershipPackArtwork.matching(
+          title: 'ID nameplate',
+          targetKind: kind, targetTier: tier,
+          sourceKind: 'svip', sourceTier: tier,
+          path: 'assets/membership/hafla/svip$tier-nameplate.png',
+          source: 'Hafla SVIP$tier icon_lv_svip$tier.png',
+        )
+      else
+        pick('ID nameplate',
+          vipArt ? '$root/vip/voiceroom_icon_vip_id_left$suffix.png' : null,
+          otherSide: vipArt
+            ? '$root/vip/voiceroom_icon_vip_id_right$suffix.png' : null),
+      if (vip && tier <= 6)
+        MembershipPackArtwork.matching(
+          title: 'Room entry effect / visual',
+          targetKind: kind, targetTier: tier,
+          sourceKind: 'vip', sourceTier: tier,
+          path: 'assets/membership/hafla/vip$tier-room-entry.svga',
+          source: 'Hafla VIP$tier entry_vip$tier.svga (animated)',
+          format: 'svga',
+        )
+      else
+        pick('Room entry effect / visual',
+          svipArt ? '$root/svip/voiceroom_svip${tier}_entry_level_ic.webp'
           : null),
       pick('Chat bubble',
         vipFull ? '$root/vip/icon_vip${tier}_4.png' : null),
@@ -153,6 +180,14 @@ class MembershipPackInventory {
           sourceKind: 'vip', sourceTier: tier,
           path: vipProfileCard[tier]!,
           source: 'Orii VIP $tier original profilecardbg',
+        )
+      else if (haflaSvip)
+        MembershipPackArtwork.matching(
+          title: 'Profile decoration',
+          targetKind: kind, targetTier: tier,
+          sourceKind: 'svip', sourceTier: tier,
+          path: 'assets/membership/hafla/svip$tier-medal.png',
+          source: 'Hafla SVIP$tier icon_medal_svip$tier.png',
         )
       else
         const MembershipPackArtwork.missing('Profile decoration'),
