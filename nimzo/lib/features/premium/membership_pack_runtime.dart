@@ -184,14 +184,13 @@ class MembershipPackAvatar extends StatelessWidget {
             ),
           ),
         if (theme.isSvip &&
-            MembershipPackInventory.forTier(theme.kind, theme.tier)[6].path
-                case final String medalAsset)
+            MembershipPackInventory.forTier(theme.kind, theme.tier)[6].path != null)
           Positioned(
             bottom: -9,
             right: -9,
             child: IgnorePointer(
               child: Image.asset(
-                medalAsset,
+                MembershipPackInventory.forTier(theme.kind, theme.tier)[6].path!,
                 width: 33,
                 height: 33,
                 fit: BoxFit.contain,
@@ -249,14 +248,13 @@ class MembershipPackNameplate extends StatelessWidget {
         style: const TextStyle(
           color: Color(0xff130e23), fontWeight: FontWeight.w800),
         child: theme.isSvip &&
-                MembershipPackInventory.forTier(theme.kind, theme.tier)[2].path
-                    case final String labelAsset
+                MembershipPackInventory.forTier(theme.kind, theme.tier)[2].path != null
             ? Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: 4,
                 children: [
                   Image.asset(
-                    labelAsset,
+                    MembershipPackInventory.forTier(theme.kind, theme.tier)[2].path!,
                     height: 19,
                     width: 62,
                     fit: BoxFit.contain,
