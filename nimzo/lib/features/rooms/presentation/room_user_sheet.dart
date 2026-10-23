@@ -156,15 +156,15 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
       child: SingleChildScrollView(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 390),
+            constraints: const BoxConstraints(maxWidth: 360),
             child: Container(
               key: const ValueKey('room-mini-profile-card'),
               margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
-              padding: const EdgeInsets.fromLTRB(18, 20, 18, 14),
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
               decoration: BoxDecoration(
-                color: const Color(0xfffcf8ff),
+                color: const Color(0xfffffbf4),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xffede4f5)),
+                border: Border.all(color: const Color(0xffdebe79), width: 1.2),
                 boxShadow: const [
                   BoxShadow(
                     color: Color(0x50000000),
@@ -189,7 +189,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                           ClipRRect(
                               borderRadius: BorderRadius.circular(16),
                               child: SizedBox(
-                                  height: 180,
+                                  height: 96,
                                   width: double.infinity,
                                   child: p.coverPath == null
                                       ? const DecoratedBox(
@@ -212,6 +212,10 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                           errorBuilder: (_, __, ___) =>
                                               const ColoredBox(
                                                   color: Color(0xffd4b9eb))))),
+                          Positioned.fill(
+                              child: IgnorePointer(
+                                  child: MembershipPackProfileDecoration(
+                                      userId: p.id))),
                           Positioned(
                               top: 0,
                               right: 0,
@@ -221,7 +225,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                   icon: const Icon(Icons.cancel_rounded,
                                       color: Colors.white))),
                         ]),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -317,8 +321,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             if (!self) ...[
