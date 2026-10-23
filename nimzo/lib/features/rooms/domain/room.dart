@@ -60,7 +60,7 @@ class Room {
 }
 
 class MicSeat {
-  static const count = 15;
+  static const count = 10;
   static const columns = 5;
   static const rows = count ~/ columns;
 
