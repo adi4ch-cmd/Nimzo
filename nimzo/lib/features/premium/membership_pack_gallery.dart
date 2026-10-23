@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'membership_catalog.dart';
 import 'membership_media_view.dart';
 import 'membership_pack_inventory.dart';
+import 'membership_pack_runtime.dart';
 
 /// Asset-level preview of a selected VIP/SVIP set.
 /// This is intentionally NOT a proof of ownership or of a working room effect.
@@ -64,6 +65,92 @@ class MembershipPackGallery extends StatelessWidget {
             style: TextStyle(color: Colors.white54, fontSize: 12)));
   }
 
+  Widget _nativeTile(String label, Widget child) => Container(
+    width: 148,
+    height: 116,
+    padding: const EdgeInsets.all(8),
+    decoration: BoxDecoration(
+      color: const Color(0xff1c2543),
+      border: Border.all(color: _gold.withValues(alpha: .34)),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Column(children: [
+      Expanded(child: Center(child: child)),
+      const SizedBox(height: 6),
+      Text(label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: _gold, fontSize: 11)),
+    ]),
+  );
+
+  Widget _nativePreview(MembershipPackTheme theme) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      const Text('NIMZO native live cosmetics',
+          style: TextStyle(
+            color: _gold, fontWeight: FontWeight.bold, fontSize: 16)),
+      const SizedBox(height: 5),
+      const Text(
+          'These are functional NIMZO-drawn styles. They are separate from original media files listed below and appear only with server-verified membership.',
+          style: TextStyle(color: Colors.white60, fontSize: 11)),
+      const SizedBox(height: 10),
+      Wrap(spacing: 9, runSpacing: 9, children: [
+        _nativeTile('Profile / mic frame',
+          Container(
+            width: 61, height: 61,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: theme.gradient(),
+              boxShadow: [
+                BoxShadow(color: theme.light.withValues(alpha: .4),
+                    blurRadius: 7),
+              ]),
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: const CircleAvatar(
+                backgroundColor: Color(0xff22243e),
+                child: Icon(Icons.person, color: Colors.white70)),
+            ),
+          )),
+        _nativeTile('ID nameplate',
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xff161b32),
+              border: Border.all(color: theme.light),
+              borderRadius: BorderRadius.circular(7),
+            ),
+            child: Text('NIMZO  ·  ${theme.label}',
+              style: const TextStyle(
+                color: Colors.white, fontSize: 11,
+                fontWeight: FontWeight.w800)),
+          )),
+        _nativeTile('Chat decoration',
+          Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              gradient: theme.gradient(),
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xff172034),
+                borderRadius: BorderRadius.circular(11)),
+              child: const Text('Welcome!',
+                style: TextStyle(color: Colors.white, fontSize: 12)),
+            ),
+          )),
+        _nativeTile('Room welcome animation',
+          SizedBox(
+            height: 76,
+            child: MembershipPackEntranceBanner(theme: theme),
+          )),
+      ]),
+      const SizedBox(height: 20),
+    ],
+  );
+
   Future<void> _expand(BuildContext context, _PackSlot slot) =>
       showDialog<void>(
         context: context,
@@ -121,6 +208,13 @@ class MembershipPackGallery extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white54, fontSize: 12)),
           const SizedBox(height: 18),
+          _nativePreview(MembershipPackTheme.forTier(
+              presentation.kind, presentation.tier)),
+          const Text('Original asset inventory',
+              style: TextStyle(
+                color: _gold, fontWeight: FontWeight.w800,
+                fontSize: 16)),
+          const SizedBox(height: 10),
           LayoutBuilder(builder: (context, layout) {
             final count = layout.maxWidth >= 600 ? 3 : 2;
             return GridView.builder(
