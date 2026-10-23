@@ -10,6 +10,26 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async => 0);
   });
+  test('SDK-deferred TEST build reports missing SDK, never mic denial', () async {
+    final voice = VivoxVoiceService();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      throw PlatformException(
+        code: 'VOICE_SDK_PENDING',
+        message: 'temporary voice-disabled Android entrypoint',
+      );
+    });
+    await expectLater(
+      voice.join('room', ''),
+      throwsA(isA<VoiceConnectionFailure>().having(
+        (error) => error.message.toString(),
+        'actual cause',
+        allOf(contains('Vivox SDK is not bundled'), isNot(contains('permission'))),
+      )),
+    );
+    await voice.dispose();
+  });
+
   test('microphone cannot transmit before audio connection', () async {
     final voice = VivoxVoiceService();
     await expectLater(voice.setMicEnabled(true), throwsStateError);
