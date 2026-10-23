@@ -22,7 +22,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 
-REPO_BRANCH = "integration/nimzo-v3-dynamic-20261021"
+REPO_BRANCH = "feature/falla-levels-v142-20261024"
 A = "{http://schemas.android.com/apk/res/android}"
 TOOLS = "{http://schemas.android.com/tools}"
 ET.register_namespace("android", A[1:-1])
@@ -83,6 +83,13 @@ def sdk_location(explicit: str | None, tmp: Path) -> tuple[Path, Path, Path, Pat
             p = Path(candidate)
             if p.exists() and p not in candidates:
                 candidates.append(p)
+        # The original 5.28.0 delivery often remains a Codespace-local ZIP,
+        # not an extracted SDK. Inspect the known filename before failing.
+        for folder in (Path("/workspaces/Nimzo"), Path("/workspaces/nimzo"),
+                       Path("/workspaces/nimzo-premium-qa"), Path.home()):
+            zip_path = folder / "com.custom.android.vivox.vivoxCoreAndroidSdk-5.28.0.zip"
+            if zip_path.is_file() and zip_path not in candidates:
+                candidates.append(zip_path)
 
     for candidate in candidates:
         folder = candidate
@@ -339,7 +346,11 @@ def main() -> None:
         "test/store_paid_purchase_test.dart",
         "test/verified_gift_broadcast_test.dart",
         "test/room_reconnect_test.dart",
-        "test/voice/vivox_voice_service_test.dart", cwd=app)
+        "test/voice/vivox_voice_service_test.dart",
+        "test/room_seat_repository_test.dart",
+        "test/room_profile_premium_layout_test.dart",
+        "test/room_user_sheet_test.dart",
+        "test/profile_content_test.dart", cwd=app)
     run("flutter", "build", "apk", "--release",
         "--target-platform=android-arm64", cwd=app)
     apk = app / "build/app/outputs/flutter-apk/app-release.apk"
@@ -348,7 +359,11 @@ def main() -> None:
     result = verify_apk(apk)
     out = Path(args.output_dir).expanduser().resolve()
     out.mkdir(parents=True, exist_ok=True)
-    target = out / f"NIMZO_1.0.37_DYNAMIC_VIVOX_QA_{commit[:10]}.apk"
+    pubspec = (app / "pubspec.yaml").read_text()
+    match = re.search(r"(?m)^version:\\s*(\\d+\\.\\d+\\.\\d+)\\+\\d+\\s*$", pubspec)
+    if match is None:
+        raise RuntimeError("Cannot determine NIMZO app version from pubspec.yaml")
+    target = out / f"NIMZO_{match.group(1)}_VIVOX528_ARM64_QA_{commit[:10]}.apk"
     shutil.copy2(apk, target)
     (out / "SHA256SUMS.txt").write_text(
         f"{result['sha256']}  {target.name}\n")
