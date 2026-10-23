@@ -81,6 +81,15 @@ class MembershipPackInventory {
     final suffix = tier == 1 ? '' : '_v$tier';
     // Orii source media is verified in expanded Drive catalog and names its
     // exact SVIP tier; only those four tiers get this animated mic asset.
+    // Actual Orii VIP 1–5 profile-card backgrounds, not screenshot crops.
+    const vipProfileCard = <int, String>{
+      1: 'assets/drive_catalog_expanded/8bec7620ab50b287621094e1a34a0cb0fb46c696416542ec2b010ee703987190.png',
+      2: 'assets/drive_catalog_expanded/8c8d9e72c40cf2cb2536f8940c21b2b293c8e01c1a9d0f94456670a425ac01b7.png',
+      3: 'assets/drive_catalog_expanded/b0be190d0a52adbccdffa213440cfbb6a274b4e4e5d8176b2d172cdeae301392.png',
+      4: 'assets/drive_catalog_expanded/089423147c0410da9c26e138bcca5f7f5f676f5889897b45046b81b02e9e1498.png',
+      5: 'assets/drive_catalog_expanded/90c5a63767f8b76151fdfaa6f533cb486226f4436d052e2a75eea906c3fb0b5b.png',
+    };
+
     const svipMic = <int, (String, String)>{
       3: (
         'assets/drive_catalog_expanded/096e6ca992bb1ff8761f2b0fc6844375d46b01c0af8295592dd991a1d8d4d80f.svga',
@@ -137,8 +146,16 @@ class MembershipPackInventory {
       else
         pick('Mic effect / visual',
           vipFull ? '$root/vip/icon_vip${tier}_5.png' : null),
-      pick('Profile decoration',
-        vipFull ? '$root/vip/icon_vip${tier}_6.${tier == 1 ? 'webp' : 'png'}' : null),
+      if (vipProfileCard.containsKey(tier) && vip)
+        MembershipPackArtwork.matching(
+          title: 'Profile decoration',
+          targetKind: kind, targetTier: tier,
+          sourceKind: 'vip', sourceTier: tier,
+          path: vipProfileCard[tier]!,
+          source: 'Orii VIP $tier original profilecardbg',
+        )
+      else
+        const MembershipPackArtwork.missing('Profile decoration'),
       const MembershipPackArtwork.missing('Room background'),
     ];
   }
