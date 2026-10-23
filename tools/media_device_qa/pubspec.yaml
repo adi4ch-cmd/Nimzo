@@ -12,3 +12,4 @@ dev_dependencies:
 flutter:
   assets:
     - assets/drive_catalog/
+    - assets/drive_catalog_expanded/

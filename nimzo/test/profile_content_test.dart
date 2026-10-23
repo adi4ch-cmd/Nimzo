@@ -9,11 +9,14 @@ import 'package:nimzo/features/profile/profile_repository.dart';
 import 'package:nimzo/features/profile/profile_screen.dart';
 import 'package:nimzo/features/profile/levels_screen.dart';
 import 'package:nimzo/features/profile/profile_collections.dart';
+import 'package:nimzo/features/store/premium_cosmetics.dart';
+import 'package:nimzo/features/store/store_visual_equipment.dart';
 
 void main() {
   Future<void> openProfile(
     WidgetTester tester, {
     bool linked = false,
+    bool profileCard = false,
   }) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -34,6 +37,17 @@ void main() {
         overrides: [
           supabaseProvider.overrideWithValue(db),
           currentUserIdProvider.overrideWithValue('u'),
+          storeVisualEquipmentProvider('u')
+              .overrideWith((_) async => profileCard
+                  ? {
+                      'Profile Card': const CosmeticMedia(
+                          'fixture-profile-card',
+                          'Profile Card',
+                          'Fixture card',
+                          'assets/premium_store/willchill/chat_send_id_card_bg.png',
+                          CosmeticMediaKind.image)
+                    }
+                  : <String, CosmeticMedia>{}),
           profileProvider('u').overrideWith(
             (_) async => const Profile(
               id: 'u',
@@ -80,6 +94,29 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets(
+      'equipped profile background remains visible behind header controls',
+      (tester) async {
+    await openProfile(tester, profileCard: true);
+    final cover =
+        tester.widget<Container>(find.byKey(const ValueKey('profile-cover')));
+    final decoration = cover.decoration! as BoxDecoration;
+    expect(decoration.gradient, isNull);
+    expect(decoration.image, isNull);
+    final frame = find.byWidgetPredicate(
+        (w) => w is EquippedCosmetic && w.category == 'Profile Card');
+    expect(
+        find.descendant(
+            of: frame,
+            matching: find.byWidgetPredicate((w) =>
+                w is DecoratedBox &&
+                w.decoration is BoxDecoration &&
+                (w.decoration as BoxDecoration).color ==
+                    Colors.white.withValues(alpha: .92))),
+        findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 
   for (var kind = 0; kind < 3; kind++) {
     testWidgets('public profile badge $kind opens its category', (
@@ -145,7 +182,8 @@ void main() {
     (tester) async {
       await openProfile(tester);
       expect(find.text('Amina'), findsOneWidget);
-      expect(find.byKey(const ValueKey('profile-level-badges')), findsOneWidget);
+      expect(
+          find.byKey(const ValueKey('profile-level-badges')), findsOneWidget);
       expect(find.text('1,250,000 coins'), findsNothing);
       expect(find.text('2,345 diamonds'), findsNothing);
       expect(find.text('89 points'), findsNothing);
@@ -163,5 +201,4 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
-
 }

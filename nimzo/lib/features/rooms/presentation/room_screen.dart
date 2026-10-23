@@ -476,6 +476,12 @@ class _State extends ConsumerState<RoomScreen> {
         }
       });
 
+  bool _hasChatBubble(String userId) =>
+      ref
+          .watch(storeVisualEquipmentProvider(userId))
+          .valueOrNull?['Chat Bubble'] !=
+      null;
+
   @override
   Widget build(BuildContext context) {
     final room = ref.watch(roomProvider(widget.roomId)),
@@ -1043,42 +1049,68 @@ class _State extends ConsumerState<RoomScreen> {
                                                             BorderRadius
                                                                 .circular(12),
                                                       ),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          EquippedIdentity(
-                                                              userId:
-                                                                  msg.userId,
-                                                              child: Text(
-                                                                  profiles[msg.userId]
-                                                                          ?.displayName ??
-                                                                      'Nimzo user',
-                                                                  maxLines: 1,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    color: NimzoStyle
-                                                                        .primary,
-                                                                    fontSize:
-                                                                        12,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700,
-                                                                  ))),
-                                                          Text(
-                                                            msg.body,
-                                                            style:
-                                                                const TextStyle(
-                                                              color: NimzoStyle
-                                                                  .ink,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                      child: DecoratedBox(
+                                                          decoration: BoxDecoration(
+                                                              color: _hasChatBubble(
+                                                                      msg
+                                                                          .userId)
+                                                                  ? Colors.black
+                                                                      .withValues(
+                                                                          alpha:
+                                                                              .60)
+                                                                  : Colors
+                                                                      .transparent,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          6)),
+                                                          child: Padding(
+                                                              padding: _hasChatBubble(
+                                                                      msg
+                                                                          .userId)
+                                                                  ? const EdgeInsets
+                                                                      .all(4)
+                                                                  : EdgeInsets
+                                                                      .zero,
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  EquippedIdentity(
+                                                                      userId: msg
+                                                                          .userId,
+                                                                      child: Text(
+                                                                          profiles[msg.userId]?.displayName ??
+                                                                              'Nimzo user',
+                                                                          maxLines:
+                                                                              1,
+                                                                          overflow: TextOverflow
+                                                                              .ellipsis,
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color: _hasChatBubble(msg.userId)
+                                                                                ? Colors.white
+                                                                                : NimzoStyle.primary,
+                                                                            fontSize:
+                                                                                12,
+                                                                            fontWeight:
+                                                                                FontWeight.w700,
+                                                                          ))),
+                                                                  Text(
+                                                                    msg.body,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: _hasChatBubble(msg
+                                                                              .userId)
+                                                                          ? Colors
+                                                                              .white
+                                                                          : NimzoStyle
+                                                                              .ink,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ))),
                                                     )),
                                               ),
                                           ],
@@ -1094,7 +1126,8 @@ class _State extends ConsumerState<RoomScreen> {
                                             'chest',
                                             () => showReferenceSheet(
                                               context,
-                                              TreasureSheet(roomId: widget.roomId),
+                                              TreasureSheet(
+                                                  roomId: widget.roomId),
                                             ),
                                           ),
                                           const SizedBox(height: 10),

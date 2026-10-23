@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "build_authorized": false,
-  "app_source_sha256": "b964bf124c45a4304195eb00a9ae9261c1acb00755b26c6ad2f5ed505bac7dca",
+  "app_source_sha256": "2696024b2e095963544655e4b64b41518c562ca39aa707e26031d944d2e4ac84",
   "voice_enabled": false,
   "open_blockers": [
     "Final Vivox integration deferred by owner",

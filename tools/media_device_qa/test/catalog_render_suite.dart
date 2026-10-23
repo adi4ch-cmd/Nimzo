@@ -10,15 +10,16 @@ import 'package:flutter_svga/flutter_svga.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Shared by the real app's host tests and the isolated Android renderer app.
-void catalogRenderSuite() {
-  testWidgets('Drive catalog contains complete, distinct animated media', (
-    tester,
-  ) async {
-    final manifest = jsonDecode(
-      await rootBundle.loadString('assets/drive_catalog/manifest.json'),
-    ) as Map;
+void catalogRenderSuite({
+  String manifestAsset = 'assets/drive_catalog/manifest.json',
+  int minimumCount = 9,
+  String label = 'Drive catalog',
+}) {
+  testWidgets('$label contains complete, distinct media', (tester) async {
+    final manifest =
+        jsonDecode(await rootBundle.loadString(manifestAsset)) as Map;
     final records = manifest['items'] as List;
-    expect(records.length, 9);
+    expect(records.length, greaterThanOrEqualTo(minimumCount));
     final seen = <String>{};
     for (final record in records.cast<Map>()) {
       final data = await rootBundle.load(record['asset'] as String);
@@ -29,6 +30,43 @@ void catalogRenderSuite() {
       expect(bytes.length, record['bytes'], reason: record['name'] as String);
       expect(sha256.convert(bytes).toString(), record['sha256']);
       expect(seen.add(record['sha256'] as String), isTrue);
+      if (record['media_kind'] == 'image') {
+        await tester.runAsync(() async {
+          final codec = await ui.instantiateImageCodec(bytes);
+          expect(
+            codec.frameCount,
+            1,
+            reason: 'Static cosmetics must be accurately labeled',
+          );
+          final frame = await codec.getNextFrame();
+          expect(frame.image.width, record['width']);
+          expect(frame.image.height, record['height']);
+          final rgba = (await frame.image.toByteData(
+            format: ui.ImageByteFormat.rawRgba,
+          ))!.buffer.asUint8List();
+          expect(
+            Iterable<int>.generate(
+              rgba.length ~/ 4,
+              (i) => rgba[i * 4 + 3],
+            ).any((a) => a > 0),
+            isTrue,
+          );
+          final png = await frame.image.toByteData(
+            format: ui.ImageByteFormat.png,
+          );
+          final base = Platform.isAndroid ? Directory.systemTemp.path : '/tmp';
+          final out = Directory('$base/nimzo-drive-rendered')
+            ..createSync(recursive: true);
+          File('${out.path}/${record['id']}.png')
+              .writeAsBytesSync(png!.buffer.asUint8List());
+          frame.image.dispose();
+          codec.dispose();
+        });
+        debugPrint(
+          'VERIFIED ${record['id']} sha256=${record['sha256']} frames=1 fps=1 distinct=1 visible=1 android=${Platform.isAndroid}',
+        );
+        continue;
+      }
       final movie = await tester.runAsync(
         () => SVGAParser.shared.decodeFromBuffer(bytes),
       );
@@ -128,5 +166,5 @@ void catalogRenderSuite() {
       controller.dispose();
       expect(tester.takeException(), isNull);
     }
-  }, timeout: const Timeout(Duration(minutes: 12)));
+  }, timeout: const Timeout(Duration(minutes: 25)));
 }

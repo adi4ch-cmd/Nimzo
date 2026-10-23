@@ -133,19 +133,7 @@ class EquippedCosmetic extends ConsumerWidget {
                     animate: !MediaQuery.disableAnimationsOf(context)),
           ),
         ),
-        if (category == 'Profile Card')
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 28, 12, 12),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: .92),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: child,
-            ),
-          )
-        else
-          child,
+        child,
       ],
     );
   }

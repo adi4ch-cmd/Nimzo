@@ -238,14 +238,18 @@ jobs:
           from pathlib import Path
           from zipfile import ZipFile
           root=Path('nimzo')
-          manifest=json.loads((root/'assets/drive_catalog/manifest.json').read_text())
+          count=0
           with ZipFile('nimzo/build/app/outputs/flutter-apk/app-release.apk') as z:
-              for item in manifest['items']:
-                  for field,hash_field in [('asset','sha256'),('thumbnail','thumbnail_sha256')]:
-                      data=z.read('assets/flutter_assets/'+item[field])
-                      assert data==(root/item[field]).read_bytes(),item['id']
-                      assert hashlib.sha256(data).hexdigest()==item[hash_field],item['id']
-          print('PASS: exact original bytes for9 Drive animations and9 matching thumbnails')
+              for manifest_path in ['assets/drive_catalog/manifest.json','assets/drive_catalog_expanded/manifest.json']:
+                  manifest=json.loads((root/manifest_path).read_text())
+                  for item in manifest['items']:
+                      for field,hash_field in [('asset','sha256'),('thumbnail','thumbnail_sha256')]:
+                          data=z.read('assets/flutter_assets/'+item[field])
+                          assert data==(root/item[field]).read_bytes(),item['id']
+                          assert hashlib.sha256(data).hexdigest()==item[hash_field],item['id']
+                      count+=1
+          assert count>=57
+          print('PASS: exact Drive product media and matching thumbnails:',count)
           PY
       - name: Verify compiled shared_preferences native startup ABI
         run: |
@@ -317,7 +321,7 @@ jobs:
             premium-test-apk/*.apk premium-test-apk/SHA256SUMS.txt premium-test-apk/SOURCE_SHA.txt premium-test-apk/README.txt premium-test-apk/ACCEPTANCE.json premium-test-apk/STARTUP_TEST.txt \
             --target "$GITHUB_SHA" \
             --title "NIMZO 1.0.40 Integration Test - Voice Disabled" \
-            --notes "Owner-requested Android integration TEST build. Dynamic content source/backend acceptance and Android installation/startup checked. Vivox deferred by owner. Includes2 new live Drive gifts and7 live Store items, corrected ID plate fitting, personal dynamic gift playback, funded room tools and durable transaction recovery. Android35 renderer checks passed for all9 imported animations. Development signing; authenticated device purchases, native media/audio and full original-task acceptance remain unverified. No automatic update manifest is published." \
+            --notes "Owner-requested Android integration TEST build. Dynamic content source/backend acceptance and Android installation/startup checked. Vivox deferred by owner. Includes the expanded verified Drive gift and Store catalog, corrected ID plate fitting, personal dynamic gift playback, funded room tools and durable transaction recovery. Android35 renderer checks cover all57 imported media (38 animations and19 static cosmetics). Development signing; authenticated device purchases, native media/audio and full original-task acceptance remain unverified. No automatic update manifest is published." \
             --prerelease
       - name: Upload launch diagnostics
         if: always()
