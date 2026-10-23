@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "build_authorized": false,
-  "app_source_sha256": "6e7f509ae39c02495deb8e0bf5a19648b6579e3c1f429834e3f549a5f0ab48eb",
+  "app_source_sha256": "cc26030ad9912403050e4ab1e85815fb113aa5046e3fe17c6c7e5eb20b0dfc62",
   "voice_enabled": false,
   "open_blockers": [
     "Final Vivox integration deferred by owner",
@@ -105,7 +105,11 @@
         "docs/validation/v3-evidence/verified-results.json",
         "docs/validation/v3-evidence/backend-deployment.json",
         "docs/validation/ROOM_TOOLS_DELIVERY_20261022.md",
-        "docs/validation/WALLET_RECOVERY_20261022.md"
+        "docs/validation/WALLET_RECOVERY_20261022.md",
+        "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
+        "docs/validation/expanded-drive-device-proof-20261023.json",
+        "docs/validation/expanded-drive-preservation-20261023.json",
+        "docs/validation/expanded-source-ci-20261023.json"
       ]
     },
     "gifts": {
@@ -113,7 +117,11 @@
       "evidence": [
         "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
         "docs/validation/v3-evidence/verified-results.json",
-        "docs/validation/v3-evidence/backend-deployment.json"
+        "docs/validation/v3-evidence/backend-deployment.json",
+        "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
+        "docs/validation/expanded-drive-device-proof-20261023.json",
+        "docs/validation/expanded-drive-preservation-20261023.json",
+        "docs/validation/expanded-source-ci-20261023.json"
       ]
     },
     "memberships": {
@@ -147,7 +155,11 @@
         "docs/validation/v3-evidence/verified-results.json",
         "docs/validation/v3-evidence/backend-deployment.json",
         "docs/validation/room-tools-evidence-20261022.json",
-        "docs/validation/wallet-recovery-evidence-20261022.json"
+        "docs/validation/wallet-recovery-evidence-20261022.json",
+        "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
+        "docs/validation/expanded-drive-device-proof-20261023.json",
+        "docs/validation/expanded-drive-preservation-20261023.json",
+        "docs/validation/expanded-source-ci-20261023.json"
       ]
     },
     "store_backpack": {
@@ -155,7 +167,11 @@
       "evidence": [
         "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
         "docs/validation/v3-evidence/verified-results.json",
-        "docs/validation/v3-evidence/backend-deployment.json"
+        "docs/validation/v3-evidence/backend-deployment.json",
+        "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
+        "docs/validation/expanded-drive-device-proof-20261023.json",
+        "docs/validation/expanded-drive-preservation-20261023.json",
+        "docs/validation/expanded-source-ci-20261023.json"
       ]
     }
   }

@@ -45,8 +45,10 @@ def main():
     before = snapshot()
     # This is deliberately NOT device evidence. SQL is only sent to this disposable
     # clone; no production migration or proof JSON is written by this fixture.
-    migration = build_sql(items, '0' * 40, '2000-01-01T00:00:00Z',
-                          'DISPOSABLE SQL FIXTURE ONLY; NO ANDROID DEVICE APPROVAL')
+    published = ROOT/'supabase/migrations/20261023061945_activate_twenty_verified_drive_gifts_store.sql'
+    migration = published.read_text() if published.exists() else build_sql(
+        items, '0' * 40, '2000-01-01T00:00:00Z',
+        'DISPOSABLE SQL FIXTURE ONLY; NO ANDROID DEVICE APPROVAL')
     sql(migration)
     after = snapshot()
     for k in ['wallets', 'owned', 'ledger']:

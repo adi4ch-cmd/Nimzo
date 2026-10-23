@@ -1,0 +1,8 @@
+{
+  "workflow_run": "https://github.com/adi4ch-cmd/Nimzo/actions/runs/39909844950",
+  "source_commit": "fc0904b95e02d4723ceb41f085498467ccb2ab01",
+  "conclusion": "success",
+  "flutter_tests": 558,
+  "log_sha256": "5eaffe9444c31a169b6d612ae32c87ac4f6a48437340d44051c26f58f2a6ea9b",
+  "sql": "All source/backend workflow fixtures, including48 expanded paid products, passed"
+}

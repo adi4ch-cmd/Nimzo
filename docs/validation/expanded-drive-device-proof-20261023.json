@@ -1,0 +1,413 @@
+{
+  "source_commit": "fc0904b95e02d4723ceb41f085498467ccb2ab01",
+  "device": "Android35 GoogleAPIs x86_64 emulator",
+  "test_passed": true,
+  "test_completed_at": "2026-10-23T06:17:12.9332189Z",
+  "workflow_run": "https://github.com/adi4ch-cmd/Nimzo/actions/runs/39909844929",
+  "workflow_conclusion": "success",
+  "log_sha256": "3d0b4455b8eeef63dfd1097e24b9a4ddf47f121bdf2180a91065bdab5d58fd93",
+  "native_log": "expanded-drive-native-20261023.log",
+  "records": {
+    "c4fcd5bb-f4c6-5871-af3d-213e56109799": {
+      "sha256": "93d60191fbfc8e331132ee388d4739a63c2aff5e7ae6a19790256d66861fc045",
+      "frames": 79,
+      "fps": 15,
+      "distinct": 78,
+      "visible": 79
+    },
+    "92a89064-62f8-5f14-bc39-80e1f33aba98": {
+      "sha256": "66c8c4fa8cfa9f238bed13b34e6bff6a8d26fa0dd9861350e0e4d308aaf1e8b6",
+      "frames": 90,
+      "fps": 30,
+      "distinct": 90,
+      "visible": 90
+    },
+    "nimzo-drive-amethyst-crown": {
+      "sha256": "0dd433b58a00448c82c2eb3275220d12439e0149d6a8aae078faf879f19465d4",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-azure-crown": {
+      "sha256": "6b3f66d633474f1d02027ec92b10cd4dada4e0448abad84a883ccbdae235d854",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-orchid-crown": {
+      "sha256": "2c1de320397227b862c5045779efe7e7e22e561093a0d2b5e4dae753499450cb",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-crimson-crown": {
+      "sha256": "717c44cb0f0e2f85a2578c5c5d097fe8446760a1449b6715ef998a1b5ddb74d7",
+      "frames": 45,
+      "fps": 20,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-rose-id-plate": {
+      "sha256": "9f156c347545d6a371afee6a270ff0b2c4a4454f929e3427064e1ec5b63db3c9",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 56,
+      "visible": 80
+    },
+    "nimzo-drive-violet-id-plate": {
+      "sha256": "1c34aafc448c2d4c848700f10a9bfdb409f8676fd5157751405a83c825384461",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 56,
+      "visible": 80
+    },
+    "nimzo-drive-gold-id-plate": {
+      "sha256": "95742d9e8ceb2bea1c32927a222f84839d7129998d75212711f52699c4f919fe",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 56,
+      "visible": 80
+    },
+    "63958a62-4018-5654-b4d6-173c5dad1db0": {
+      "sha256": "1fbde44aca3fcc75cd057c9af03492bca67611d037dc46ef6eb64eff6fd1ea3b",
+      "frames": 48,
+      "fps": 12,
+      "distinct": 45,
+      "visible": 48
+    },
+    "ebac2405-40a6-56c8-929a-d0debfc6be48": {
+      "sha256": "58dd09579fed95d978ca9083a2b81bb3808b10ad8b268147be2fa23264d94676",
+      "frames": 121,
+      "fps": 60,
+      "distinct": 121,
+      "visible": 120
+    },
+    "d08fa443-8899-5797-a185-1cbc9c41c21f": {
+      "sha256": "df3bc998e03640f58426b8a77e79efc6b84c09f55ff7e06b3eb31b558fcb9bbd",
+      "frames": 180,
+      "fps": 20,
+      "distinct": 180,
+      "visible": 180
+    },
+    "nimzo-drive2-cupid-hearts": {
+      "sha256": "f07fcfb17cba018362d42cfdc5b95148e16ddcf2e3f71bc415940098a6f99f2c",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-sapphire-dragon": {
+      "sha256": "9bfbb37b35e77e3a1857a9cd38b9b7b1cd96188224e8eea381f5cd356e2e41ad",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-crimson-lion": {
+      "sha256": "55d8587c73c7eb87ff570a5c1d01d98e3e5ba88698e64026816d3b7a9203aeff",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-emerald-masquerade": {
+      "sha256": "9dc92a803d6709410cbfe137fc1f4851fd984a3a521e3b1f36b315e2d3298e1c",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-emerald-treasure": {
+      "sha256": "0603a5a0c29c4495e90f02eae6259c5a0fe686496b77ba0397f2ffa2bf0b9d4b",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-golden-zodiac": {
+      "sha256": "a103911f42534fcbda8451a3d48c454fdac2cfbf0cec81ba1b414510f585d01b",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-aqua-ribbon": {
+      "sha256": "6ab74d8a6025be35e86e2fb2440b33365815eadb2a5d9529d701e1ade13dca58",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-moonlit-crystal": {
+      "sha256": "0cd99456f43ae88ff21697c18e7e8099c8f5fb513b5ea408e2d0dc0d019731d2",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-arctic-aurora": {
+      "sha256": "654dad7baf8f5278e807a533479e2b7795c18b125b9a802d609bfaa5bf217465",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-cosmic-rocket": {
+      "sha256": "b382814ed6d3761b7ccb69b36e5aacc09461f8690962ba97581728c2a5f11608",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-neon-music": {
+      "sha256": "fa19e36c1b70fda09fafc8e1d8878710869adeddbd33ee9a5111a4b2659437c4",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-sweet-letters": {
+      "sha256": "6fd43802ee80cad66533b936c39638975de0ed5338f489dc31c1475590810731",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-amethyst-crown": {
+      "sha256": "602c7adb245636a1926d0838635d9e8bf944db30552bacffa5b64f901e7aef78",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "9fe05324-ef7b-57db-8a77-863194b56e9a": {
+      "sha256": "9b8346cf8ed2ef355a1210d7e56827a00ac9f60a6cbe1a58bf2fdaf3ccd23b56",
+      "frames": 40,
+      "fps": 10,
+      "distinct": 40,
+      "visible": 40
+    },
+    "363ac433-1683-5702-ba8a-33a6518acf41": {
+      "sha256": "00f33c2a511b4b5bce5e6a53d2a31c9776f488d0aa5bdb9a8efeb5cb39a81a91",
+      "frames": 60,
+      "fps": 15,
+      "distinct": 60,
+      "visible": 60
+    },
+    "47eef0cf-ee87-5fb4-a7dd-c247275f9dc9": {
+      "sha256": "f9ee14f518ce9fabd86e9b5da0a1b77f0f76c9990c49f6ee06eea8cec5accd26",
+      "frames": 60,
+      "fps": 15,
+      "distinct": 60,
+      "visible": 60
+    },
+    "61db920d-549c-52da-b4a1-68187063930c": {
+      "sha256": "f1e0d2e111edf21cc76cb581aa06d50d79f00225198f4985f0a8c7e6a35d1f6f",
+      "frames": 60,
+      "fps": 15,
+      "distinct": 60,
+      "visible": 60
+    },
+    "nimzo-drive2-arcane-lightning": {
+      "sha256": "e6d230bc8f9adf4bf0972422f4d9e0f7d3a6009aa0d0775c800e7d33ef70c6c0",
+      "frames": 30,
+      "fps": 30,
+      "distinct": 30,
+      "visible": 30
+    },
+    "nimzo-drive2-solar-portal": {
+      "sha256": "c196a3011eae478d33c38889048eba74e6b6a09cba3247db86ef6f2ff1028ea7",
+      "frames": 40,
+      "fps": 30,
+      "distinct": 40,
+      "visible": 40
+    },
+    "nimzo-drive2-golden-runes": {
+      "sha256": "d8e5787320b886e0ff13622b8b19ba5ce4592860e78bebc94ee958c8039af558",
+      "frames": 43,
+      "fps": 30,
+      "distinct": 43,
+      "visible": 43
+    },
+    "nimzo-drive2-moonlit-palace": {
+      "sha256": "d00f0073310e68c554c01a9907c56ac2bc9e5cef9f0c21fce17c1ca74dbf864a",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "a9e4ad2b-95f8-51f3-beee-01cf687d3e96": {
+      "sha256": "424a2cdd6e869676ae943603d7d4542dfef21ecebe7662b6b62d335fb21d74f1",
+      "frames": 26,
+      "fps": 20,
+      "distinct": 26,
+      "visible": 26
+    },
+    "544b7366-0d83-5729-b007-b709cd21c79b": {
+      "sha256": "dbe6935d5855069d3f9762e20912b3076ad862150fbe981f00258afceef7cfc6",
+      "frames": 20,
+      "fps": 20,
+      "distinct": 20,
+      "visible": 20
+    },
+    "e8e3f1f1-84af-524e-bc74-597bb57a4516": {
+      "sha256": "e3bb6d3e674ee3fbf22cbaba40f5b6a828810aaeb85022a36bb632b56f65bed6",
+      "frames": 26,
+      "fps": 20,
+      "distinct": 26,
+      "visible": 26
+    },
+    "b97a98a1-f7d0-5f74-b976-5fd7101d4bca": {
+      "sha256": "2cf4193aa696c0cd51064f28d8a63e34fe175b3f7d2d6516de7759fcc9744426",
+      "frames": 26,
+      "fps": 20,
+      "distinct": 26,
+      "visible": 26
+    },
+    "ca09e7da-bb3d-55d3-bfd0-34ac1e5089fa": {
+      "sha256": "e7891975b09f1b491d7548b58a690f6e7013a5d9cae7b3a72eebe11e9d8eaeff",
+      "frames": 20,
+      "fps": 20,
+      "distinct": 20,
+      "visible": 20
+    },
+    "d99ca184-ef05-56ba-8e83-beed00894e66": {
+      "sha256": "72bdb4f53016d2d1d3dee7539c6537c9f90ebdc55abfcb5d2093dd0e77915a4d",
+      "frames": 99,
+      "fps": 20,
+      "distinct": 50,
+      "visible": 99
+    },
+    "a473acf3-1f5e-56cc-8fe9-414c850f6a19": {
+      "sha256": "bc37a7dccae05f840747305d842a6a6c777afe2e7bc0bcf640e02a0dc748519c",
+      "frames": 36,
+      "fps": 20,
+      "distinct": 36,
+      "visible": 36
+    },
+    "181755ca-8c98-59c0-993f-e2d44021c972": {
+      "sha256": "c6d00f871e394d68d8c26e4f71fc51c762aa180b01a21d8760c2bb161fc2b6a0",
+      "frames": 35,
+      "fps": 20,
+      "distinct": 35,
+      "visible": 35
+    },
+    "aa344b47-33c1-5396-bf05-0106288f46c6": {
+      "sha256": "233dc04da3379bd53bb7e68972b9613fd675b6b60c0213695433352b20225ece",
+      "frames": 72,
+      "fps": 24,
+      "distinct": 56,
+      "visible": 55
+    },
+    "8f354993-9da4-58c8-9aff-a702398ec67c": {
+      "sha256": "93f59e0f963bbffb87a95f01aaeac7a07a08441fe8712ba9de53ad0dfdbe3740",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 65,
+      "visible": 80
+    },
+    "d6033e3d-1398-55be-bdd2-b266b19cb9ed": {
+      "sha256": "9ef1d82dad8e04bfe7edf1bce0a8ba8d0801286e07c49f5fccefc66f0678101e",
+      "frames": 40,
+      "fps": 20,
+      "distinct": 39,
+      "visible": 40
+    },
+    "3010d672-8a7b-5af1-a78b-a6a68872ab46": {
+      "sha256": "a8ddeaf83dbf3f53061174a6baae2d7191c30b6d950fdb0ead4d49a2085b71f7",
+      "frames": 60,
+      "fps": 15,
+      "distinct": 60,
+      "visible": 60
+    },
+    "addebbdd-0451-5d52-8dcc-12b593219c16": {
+      "sha256": "2e8cb11e551e018fa9e3a336a7fbcad2a2e3b33d2ee4661b40d752f56294e155",
+      "frames": 52,
+      "fps": 15,
+      "distinct": 44,
+      "visible": 52
+    },
+    "nimzo-drive2-rainbow-blossom": {
+      "sha256": "ad911ebb9f7ca39b27b80ce0a74a5553a13e911a557ea5d5d2b3d53e6d1e93e1",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 44,
+      "visible": 43
+    },
+    "nimzo-drive2-golden-sound-orbit": {
+      "sha256": "08ca11a9f0f11406f288602126833d4cb5d4235a3e3f0adc9e06c58e833a1050",
+      "frames": 60,
+      "fps": 15,
+      "distinct": 60,
+      "visible": 60
+    },
+    "nimzo-drive2-violet-electric-halo": {
+      "sha256": "096e6ca992bb1ff8761f2b0fc6844375d46b01c0af8295592dd991a1d8d4d80f",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 80,
+      "visible": 80
+    },
+    "nimzo-drive2-amber-star-pulse": {
+      "sha256": "2af1763a40b7510780820cfd2f25e039bf621e46df0f5427fb0caef31ebd6b1d",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 80,
+      "visible": 80
+    },
+    "nimzo-drive2-crimson-star-pulse": {
+      "sha256": "c1cc37dc26d4f78b5c3626021f95ee12423c5e6494199b124a6194d6f09f7292",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 80,
+      "visible": 80
+    },
+    "nimzo-drive2-prismatic-star-pulse": {
+      "sha256": "e05d78c6b7ca7c384828c4fd240c2fb5a8e55ddd345c8afc82929030f58ce377",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 80,
+      "visible": 80
+    },
+    "nimzo-drive2-jade-bear": {
+      "sha256": "8bec7620ab50b287621094e1a34a0cb0fb46c696416542ec2b010ee703987190",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-sapphire-wolf": {
+      "sha256": "8c8d9e72c40cf2cb2536f8940c21b2b293c8e01c1a9d0f94456670a425ac01b7",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-violet-eagle": {
+      "sha256": "b0be190d0a52adbccdffa213440cfbb6a274b4e4e5d8176b2d172cdeae301392",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-golden-lion": {
+      "sha256": "089423147c0410da9c26e138bcca5f7f5f676f5889897b45046b81b02e9e1498",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-amber-dragon": {
+      "sha256": "90c5a63767f8b76151fdfaa6f533cb486226f4436d052e2a75eea906c3fb0b5b",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    }
+  },
+  "preview_artifact_id": 12481789462,
+  "log_transport": "Connected GitHub fetch_workflow_job_logs for verified job120270043205; workspace Azure log redirects are blocked by proxy"
+}

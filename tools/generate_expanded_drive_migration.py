@@ -48,8 +48,15 @@ def github_api(path):
     return result.stdout
 
 
-def verify_online_proof(proof, source_commit, root=ROOT):
-    """Bind production evidence to GitHub's actual run, logs and pinned sources."""
+def verify_online_proof(proof, source_commit, root=ROOT, fetch_native_log=None):
+    """Bind production evidence to GitHub's actual run, logs and pinned sources.
+
+    A library caller may supply an authenticated GitHub log transport when the
+    CLI's redirected log download is unavailable. The callback receives only the
+    API endpoint for the job independently verified below and must return its
+    actual log bytes. CLI execution always uses github_api; this changes only
+    log transport, never metadata, source, timestamp or native-record checks.
+    """
     match=re.fullmatch(r'https://github\.com/adi4ch-cmd/Nimzo/actions/runs/([0-9]+)',str(proof.get('workflow_run','')))
     if not match:
         raise ValueError('Native evidence must belong to '+REPOSITORY)
@@ -76,7 +83,11 @@ def verify_online_proof(proof, source_commit, root=ROOT):
     completed=datetime.fromisoformat(job['completed_at'].replace('Z','+00:00'))
     if not started<=timestamp<=completed:
         raise ValueError('Device proof timestamp is outside the actual Android job')
-    actual_log=github_api(f'repos/{REPOSITORY}/actions/jobs/{job["id"]}/logs').decode('utf-8')
+    log_endpoint=f'repos/{REPOSITORY}/actions/jobs/{job["id"]}/logs'
+    raw_log=(github_api if fetch_native_log is None else fetch_native_log)(log_endpoint)
+    if not isinstance(raw_log,bytes):
+        raise ValueError('Native log transport must return actual log bytes')
+    actual_log=raw_log.decode('utf-8')
     if native_records(actual_log)!=proof['records']:
         raise ValueError('Actual GitHub native job records differ from proof')
     for folder in ['drive_catalog','drive_catalog_expanded']:
