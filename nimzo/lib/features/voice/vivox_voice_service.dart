@@ -180,7 +180,7 @@ class VivoxVoiceService implements VoiceService {
     // Vivox requires capture access before joining even when initially muted.
     if (await _invokeNative<bool>('requestMicPermission') != true) {
       throw VoiceConnectionFailure(
-        'Microphone permission is required for room audio.',
+        'Microphone access is denied. Allow Microphone in Android Settings > Apps > NIMZO > Permissions, then retry.',
       );
     }
     final Map<String, dynamic> data;
