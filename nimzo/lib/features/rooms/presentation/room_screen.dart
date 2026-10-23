@@ -496,6 +496,13 @@ class _State extends ConsumerState<RoomScreen> {
         ref.watch(roomModerationProvider(widget.roomId)).valueOrNull == true;
     final connected = ref.watch(voiceConnectedProvider).valueOrNull ?? false;
     final roomTheme = room.valueOrNull?.theme ?? 'nimzo_white';
+    final ownerId = room.valueOrNull?.ownerId;
+    final verifiedOwner = ownerId == null
+        ? null
+        : ref.watch(effectiveMembershipProvider(ownerId)).valueOrNull;
+    final showVip6Seats = verifiedOwner?.vipLevel == 6 &&
+        verifiedOwner?.svipLevel == 0 &&
+        roomTheme == 'nimzo_white';
     final palette = RoomTheme.byId(roomTheme);
     final backgroundUrl = nimzoApprovedRoomBackground(
       ref.watch(nimzoRemoteSettingsProvider).valueOrNull ??
@@ -852,7 +859,18 @@ class _State extends ConsumerState<RoomScreen> {
                                                                 SizedBox(
                                                                   width: 46,
                                                                   height: 48,
-                                                                  child: s.locked
+                                                                  child: showVip6Seats
+                                                                      ? Image.asset(
+                                                                          s.locked
+                                                                              ? 'assets/membership/tana-vip6-locked-seat.png'
+                                                                              : 'assets/membership/tana-vip6-open-seat.png',
+                                                                          width: 43,
+                                                                          height: 43,
+                                                                          fit: BoxFit.contain,
+                                                                          errorBuilder: (_, __, ___) =>
+                                                                              const Icon(Icons.mic),
+                                                                        )
+                                                                      : s.locked
                                                                       ? const Icon(
                                                                           Icons
                                                                               .lock_outline_rounded,
