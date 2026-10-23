@@ -42,6 +42,7 @@ flutter:
     - assets/falla_levels/wealth/
     - assets/falla_levels/charm/
     - assets/falla_levels/active/
+    - assets/falla_levels/level_up/
     - assets/events/
     - assets/brand/
     - assets/games/
