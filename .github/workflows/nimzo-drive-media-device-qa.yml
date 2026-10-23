@@ -48,14 +48,7 @@ jobs:
           arch: x86_64
           disable-animations: true
           working-directory: tools/media_device_qa
-          script: |
-            flutter drive --driver=test_driver/catalog_driver.dart --target=integration_test/catalog_device_test.dart --no-dds --keep-app-running -d emulator-5554
-            mkdir -p artifacts
-            package_id=$(python3 -c "import json; print(json.load(open('build/app/outputs/apk/debug/output-metadata.json'))['applicationId'])")
-            preview_dir=$(adb shell run-as "$package_id" find . -type d -name nimzo-drive-rendered | tr -d '\r')
-            test -n "$preview_dir"
-            adb exec-out run-as "$package_id" tar -C "$preview_dir" -c . > previews.tar
-            tar -xf previews.tar -C artifacts
+          script: bash run_android_verification.sh
       - uses: actions/upload-artifact@v4
         with:
           name: drive-catalog-android-previews
