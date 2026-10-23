@@ -14,12 +14,19 @@ void catalogRenderSuite({
   String manifestAsset = 'assets/drive_catalog/manifest.json',
   int minimumCount = 9,
   String label = 'Drive catalog',
+  Set<String>? mediaKinds,
 }) {
   testWidgets('$label contains complete, distinct media', (tester) async {
     final manifest = jsonDecode(
       (await tester.runAsync(() => rootBundle.loadString(manifestAsset)))!,
     ) as Map;
-    final records = manifest['items'] as List;
+    final records = (manifest['items'] as List)
+        .cast<Map>()
+        .where(
+          (record) =>
+              mediaKinds == null || mediaKinds.contains(record['media_kind']),
+        )
+        .toList();
     expect(records.length, greaterThanOrEqualTo(minimumCount));
     final seen = <String>{};
     for (final record in records.cast<Map>()) {

@@ -5,6 +5,8 @@ on:
     paths:
       - nimzo/assets/drive_catalog/**
       - nimzo/assets/drive_catalog_expanded/**
+      - nimzo/assets/membership/remix/**
+      - nimzo/assets/drive_catalog_premium/**
       - tools/media_device_qa/**
       - .github/workflows/nimzo-drive-media-device-qa.yml
   workflow_dispatch: {}
@@ -34,6 +36,9 @@ jobs:
           mkdir -p assets
           cp -r ../../nimzo/assets/drive_catalog assets/
           cp -r ../../nimzo/assets/drive_catalog_expanded assets/
+          cp -r ../../nimzo/assets/drive_catalog_premium assets/
+          mkdir -p assets/membership
+          cp -r ../../nimzo/assets/membership/remix assets/membership/
           python3 ../configure_android_gradle.py android
           flutter pub get
       - name: Enable KVM

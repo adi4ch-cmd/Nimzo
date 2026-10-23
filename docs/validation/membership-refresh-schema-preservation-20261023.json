@@ -1,0 +1,37 @@
+{
+  "before": [
+    {
+      "preservation": {
+        "gifts": "a6fbf3cdbb79e4ee275e3555e80eb403",
+        "ledger": "76cf99b69363a264754f13182a86efa6",
+        "wallets": "943c1121b5c48a81a9379fa0a6f4394f",
+        "profiles": "af8b9d1be4b569bc6ab8a258bc8b87e7",
+        "svip_thresholds": "d728d2ea7ff12297f65e31c2553209c6",
+        "vip_daily_rewards": "06ee276fc845cdbc75ec21c309aa176d",
+        "normal_vip_catalog": "d8dcf63140e2c115fc03fa15ea48fa94",
+        "svip_friday_rewards": "a49037b3218d4c4811d1966865d4de02",
+        "nimzo_cosmetic_catalog": "95d6d1a4fc8010603e92261963157193",
+        "nimzo_cosmetic_equipped": "4feda429a224b3abc54b66c7ee7eb500",
+        "nimzo_cosmetic_ownership": "0e201241d0503d04e05eb7c9ee1a07bc"
+      }
+    }
+  ],
+  "after": [
+    {
+      "preservation": {
+        "gifts": "a6fbf3cdbb79e4ee275e3555e80eb403",
+        "ledger": "76cf99b69363a264754f13182a86efa6",
+        "wallets": "943c1121b5c48a81a9379fa0a6f4394f",
+        "profiles": "af8b9d1be4b569bc6ab8a258bc8b87e7",
+        "svip_thresholds": "d728d2ea7ff12297f65e31c2553209c6",
+        "vip_daily_rewards": "06ee276fc845cdbc75ec21c309aa176d",
+        "normal_vip_catalog": "d8dcf63140e2c115fc03fa15ea48fa94",
+        "svip_friday_rewards": "a49037b3218d4c4811d1966865d4de02",
+        "nimzo_cosmetic_catalog": "95d6d1a4fc8010603e92261963157193",
+        "nimzo_cosmetic_equipped": "4feda429a224b3abc54b66c7ee7eb500",
+        "nimzo_cosmetic_ownership": "0e201241d0503d04e05eb7c9ee1a07bc"
+      }
+    }
+  ],
+  "unchanged": true
+}

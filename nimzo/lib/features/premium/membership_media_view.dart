@@ -19,11 +19,13 @@ class MembershipMediaView extends StatefulWidget {
       {super.key,
       required this.media,
       this.animate = false,
+      this.fit = BoxFit.contain,
       this.onReady,
       this.onUnavailable,
       this.onFinished});
   final MembershipMedia media;
   final bool animate;
+  final BoxFit fit;
   final VoidCallback? onReady, onUnavailable, onFinished;
   @override
   State<MembershipMediaView> createState() => _MembershipMediaViewState();
@@ -88,7 +90,8 @@ class _MembershipMediaViewState extends State<MembershipMediaView>
           await controller.forward();
           if (mounted) _finish();
         } else {
-          controller.value = .5;
+          // Non-entrance SVGAs are decorative heroes with real motion.
+          controller.repeat();
         }
       } else if (media.format == 'vap') {
         if (!widget.animate)
@@ -158,6 +161,13 @@ class _MembershipMediaViewState extends State<MembershipMediaView>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed && widget.animate) _finish();
+    if (!widget.animate && _svga != null && _ready && !_failed) {
+      if (state == AppLifecycleState.resumed) {
+        _svga!.repeat();
+      } else {
+        _svga!.stop();
+      }
+    }
   }
 
   Future<void> _removeFile() async {
@@ -189,8 +199,8 @@ class _MembershipMediaViewState extends State<MembershipMediaView>
               style: TextStyle(color: Colors.grey)));
     if (_finished && widget.animate) return const SizedBox.shrink();
     if (!_ready) return const Center(child: CircularProgressIndicator());
-    if (_image != null) return Image.memory(_image!, fit: BoxFit.contain);
-    if (_svga != null) return SVGAImage(_svga!, fit: BoxFit.contain);
+    if (_image != null) return Image.memory(_image!, fit: widget.fit);
+    if (_svga != null) return SVGAImage(_svga!, fit: widget.fit);
     if (_vap != null) return VapPlayer(_vap!);
     return const SizedBox.shrink();
   }

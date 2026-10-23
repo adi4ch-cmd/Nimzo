@@ -1,12 +1,14 @@
 {
   "schema_version": 1,
   "build_authorized": false,
-  "app_source_sha256": "cc26030ad9912403050e4ab1e85815fb113aa5046e3fe17c6c7e5eb20b0dfc62",
+  "app_source_sha256": "31080a48da9a1d8a3c999afc28ffb436a67209cbdad8b359b204f0e9a6cb3c3a",
   "voice_enabled": false,
   "open_blockers": [
     "Final Vivox integration deferred by owner",
     "Authenticated Android purchases/claims and native media/audio QA remain unverified",
-    "Complete original-task acceptance remains incomplete"
+    "Complete original-task acceptance remains incomplete",
+    "Requested20 additional diverse gifts:7 suitable selected,13 missing",
+    "New membership/gift native Android proof and media publication remain pending"
   ],
   "checks": {
     "gifts": {
@@ -71,7 +73,7 @@
   "qa_build_authorized": true,
   "qa_open_blockers": [],
   "voice_status": "OWNER_DEFERRED",
-  "qa_scope": "Supported dynamic-content and room-tools source/backend integration; Android TEST APK only; authenticated/native verification outstanding",
+  "qa_scope": "Supported dynamic source/backend QA; new70 membership originals and7 diverse gifts are STAGED pending isolated Android audit/publication; requested20 gifts remain13 short; no new NIMZO delivery APK yet",
   "owner_authorization": "Dynamic systam complete kar ke apk test ke kiy build kar skty ho",
   "qa_checks": {
     "dynamic_audit": {
@@ -109,7 +111,8 @@
         "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
         "docs/validation/expanded-drive-device-proof-20261023.json",
         "docs/validation/expanded-drive-preservation-20261023.json",
-        "docs/validation/expanded-source-ci-20261023.json"
+        "docs/validation/expanded-source-ci-20261023.json",
+        "docs/validation/MEMBERSHIP_REFRESH_20261023.md"
       ]
     },
     "gifts": {
@@ -121,7 +124,8 @@
         "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
         "docs/validation/expanded-drive-device-proof-20261023.json",
         "docs/validation/expanded-drive-preservation-20261023.json",
-        "docs/validation/expanded-source-ci-20261023.json"
+        "docs/validation/expanded-source-ci-20261023.json",
+        "docs/validation/MEMBERSHIP_REFRESH_20261023.md"
       ]
     },
     "memberships": {
@@ -129,7 +133,8 @@
       "evidence": [
         "docs/validation/V3_DYNAMIC_DELIVERY_20261022.md",
         "docs/validation/v3-evidence/verified-results.json",
-        "docs/validation/v3-evidence/backend-deployment.json"
+        "docs/validation/v3-evidence/backend-deployment.json",
+        "docs/validation/MEMBERSHIP_REFRESH_20261023.md"
       ]
     },
     "progression": {
@@ -159,7 +164,8 @@
         "docs/validation/EXPANDED_DRIVE_CATALOG_20261023.md",
         "docs/validation/expanded-drive-device-proof-20261023.json",
         "docs/validation/expanded-drive-preservation-20261023.json",
-        "docs/validation/expanded-source-ci-20261023.json"
+        "docs/validation/expanded-source-ci-20261023.json",
+        "docs/validation/MEMBERSHIP_REFRESH_20261023.md"
       ]
     },
     "store_backpack": {

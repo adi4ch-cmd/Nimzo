@@ -19,7 +19,8 @@ def main():
  insert into public.nimzo_content_revisions(channel) values('settings');
  create function nimzo_internal.bump_content_revision() returns trigger language plpgsql security definer set search_path='' as $$begin update public.nimzo_content_revisions set revision=revision+1 where channel=tg_argv[0];return null;end$$;""")
  command(a.container,a.database,(ROOT/'supabase/migrations/20261021120100_dynamic_membership_presentation.sql').read_text())
- for test in ['restored_memberships','dynamic_membership_presentation','membership_checked_purchase']:
+ command(a.container,a.database,(ROOT/'supabase/migrations/20261023152602_membership_animated_presentations.sql').read_text())
+ for test in ['restored_memberships','dynamic_membership_presentation','membership_checked_purchase','membership_animated_presentations']:
   result=command(a.container,a.database,(ROOT/f'supabase/tests/{test}.sql').read_text())
   if not result.rstrip().endswith('ROLLBACK'):raise AssertionError(test+': fixture must rollback')
   print('PASS: '+test)

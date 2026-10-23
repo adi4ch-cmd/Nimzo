@@ -15,9 +15,12 @@ class MembershipMedia {
       required this.format});
   final String url, sha256, format;
   final int bytes;
-  bool get isBundled => url.startsWith('assets/membership/voku/');
+  bool get isBundled =>
+      url.startsWith('assets/membership/remix/') ||
+      url.startsWith('assets/membership/voku/');
 
-  static MembershipMedia? parse(dynamic value, {bool entrance = false}) {
+  static MembershipMedia? parse(dynamic value,
+      {bool entrance = false, bool animatedHero = false}) {
     if (value is! Map) return null;
     final url = value['url'];
     final hash = value['sha256'];
@@ -31,7 +34,11 @@ class MembershipMedia {
         size is! int ||
         size < 1 ||
         size > (entrance ? 16 * 1024 * 1024 : 4 * 1024 * 1024) ||
-        !(entrance ? ['svga', 'vap'] : ['png', 'webp', 'jpeg'])
+        !(entrance
+                ? ['svga', 'vap']
+                : animatedHero
+                    ? ['png', 'webp', 'jpeg', 'svga']
+                    : ['png', 'webp', 'jpeg'])
             .contains(format)) {
       return null;
     }
@@ -44,7 +51,11 @@ class MembershipPresentation {
       : kind = row['kind'] as String,
         tier = (row['tier'] as num).toInt(),
         title = (row['title'] as String?) ?? '',
-        hero = MembershipMedia.parse(row['hero']),
+        hero = MembershipMedia.parse(
+                row['hero'] is Map ? (row['hero'] as Map)['animation'] : null,
+                animatedHero: true) ??
+            MembershipMedia.parse(row['hero'], animatedHero: true),
+        card = MembershipMedia.parse(row['card']),
         badge = MembershipMedia.parse(row['badge']),
         entrance = MembershipMedia.parse(row['entrance'], entrance: true),
         benefits = (row['benefit_keys'] as List? ?? const [])
@@ -52,20 +63,19 @@ class MembershipPresentation {
             .where(supportedBenefits.contains)
             .toSet();
   MembershipPresentation.bundled(
-      this.kind, this.tier, Map heroRow, Map badgeRow)
+      this.kind, this.tier, Map heroRow, Map badgeRow,
+      {Map? cardRow})
       : title = '${kind.toUpperCase()} $tier',
-        hero = MembershipMedia(
-            url: heroRow['asset'] as String,
-            sha256: heroRow['sha256'] as String,
-            bytes: heroRow['bytes'] as int,
-            format: 'png'),
-        badge = MembershipMedia(
-            url: badgeRow['asset'] as String,
-            sha256: badgeRow['sha256'] as String,
-            bytes: badgeRow['bytes'] as int,
-            format: 'png'),
+        hero = _bundledMedia(heroRow),
+        badge = _bundledMedia(badgeRow),
+        card = cardRow == null ? null : _bundledMedia(cardRow),
         entrance = null,
         benefits = const {'badge', 'room_entry'};
+  static MembershipMedia _bundledMedia(Map row) => MembershipMedia(
+      url: row['asset'] as String,
+      sha256: row['sha256'] as String,
+      bytes: row['bytes'] as int,
+      format: (row['codec'] ?? row['format'] ?? 'png') as String);
   static const supportedBenefits = {
     'badge',
     'room_entry',
@@ -74,7 +84,7 @@ class MembershipPresentation {
   };
   final String kind, title;
   final int tier;
-  final MembershipMedia? hero, badge, entrance;
+  final MembershipMedia? hero, badge, card, entrance;
   final Set<String> benefits;
 }
 
@@ -94,7 +104,7 @@ final membershipPresentationsProvider =
   }));
   final rows = await session.client
       .from('nimzo_membership_presentations')
-      .select('kind,tier,title,hero,badge,entrance,benefit_keys')
+      .select('kind,tier,title,hero,badge,card,entrance,benefit_keys')
       .eq('active', true)
       .eq('approved', true)
       .order('kind')
@@ -109,9 +119,9 @@ final membershipPresentationsProvider =
 final membershipBundledPresentationsProvider =
     FutureProvider<List<MembershipPresentation>>((ref) async {
   final manifest = jsonDecode(
-          await rootBundle.loadString('assets/membership/voku/manifest.json'))
+          await rootBundle.loadString('assets/membership/remix/manifest.json'))
       as Map;
-  final rows = (manifest['records'] as List).cast<Map>();
+  final rows = (manifest['items'] as List).cast<Map>();
   return [
     for (final kind in ['vip', 'svip'])
       for (var tier = 1; tier <= 10; tier++)
@@ -121,6 +131,8 @@ final membershipBundledPresentationsProvider =
             rows.firstWhere((r) =>
                 r['kind'] == kind && r['tier'] == tier && r['role'] == 'hero'),
             rows.firstWhere((r) =>
-                r['kind'] == kind && r['tier'] == tier && r['role'] == 'badge'))
+                r['kind'] == kind && r['tier'] == tier && r['role'] == 'badge'),
+            cardRow: rows.firstWhere((r) =>
+                r['kind'] == kind && r['tier'] == tier && r['role'] == 'card'))
   ];
 });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_svga/flutter_svga.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/features/premium/membership_catalog.dart';
@@ -78,11 +79,12 @@ void main() {
         await tester
             .tap(find.widgetWithText(ChoiceChip, '${group.toUpperCase()} 10'));
         await tester.pump();
-        for (var frame = 0; frame < 20; frame++) {
+        for (var frame = 0; frame < 150; frame++) {
           await tester.runAsync(() async {
             await Future<void>.delayed(const Duration(milliseconds: 20));
           });
           await tester.pump(const Duration(milliseconds: 20));
+          if (find.byType(CircularProgressIndicator).evaluate().isEmpty) break;
         }
         expect(find.widgetWithText(ChoiceChip, '${group.toUpperCase()} 10'),
             findsOneWidget);
@@ -94,8 +96,10 @@ void main() {
             isTrue);
         expect(find.byKey(const ValueKey('membership-fixed-status')),
             findsOneWidget);
-        expect(find.byType(MembershipMediaView), findsNWidgets(2));
-        expect(find.byType(Image), findsNWidgets(2));
+        expect(find.byType(MembershipMediaView), findsNWidgets(3));
+        expect(find.byType(Image), findsNWidgets(group == 'vip' ? 3 : 2));
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+        if (group == 'svip') expect(find.byType(SVGAImage), findsOneWidget);
         expect(
             find.text('Tier artwork is currently unavailable.'), findsNothing);
         if (group == 'vip')

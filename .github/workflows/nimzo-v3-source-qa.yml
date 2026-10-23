@@ -60,6 +60,7 @@ jobs:
           python3 tools/test_dynamic_room_rocket_config.py --container "$SQL_CONTAINER" --database rocket_dynamic_ci
           python3 tools/test_drive_catalog.py --container "$SQL_CONTAINER" --gift-fixture gift_checked_ci --database drive_catalog_ci
           python3 tools/test_expanded_drive_catalog.py --container "$SQL_CONTAINER" --fixture drive_catalog_ci --database drive_expanded_ci
+          python3 tools/test_membership_refresh_catalog.py --container "$SQL_CONTAINER" --fixture drive_expanded_ci --database membership_refresh_ci
           python3 tools/test_store_ownership_expiry.py --container "$SQL_CONTAINER" --database store_expiry_ci
           python3 tools/test_dynamic_memberships.py --container "$SQL_CONTAINER" --database membership_dynamic_ci
           python3 tools/test_dynamic_event_images.py --container "$SQL_CONTAINER" --database event_images_ci
