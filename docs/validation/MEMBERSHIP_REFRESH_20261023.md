@@ -54,7 +54,7 @@ exhausted. Missing thirteen suitable diverse effects is a genuine source gap.
   focused checks. The complete GitHub source CI run passed564 tests, including
   the added render check and decoded media/no-spinner assertions: https://github.com/adi4ch-cmd/Nimzo/actions/runs/39978492933 .
 - Python parser/import/build-policy regression:34 passed locally (32 in the
-  first pinned source CI run; two additional cases cover observed native
+  first pinned source CI run; final source CI also passed34. Cases cover observed native
   terminal-boundary events and reject events beyond that boundary).
 - Analyzer:59 existing info findings; no errors or warnings.
 - Disposable membership suite:restored rules, presentation RLS, checked-price
@@ -87,5 +87,24 @@ readback; the importer was immediately sealed as version11 (HTTP410).
 The bundled manifest keeps its original staging provenance to preserve exact
 native-source identity; current activation is held in the approved backend rows.
 This does not complete the original master task or twenty-gift request.
-A1.0.41 TEST APK is being prepared under the existing owner authorization;
-Vivox and authenticated physical-device checkout remain unverified.
+Verified1.0.41+141 TEST APK was published from sourceb92056ea45527e3cad2de59079d6d40f4e9d22c8:
+https://github.com/adi4ch-cmd/Nimzo/releases/tag/nimzo-v3-dynamic-1.0.41-39981108199 .
+The actual downloaded238284331-byte APK matches SHA256
+`70136448cb1ff626c95295ba9d92786b86bb4255c0f70d54339e7c72c02134a1`.
+All134 imported originals,441 WillChill assets and65 earlier controls/media
+matched compiled bytes. Signature verification and Android29 installation/
+20-second startup passed. Full source/backend CI at this exact source passed:
+https://github.com/adi4ch-cmd/Nimzo/actions/runs/39981108215 .
+Vivox and authenticated physical-device checkout remain unverified. Development
+signing may require a spare test device; preserve existing installations/data.
+No automatic APK update manifest was published.
+
+Additional source audit checked23846 WebPs,37GIFs and65 name-qualified JSONs.
+It identified264 animated raster resources and64 Lottie documents; raster
+contact sheets were reviewed. These are predominantly UI indicators, emoji,
+source-app tier medals, frames or loading/game graphics. They were not padded
+into the requested premium gift set. The generic congratulations effect also
+contains profile-frame slots and was not published as a complete gift.
+Lama-6.10.1.apks remains unavailable through the connector:286206190 bytes
+exceeds its268435456-byte download limit; a streamed retry also returned HTTP413.
+This is an access limitation, not a claim that Lama lacks suitable resources.
