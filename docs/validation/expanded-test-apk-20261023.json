@@ -1,0 +1,18 @@
+{
+  "version": "1.0.40+140",
+  "workflow_run": "https://github.com/adi4ch-cmd/Nimzo/actions/runs/39910959143",
+  "workflow_conclusion": "success",
+  "source_commit": "90d15c3361c59b7b241d163e7487e36790eec734",
+  "download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-v3-dynamic-1.0.40-39910959143/NIMZO_1.0.40_Universal_NO_VIVOX_TEST.apk",
+  "apk_sha256": "92c4adc900bc2f8df5e6a7682fdde16e4d6a13249708758b1f92001bc14de6ff",
+  "apk_bytes": 225728825,
+  "published_apk_downloaded_and_checksum_verified": true,
+  "drive_products_compiled_originals_and_thumbnails_verified": 57,
+  "original_willchill_assets_verified": 441,
+  "other_control_assets_verified": 65,
+  "android_install_startup": "PASS: API29 emulator installed APK and remained running20seconds without unhandled startup exceptions",
+  "android_media_render": "PASS: API35 emulator all57 media, every frame for38 animations and native decoding for19 static cosmetics",
+  "authenticated_physical_device_checkout": false,
+  "vivox": "OWNER_DEFERRED",
+  "production_auto_update_manifest_changed": false
+}
