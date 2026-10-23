@@ -6,6 +6,7 @@ import '../../core/providers/supabase_provider.dart';
 import 'membership_status.dart';
 import 'membership_catalog.dart';
 import 'membership_media_view.dart';
+import 'membership_pack_runtime.dart';
 
 /// Effective, expiry-checked identity from the server; cached profile tiers
 /// never establish an entitlement. Dispose on navigation/account changes.
@@ -78,45 +79,10 @@ class _VerifiedOwnMembershipEntranceState extends ConsumerState<VerifiedOwnMembe
       .where((row) => row.kind == kind && row.tier == tier && row.benefits.contains('room_entry'));
     final entrance = rows.isEmpty ? null : rows.first.entrance;
     _joinedEntrance = entrance == null
-      ? _OriginalMembershipEntrance(key: ValueKey('$id:$kind:$tier'), label: '${kind.toUpperCase()} $tier')
+      ? MembershipPackEntranceBanner(key: ValueKey('$id:$kind:$tier'),
+          theme: MembershipPackTheme.fromStatus(membership)!)
       : IgnorePointer(child: MembershipMediaView(key: ValueKey('$id:${entrance.sha256}'), media: entrance, animate: true));
     return _joinedEntrance!;
   }
 }
 
-class _OriginalMembershipEntrance extends StatelessWidget {
-  const _OriginalMembershipEntrance({super.key, required this.label});
-  final String label;
-  @override
-  Widget build(BuildContext context) => IgnorePointer(
-        child: Align(
-          alignment: const Alignment(0, -.6),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: 1),
-            duration: const Duration(seconds: 3),
-            builder: (_, progress, child) => Opacity(
-              opacity: progress < .2
-                  ? progress / .2
-                  : progress > .8
-                      ? (1 - progress) / .2
-                      : 1,
-              child: Transform.translate(
-                  offset: Offset(0, -18 * progress), child: child),
-            ),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                  color: const Color(0xff143c30),
-                  border: Border.all(color: const Color(0xffffd270)),
-                  borderRadius: BorderRadius.circular(24)),
-              child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  child: Text('$label · Welcome to the room',
-                      style: const TextStyle(
-                          color: Color(0xffffd270),
-                          fontWeight: FontWeight.w800))),
-            ),
-          ),
-        ),
-      );
-}
