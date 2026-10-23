@@ -18,6 +18,7 @@ import '../social/friend_button.dart';
 import 'profile_repository.dart';
 import 'levels_screen.dart';
 import 'profile_level_scale.dart';
+import 'falla_level_badge.dart';
 import 'profile_level_pills.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
@@ -702,7 +703,11 @@ class LevelBadge extends StatelessWidget {
       ProfileLevelScale.color(kind, level);
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => FallaLevelBadge(
+        kind: kind,
+        level: level,
+        height: showLabel ? 28 : 34,
+        fallback: Container(
         padding:
             EdgeInsets.symmetric(horizontal: showLabel ? 5 : 10, vertical: 4),
         decoration: BoxDecoration(
@@ -737,6 +742,7 @@ class LevelBadge extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       );
 }
