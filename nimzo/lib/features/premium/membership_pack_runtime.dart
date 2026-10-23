@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'membership_identity.dart';
 import 'membership_status.dart';
+import 'membership_pack_inventory.dart';
+import '../store/premium_cosmetics.dart';
+import '../store/cosmetic_media_view.dart';
 
 /// NIMZO-native membership look. These are real Flutter decorations rendered
 /// on actual profiles/voice rooms, not claims of missing third-party animation
@@ -149,7 +152,39 @@ class MembershipPackAvatar extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(
+        // Only exact-tier originals may decorate an actual user avatar.
+        if (MembershipPackInventory.forTier(theme.kind, theme.tier)[1].path
+            case final String framePath)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Image.asset(
+                framePath,
+                fit: BoxFit.fill,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              ),
+            ),
+          ),
+        // Orii supplies genuine animated Mic Wave files for SVIP 3–6.
+        // Play only when this member is actually speaking.
+        if (speaking &&
+            MembershipPackInventory.forTier(theme.kind, theme.tier)[5].animated)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CosmeticMediaView(
+                media: CosmeticMedia(
+                  'membership-mic-${theme.kind}-${theme.tier}',
+                  'Mic Wave',
+                  'Verified SVIP ${theme.tier} mic wave',
+                  MembershipPackInventory.forTier(theme.kind, theme.tier)[5]
+                      .path!,
+                  CosmeticMediaKind.svga,
+                ),
+                animate: true,
+              ),
+            ),
+          ),
+        if (!MembershipPackInventory.forTier(theme.kind, theme.tier)[1].available)
+          Positioned(
           bottom: -3,
           right: -4,
           child: DecoratedBox(
@@ -224,9 +259,22 @@ class MembershipPackChatBubble extends StatelessWidget {
           color: theme.light.withValues(alpha: .25),
           blurRadius: 6)],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: child),
+      child: Stack(children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: child),
+        if (MembershipPackInventory.forTier(theme.kind, theme.tier)[4].path
+            case final String bubblePath)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Image.asset(
+                bubblePath,
+                fit: BoxFit.fill,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              ),
+            ),
+          ),
+      ]),
     ),
   );
 }
