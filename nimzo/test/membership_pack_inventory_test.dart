@@ -44,13 +44,20 @@ void main() {
       expect(vip[0].available, tier <= 7);
       expect(vip[1].available, tier <= 5);
       expect(vip[2].available, tier <= 7);
-      expect(vip[3].available, tier <= 5);
+      expect(vip[3].available, tier <= 6);
+      if (tier <= 6) {
+        expect(vip[3].animated, isTrue);
+        expect(vip[3].path,
+            'assets/membership/hafla/vip$tier-room-entry.svga');
+      }
       expect(vip[4].available, tier <= 5);
       expect(vip[5].available, tier <= 5);
       expect(vip[6].available, tier <= 5);
       expect(vip[7].available, tier == 6,
           reason: 'Tana supplies the genuine VIP6 room wallpaper only');
-      expect(svip[0].available, tier <= 8);
+      expect(svip[0].available, isTrue);
+      expect(svip[0].path,
+          'assets/membership/hafla/svip$tier-tier-background.png');
       if (tier == 6) {
         expect(vip[7].path, 'assets/membership/tana-vip6-room-bg.webp');
         expect(vip[7].sourceTier, 6);
@@ -58,7 +65,9 @@ void main() {
       }
       expect(svip[1].available, isFalse,
           reason: 'SVIP frames must be SVIP frames from an actual source');
-      expect(svip[2].available, isFalse);
+      expect(svip[2].available, isTrue);
+      expect(svip[2].path,
+          'assets/membership/hafla/svip$tier-nameplate.png');
       expect(svip[3].available, tier <= 8,
           reason: 'Available image is a static same-tier entry icon');
       expect(svip[5].available, tier >= 3 && tier <= 6,
@@ -69,7 +78,10 @@ void main() {
         expect(svip[5].sourceKind, 'svip');
         expect(svip[5].thumbnail, isNotNull);
       }
-      for (final i in [4, 6, 7]) {
+      expect(svip[6].available, isTrue);
+      expect(svip[6].path,
+          'assets/membership/hafla/svip$tier-medal.png');
+      for (final i in [4, 7]) {
         expect(svip[i].available, isFalse);
       }
     }
