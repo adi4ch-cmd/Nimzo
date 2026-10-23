@@ -37,17 +37,18 @@ class ProfileLevelPill extends StatelessWidget {
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         Icon(icon, size: compact ? 12 : 14, color: Colors.white),
         const SizedBox(width: 3),
-        Text(level >= 0 ? '$level' : '—', style: TextStyle(
+        Text(level > 0 ? '$level' : '—', style: TextStyle(
             color: Colors.white, fontSize: compact ? 13 : 15,
             fontWeight: FontWeight.w800)),
       ]),
     );
     return Semantics(
-      label: '$label level ${level >= 0 ? level : 'unavailable'}',
+      label: '$label level ${level > 0 ? level : 'unavailable'}',
       child: SizedBox(
         key: ValueKey('profile-level-pill-$kind'),
+        width: compact ? 66 : 88,
         height: compact ? 25 : 34,
-        child: FallaLevelBadge(
+        child: level <= 0 ? legacy : FallaLevelBadge(
           kind: kind,
           level: level,
           height: compact ? 25 : 34,
