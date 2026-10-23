@@ -2,6 +2,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/profile/profile_level_scale.dart';
 
 void main() {
+  test('Falla asset ranges retain full original extended levels', () {
+    expect(ProfileLevelScale.maxLevels, [270, 270, 140]);
+    expect(ProfileLevelScale.levelFor(0, 10000 * 270 * 270), 270);
+    expect(ProfileLevelScale.levelFor(1, 100 * 270 * 270), 270);
+    expect(ProfileLevelScale.levelFor(2, 20 * 140 * 140), 140);
+    expect(ProfileLevelScale.nextRequirement(0, 270),
+        ProfileLevelScale.requiredFor(0, 270));
+    expect(ProfileLevelScale.fraction(0, 270, 999999999999), 1);
+  });
+
   test('tier starts match authoritative SQL square-step thresholds', () {
     for (var kind = 0; kind < 3; kind++) {
       final unit = ProfileLevelScale.thresholds[kind];
