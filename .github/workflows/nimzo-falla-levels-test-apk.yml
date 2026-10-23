@@ -323,7 +323,7 @@ jobs:
           cp nimzo/build/app/outputs/flutter-apk/app-release.apk premium-test-apk/NIMZO_1.0.43_Universal_NO_VIVOX_TEST.apk
           cp nimzo/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk premium-test-apk/NIMZO_1.0.43_ARM64_NO_VIVOX_TEST.apk
           printf '%s\n' "$GITHUB_SHA" > premium-test-apk/SOURCE_SHA.txt
-          echo 'Android test build, development signing. Vivox voice disabled because the SDK release download is unavailable. 683 original Falla Wealth/Charm/Active levels included; XP still uses NIMZO's verified progression curve, not unverified Falla XP thresholds; server membership purchasing remains disabled.' > premium-test-apk/README.txt
+          echo "Android TEST build, development signing. Vivox voice disabled because the SDK download is unavailable. 683 original Falla Wealth/Charm/Active levels and 6 level-up images included. XP uses existing NIMZO progression curve, not verified exact Falla thresholds; membership purchases may be unavailable." > premium-test-apk/README.txt
           (cd premium-test-apk && sha256sum *.apk > SHA256SUMS.txt)
       - name: Upload verified release-mode APK artifact
         uses: actions/upload-artifact@v4
