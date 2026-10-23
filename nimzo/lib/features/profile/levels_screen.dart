@@ -93,7 +93,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
     (from: 40, to: 59, label: 'Blue', color: Color(0xff2563eb)),
     (from: 60, to: 79, label: 'Pink', color: Color(0xffdb2777)),
     (from: 80, to: 99, label: 'Red', color: Color(0xffdc2626)),
-    (from: 100, to: 120, label: 'Gold', color: Color(0xffd4a017)),
+    (from: 100, to: 270, label: 'Gold', color: Color(0xffd4a017)),
   ];
   static const tabs = <String>['Wealth', 'Charm', 'Active'];
   static const icons = <IconData>[
@@ -194,7 +194,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                   final progress = earned == null || level <= 0
                       ? null
                       : ProfileLevelScale.fraction(selected, level, earned);
-                  final next = earned == null || level <= 0 || level >= 120
+                  final next = earned == null || level < 0 || level >= ProfileLevelScale.maxLevels[selected]
                       ? null
                       : (ProfileLevelScale.nextRequirement(selected, level) -
                               earned)
@@ -310,14 +310,14 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                     fontWeight: FontWeight.w900)),
             const SizedBox(height: 8),
             const Text(
-              'Level 0–100 badge catalog. Badges unlock automatically from verified progress.',
+              'Original Falla level tags: Wealth/Charm 0–270, Active 0–140. Unlocked from verified progress.',
               style: TextStyle(color: Color(0xff84798e), fontSize: 12),
             ),
             const SizedBox(height: 12),
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: 101,
+              itemCount: selected == 2 ? 141 : 271,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 childAspectRatio: 1.18,
@@ -372,7 +372,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                               color: Color(0xff433850),
                               fontWeight: FontWeight.w800,
                               fontSize: 14))),
-                  Text('Lv. ${band.from}–${band.to}',
+                  Text('Lv. ${band.from}–${band.to > ProfileLevelScale.maxLevels[selected] ? ProfileLevelScale.maxLevels[selected] : band.to}',
                       style: const TextStyle(
                           color: Color(0xff83798e),
                           fontSize: 12,
