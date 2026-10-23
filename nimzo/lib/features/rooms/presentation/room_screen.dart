@@ -668,6 +668,9 @@ class _State extends ConsumerState<RoomScreen> {
                     child: SafeArea(
                       child: MembershipPackRoomAtmosphere(
                           ownerId: room.valueOrNull?.ownerId,
+                          allowOriginalBackground:
+                              roomTheme == 'nimzo_white' &&
+                              backgroundUrl == null,
                           child: EquippedCosmetic(
                           userId: room.valueOrNull?.ownerId,
                           category: 'Party Theme',
