@@ -53,36 +53,81 @@ class _LevelState extends ConsumerState<LevelsScreen> {
   void _showVerifiedIncrease(VerifiedLevelIncrease upgrade) {
     if (!mounted) return;
     final title = tabs[upgrade.kind];
+    final folder = const ['wealth', 'charm', 'active'][upgrade.kind];
     showDialog<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: const Color(0xff152143),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-        title: const Text('LEVEL UP!',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xffffda72),
-                fontSize: 26, fontWeight: FontWeight.w900)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Center(child: LevelBadge(kind: upgrade.kind, level: upgrade.to)),
-            const SizedBox(height: 18),
-            Text('$title Level ${upgrade.to}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white,
-                    fontSize: 21, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 7),
-            Text('Level ${upgrade.from} → ${upgrade.to}',
-                style: const TextStyle(color: Color(0xffd1d9eb))),
-          ],
+      barrierColor: const Color(0xc900061c),
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: AspectRatio(
+            aspectRatio: 867 / 1016,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/falla_levels/level_up/$folder.webp',
+                    fit: BoxFit.fill,
+                    errorBuilder: (_, __, ___) => Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xff152143),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 32,
+                  child: Text('LEVEL UP!',
+                    style: const TextStyle(color: Color(0xffffdc73),
+                      fontSize: 27, fontWeight: FontWeight.w900)),
+                ),
+                Positioned(
+                  top: 104,
+                  child: SizedBox(
+                    width: 160, height: 145,
+                    child: Image.asset(
+                      'assets/falla_levels/level_up/${folder}_icon_bg.webp',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 171,
+                  child: LevelBadge(kind: upgrade.kind, level: upgrade.to),
+                ),
+                Positioned(
+                  bottom: 86,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('$title Level ${upgrade.to}',
+                        style: const TextStyle(color: Colors.white,
+                          fontSize: 20, fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 4),
+                      Text('Level ${upgrade.from} → ${upgrade.to}',
+                        style: const TextStyle(color: Color(0xffffe1b3),
+                          fontSize: 12, fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  bottom: 20,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    child: const Text('Continue',
+                      style: TextStyle(color: Colors.white,
+                        fontWeight: FontWeight.w800)),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Continue',
-                  style: TextStyle(color: Color(0xffffda72)))),
-        ],
       ),
     );
   }
