@@ -718,8 +718,22 @@ class _State extends ConsumerState<RoomScreen> {
                                           seatsProvider(widget.roomId)),
                                     ),
                                   if (failure != null)
-                                    DataFailure(
-                                        message: failure!, onRetry: join),
+                                    failure!.startsWith('Voice is unavailable in this TEST APK')
+                                        ? Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 18, vertical: 12),
+                                            child: Text(
+                                              failure!,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Color(0xff3d2b53),
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          )
+                                        : DataFailure(
+                                            message: failure!, onRetry: join),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 8,
