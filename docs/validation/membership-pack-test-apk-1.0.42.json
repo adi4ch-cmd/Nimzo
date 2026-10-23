@@ -1,0 +1,21 @@
+{
+  "version": "1.0.42+142",
+  "source_sha": "98770e46e1887f0dae0f439492166153070867e7",
+  "workflow_run": 40028859212,
+  "workflow_conclusion": "success",
+  "apk_bytes": 250814417,
+  "sha256": "3d99032905a13dfb8020e50cedc31e7dd1c58777c0f49c98e513a9658100a803",
+  "published_binary_checksum": "PASS",
+  "published_binary_zip_integrity": "PASS",
+  "arm64_flutter_library_present": true,
+  "exact_original_membership_records_checked": 105,
+  "flutter_tests_passed": 590,
+  "android_api": 35,
+  "android_install_startup": "PASS (unauthenticated x86_64 emulator,20 seconds)",
+  "authenticated_pack_android_acceptance": "NOT TESTED",
+  "physical_device_verification": "NOT TESTED",
+  "vivox": "OWNER DEFERRED",
+  "full20_pack_complete": false,
+  "release_url": "https://github.com/adi4ch-cmd/Nimzo/releases/tag/nimzo-v3-dynamic-1.0.42-40028859212",
+  "download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-v3-dynamic-1.0.42-40028859212/NIMZO_1.0.42_Universal_NO_VIVOX_TEST.apk"
+}

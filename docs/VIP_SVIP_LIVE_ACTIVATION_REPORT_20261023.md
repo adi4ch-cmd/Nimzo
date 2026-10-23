@@ -1,6 +1,8 @@
 # VIP/SVIP live equipment report — 2026-10-23
 
-PR #44 continues the existing integration branch; existing purchases, membership state, accounts, Store ownership, rooms, gifts and wallets are preserved. **The full20-pack Android acceptance is NOT complete, and no new APK was built or published.**
+PR #44 continues the existing integration branch; existing purchases, membership state, accounts, Store ownership, rooms, gifts and wallets are preserved. **The full20-pack Android acceptance is NOT complete. After the owner explicitly requested “Apk do”,1.0.42 was built and published as a TEST prerelease; this is not the completed20-pack release.**
+
+[Download1.0.42 membership TEST APK](https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-v3-dynamic-1.0.42-40028859212/NIMZO_1.0.42_Universal_NO_VIVOX_TEST.apk). [Build and published-binary evidence](validation/membership-pack-test-apk-1.0.42.json). Android15 emulator install/startup passed; authenticated membership/profile/room playback remains unverified.
 
 ## What is implemented
 
@@ -80,8 +82,8 @@ Post-deployment security advisors show no missing RLS policy on either new table
 - New SQL: all20 exact-tier apply/read/remove, owner/observer reads, mismatched/inactive/blocked/anonymous denial, no direct client writes, expiry, manual slot overrides, owner wallpaper permission and later Store theme switching passed.
 - Concurrent Apply versus individual Store equip serializes under the same transaction lock. All20 selections survive independent connections/account changes.
 - Flutter controls: all20 Apply/Remove requests, server-confirmed state changes and actual avatar/chat wrapper activation/removal tested. Entitlement without Apply stays unequipped. Revocation during delayed entrance catalog lookup prevents playback; active removal stops playback. Real original mic motion/lifecycle test passed.
-- Android tests for this branch: **Not tested**. No new app/test APK built, following the final-build gate. Earlier1.0.41 Android15 install testing does not verify these new features.
-- Release blockers: genuine original-media gaps above; authenticated two-user Android profile/room/chat/restart/speech/expiry acceptance. Vivox remains owner-deferred. There is no final-complete APK or new download URL for this branch.
+- Owner-requested1.0.42 TEST build workflow40028859212 passed all590 Flutter tests, compiled-media/signature checks and Android15 emulator installation/startup. The published250814417-byte APK was downloaded independently: ZIP integrity, SHA-256 and105 membership original records match. **Authenticated per-tier Android pack/render/playback tests remain Not tested.**
+- Release blockers: genuine original-media gaps above; authenticated two-user Android profile/room/chat/restart/speech/expiry acceptance. Vivox remains owner-deferred. There is no final-complete APK; the explicitly owner-requested1.0.42 test prerelease is linked above.
 
 ## Actual development previews
 
