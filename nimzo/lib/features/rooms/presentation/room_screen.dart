@@ -30,6 +30,7 @@ import '../domain/room_theme.dart';
 import 'room_controller.dart';
 import 'room_session.dart';
 import 'room_user_sheet.dart';
+import 'room_seat_identity.dart';
 import 'room_overlays.dart';
 import '../rocket/room_rocket_widgets.dart';
 import '../diamond/room_diamond_repository.dart';
@@ -827,7 +828,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                           child: Container(
                                                             key: ValueKey(
                                                                 'room-mic-seat-$n'),
-                                                            height: 84,
+                                                            height: 104,
                                                             margin:
                                                                 const EdgeInsets
                                                                     .symmetric(
@@ -948,22 +949,13 @@ class _State extends ConsumerState<RoomScreen> {
                                                                       const SizedBox(
                                                                           height:
                                                                               3),
-                                                                      MembershipPackNameplate(
-                                                                          userId:
-                                                                              s.userId,
-                                                                          child: EquippedIdentity(
-                                                                              userId: s.userId ?? '',
-                                                                              child: Text(
-                                                                                p?.displayName ?? '$n',
-                                                                                maxLines: 1,
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                                style: TextStyle(
-                                                                                  fontSize: 12,
-                                                                                  color: RoomTheme.byId(
-                                                                                    room.valueOrNull?.theme ?? 'nimzo_white',
-                                                                                  ).text.withValues(alpha: .88),
-                                                                                ),
-                                                                              ))),
+                                                                      RoomSeatIdentity(
+                                                                          userId: s.userId!,
+                                                                          displayName: p?.displayName ?? '$n',
+                                                                          textColor: RoomTheme.byId(
+                                                                            room.valueOrNull?.theme ?? 'nimzo_white',
+                                                                          ).text,
+                                                                        ),
                                                                       if (s
                                                                           .muted)
                                                                         Icon(
