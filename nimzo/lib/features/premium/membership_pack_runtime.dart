@@ -183,7 +183,23 @@ class MembershipPackAvatar extends StatelessWidget {
               ),
             ),
           ),
-        if (!MembershipPackInventory.forTier(theme.kind, theme.tier)[1].available)
+        if (theme.isSvip &&
+            MembershipPackInventory.forTier(theme.kind, theme.tier)[6].path
+                case final String medalAsset)
+          Positioned(
+            bottom: -9,
+            right: -9,
+            child: IgnorePointer(
+              child: Image.asset(
+                medalAsset,
+                width: 33,
+                height: 33,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              ),
+            ),
+          )
+        else if (!MembershipPackInventory.forTier(theme.kind, theme.tier)[1].available)
           Positioned(
           bottom: -3,
           right: -4,
@@ -232,7 +248,27 @@ class MembershipPackNameplate extends StatelessWidget {
       child: DefaultTextStyle.merge(
         style: const TextStyle(
           color: Color(0xff130e23), fontWeight: FontWeight.w800),
-        child: child,
+        child: theme.isSvip &&
+                MembershipPackInventory.forTier(theme.kind, theme.tier)[2].path
+                    case final String labelAsset
+            ? Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 4,
+                children: [
+                  Image.asset(
+                    labelAsset,
+                    height: 19,
+                    width: 62,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) =>
+                        Text(theme.label,
+                            style: TextStyle(color: theme.light,
+                                fontSize: 10, fontWeight: FontWeight.w900)),
+                  ),
+                  child,
+                ],
+              )
+            : child,
       ),
     ),
   );
@@ -316,12 +352,13 @@ class MembershipPackEntranceBanner extends StatelessWidget {
               // This is a tier-matched STATIC emblem inside NIMZO's
               // real entrance transition, not a borrowed MP4/VAP effect.
               if (MembershipPackInventory.forTier(theme.kind, theme.tier)[3]
-                  .path case final String entryArt)
+                  case final entryArt
+                  when !entryArt.animated && entryArt.path != null)
                 SizedBox(
                   width: 58,
                   height: 32,
                   child: Image.asset(
-                    entryArt,
+                    entryArt.path!,
                     fit: BoxFit.contain,
                     errorBuilder: (_, __, ___) =>
                         const Icon(Icons.auto_awesome,
