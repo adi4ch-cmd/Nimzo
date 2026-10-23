@@ -1,0 +1,15 @@
+# Expanded owner-supplied Drive catalog
+
+Owner requested at least20 gifts and additional Store content. This batch adds20 genuine SVGA gifts and28 Store cosmetics:9 animated Mic Waves,13 static Chat Bubbles,5 static Profile Cards and1 static Party Theme. Together with the earlier Drive batch there are57 products,38 animated and19 static. The existing live catalog currently has7 gifts and45 Store products; after verified additive activation the expected totals are27 and73.
+
+Source pins and exact original-byte hashes are recorded in `nimzo/assets/drive_catalog_expanded/manifest.json`. Originals were extracted again from hash-pinned owner-supplied APK archives. No duplicates of existing originals were selected. Relationship text, missing dynamic resources, unsupported assets and incomplete scenes were excluded. Static images are accurately classified as static cosmetics. Gifts grant no implied relationship, membership or financial rewards.
+
+Host verification completed:558 Flutter tests passed; all48 expanded products passed production media preflight and actual decoding/rasterization (every animation frame). Analyzer reported59 informational notices, zero errors/warnings.19 Python build-guard tests passed;10 voice-sdk validation tests completed with one expected SDK-absence skip. Real disposable Postgres fixture verifies20 gift sends/replays,28 Store purchases/replays/equips, lifetime ownership, exact190000 total coin debit and unchanged prior catalog/media/financial data during import. A duplicate import aborts atomically.
+
+77 original/thumbnail objects are uploaded to immutable SHA-addressed Supabase Storage URLs. Public HTTPS readback checked every MIME type, byte count and SHA256; see expanded-drive-storage-readback-20261023.json. The owner-import function was sealed after upload (version9, HTTP410); no client write policies were added. Bucket allowed types are restricted to SVGA, PNG, WebP and JPEG with the existing8MiB object limit. Moonlit Palace has original JPEG bytes despite its source .png extension; publication metadata accurately uses image/jpeg.
+
+Equipped Profile Cards now remain visible behind the profile header; a regression test covers the actual screen. Chat Bubble text receives a readable scrim while preserving decorative borders. Existing ID-plate and approved personal-gift animation fixes are retained.
+
+Android verification is pending. The isolated renderer uses the documented integration driver because Flutter3.47.6's flutter-test golden-stream subscription requires DDS even for tests without goldens. Asset reads execute outside the host fake clock to avoid nondeterministic stalls. Assertions still inspect exact original bytes, real decoder resources and every rendered animation frame; any assertion fails the driver. No production activation, successful Android proof or new APK is claimed in this stage report.
+
+Vivox remains explicitly deferred by owner. Full original master-task acceptance and authenticated physical-device purchase/audio QA remain incomplete. No production automatic-update manifest is changed by this test release work.
