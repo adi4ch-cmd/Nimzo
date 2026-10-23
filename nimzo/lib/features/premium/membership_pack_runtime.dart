@@ -279,3 +279,41 @@ class MembershipPackEntranceBanner extends StatelessWidget {
     ),
   );
 }
+
+/// Compact owner-only room identity. It does not change the user's chosen
+/// wallpaper, but adds a real matching membership theme to the room header.
+class MembershipPackRoomBanner extends StatelessWidget {
+  const MembershipPackRoomBanner({super.key, required this.ownerId});
+  final String? ownerId;
+
+  @override
+  Widget build(BuildContext context) => VerifiedMembershipPack(
+    userId: ownerId,
+    fallback: const SizedBox.shrink(),
+    builder: (theme) => Semantics(
+      label: '${theme.label} room membership theme',
+      child: Container(
+        key: ValueKey('membership-pack-room-${theme.kind}-${theme.tier}'),
+        width: double.infinity,
+        constraints: const BoxConstraints(minHeight: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+        decoration: BoxDecoration(
+          gradient: theme.gradient(opacity: .8),
+          border: Border(
+            bottom: BorderSide(color: theme.light.withValues(alpha: .9))),
+        ),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          const Icon(Icons.auto_awesome, size: 13,
+              color: Color(0xff1d1730)),
+          const SizedBox(width: 5),
+          Flexible(child: Text('${theme.label}  ·  Royal Voice Room',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xff150e23),
+                fontWeight: FontWeight.w900, fontSize: 11))),
+        ]),
+      ),
+    ),
+  );
+}
