@@ -204,7 +204,7 @@ class MembershipPackGallery extends StatelessWidget {
               style: const TextStyle(color: Colors.white70)),
           const SizedBox(height: 6),
           const Text(
-              'Only existing assets are previewed. Missing pieces and effects are not represented as completed. Ownership and benefits are confirmed separately by the server.',
+              'Only original assets matching this exact VIP/SVIP level are shown. Different source APKs are allowed; different levels are not. Missing parts remain empty. Membership access is confirmed by the server.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white54, fontSize: 12)),
           const SizedBox(height: 18),
@@ -254,12 +254,13 @@ class MembershipPackGallery extends StatelessWidget {
                                 color: _gold,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600)),
-                        if (slot.artwork != null &&
-                            !slot.artwork!.isTierSpecific &&
-                            slot.available)
-                          const Text('Shared artwork',
-                              style: TextStyle(
-                                  color: Colors.white54, fontSize: 10)),
+                        if (slot.artwork?.available == true)
+                          Text(slot.artwork!.source,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  color: Colors.white54, fontSize: 9)),
                       ]),
                     ),
                   ),
