@@ -40,10 +40,10 @@ class MembershipPackGallery extends StatelessWidget {
     if (artwork?.available == true) {
       if (artwork!.animated) {
         return CosmeticMediaView(
-          key: ValueKey('membership-mic-${presentation.kind}-${presentation.tier}'),
+          key: ValueKey('membership-original-${presentation.kind}-${presentation.tier}-${artwork.title}'),
           media: CosmeticMedia(
             'membership-${presentation.kind}-${presentation.tier}-${artwork.title}',
-            'Mic Wave',
+            artwork.title.contains('entry') ? 'Room Entry' : 'Mic Wave',
             artwork.title,
             artwork.path!,
             CosmeticMediaKind.svga,
