@@ -164,6 +164,42 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('VIP6 original room wallpaper only appears with permission',
+      (tester) async {
+    Future<void> buildRoom(bool allowOriginal) async {
+      await tester.pumpWidget(ProviderScope(
+        key: ValueKey('wallpaper-$allowOriginal'),
+        overrides: [
+          effectiveMembershipProvider('vip6')
+              .overrideWith((_) async => _status(vip: 6)),
+        ],
+        child: MaterialApp(home: Scaffold(
+          body: MembershipPackRoomAtmosphere(
+            ownerId: 'vip6',
+            allowOriginalBackground: allowOriginal,
+            child: const SizedBox.expand(),
+          ),
+        )),
+      ));
+      await tester.pumpAndSettle();
+    }
+
+    await buildRoom(false);
+    var surface = tester.widget<DecoratedBox>(
+        find.byKey(const ValueKey('membership-pack-atmosphere-vip-6')));
+    expect((surface.decoration as BoxDecoration).image, isNull,
+        reason: 'Custom or non-default room backgrounds must win');
+
+    await buildRoom(true);
+    surface = tester.widget<DecoratedBox>(
+        find.byKey(const ValueKey('membership-pack-atmosphere-vip-6')));
+    final image = (surface.decoration as BoxDecoration).image?.image;
+    expect(image, isA<AssetImage>());
+    expect((image! as AssetImage).assetName,
+        'assets/membership/tana-vip6-room-bg.webp');
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('native VIP entry animates at every tier without media assets',
       (tester) async {
     for (var tier = 1; tier <= 10; tier++) {
