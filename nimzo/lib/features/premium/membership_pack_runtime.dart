@@ -30,6 +30,15 @@ class MembershipPackTheme {
         : status.vipLevel;
     if (tier <= 0) return null;
     final kind = status.svipLevel > 0 ? 'svip' : 'vip';
+    return forTier(kind, tier);
+  }
+
+  /// Theme lookup for static previews; grants no membership privileges.
+  static MembershipPackTheme forTier(String kind, int tier) {
+    if (kind != 'vip' && kind != 'svip') {
+      throw ArgumentError.value(kind, 'kind');
+    }
+    if (tier <= 0) throw RangeError.value(tier, 'tier');
     const vip = <(Color, Color)>[
       (Color(0xfff2b8de), Color(0xff792358)),
       (Color(0xffa7ccfc), Color(0xff24518b)),
@@ -102,11 +111,13 @@ class MembershipPackAvatar extends StatelessWidget {
     required this.userId,
     required this.child,
     required this.size,
+    this.speaking = false,
   });
 
   final String? userId;
   final Widget child;
   final double size;
+  final bool speaking;
 
   @override
   Widget build(BuildContext context) => VerifiedMembershipPack(
@@ -118,15 +129,17 @@ class MembershipPackAvatar extends StatelessWidget {
       height: size + 7,
       child: Stack(clipBehavior: Clip.none, children: [
         Positioned.fill(
-          child: DecoratedBox(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOut,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: theme.gradient(),
               boxShadow: [
                 BoxShadow(
-                  color: theme.light.withValues(alpha: .5),
-                  blurRadius: 7,
-                  spreadRadius: 1,
+                  color: theme.light.withValues(alpha: speaking ? .88 : .4),
+                  blurRadius: speaking ? 14 : 7,
+                  spreadRadius: speaking ? 3 : 1,
                 )
               ],
             ),
@@ -175,9 +188,11 @@ class MembershipPackNameplate extends StatelessWidget {
       key: ValueKey('membership-pack-nameplate-${theme.kind}-${theme.tier}'),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        gradient: theme.gradient(opacity: .92),
+        color: const Color(0xff161b32),
         borderRadius: BorderRadius.circular(7),
         border: Border.all(color: theme.light, width: 1),
+        boxShadow: [BoxShadow(
+            color: theme.dark.withValues(alpha: .5), blurRadius: 3)],
       ),
       child: DefaultTextStyle.merge(
         style: const TextStyle(
