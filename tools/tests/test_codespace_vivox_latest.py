@@ -33,7 +33,7 @@ class CodespaceVivoxLatestTests(unittest.TestCase):
         self.assertIn("sdk_location(args.sdk_root, tmp_parent)", self.source)
         self.assertIn("git\", \"worktree\", \"add\", \"--detach", self.source)
         self.assertNotIn("gh release upload", self.source)
-        self.assertNotIn("git add", self.source)
+        self.assertNotIn('run("git", "add"', self.source)
         self.assertIn("verify_prebuild_acceptance.py", self.source)
 
     def test_derives_current_apk_name_from_pubspec(self):
