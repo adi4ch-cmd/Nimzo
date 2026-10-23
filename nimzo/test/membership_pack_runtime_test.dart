@@ -4,6 +4,8 @@ import 'package:nimzo/features/premium/membership_identity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/premium/membership_pack_runtime.dart';
 import 'package:nimzo/features/premium/membership_status.dart';
+import 'package:nimzo/features/store/cosmetic_media_view.dart';
+import 'package:nimzo/features/store/premium_cosmetics.dart';
 
 MembershipStatus _status({int vip = 0, int svip = 0, bool retired = false}) =>
     MembershipStatus.fromJson({
@@ -104,6 +106,62 @@ void main() {
     expect(find.byKey(const ValueKey('membership-pack-chat-vip-10')),
         findsNothing);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('VIP 1 live profile frame and chat use its own original art',
+      (tester) async {
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        effectiveMembershipProvider('vip1').overrideWith((_) async =>
+            _status(vip: 1)),
+      ],
+      child: const MaterialApp(
+        home: Scaffold(
+          body: Column(children: [
+            MembershipPackAvatar(userId: 'vip1', size: 64,
+                child: CircleAvatar(child: Text('N'))),
+            MembershipPackChatBubble(userId: 'vip1',
+                child: Text('Hello')),
+          ]),
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    final imagePaths = tester.widgetList<Image>(find.byType(Image))
+        .map((image) => image.image)
+        .whereType<AssetImage>()
+        .map((image) => image.assetName).toList();
+    expect(imagePaths, contains(
+        'assets/willchill_premium/vip/icon_vip1_2.png'));
+    expect(imagePaths, contains(
+        'assets/willchill_premium/vip/icon_vip1_4.png'));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('SVIP 5 speaking mic selects its actual Orii SVIP 5 SVGA',
+      (tester) async {
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        effectiveMembershipProvider('svip5').overrideWith((_) async =>
+            _status(svip: 5)),
+      ],
+      child: const MaterialApp(
+        home: Scaffold(body: MembershipPackAvatar(
+          userId: 'svip5', size: 62, speaking: true,
+          child: CircleAvatar(child: Text('N')),
+        )),
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    // Decoder readiness and frame playback still require Android device QA.
+    expect(find.byType(CosmeticMediaView), findsOneWidget);
+    final media = tester.widget<CosmeticMediaView>(
+        find.byType(CosmeticMediaView)).media;
+    expect(media.asset, contains('c1cc37dc26d4f78b5c3626021f95ee'));
+    expect(media.kind, CosmeticMediaKind.svga);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 
   testWidgets('native VIP entry animates at every tier without media assets',
