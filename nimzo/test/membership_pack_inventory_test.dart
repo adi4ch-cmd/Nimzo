@@ -48,8 +48,14 @@ void main() {
       expect(vip[4].available, tier <= 5);
       expect(vip[5].available, tier <= 5);
       expect(vip[6].available, tier <= 5);
-      expect(vip[7].available, isFalse);
+      expect(vip[7].available, tier == 6,
+          reason: 'Tana supplies the genuine VIP6 room wallpaper only');
       expect(svip[0].available, tier <= 8);
+      if (tier == 6) {
+        expect(vip[7].path, 'assets/membership/tana-vip6-room-bg.webp');
+        expect(vip[7].sourceTier, 6);
+        expect(vip[7].sourceKind, 'vip');
+      }
       expect(svip[1].available, isFalse,
           reason: 'SVIP frames must be SVIP frames from an actual source');
       expect(svip[2].available, isFalse);
