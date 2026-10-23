@@ -45,6 +45,24 @@ jobs:
             z.extractall('.')
           print('Extracted 683 original Falla WEBP tags')
           PY
+      - name: Include original Falla Wealth, Charm and Active level-up graphics
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --output /tmp/falla_levelup.zip \
+            'https://sb-55reh6gl5lbv.vercel.run/falla_level_up_6.zip'
+          echo '12b8f590bd8e57b59c76baddbb926ce886e34481754df030c31590855a4dd87b  /tmp/falla_levelup.zip' | sha256sum --check
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          with ZipFile('/tmp/falla_levelup.zip') as z:
+              expect={f'nimzo/assets/falla_levels/level_up/{kind}{suffix}.webp'
+                      for kind in ('wealth','charm','active')
+                      for suffix in ('','_icon_bg')}
+              assert set(z.namelist())==expect
+              assert z.testzip() is None
+              z.extractall('.')
+          print('Original Falla 6 level-up graphics added')
+          PY
       - name: Commit permanent original artwork to source branch
         shell: bash
         run: |
