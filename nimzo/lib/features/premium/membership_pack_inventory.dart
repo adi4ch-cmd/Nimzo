@@ -88,7 +88,7 @@ class MembershipPackInventory {
       ),
       4: (
         'assets/drive_catalog_expanded/2af1763a40b7510780820cfd2f25e039bf621e46df0f5427fb0caef31ebd6b1d.svga',
-        'assets/drive_catalog_expanded/c2380fff578b5f27a48c6c09f117d248993d174ee59a6d56499cf1bac03c46.png',
+        'assets/drive_catalog_expanded/c2380fff578b5f27a48c6c09f117d248993d174ee59a6d56499cfb412c1882aa.png',
       ),
       5: (
         'assets/drive_catalog_expanded/c1cc37dc26d4f78b5c3626021f95ee12423c5e6494199b124a6194d6f09f7292.svga',
