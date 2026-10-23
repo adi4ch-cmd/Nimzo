@@ -1,5 +1,6 @@
 import '../premium/membership_identity.dart';
 import '../premium/membership_pack_runtime.dart';
+import '../premium/membership_pack_inventory.dart';
 import '../store/store_visual_equipment.dart';
 import '../../core/widgets/master_ui.dart';
 
@@ -120,6 +121,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           String? image(String bucket, String? path) =>
               path == null ? null : db.storage.from(bucket).getPublicUrl(path);
           final cover = image('covers', p.coverPath);
+          final verifiedMembership = ref.watch(effectiveMembershipProvider(id));
+          final packTheme = MembershipPackTheme.fromStatus(
+              verifiedMembership.hasError
+                  ? null
+                  : verifiedMembership.valueOrNull);
+          final packProfileCard = packTheme == null
+              ? null
+              : MembershipPackInventory.forTier(
+                  packTheme.kind, packTheme.tier)[6].path;
           final hasProfileCard = ref
                   .watch(storeVisualEquipmentProvider(id))
                   .valueOrNull
@@ -144,12 +154,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 : null,
                             gradient:
                                 hasProfileCard ? null : NimzoStyle.heroGradient,
-                            image: hasProfileCard || cover == null
+                            // Preserve a chosen user cover or an equipped
+                            // Store item. Only the otherwise-default cover
+                            // uses original art of this verified VIP tier.
+                            image: hasProfileCard
                                 ? null
-                                : DecorationImage(
-                                    image: NetworkImage(cover),
-                                    fit: BoxFit.cover,
-                                  ),
+                                : cover != null
+                                    ? DecorationImage(
+                                        image: NetworkImage(cover),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : packProfileCard != null
+                                        ? DecorationImage(
+                                            image: AssetImage(packProfileCard),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : null,
                           ),
                           child: Align(
                             alignment: Alignment.topLeft,
