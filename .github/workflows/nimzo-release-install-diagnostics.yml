@@ -1,6 +1,11 @@
 name: Diagnose published NIMZO installation on Android15
 on:
   workflow_dispatch: {}
+  push:
+    branches: [integration/nimzo-v3-dynamic-20261021]
+    paths:
+      - .github/workflows/nimzo-release-install-diagnostics.yml
+      - tools/diagnose_release_install.sh
 permissions:
   contents: read
 jobs:
