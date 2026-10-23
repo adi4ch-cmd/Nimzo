@@ -387,10 +387,15 @@ class MembershipPackRoomBanner extends StatelessWidget {
 /// that leaves the existing room wallpaper and touch targets intact.
 class MembershipPackRoomAtmosphere extends StatelessWidget {
   const MembershipPackRoomAtmosphere({
-    super.key, required this.ownerId, required this.child,
+    super.key,
+    required this.ownerId,
+    required this.child,
+    this.allowOriginalBackground = false,
   });
   final String? ownerId;
   final Widget child;
+  /// Only true for rooms with no user-selected/approved custom wallpaper.
+  final bool allowOriginalBackground;
 
   @override
   Widget build(BuildContext context) => VerifiedMembershipPack(
@@ -399,6 +404,17 @@ class MembershipPackRoomAtmosphere extends StatelessWidget {
     builder: (theme) => DecoratedBox(
       key: ValueKey('membership-pack-atmosphere-${theme.kind}-${theme.tier}'),
       decoration: BoxDecoration(
+        // A room's own wallpaper always wins. In a default room the
+        // exact-level VIP 6 original background can be displayed.
+        image: allowOriginalBackground &&
+                MembershipPackInventory.forTier(theme.kind, theme.tier)[7]
+                    .path != null
+            ? DecorationImage(
+                image: AssetImage(MembershipPackInventory.forTier(
+                    theme.kind, theme.tier)[7].path!),
+                fit: BoxFit.cover,
+              )
+            : null,
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
