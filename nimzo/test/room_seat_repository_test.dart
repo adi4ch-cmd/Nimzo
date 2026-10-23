@@ -3,8 +3,16 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/features/rooms/data/room_repository.dart';
+import 'package:nimzo/features/rooms/domain/room.dart';
 
 void main() {
+  test('NIMZO mic seat layout is two rows of five', () {
+    expect(MicSeat.count, 10);
+    expect(MicSeat.columns, 5);
+    expect(MicSeat.rows, 2);
+    expect(() => MicSeat.validateNumber(11), throwsRangeError);
+    expect(() => MicSeat.validateNumber(10), returnsNormally);
+  });
   test('invalid seat numbers never reach the server; seat 10 does', () async {
     final requested = <String>[];
     final paths = <String>[];
