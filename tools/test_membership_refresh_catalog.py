@@ -3,6 +3,7 @@
 import argparse
 import json
 import re
+from pathlib import Path
 from generate_membership_refresh_migration import ROOT, load_items, build_sql
 from test_gift_checked_send import command
 
@@ -12,6 +13,7 @@ def main():
     parser.add_argument('--container', default='nimzo-postgres-test')
     parser.add_argument('--fixture', required=True)
     parser.add_argument('--database', required=True)
+    parser.add_argument('--publication-sql', type=Path)
     args = parser.parse_args()
     if not re.fullmatch(r'drive_expanded_[a-z0-9_]+', args.fixture) or not re.fullmatch(r'membership_refresh_[a-z0-9_]+', args.database):
         parser.error('Disposable fixture names required')
@@ -44,10 +46,13 @@ def main():
         return {table: json.loads(sql(f"select coalesce(jsonb_agg(to_jsonb(t) order by to_jsonb(t)::text),'[]'::jsonb) from public.{table} t;")) for table in tables}
     before = snapshot()
     membership, gifts, _ = load_items()
-    # Synthetic evidence confined to this disposable database; never persisted
-    # to a production migration/proof file or used to claim Android acceptance.
-    migration = build_sql(membership, gifts, '0'*40, '2000-01-01T00:00:00Z',
-                          'DISPOSABLE SQL FIXTURE ONLY; NOT NATIVE EVIDENCE')
+    # Before publication, synthetic evidence stays confined to this fixture.
+    # After publication, exercise the exact actual migration in the clone.
+    published = ROOT/'supabase/migrations/20261023154035_activate_verified_membership_refresh.sql'
+    migration = (args.publication_sql.read_text() if args.publication_sql else
+                 published.read_text() if published.exists() else
+                 build_sql(membership, gifts, '0'*40, '2000-01-01T00:00:00Z',
+                           'DISPOSABLE SQL FIXTURE ONLY; NOT NATIVE EVIDENCE'))
     sql(migration)
     after = snapshot()
     for table in tables:

@@ -1,0 +1,1109 @@
+{
+  "source_commit": "5bef37e4ff1ae4446d69fef25ca25852023e350f",
+  "test_passed": true,
+  "workflow_conclusion": "success",
+  "device": "Android35 x86_64 Google APIs emulator",
+  "workflow_run": "https://github.com/adi4ch-cmd/Nimzo/actions/runs/39978492899",
+  "test_completed_at": "2026-10-23T15:35:03.098949+00:00",
+  "native_log": "membership-refresh-native-20261023.log",
+  "log_sha256": "b0566956e66241bf7c19d67761c4917a5a83fc272039872426c23c63397967fd",
+  "records": {
+    "membership-svip-1-badge": {
+      "sha256": "f4b8c7456ac316d5dfe7dced7629f65373404f2c22aae536bed83bbec9bd4abd",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-1-card": {
+      "sha256": "bdf7067a94be36e6a6226b97feead29d1295808011c2eb7ef499a7a24fa8346a",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-1-hero": {
+      "sha256": "3e106fbaa464c7ced60f6af59c7be065bed5013017feb3d10330cb080c78bebf",
+      "kind": "raster",
+      "frames": 60,
+      "fps": 20,
+      "distinct": 24,
+      "visible": 60
+    },
+    "membership-svip-1-hero_still": {
+      "sha256": "aa69add9b0ce80a624eb1ae5c547dedfcae2248e873624c60b31b5da51936080",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-2-badge": {
+      "sha256": "d8501d97db9124f360d4e2770e609230189128d409dc9be91a5737bb7e472d3f",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-2-card": {
+      "sha256": "66d1e25822eea0f2aac0ec19f57376748a183ef6b95fa8aef06e4729de7185f1",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-2-hero": {
+      "sha256": "c14184291d240f371003f1e490b3430d32f6b2765a81516dea4db7d73fca16be",
+      "kind": "raster",
+      "frames": 60,
+      "fps": 20,
+      "distinct": 59,
+      "visible": 60
+    },
+    "membership-svip-2-hero_still": {
+      "sha256": "4a6f8475c5e0110af94575bac6c1bcb7116e3067039d94e2635ee231e461ecf8",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-3-badge": {
+      "sha256": "91f183d8c63df821595e95d5549a8f5788f210b5f6c0fdec68fac415f8d477eb",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-3-card": {
+      "sha256": "1faabcb362a21d3270247358934e64765d6d1e79470e11674a58404430ea3846",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-3-hero": {
+      "sha256": "ad54e288570a20d08c5f69661219e68b054bfbe97d101e984ac64f9fa1e9df84",
+      "kind": "raster",
+      "frames": 60,
+      "fps": 20,
+      "distinct": 60,
+      "visible": 60
+    },
+    "membership-svip-3-hero_still": {
+      "sha256": "52a6584b412fce0532bc448b3d0c9e8caadcff36bdd7ccb207b02089bb139cbb",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-4-badge": {
+      "sha256": "5d8a8c27b834bd81b7ee132c71a7a94c37bc77dc759993665105d3163d78e9e1",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-4-card": {
+      "sha256": "863aab75c57eed6ab63151b0292f770ce171593f22a0809401f9f1119964d105",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-4-hero": {
+      "sha256": "50de9d5fa2cd00bdd85e1e653c00bd574578f49f556fb757d63a1ce84c8b730f",
+      "kind": "raster",
+      "frames": 60,
+      "fps": 20,
+      "distinct": 60,
+      "visible": 60
+    },
+    "membership-svip-4-hero_still": {
+      "sha256": "e0d7544b55b9f8779306045f205a1f0067c8d7d1a1e65fdb9ad4036dffb02ae5",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-5-badge": {
+      "sha256": "0c7ae33de121c0adbd7b505806b02b9188e893965f07638f7321b5ad32fb77f0",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-5-card": {
+      "sha256": "3b3a0b0a440fafbc9c87f2c1cebb64ad8dfe37475b3105320355afadd342d915",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-5-hero": {
+      "sha256": "62c46772d01d9bf376c7713c81955780700e3879d6f8cde8d919c86729c7f668",
+      "kind": "raster",
+      "frames": 60,
+      "fps": 20,
+      "distinct": 60,
+      "visible": 60
+    },
+    "membership-svip-5-hero_still": {
+      "sha256": "f96c0db47e1b06d41e677e3ddec4b29cb1c92cb95ff063b41c0e43957f183241",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-6-badge": {
+      "sha256": "83976f378c9467ee5044482c505ed8a4179bf833bacc509402579f1e3c660889",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-6-card": {
+      "sha256": "add9a8aee829932720d1ab51d8274c2f646bc4345bb7104aeafa59be7bb7a79b",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-6-hero": {
+      "sha256": "e75a5cec2e44bb36a88bc5d2207cfa7fa9709a8b521d516aaccf1467d85aeda3",
+      "kind": "raster",
+      "frames": 30,
+      "fps": 10,
+      "distinct": 30,
+      "visible": 30
+    },
+    "membership-svip-6-hero_still": {
+      "sha256": "948f7c1ea988243908d5eb320fcfb74bbea83422af08ddc6d566795fadee23e4",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-7-badge": {
+      "sha256": "6a10dfb88a6d8c10dd2149b2bbedafef198cabff1b1e567abcc730b41e7deef8",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-7-card": {
+      "sha256": "b5474e93cb76a028a2aaf9539e091bb40aaa031c1ebad8d2591695a06b215b52",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-7-hero": {
+      "sha256": "548ed6e858d154f88d56906269292b605b0b260a6aa0a9cb45e342b9f6eedbea",
+      "kind": "raster",
+      "frames": 30,
+      "fps": 10,
+      "distinct": 30,
+      "visible": 30
+    },
+    "membership-svip-7-hero_still": {
+      "sha256": "cae152b1928a34a7eb51106576c18c6b3e2d61c93ca709bd26c5cbb37173f4ca",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-8-badge": {
+      "sha256": "470bd3fa884d51f593c1a2bc911210b583b97c163ed4faf0b417c0027ac82dfd",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-8-card": {
+      "sha256": "177e3b5234ebe78f1063c81d59bbf9447b9b9c41fdf20e992127b221cc92102e",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-8-hero": {
+      "sha256": "5beccb3bc6e727181a7dc41f059f725a1c54c775483eb1ef9dae7ee1ec0f7b36",
+      "kind": "raster",
+      "frames": 10,
+      "fps": 10,
+      "distinct": 10,
+      "visible": 10
+    },
+    "membership-svip-8-hero_still": {
+      "sha256": "0de4e16437f78e0558ffcad9f70cba79d52ececba31c55977a452aa446d11817",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-9-badge": {
+      "sha256": "dd41e4abcfcb39b545b3534a8a502b50f170b87bf5c277358acd214179981ddf",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-9-card": {
+      "sha256": "137337ab05a6a462620a77145cf9deb2eea0c7fafab3bdd0ea091be9b7469d9f",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-9-hero": {
+      "sha256": "f68d51ffbcf29c5cb8e1d7061725dd555c0d27f0562a9b79614464f9b133418e",
+      "kind": "raster",
+      "frames": 30,
+      "fps": 10,
+      "distinct": 30,
+      "visible": 30
+    },
+    "membership-svip-9-hero_still": {
+      "sha256": "04281c80d36c7bb40100e1a3e663d26f00c6be983197aa9494595cd4fbc84715",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-10-badge": {
+      "sha256": "1d71ef3af3993c5aa9d99a556bac0b5735be2795cfd569d3d21a25e9ea0ec225",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-10-card": {
+      "sha256": "e8cf4eacd92a61cae09e3efdd8a364a82a90d83fc4bbf98ca9e91469b95fc460",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-svip-10-hero": {
+      "sha256": "1abc8cd67196244f3dae4ec17ae53820eae52776a48315b81391bb4bc283f7b2",
+      "kind": "raster",
+      "frames": 30,
+      "fps": 10,
+      "distinct": 30,
+      "visible": 30
+    },
+    "membership-svip-10-hero_still": {
+      "sha256": "2e59b136d13e0ad23a7063e69c6acb655ef0c67d31049709942924b7ac923de7",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-1-badge": {
+      "sha256": "8e19c99a1e940aed6c1bfb0527fdc57fa9462c617c5f1e7c4d80bf18bf0d3721",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-1-card": {
+      "sha256": "518f4183f82e211af0e7c832767abf3c0d7bf0fbc8398443927ae5edceb217d2",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-1-hero": {
+      "sha256": "2836d86129e6a8429e33b341d63b86c3f7311cb856385b69c04086797cf077f8",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-2-badge": {
+      "sha256": "191db44d70f3efc48e3a9d615ac93e4fa3ae13cb9ed9f467bfcc1269accbb09e",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-2-card": {
+      "sha256": "ced659c65c929595010121032fb8b03d675393db6c68e795b628c25d9b35ad40",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-2-hero": {
+      "sha256": "a6697df0d8090d7be97425c6e17d27480d0d601d9866ac1ccc1ab304667bf808",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-3-badge": {
+      "sha256": "bae5c3573e67732d6bed943416b686ba936ee9905dc95b4ae239313e9c9b9c35",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-3-card": {
+      "sha256": "6903c0aad716447ccc99ac29171252eb7845c02ecfec1db91cd2e7b2c7c75ab3",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-3-hero": {
+      "sha256": "209ec8a915eab25cb54a51bfbbbf14032afb81ffc665ab0a3dc25347534f09ce",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-4-badge": {
+      "sha256": "81b6613a37eb629c2b5e5a4bb1c83d1fbc35e091abee7f4759a3925c9e218738",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-4-card": {
+      "sha256": "4174498fea26de4eb5d16ef0f003f32992316aa16c6d198bbda853c4b24f33c1",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-4-hero": {
+      "sha256": "75dc8649bfc9d277e6a996cea69403afe662d9b1fb765ba1f49fe3c9181d4740",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-5-badge": {
+      "sha256": "a0c9be3fcd8d1da204b6611a55152988084b828f471ca6a9428d805519c81994",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-5-card": {
+      "sha256": "354a1613be5cf95b67794b753ec2e4a44ad019c40e449c46c96648abe0abe668",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-5-hero": {
+      "sha256": "7e377e9f8990993e43ed8d06d665cab94c76ec2fa87e7b83e616fddbf97c621a",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-6-badge": {
+      "sha256": "35d95cf3196610b4de44157e729e978a11e50c69c13e95eb2ca095cd6d949832",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-6-card": {
+      "sha256": "1f8926c802d8d765121d4cc0e93b556283c7e3644f43ed8dbfb62bac43e64aad",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-6-hero": {
+      "sha256": "95d2d2a9d89d4aaa87a48be2af6ef327768982bdbfc7161ae0e51c24add92c7a",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-7-badge": {
+      "sha256": "c6e7e1ffda30731cf8001ba245f78bcc8d004a56572aad6bdde6528ce244240d",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-7-card": {
+      "sha256": "038f21fa985331daf13f01dc92a9e0ed9ebceab2400ce380a44621f987af197a",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-7-hero": {
+      "sha256": "1128215f8362a1d45e937a19986ff1791ad00b2cf14e3d14cabb0eaf9cfb71a2",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-8-badge": {
+      "sha256": "232a175ba9f0df38b8dbcacf4ebd4f999b03dc697f3295ea70cddacf611297ce",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-8-card": {
+      "sha256": "093567c1c934944bb4a52c51e92ffc38b9230a2262b835c1ca1d890ff68b6a09",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-8-hero": {
+      "sha256": "b83825102b6909bd026b697e7a29cd24dd203df9d2b1cb68823a54e81c7a7df5",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-9-badge": {
+      "sha256": "8eb23271e0ee710f2f02b090502f202faf56ea5b8b42dd708e63746056f89f03",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-9-card": {
+      "sha256": "5286139d215dc9a844f79a004baaaa06225bedc75b86142337dc648e6b610849",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-9-hero": {
+      "sha256": "b836fd4d1111fb4db5c5683d39da160c83ed168ebf620bb58dff16deccc49a5a",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-10-badge": {
+      "sha256": "36cdc44853727856b2ad410c7c27bde0f9ef97923984f53f5728c152e3977c0c",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-10-card": {
+      "sha256": "969290f882a50737afed08391acbb78e7ee563bce309cb89ab8eea49f1670d0f",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "membership-vip-10-hero": {
+      "sha256": "5f9e3d5f0460feb5d2bfd61184d57f87fbd1642551cc191525f5ffa1fff63b94",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "fa44f470-c0df-5383-886f-d3904e7140e2": {
+      "sha256": "7a450323ab5431d326493ea797a2f90812a8d19fb81cf8e5efd8fd08de6b924b",
+      "kind": "raster",
+      "frames": 58,
+      "fps": 20,
+      "distinct": 48,
+      "visible": 47
+    },
+    "c4fcd5bb-f4c6-5871-af3d-213e56109799": {
+      "sha256": "93d60191fbfc8e331132ee388d4739a63c2aff5e7ae6a19790256d66861fc045",
+      "kind": "raster",
+      "frames": 79,
+      "fps": 15,
+      "distinct": 78,
+      "visible": 79
+    },
+    "92a89064-62f8-5f14-bc39-80e1f33aba98": {
+      "sha256": "66c8c4fa8cfa9f238bed13b34e6bff6a8d26fa0dd9861350e0e4d308aaf1e8b6",
+      "kind": "raster",
+      "frames": 90,
+      "fps": 30,
+      "distinct": 90,
+      "visible": 90
+    },
+    "nimzo-drive-amethyst-crown": {
+      "sha256": "0dd433b58a00448c82c2eb3275220d12439e0149d6a8aae078faf879f19465d4",
+      "kind": "raster",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-azure-crown": {
+      "sha256": "6b3f66d633474f1d02027ec92b10cd4dada4e0448abad84a883ccbdae235d854",
+      "kind": "raster",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-orchid-crown": {
+      "sha256": "2c1de320397227b862c5045779efe7e7e22e561093a0d2b5e4dae753499450cb",
+      "kind": "raster",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-crimson-crown": {
+      "sha256": "717c44cb0f0e2f85a2578c5c5d097fe8446760a1449b6715ef998a1b5ddb74d7",
+      "kind": "raster",
+      "frames": 45,
+      "fps": 20,
+      "distinct": 45,
+      "visible": 45
+    },
+    "nimzo-drive-rose-id-plate": {
+      "sha256": "9f156c347545d6a371afee6a270ff0b2c4a4454f929e3427064e1ec5b63db3c9",
+      "kind": "raster",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 56,
+      "visible": 80
+    },
+    "nimzo-drive-violet-id-plate": {
+      "sha256": "1c34aafc448c2d4c848700f10a9bfdb409f8676fd5157751405a83c825384461",
+      "kind": "raster",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 56,
+      "visible": 80
+    },
+    "nimzo-drive-gold-id-plate": {
+      "sha256": "95742d9e8ceb2bea1c32927a222f84839d7129998d75212711f52699c4f919fe",
+      "kind": "raster",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 56,
+      "visible": 80
+    },
+    "63958a62-4018-5654-b4d6-173c5dad1db0": {
+      "sha256": "1fbde44aca3fcc75cd057c9af03492bca67611d037dc46ef6eb64eff6fd1ea3b",
+      "kind": "raster",
+      "frames": 48,
+      "fps": 12,
+      "distinct": 45,
+      "visible": 48
+    },
+    "ebac2405-40a6-56c8-929a-d0debfc6be48": {
+      "sha256": "58dd09579fed95d978ca9083a2b81bb3808b10ad8b268147be2fa23264d94676",
+      "kind": "raster",
+      "frames": 121,
+      "fps": 60,
+      "distinct": 121,
+      "visible": 120
+    },
+    "d08fa443-8899-5797-a185-1cbc9c41c21f": {
+      "sha256": "df3bc998e03640f58426b8a77e79efc6b84c09f55ff7e06b3eb31b558fcb9bbd",
+      "kind": "raster",
+      "frames": 180,
+      "fps": 20,
+      "distinct": 180,
+      "visible": 180
+    },
+    "nimzo-drive2-cupid-hearts": {
+      "sha256": "f07fcfb17cba018362d42cfdc5b95148e16ddcf2e3f71bc415940098a6f99f2c",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-sapphire-dragon": {
+      "sha256": "9bfbb37b35e77e3a1857a9cd38b9b7b1cd96188224e8eea381f5cd356e2e41ad",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-crimson-lion": {
+      "sha256": "55d8587c73c7eb87ff570a5c1d01d98e3e5ba88698e64026816d3b7a9203aeff",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-emerald-masquerade": {
+      "sha256": "9dc92a803d6709410cbfe137fc1f4851fd984a3a521e3b1f36b315e2d3298e1c",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-emerald-treasure": {
+      "sha256": "0603a5a0c29c4495e90f02eae6259c5a0fe686496b77ba0397f2ffa2bf0b9d4b",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-golden-zodiac": {
+      "sha256": "a103911f42534fcbda8451a3d48c454fdac2cfbf0cec81ba1b414510f585d01b",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-aqua-ribbon": {
+      "sha256": "6ab74d8a6025be35e86e2fb2440b33365815eadb2a5d9529d701e1ade13dca58",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-moonlit-crystal": {
+      "sha256": "0cd99456f43ae88ff21697c18e7e8099c8f5fb513b5ea408e2d0dc0d019731d2",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-arctic-aurora": {
+      "sha256": "654dad7baf8f5278e807a533479e2b7795c18b125b9a802d609bfaa5bf217465",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-cosmic-rocket": {
+      "sha256": "b382814ed6d3761b7ccb69b36e5aacc09461f8690962ba97581728c2a5f11608",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-neon-music": {
+      "sha256": "fa19e36c1b70fda09fafc8e1d8878710869adeddbd33ee9a5111a4b2659437c4",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-sweet-letters": {
+      "sha256": "6fd43802ee80cad66533b936c39638975de0ed5338f489dc31c1475590810731",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-amethyst-crown": {
+      "sha256": "602c7adb245636a1926d0838635d9e8bf944db30552bacffa5b64f901e7aef78",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "9fe05324-ef7b-57db-8a77-863194b56e9a": {
+      "sha256": "9b8346cf8ed2ef355a1210d7e56827a00ac9f60a6cbe1a58bf2fdaf3ccd23b56",
+      "kind": "raster",
+      "frames": 40,
+      "fps": 10,
+      "distinct": 40,
+      "visible": 40
+    },
+    "363ac433-1683-5702-ba8a-33a6518acf41": {
+      "sha256": "00f33c2a511b4b5bce5e6a53d2a31c9776f488d0aa5bdb9a8efeb5cb39a81a91",
+      "kind": "raster",
+      "frames": 60,
+      "fps": 15,
+      "distinct": 60,
+      "visible": 60
+    },
+    "47eef0cf-ee87-5fb4-a7dd-c247275f9dc9": {
+      "sha256": "f9ee14f518ce9fabd86e9b5da0a1b77f0f76c9990c49f6ee06eea8cec5accd26",
+      "kind": "raster",
+      "frames": 60,
+      "fps": 15,
+      "distinct": 60,
+      "visible": 60
+    },
+    "61db920d-549c-52da-b4a1-68187063930c": {
+      "sha256": "f1e0d2e111edf21cc76cb581aa06d50d79f00225198f4985f0a8c7e6a35d1f6f",
+      "kind": "raster",
+      "frames": 60,
+      "fps": 15,
+      "distinct": 60,
+      "visible": 60
+    },
+    "nimzo-drive2-arcane-lightning": {
+      "sha256": "e6d230bc8f9adf4bf0972422f4d9e0f7d3a6009aa0d0775c800e7d33ef70c6c0",
+      "kind": "raster",
+      "frames": 30,
+      "fps": 30,
+      "distinct": 30,
+      "visible": 30
+    },
+    "nimzo-drive2-solar-portal": {
+      "sha256": "c196a3011eae478d33c38889048eba74e6b6a09cba3247db86ef6f2ff1028ea7",
+      "kind": "raster",
+      "frames": 40,
+      "fps": 30,
+      "distinct": 40,
+      "visible": 40
+    },
+    "nimzo-drive2-golden-runes": {
+      "sha256": "d8e5787320b886e0ff13622b8b19ba5ce4592860e78bebc94ee958c8039af558",
+      "kind": "raster",
+      "frames": 43,
+      "fps": 30,
+      "distinct": 43,
+      "visible": 43
+    },
+    "nimzo-drive2-moonlit-palace": {
+      "sha256": "d00f0073310e68c554c01a9907c56ac2bc9e5cef9f0c21fce17c1ca74dbf864a",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "a9e4ad2b-95f8-51f3-beee-01cf687d3e96": {
+      "sha256": "424a2cdd6e869676ae943603d7d4542dfef21ecebe7662b6b62d335fb21d74f1",
+      "kind": "raster",
+      "frames": 26,
+      "fps": 20,
+      "distinct": 26,
+      "visible": 26
+    },
+    "544b7366-0d83-5729-b007-b709cd21c79b": {
+      "sha256": "dbe6935d5855069d3f9762e20912b3076ad862150fbe981f00258afceef7cfc6",
+      "kind": "raster",
+      "frames": 20,
+      "fps": 20,
+      "distinct": 20,
+      "visible": 20
+    },
+    "e8e3f1f1-84af-524e-bc74-597bb57a4516": {
+      "sha256": "e3bb6d3e674ee3fbf22cbaba40f5b6a828810aaeb85022a36bb632b56f65bed6",
+      "kind": "raster",
+      "frames": 26,
+      "fps": 20,
+      "distinct": 26,
+      "visible": 26
+    },
+    "b97a98a1-f7d0-5f74-b976-5fd7101d4bca": {
+      "sha256": "2cf4193aa696c0cd51064f28d8a63e34fe175b3f7d2d6516de7759fcc9744426",
+      "kind": "raster",
+      "frames": 26,
+      "fps": 20,
+      "distinct": 26,
+      "visible": 26
+    },
+    "ca09e7da-bb3d-55d3-bfd0-34ac1e5089fa": {
+      "sha256": "e7891975b09f1b491d7548b58a690f6e7013a5d9cae7b3a72eebe11e9d8eaeff",
+      "kind": "raster",
+      "frames": 20,
+      "fps": 20,
+      "distinct": 20,
+      "visible": 20
+    },
+    "d99ca184-ef05-56ba-8e83-beed00894e66": {
+      "sha256": "72bdb4f53016d2d1d3dee7539c6537c9f90ebdc55abfcb5d2093dd0e77915a4d",
+      "kind": "raster",
+      "frames": 99,
+      "fps": 20,
+      "distinct": 50,
+      "visible": 99
+    },
+    "a473acf3-1f5e-56cc-8fe9-414c850f6a19": {
+      "sha256": "bc37a7dccae05f840747305d842a6a6c777afe2e7bc0bcf640e02a0dc748519c",
+      "kind": "raster",
+      "frames": 36,
+      "fps": 20,
+      "distinct": 36,
+      "visible": 36
+    },
+    "181755ca-8c98-59c0-993f-e2d44021c972": {
+      "sha256": "c6d00f871e394d68d8c26e4f71fc51c762aa180b01a21d8760c2bb161fc2b6a0",
+      "kind": "raster",
+      "frames": 35,
+      "fps": 20,
+      "distinct": 35,
+      "visible": 35
+    },
+    "aa344b47-33c1-5396-bf05-0106288f46c6": {
+      "sha256": "233dc04da3379bd53bb7e68972b9613fd675b6b60c0213695433352b20225ece",
+      "kind": "raster",
+      "frames": 72,
+      "fps": 24,
+      "distinct": 56,
+      "visible": 55
+    },
+    "8f354993-9da4-58c8-9aff-a702398ec67c": {
+      "sha256": "93f59e0f963bbffb87a95f01aaeac7a07a08441fe8712ba9de53ad0dfdbe3740",
+      "kind": "raster",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 65,
+      "visible": 80
+    },
+    "d6033e3d-1398-55be-bdd2-b266b19cb9ed": {
+      "sha256": "9ef1d82dad8e04bfe7edf1bce0a8ba8d0801286e07c49f5fccefc66f0678101e",
+      "kind": "raster",
+      "frames": 40,
+      "fps": 20,
+      "distinct": 39,
+      "visible": 40
+    },
+    "3010d672-8a7b-5af1-a78b-a6a68872ab46": {
+      "sha256": "a8ddeaf83dbf3f53061174a6baae2d7191c30b6d950fdb0ead4d49a2085b71f7",
+      "kind": "raster",
+      "frames": 60,
+      "fps": 15,
+      "distinct": 60,
+      "visible": 60
+    },
+    "addebbdd-0451-5d52-8dcc-12b593219c16": {
+      "sha256": "2e8cb11e551e018fa9e3a336a7fbcad2a2e3b33d2ee4661b40d752f56294e155",
+      "kind": "raster",
+      "frames": 52,
+      "fps": 15,
+      "distinct": 44,
+      "visible": 52
+    },
+    "nimzo-drive2-rainbow-blossom": {
+      "sha256": "ad911ebb9f7ca39b27b80ce0a74a5553a13e911a557ea5d5d2b3d53e6d1e93e1",
+      "kind": "raster",
+      "frames": 45,
+      "fps": 15,
+      "distinct": 44,
+      "visible": 43
+    },
+    "nimzo-drive2-golden-sound-orbit": {
+      "sha256": "08ca11a9f0f11406f288602126833d4cb5d4235a3e3f0adc9e06c58e833a1050",
+      "kind": "raster",
+      "frames": 60,
+      "fps": 15,
+      "distinct": 60,
+      "visible": 60
+    },
+    "nimzo-drive2-violet-electric-halo": {
+      "sha256": "096e6ca992bb1ff8761f2b0fc6844375d46b01c0af8295592dd991a1d8d4d80f",
+      "kind": "raster",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 80,
+      "visible": 80
+    },
+    "nimzo-drive2-amber-star-pulse": {
+      "sha256": "2af1763a40b7510780820cfd2f25e039bf621e46df0f5427fb0caef31ebd6b1d",
+      "kind": "raster",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 80,
+      "visible": 80
+    },
+    "nimzo-drive2-crimson-star-pulse": {
+      "sha256": "c1cc37dc26d4f78b5c3626021f95ee12423c5e6494199b124a6194d6f09f7292",
+      "kind": "raster",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 80,
+      "visible": 80
+    },
+    "nimzo-drive2-prismatic-star-pulse": {
+      "sha256": "e05d78c6b7ca7c384828c4fd240c2fb5a8e55ddd345c8afc82929030f58ce377",
+      "kind": "raster",
+      "frames": 80,
+      "fps": 20,
+      "distinct": 80,
+      "visible": 80
+    },
+    "nimzo-drive2-jade-bear": {
+      "sha256": "8bec7620ab50b287621094e1a34a0cb0fb46c696416542ec2b010ee703987190",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-sapphire-wolf": {
+      "sha256": "8c8d9e72c40cf2cb2536f8940c21b2b293c8e01c1a9d0f94456670a425ac01b7",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-violet-eagle": {
+      "sha256": "b0be190d0a52adbccdffa213440cfbb6a274b4e4e5d8176b2d172cdeae301392",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-golden-lion": {
+      "sha256": "089423147c0410da9c26e138bcca5f7f5f676f5889897b45046b81b02e9e1498",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "nimzo-drive2-amber-dragon": {
+      "sha256": "90c5a63767f8b76151fdfaa6f533cb486226f4436d052e2a75eea906c3fb0b5b",
+      "kind": "raster",
+      "frames": 1,
+      "fps": 1,
+      "distinct": 1,
+      "visible": 1
+    },
+    "01fb59a5-3d65-5561-b981-a5f855c9242c": {
+      "sha256": "e69aea7e989ab0634c46403223c337d6251db1e5437827d9d010bab29789bbb6",
+      "kind": "vap",
+      "declared": 55,
+      "rendered": 56,
+      "first": 0,
+      "last": 55,
+      "samples": 12,
+      "distinct": 12,
+      "visible": 11
+    },
+    "a5e1c742-a7b9-5ada-bb12-32010d8003ba": {
+      "sha256": "02b2ae1c1deedc6fbd28b9aed75ba280e6160088d1b4668398a44331f904ef8a",
+      "kind": "vap",
+      "declared": 145,
+      "rendered": 146,
+      "first": 0,
+      "last": 145,
+      "samples": 36,
+      "distinct": 36,
+      "visible": 35
+    },
+    "98cb3d8c-22c4-5d96-a87e-87c6f4135c3f": {
+      "sha256": "6cc5914d15ef3e5f8c140dfa0e5097e753a2b0e6a313792759f6d0cb7fd1d5f6",
+      "kind": "vap",
+      "declared": 145,
+      "rendered": 146,
+      "first": 0,
+      "last": 145,
+      "samples": 35,
+      "distinct": 35,
+      "visible": 34
+    },
+    "12fc7f03-9519-573b-bdbf-77ab85326396": {
+      "sha256": "d4a5b10c11e2565eca021f79b60e90142643a37608ef8dedd1397b57b97236d4",
+      "kind": "vap",
+      "declared": 144,
+      "rendered": 145,
+      "first": 0,
+      "last": 144,
+      "samples": 35,
+      "distinct": 34,
+      "visible": 33
+    },
+    "1a4d6ba7-1e56-55f4-9aca-003eb83d11a7": {
+      "sha256": "b6e1d2dcac284b7e74fe5217ab036122aebfc1ceb88cc743b914d3d24bb365be",
+      "kind": "vap",
+      "declared": 146,
+      "rendered": 147,
+      "first": 0,
+      "last": 146,
+      "samples": 36,
+      "distinct": 36,
+      "visible": 35
+    },
+    "1bf2561a-f3cc-549a-9102-346c203506de": {
+      "sha256": "d2ec2938319184aacfaaf295ef7aeca628ee4b2a761d0821473951232897baf2",
+      "kind": "vap",
+      "declared": 146,
+      "rendered": 147,
+      "first": 0,
+      "last": 146,
+      "samples": 36,
+      "distinct": 35,
+      "visible": 34
+    }
+  },
+  "artifact_id": 12513051597,
+  "artifact_sha256": "9c1ec6896f4e33a36acebca11da23abae26fb21a98129c5d55b067d32f49c9c0",
+  "collected_png_count": 134,
+  "vap_event_note": "SDK emits terminal boundary frameCount in addition to frame indices0..frameCount-1; raw counts retained, GPU pixel checks are samples",
+  "requested_gifts": 20,
+  "selected_gifts": 7,
+  "remaining_gifts": 13
+}

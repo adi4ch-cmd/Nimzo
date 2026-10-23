@@ -75,8 +75,11 @@ def native_records(log, items):
         if item['media_kind'] == 'vap':
             frames = item['frames']
             if (record['kind'] != 'vap' or record['declared'] != frames or
-                    not int(frames * .9) <= record['rendered'] <= frames or
-                    record['first'] > 1 or record['last'] != frames - 1 or
+                    # Android VAP SDK also emits the terminal boundary index
+                    # equal to frameCount. Preserve raw event counts honestly.
+                    not int(frames * .9) <= record['rendered'] <= frames + 1 or
+                    record['first'] > 1 or record['last'] not in (frames - 1, frames) or
+                    record['rendered'] > record['last'] - record['first'] + 1 or
                     record['samples'] < 3 or record['distinct'] < 3 or
                     record['distinct'] > record['samples'] or
                     not record['samples'] // 2 < record['visible'] <= record['samples']):

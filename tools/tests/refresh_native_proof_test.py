@@ -29,6 +29,17 @@ class RefreshNativeProofTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             native_records(self.log.replace('completed=true', 'completed=false'), self.items)
 
+    def test_actual_android_terminal_boundary_event_is_preserved(self):
+        log = self.log.replace('rendered=10 first=0 last=9', 'rendered=11 first=0 last=10')
+        records = native_records(log, self.items)
+        self.assertEqual(records['fixture-vap']['rendered'], 11)
+        self.assertEqual(records['fixture-vap']['last'], 10)
+
+    def test_events_beyond_native_terminal_boundary_fail(self):
+        with self.assertRaisesRegex(ValueError, 'Incomplete native VAP'):
+            native_records(self.log.replace('rendered=10 first=0 last=9',
+                           'rendered=12 first=0 last=11'), self.items)
+
     def test_missing_svga_frame_metadata_fails(self):
         with self.assertRaisesRegex(ValueError, 'frame parameters differ'):
             native_records(self.log.replace('frames=4 fps=20', 'frames=3 fps=20'), self.items)
