@@ -5,56 +5,83 @@ import 'package:nimzo/features/premium/membership_pack_inventory.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('VIP/SVIP levels all have the same eight named slots', () {
+  test('all existing and prospective levels keep the same pack slot structure', () {
     for (final kind in ['vip', 'svip']) {
       for (var tier = 1; tier <= 12; tier++) {
         final parts = MembershipPackInventory.forTier(kind, tier);
-        expect(parts.length, MembershipPackInventory.slots.length);
-        expect(parts.map((part) => part.title).toList(),
-            MembershipPackInventory.slots);
-        expect(parts.every((part) => part.available), isTrue,
-            reason: '$kind $tier must be assembled from sourced image files');
-        expect(parts.every((part) => part.source.isNotEmpty), isTrue);
+        expect(parts.map((part) => part.title).toList(), MembershipPackInventory.slots);
+        expect(parts.length, 8);
+        expect(parts.every((part) => part.matchesTarget(kind, tier)), isTrue,
+            reason: '$kind $tier must never use borrowed levels or categories');
       }
     }
   });
 
-  test('mixed-source pack keeps target identity, not borrowed source level', () {
-    final vip5 = MembershipPackInventory.forTier('vip', 5);
-    final svip5 = MembershipPackInventory.forTier('svip', 5);
-    expect(vip5.map((p) => p.source).toSet().length, greaterThan(4));
-    expect(svip5.map((p) => p.source).toSet().length, greaterThan(4));
-    expect(svip5[1].source, startsWith('WillChill VIP'));
-    expect(svip5[2].source, contains('SVIP'));
-    expect(svip5[7].source, startsWith('DangLive'));
-    expect(svip5[1].isTierSpecific, isFalse);
-    expect(svip5[3].source, contains('static banner'),
-        reason: 'A static image must not be represented as animated VAP');
+  test('reject cross-level and VIP vs SVIP art even with correct UI labels', () {
+    MembershipPackArtwork asset(String targetKind, int targetTier,
+            String sourceKind, int sourceTier) =>
+        MembershipPackArtwork.matching(
+          title: 'Avatar frame',
+          targetKind: targetKind,
+          targetTier: targetTier,
+          sourceKind: sourceKind,
+          sourceTier: sourceTier,
+          path: 'assets/example.png',
+          source: 'Another APK',
+        );
+    expect(() => asset('svip', 5, 'vip', 5), throwsStateError);
+    expect(() => asset('svip', 6, 'svip', 2), throwsStateError);
+    expect(() => asset('vip', 6, 'vip', 5), throwsStateError);
+    expect(() => asset('vip', 6, 'vip', 6).available, returnsNormally);
+    final sameTier = asset('svip', 6, 'svip', 6);
+    expect(sameTier.matchesTarget('svip', 6), isTrue);
   });
 
-  test('all 20 bundled mixed packs reference declared Flutter assets', () async {
+  test('missing tier pieces remain unavailable rather than borrowed', () {
+    for (var tier = 1; tier <= 10; tier++) {
+      final vip = MembershipPackInventory.forTier('vip', tier);
+      final svip = MembershipPackInventory.forTier('svip', tier);
+      expect(vip[0].available, tier <= 7);
+      expect(vip[1].available, tier <= 5);
+      expect(vip[2].available, tier <= 7);
+      expect(vip[3].available, tier <= 5);
+      expect(vip[4].available, tier <= 5);
+      expect(vip[5].available, tier <= 5);
+      expect(vip[6].available, tier <= 5);
+      expect(vip[7].available, isFalse);
+      expect(svip[0].available, tier <= 8);
+      expect(svip[1].available, isFalse,
+          reason: 'SVIP frames must be SVIP frames from an actual source');
+      expect(svip[2].available, isFalse);
+      expect(svip[3].available, tier <= 8,
+          reason: 'Available image is a static same-tier entry icon');
+      for (final i in [4, 5, 6, 7]) {
+        expect(svip[i].available, isFalse);
+      }
+    }
+  });
+
+  test('all selected genuine assets resolve in Flutter asset manifest', () async {
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
     final paths = manifest.listAssets().toSet();
     for (final kind in ['vip', 'svip']) {
       for (var tier = 1; tier <= 10; tier++) {
-        for (final artwork in MembershipPackInventory.forTier(kind, tier)) {
-          if (artwork.path != null) {
-            expect(paths, contains(artwork.path),
-                reason: '$kind $tier missing ${artwork.title}: ${artwork.source}');
+        for (final part in MembershipPackInventory.forTier(kind, tier)) {
+          if (part.path != null) {
+            expect(paths, contains(part.path),
+                reason: '$kind $tier: missing ${part.title} from ${part.source}');
           }
-          if (artwork.otherSide != null) {
-            expect(paths, contains(artwork.otherSide),
-                reason: '$kind $tier missing second nameplate ornament');
+          if (part.otherSide != null) {
+            expect(paths, contains(part.otherSide),
+                reason: '$kind $tier: missing second nameplate image');
           }
         }
       }
     }
   });
 
-  test('invalid tiers and membership categories fail safely', () {
-    expect(() => MembershipPackInventory.forTier('admin', 1),
-        throwsArgumentError);
-    expect(() => MembershipPackInventory.forTier('svip', 0),
-        throwsRangeError);
+  test('unrecognized category and tier are rejected', () {
+    expect(() => MembershipPackInventory.forTier('admin', 1), throwsArgumentError);
+    expect(() => MembershipPackInventory.forTier('svip', 0), throwsRangeError);
   });
 }
