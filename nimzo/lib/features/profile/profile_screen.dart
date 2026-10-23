@@ -23,6 +23,7 @@ import 'profile_level_pills.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
+import 'profile_equipped_props.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -316,7 +317,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                       ],
                     ),
-                    VerifiedMembershipIdentity(userId: id),
+                    // The original applied ID frame already labels this tier.
+                    // Avoid showing a duplicate VIP/SVIP badge below the name.
+                    if (packTheme == null ||
+                        verifiedMembership.valueOrNull?.hasSlot('ID Frame') !=
+                            true)
+                      VerifiedMembershipIdentity(userId: id),
                     Text(
                       'ID:${p.nimzoId} · ${p.countryName ?? p.countryCode ?? ''}',
                       style: const TextStyle(color: NimzoStyle.muted),
@@ -353,6 +359,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
+                    ProfileEquippedProps(userId: id),
                     Text(p.bio?.isNotEmpty == true ? p.bio! : 'No bio yet'),
                     AsyncContent(
                       value: ref.watch(profileStatsProvider(id)),
