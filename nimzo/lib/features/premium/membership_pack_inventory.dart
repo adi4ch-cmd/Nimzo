@@ -156,7 +156,16 @@ class MembershipPackInventory {
         )
       else
         const MembershipPackArtwork.missing('Profile decoration'),
-      const MembershipPackArtwork.missing('Room background'),
+      if (vip && tier == 6)
+        MembershipPackArtwork.matching(
+          title: 'Room background',
+          targetKind: kind, targetTier: tier,
+          sourceKind: 'vip', sourceTier: 6,
+          path: 'assets/membership/tana-vip6-room-bg.webp',
+          source: 'Tana VIP6 bg_voice_room_vip6_mode.webp',
+        )
+      else
+        const MembershipPackArtwork.missing('Room background'),
     ];
   }
 }
