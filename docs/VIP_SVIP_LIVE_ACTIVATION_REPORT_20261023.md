@@ -94,3 +94,7 @@ These are actual Flutter host captures with test state, not Android/device verif
 ## Why the installed app still looks old
 
 The previously published1.0.41 APK predates PR44 and this implementation. A backend refresh cannot add new Flutter widgets, Apply/Remove controls or newly bundled media to that binary. The updated code and backend activation are separately reported; no claim is made that a user device already received this UI.
+
+## Own account avatar regression
+
+The Me-tab avatar now uses the same server-backed membership renderer as public profiles and room seats. VIP and SVIP apply/removal widget regressions pass, and Me-tab layouts fit320/360/390dp. These are host tests, not Android verification. Existing Store frame selection remains preserved.

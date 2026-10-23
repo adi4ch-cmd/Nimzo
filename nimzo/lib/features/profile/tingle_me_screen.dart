@@ -1,4 +1,5 @@
 import '../premium/membership_identity.dart';
+import '../premium/membership_pack_runtime.dart';
 import '../../app/feature_availability.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/art/nimzo_identity_art.dart';
@@ -171,18 +172,22 @@ class TingleMeScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 9),
                     child: Row(
                       children: [
-                        NimzoEquippedAvatarFrame(
-                          variant: ref.watch(nimzoOwnAvatarFrameProvider),
-                          mediaId: ref.watch(nimzoOwnAvatarMediaProvider),
-                          avatar: CircleAvatar(
-                            radius: 27,
-                            backgroundColor: NimzoStyle.primary,
-                            backgroundImage:
-                                avatar == null ? null : NetworkImage(avatar),
-                            child: avatar == null
-                                ? const Icon(Icons.person_rounded,
-                                    color: Colors.white, size: 28)
-                                : null,
+                        MembershipPackAvatar(
+                          userId: id,
+                          size: 64,
+                          child: NimzoEquippedAvatarFrame(
+                            variant: ref.watch(nimzoOwnAvatarFrameProvider),
+                            mediaId: ref.watch(nimzoOwnAvatarMediaProvider),
+                            avatar: CircleAvatar(
+                              radius: 27,
+                              backgroundColor: NimzoStyle.primary,
+                              backgroundImage:
+                                  avatar == null ? null : NetworkImage(avatar),
+                              child: avatar == null
+                                  ? const Icon(Icons.person_rounded,
+                                      color: Colors.white, size: 28)
+                                  : null,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
