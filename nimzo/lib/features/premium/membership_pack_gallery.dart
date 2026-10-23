@@ -4,6 +4,8 @@ import 'membership_catalog.dart';
 import 'membership_media_view.dart';
 import 'membership_pack_inventory.dart';
 import 'membership_pack_runtime.dart';
+import '../store/premium_cosmetics.dart';
+import '../store/cosmetic_media_view.dart';
 
 /// Asset-level preview of a selected VIP/SVIP set.
 /// This is intentionally NOT a proof of ownership or of a working room effect.
@@ -36,6 +38,21 @@ class MembershipPackGallery extends StatelessWidget {
       );
     }
     if (artwork?.available == true) {
+      if (artwork!.animated) {
+        return CosmeticMediaView(
+          key: ValueKey('membership-mic-${presentation.kind}-${presentation.tier}'),
+          media: CosmeticMedia(
+            'membership-${presentation.kind}-${presentation.tier}-${artwork.title}',
+            'Mic Wave',
+            artwork.title,
+            artwork.path!,
+            CosmeticMediaKind.svga,
+            thumbnail: artwork.thumbnail,
+          ),
+          animate: expanded,
+          fit: BoxFit.contain,
+        );
+      }
       Widget image(String path) => Image.asset(
             path,
             fit: BoxFit.contain,
