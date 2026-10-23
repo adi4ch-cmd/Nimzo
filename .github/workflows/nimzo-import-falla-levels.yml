@@ -1,0 +1,60 @@
+name: NIMZO Import Original Falla Levels (683 Files)
+on:
+  push:
+    branches:
+      - feature/falla-levels-v142-20261024
+    paths:
+      - '.github/workflows/nimzo-import-falla-levels.yml'
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  import:
+    if: ${{ !startsWith(github.event.head_commit.message, 'chore(levels): persist original Falla') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Download original extracted Falla badge bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 4 --retry-all-errors \
+            --output /tmp/falla_683_assets.zip \
+            'https://sb-55reh6gl5lbv.vercel.run/falla_683_assets.zip'
+          echo '0923f28d10a079d10b6f7484389daefcca47a01526ee84494d8480e5a3554a29  /tmp/falla_683_assets.zip' | sha256sum --check
+      - name: Validate source files and extract safely
+        run: |
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          from pathlib import Path
+          import re
+          p=Path('/tmp/falla_683_assets.zip')
+          with ZipFile(p) as z:
+            assert z.testzip() is None
+            filenames=z.namelist()
+            expect={f'nimzo/assets/falla_levels/{kind}/{n}.webp'
+                    for kind,top in [('wealth',270),('charm',270),('active',140)]
+                    for n in range(top+1)}
+            actual={n for n in filenames if n.endswith('.webp')}
+            assert actual==expect,(len(actual),len(expect))
+            assert len(actual)==683
+            for n in filenames:
+              assert not n.startswith('/') and '..' not in n.split('/')
+            z.extractall('.')
+          print('Extracted 683 original Falla WEBP tags')
+          PY
+      - name: Commit permanent original artwork to source branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nimzo/assets/falla_levels
+          if git diff --cached --quiet; then
+            echo "Already imported"; exit 0
+          fi
+          git commit -m "chore(levels): persist original Falla 683 WEBP assets"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
