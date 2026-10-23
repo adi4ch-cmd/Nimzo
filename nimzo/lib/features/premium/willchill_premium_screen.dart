@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/providers/supabase_provider.dart';
 import '../../core/services/nimzo_content_sync.dart';
 import 'membership_catalog.dart';
+import 'membership_pack_gallery.dart';
 import 'membership_media_view.dart';
 import 'membership_status.dart';
 import 'membership_purchase_keys.dart';
@@ -542,6 +543,21 @@ class _WillChillPremiumScreenState extends ConsumerState<WillChillPremiumScreen>
                         color: emerald)),
                 Text(owned == row.tier ? 'Your active tier' : 'Tier details',
                     style: const TextStyle(color: Color(0xff668273))),
+                const SizedBox(height: 10),
+                TextButton.icon(
+                  key: ValueKey('membership-view-set-${row.kind}-${row.tier}'),
+                  icon: const Icon(Icons.grid_view_rounded),
+                  label: Text('View ${row.kind.toUpperCase()} ${row.tier} set'),
+                  onPressed: () => showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: const Color(0xff0d1430),
+                    builder: (_) => SizedBox(
+                      height: MediaQuery.sizeOf(context).height * .84,
+                      child: MembershipPackGallery(presentation: row),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 14),
                 if (benefits.contains('badge') && row.badge != null)
                   _benefit(Icons.verified_outlined, 'Membership badge',
