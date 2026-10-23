@@ -42,7 +42,7 @@ for package in dict.fromkeys(r['package'] for r in selection):
             fps=int(params[3]);frames=int(params[4])
           else:
             with Image.open(io.BytesIO(data)) as image:
-              width,height=image.size;image.verify()
+              width,height=image.size;codec=image.format.lower();mime=Image.MIME[image.format];image.verify()
             fps=frames=1
           slug=row['name'].lower().replace(' ','-')
           product_id=str(uuid.uuid5(uuid.NAMESPACE_URL,'nimzo:drive:20261023:'+slug)) if row['category']=='gift' else 'nimzo-drive2-'+slug

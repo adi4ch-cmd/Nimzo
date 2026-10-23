@@ -16,13 +16,17 @@ void catalogRenderSuite({
   String label = 'Drive catalog',
 }) {
   testWidgets('$label contains complete, distinct media', (tester) async {
-    final manifest =
-        jsonDecode(await rootBundle.loadString(manifestAsset)) as Map;
+    final manifest = jsonDecode(
+      (await tester.runAsync(() => rootBundle.loadString(manifestAsset)))!,
+    ) as Map;
     final records = manifest['items'] as List;
     expect(records.length, greaterThanOrEqualTo(minimumCount));
     final seen = <String>{};
     for (final record in records.cast<Map>()) {
-      final data = await rootBundle.load(record['asset'] as String);
+      debugPrint('RENDERING ${record['id']}');
+      final data = (await tester.runAsync(
+        () => rootBundle.load(record['asset'] as String),
+      ))!;
       final bytes = data.buffer.asUint8List(
         data.offsetInBytes,
         data.lengthInBytes,
