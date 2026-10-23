@@ -1,13 +1,15 @@
 {
   "schema_version": 1,
   "build_authorized": false,
-  "app_source_sha256": "42930c47777e444abc96c5ff030befd86f0d603744ad3f694b81b9deefc5a9a9",
+  "app_source_sha256": "1e81951058e5174520de93af13a2d4d4a95b16f769967e16f8c9fa1d6c9bd315",
   "voice_enabled": false,
   "open_blockers": [
     "Final Vivox integration deferred by owner",
     "Authenticated Android purchases/claims and physical-device audio remain unverified",
     "Complete original-task acceptance remains incomplete",
-    "Requested20 additional diverse gifts:7 suitable selected,13 missing"
+    "Requested20 additional diverse gifts:7 suitable selected,13 missing",
+    "Exact-tier original membership media gaps: see docs/VIP_SVIP_LIVE_ACTIVATION_REPORT_20261023.md",
+    "Authenticated two-user Android membership apply/profile/room/restart acceptance not verified"
   ],
   "checks": {
     "gifts": {
@@ -72,8 +74,8 @@
   "qa_build_authorized": true,
   "qa_open_blockers": [],
   "voice_status": "OWNER_DEFERRED",
-  "qa_scope": "Owner-authorized1.0.41 TEST APK:34 active gifts/73Store,20 YoHo/Falla presentations;134 native originals verified,84 immutable objects read back, existing finances/ownership preserved. Requested20 extra diverse gifts remain13 short. Vivox and authenticated physical-device checkout deferred/unverified.",
-  "owner_authorization": "Dynamic systam complete kar ke apk test ke kiy build kar skty ho",
+  "qa_scope": "Owner-requested1.0.42 TEST APK: server-backed exact-tier Apply/Remove and inline package contents. Source98ea234 CI40027784232:590 Flutter tests and backend suites pass. Android build/install smoke will run before publication. Full authenticated20-pack Android acceptance and genuine media gaps remain open; Vivox remains deferred.",
+  "owner_authorization": "Apk do (2026-10-23): latest membership implementation TEST APK requested; full production acceptance remains incomplete.",
   "qa_checks": {
     "dynamic_audit": {
       "status": "PASS",
@@ -114,7 +116,8 @@
         "docs/validation/MEMBERSHIP_REFRESH_20261023.md",
         "docs/validation/membership-refresh-device-proof-20261023.json",
         "docs/validation/membership-refresh-publication-preservation-20261023.json",
-        "docs/validation/membership-refresh-storage-readback-20261023.json"
+        "docs/validation/membership-refresh-storage-readback-20261023.json",
+        "docs/VIP_SVIP_LIVE_ACTIVATION_REPORT_20261023.md"
       ]
     },
     "gifts": {
@@ -142,7 +145,8 @@
         "docs/validation/MEMBERSHIP_REFRESH_20261023.md",
         "docs/validation/membership-refresh-device-proof-20261023.json",
         "docs/validation/membership-refresh-publication-preservation-20261023.json",
-        "docs/validation/membership-refresh-storage-readback-20261023.json"
+        "docs/validation/membership-refresh-storage-readback-20261023.json",
+        "docs/VIP_SVIP_LIVE_ACTIVATION_REPORT_20261023.md"
       ]
     },
     "progression": {
@@ -176,7 +180,8 @@
         "docs/validation/MEMBERSHIP_REFRESH_20261023.md",
         "docs/validation/membership-refresh-device-proof-20261023.json",
         "docs/validation/membership-refresh-publication-preservation-20261023.json",
-        "docs/validation/membership-refresh-storage-readback-20261023.json"
+        "docs/validation/membership-refresh-storage-readback-20261023.json",
+        "docs/VIP_SVIP_LIVE_ACTIVATION_REPORT_20261023.md"
       ]
     },
     "store_backpack": {

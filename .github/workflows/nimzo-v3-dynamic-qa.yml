@@ -229,6 +229,23 @@ jobs:
         working-directory: nimzo
         run: flutter build apk --release
 
+      - name: Verify exact membership pack originals in APK
+        run: |
+          python3 tools/verify_membership_pack_assets.py
+          python3 - <<'PYCODE'
+          import hashlib,json
+          from pathlib import Path
+          from zipfile import ZipFile
+          index=json.loads(Path('nimzo/assets/membership/packs/provenance.json').read_text())
+          with ZipFile('nimzo/build/app/outputs/flutter-apk/app-release.apk') as apk:
+              count=0
+              for slots in index.values():
+                  for row in slots.values():
+                      data=apk.read('assets/flutter_assets/'+row['path'])
+                      assert hashlib.sha256(data).hexdigest()==row['sha256'],row['path']
+                      count+=1
+          print('PASS: exact original membership pack records packaged:',count)
+          PYCODE
       - name: Verify exact v3 compiled media bytes
         run: python3 tools/verify_v3_apk_assets.py nimzo/build/app/outputs/flutter-apk/app-release.apk
       - name: Verify all imported gifts, Store and membership originals in compiled APK
@@ -273,25 +290,25 @@ jobs:
       - name: Install and launch release APK
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: 35
           arch: x86_64
-          target: default
+          target: google_apis
           disable-animations: true
           script: python3 tools/verify_android_launch.py nimzo/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Prepare installable APKs and checksums
         run: |
           mkdir -p premium-test-apk
-          cp nimzo/build/app/outputs/flutter-apk/app-release.apk premium-test-apk/NIMZO_1.0.41_Universal_NO_VIVOX_TEST.apk
+          cp nimzo/build/app/outputs/flutter-apk/app-release.apk premium-test-apk/NIMZO_1.0.42_Universal_NO_VIVOX_TEST.apk
           printf '%s\n' "$GITHUB_SHA" > premium-test-apk/SOURCE_SHA.txt
           cp release/acceptance.json premium-test-apk/ACCEPTANCE.json
           cp android-launch-diagnostics/result.txt premium-test-apk/STARTUP_TEST.txt
-          printf '%s\n' 'Owner-authorized TEST APK. Dynamic content backend and source checks passed. Vivox is deferred by owner; this APK has no voice connectivity. Development signing: Android refuses replacement of a differently signed installed app; use a spare test device and preserve the existing installation/data. This prerelease has no automatic-update manifest.7 new diverse gifts are active;13 of the requested20 remain missing. Authenticated purchases and physical-device audio remain for device QA.' > premium-test-apk/README.txt
+          printf '%s\n' 'Owner-requested1.0.42 membership TEST APK. Persistent server-backed Apply/Remove and inline tier contents included. Genuine matching media is missing in some tiers; full20-pack acceptance is incomplete. Dynamic content backend and source checks passed. Vivox is deferred by owner; this APK has no voice connectivity. Development signing: Android refuses replacement of a differently signed installed app; use a spare test device and preserve the existing installation/data. This prerelease has no automatic-update manifest.7 new diverse gifts are active;13 of the requested20 remain missing. Authenticated purchases and physical-device audio remain for device QA.' > premium-test-apk/README.txt
           (cd premium-test-apk && sha256sum *.apk > SHA256SUMS.txt)
       - name: Upload verified release-mode APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: NIMZO-PREMIUM-STORE-1-0-41-NO-VIVOX-TEST
+          name: NIMZO-PREMIUM-STORE-1-0-42-NO-VIVOX-TEST
           path: premium-test-apk/
           if-no-files-found: error
           retention-days: 14
@@ -299,11 +316,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "nimzo-v3-dynamic-1.0.41-${GITHUB_RUN_ID}" \
+          gh release create "nimzo-v3-dynamic-1.0.42-${GITHUB_RUN_ID}" \
             premium-test-apk/*.apk premium-test-apk/SHA256SUMS.txt premium-test-apk/SOURCE_SHA.txt premium-test-apk/README.txt premium-test-apk/ACCEPTANCE.json premium-test-apk/STARTUP_TEST.txt \
             --target "$GITHUB_SHA" \
-            --title "NIMZO 1.0.41 Integration Test - Voice Disabled" \
-            --notes "Owner-requested Android integration TEST build. Dynamic content source/backend acceptance and Android installation/startup checked. Vivox deferred by owner. Includes YoHo VIP, Falla animated SVIP,73 Store items and34 live gifts. The requested20 extra diverse gifts remain13 short:7 suitable gifts were added with at most2 per type. Android35 renderer verification covered134 imported originals, including6 native VAP animations; all134 previews were collected. Existing balances and ownership were preserved. Development signing; authenticated physical-device purchases/audio and full original-task acceptance remain unverified. No automatic update manifest is published." \
+            --title "NIMZO 1.0.42 Membership Packs Test - Voice Disabled" \
+            --notes "Owner-requested Android membership TEST build. Includes persistent exact-tier Apply/Remove, inline package contents and actual profile/Me/room renderers. Source/backend regression and Android15 installation/startup checked; authenticated two-user pack and physical-device playback are NOT verified. Exact media gaps are listed in docs/VIP_SVIP_LIVE_ACTIVATION_REPORT_20261023.md; this is NOT the complete20-pack release. Vivox deferred by owner. Includes YoHo VIP, Falla animated SVIP,73 Store items and34 live gifts. The requested20 extra diverse gifts remain13 short:7 suitable gifts were added with at most2 per type. Android35 renderer verification covered134 imported originals, including6 native VAP animations; all134 previews were collected. Existing balances and ownership were preserved. Development signing; authenticated physical-device purchases/audio and full original-task acceptance remain unverified. No automatic update manifest is published." \
             --prerelease
       - name: Upload launch diagnostics
         if: always()
