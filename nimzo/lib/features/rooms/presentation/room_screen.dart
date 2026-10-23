@@ -671,6 +671,8 @@ class _State extends ConsumerState<RoomScreen> {
                           category: 'Party Theme',
                           child: Column(
                             children: [
+                              MembershipPackRoomBanner(
+                                  ownerId: room.valueOrNull?.ownerId),
                               if (joining) const LinearProgressIndicator(),
                               if (room.hasError)
                                 DataFailure(
