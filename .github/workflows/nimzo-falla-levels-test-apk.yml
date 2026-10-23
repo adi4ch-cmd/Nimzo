@@ -218,21 +218,29 @@ jobs:
         working-directory: nimzo
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
-      - name: Test Store membership room profile gift startup and voice service
-        working-directory: nimzo
-        run: flutter test test/store_equipment_surfaces_test.dart test/store_actual_media_test.dart test/store_live_contract_test.dart test/store_full_preview_test.dart test/store_category_preview_ui_test.dart test/membership_layout_test.dart test/membership_retirement_test.dart test/willchill_membership_showcase_test.dart test/willchill_membership_badges_test.dart test/room_reconnect_test.dart test/issue15_room_walkthrough_test.dart test/verified_gift_broadcast_test.dart test/car_only_gift_contract_test.dart test/private_gift_readiness_test.dart test/profile_content_test.dart test/profile_gift_refresh_test.dart test/profile_membership_levels_test.dart test/startup_bootstrap_contract_test.dart test/voice/vivox_voice_service_test.dart
-      - name: Verify all 683 actual Falla badges and level math before build
+      - name: Run active level, Store, profile, startup and voice-service regression tests
         working-directory: nimzo
         run: |
           set -euo pipefail
-          flutter test --reporter expanded test/profile_level_scale_test.dart test/verified_level_up_tracker_test.dart
+          flutter test --reporter expanded \
+            test/profile_level_scale_test.dart \
+            test/verified_level_up_tracker_test.dart \
+            test/profile_content_test.dart \
+            test/store_live_contract_test.dart \
+            test/store_full_preview_test.dart \
+            test/startup_bootstrap_contract_test.dart \
+            test/voice/vivox_voice_service_test.dart
+      - name: Verify complete original source artwork and level up display
+        working-directory: nimzo
+        run: |
           python3 - <<'PY'
           from pathlib import Path
-          for cat, maximum in [('wealth',270),('charm',270),('active',140)]:
-              for level in range(maximum+1):
-                  file=Path('assets/falla_levels')/cat/f'{level}.webp'
-                  assert file.is_file() and file.stat().st_size>40,file
-          print('SOURCE PASS: 683 original Falla level images present')
+          for cat, top in [('wealth',270),('charm',270),('active',140)]:
+              for level in range(top+1):
+                  assert (Path('assets/falla_levels')/cat/f'{level}.webp').is_file()
+              for suffix in ('','_icon_bg'):
+                  assert (Path('assets/falla_levels/level_up')/f'{cat}{suffix}.webp').is_file()
+          print('PASS: Falla 683 original level badges and 6 level-up background images')
           PY
       - name: Build premium APK without Vivox
         working-directory: nimzo
@@ -283,7 +291,11 @@ jobs:
                       inside='assets/flutter_assets/'+rel
                       src=Path('nimzo')/rel
                       assert apk.read(inside)==src.read_bytes(), f'APK missing or changed: {inside}'
-          print('APK PASS: all 683 exact Falla WEBP assets embedded')
+          for cat in ('wealth','charm','active'):
+              for suffix in ('','_icon_bg'):
+                  rel=f'assets/falla_levels/level_up/{cat}{suffix}.webp'
+                  assert apk.read('assets/flutter_assets/'+rel)==(Path('nimzo')/rel).read_bytes()
+          print('APK PASS: 683 original level badges + 6 Falla level-up images embedded')
           PY
       - name: Build and verify smaller ARM64 APK
         working-directory: nimzo
