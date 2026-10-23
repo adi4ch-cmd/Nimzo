@@ -313,7 +313,24 @@ class MembershipPackEntranceBanner extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              const Icon(Icons.auto_awesome, color: Color(0xff28121c), size: 19),
+              // This is a tier-matched STATIC emblem inside NIMZO's
+              // real entrance transition, not a borrowed MP4/VAP effect.
+              if (MembershipPackInventory.forTier(theme.kind, theme.tier)[3]
+                  .path case final String entryArt)
+                SizedBox(
+                  width: 58,
+                  height: 32,
+                  child: Image.asset(
+                    entryArt,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) =>
+                        const Icon(Icons.auto_awesome,
+                            color: Color(0xff28121c), size: 19),
+                  ),
+                )
+              else
+                const Icon(Icons.auto_awesome,
+                    color: Color(0xff28121c), size: 19),
               const SizedBox(width: 8),
               Flexible(child: Text('${theme.label} · Welcome to the room',
                 maxLines: 2,
