@@ -890,6 +890,7 @@ class _State extends ConsumerState<RoomScreen> {
                                                                       child: MembershipPackAvatar(
                                                                           userId: s.userId,
                                                                           size: 48,
+                                                                          speaking: speaking.contains(s.userId),
                                                                           child: EquippedAvatar(
                                                                           userId: s.userId,
                                                                           size: 48,
