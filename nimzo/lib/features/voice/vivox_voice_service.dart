@@ -119,6 +119,12 @@ class VivoxVoiceService implements VoiceService {
     try {
       return await _channel.invokeMethod<T>(method, arguments);
     } on PlatformException catch (error) {
+      if (error.code == 'VOICE_SDK_PENDING') {
+        throw VoiceConnectionFailure(
+          'Voice is unavailable in this TEST APK because the Vivox SDK is not bundled. '
+          'A full voice-enabled build is required.',
+        );
+      }
       // Java exception messages can contain credentials or provider payloads.
       const codes = {'VIVOX_NATIVE', 'PERMISSION_PENDING'};
       const types = {
