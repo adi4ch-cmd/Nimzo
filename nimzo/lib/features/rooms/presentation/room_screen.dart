@@ -666,7 +666,9 @@ class _State extends ConsumerState<RoomScreen> {
                     url: backgroundUrl,
                     publication: backgroundPublication,
                     child: SafeArea(
-                      child: EquippedCosmetic(
+                      child: MembershipPackRoomAtmosphere(
+                          ownerId: room.valueOrNull?.ownerId,
+                          child: EquippedCosmetic(
                           userId: room.valueOrNull?.ownerId,
                           category: 'Party Theme',
                           child: Column(
@@ -1399,7 +1401,7 @@ class _State extends ConsumerState<RoomScreen> {
                                 ),
                               ),
                             ],
-                          )),
+                          ))),
                     )),
               ),
               if (joined)
