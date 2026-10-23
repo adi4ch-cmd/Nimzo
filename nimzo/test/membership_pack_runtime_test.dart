@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nimzo/features/premium/membership_identity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nimzo/features/premium/membership_pack_runtime.dart';
 import 'package:nimzo/features/premium/membership_status.dart';
@@ -36,6 +38,72 @@ void main() {
     expect(MembershipPackTheme.fromStatus(_status()), isNull);
     expect(MembershipPackTheme.fromStatus(_status(vip: 5, retired: true)),
         isNull);
+  });
+
+  testWidgets('verified live cosmetics render on profile, voice room and chat',
+      (tester) async {
+    for (final kind in ['vip', 'svip']) {
+      for (final tier in [1, 5, 10]) {
+        final status = _status(
+            vip: kind == 'vip' ? tier : 0,
+            svip: kind == 'svip' ? tier : 0);
+        await tester.pumpWidget(ProviderScope(
+          key: ValueKey('$kind-$tier'),
+          overrides: [
+            effectiveMembershipProvider('person')
+                .overrideWith((_) async => status),
+          ],
+          child: MaterialApp(
+            home: Scaffold(body: Column(children: [
+              MembershipPackAvatar(
+                userId: 'person', size: 48,
+                child: const CircleAvatar(child: Text('A')),
+              ),
+              const MembershipPackNameplate(
+                userId: 'person', child: Text('User')),
+              const MembershipPackChatBubble(
+                userId: 'person', child: Text('Hello')),
+              const MembershipPackRoomBanner(ownerId: 'person'),
+              const Expanded(child: MembershipPackRoomAtmosphere(
+                  ownerId: 'person', child: SizedBox.expand())),
+            ])),
+          ),
+        ));
+        await tester.pumpAndSettle();
+        for (final name in ['avatar', 'nameplate', 'chat', 'room', 'atmosphere']) {
+          expect(
+              find.byKey(ValueKey('membership-pack-$name-$kind-$tier')),
+              findsOneWidget,
+              reason: '$name must render for $kind $tier');
+        }
+        expect(tester.takeException(), isNull);
+      }
+    }
+  });
+
+  testWidgets('no active tier causes cosmetic wrappers to fail closed',
+      (tester) async {
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        effectiveMembershipProvider('person')
+            .overrideWith((_) async => _status(retired: true, vip: 10)),
+      ],
+      child: const MaterialApp(home: Scaffold(body: Column(children: [
+        MembershipPackAvatar(userId: 'person', size: 48,
+            child: CircleAvatar(child: Text('A'))),
+        MembershipPackNameplate(userId: 'person', child: Text('User')),
+        MembershipPackChatBubble(userId: 'person', child: Text('Hello')),
+        MembershipPackRoomBanner(ownerId: 'person'),
+      ]))),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('membership-pack-avatar-vip-10')),
+        findsNothing);
+    expect(find.byKey(const ValueKey('membership-pack-nameplate-vip-10')),
+        findsNothing);
+    expect(find.byKey(const ValueKey('membership-pack-chat-vip-10')),
+        findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('native VIP entry animates at every tier without media assets',
