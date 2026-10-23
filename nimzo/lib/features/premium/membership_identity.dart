@@ -7,6 +7,9 @@ import 'membership_status.dart';
 import 'membership_catalog.dart';
 import 'membership_media_view.dart';
 import 'membership_pack_runtime.dart';
+import 'membership_pack_inventory.dart';
+import '../store/premium_cosmetics.dart';
+import '../store/cosmetic_media_view.dart';
 
 /// Effective, expiry-checked identity from the server; cached profile tiers
 /// never establish an entitlement. Dispose on navigation/account changes.
@@ -78,11 +81,67 @@ class _VerifiedOwnMembershipEntranceState extends ConsumerState<VerifiedOwnMembe
     final rows = (remote.hasError ? <MembershipPresentation>[] : remote.valueOrNull ?? <MembershipPresentation>[])
       .where((row) => row.kind == kind && row.tier == tier && row.benefits.contains('room_entry'));
     final entrance = rows.isEmpty ? null : rows.first.entrance;
-    _joinedEntrance = entrance == null
-      ? MembershipPackEntranceBanner(key: ValueKey('$id:$kind:$tier'),
-          theme: MembershipPackTheme.fromStatus(membership)!)
-      : IgnorePointer(child: MembershipMediaView(key: ValueKey('$id:${entrance.sha256}'), media: entrance, animate: true));
+    final bundledEntry = MembershipPackInventory.forTier(kind, tier)[3];
+    _joinedEntrance = entrance != null
+      ? IgnorePointer(child: MembershipMediaView(
+          key: ValueKey('$id:${entrance.sha256}'),
+          media: entrance, animate: true))
+      : bundledEntry.animated
+        ? _OriginalVipRoomEntry(
+            key: ValueKey('$id:$kind:$tier:original-entry'),
+            kind: kind, tier: tier, asset: bundledEntry.path!)
+        : MembershipPackEntranceBanner(key: ValueKey('$id:$kind:$tier'),
+            theme: MembershipPackTheme.fromStatus(membership)!);
     return _joinedEntrance!;
   }
 }
 
+
+/// A Hafla VIP entrance is real SVGA media, not the NIMZO drawn banner.
+/// It runs once after the verified user enters the room and removes itself
+/// after playback or an error. Nothing is persisted or granted here.
+class _OriginalVipRoomEntry extends StatefulWidget {
+  const _OriginalVipRoomEntry({
+    super.key, required this.kind, required this.tier, required this.asset,
+  });
+
+  final String kind;
+  final int tier;
+  final String asset;
+
+  @override
+  State<_OriginalVipRoomEntry> createState() => _OriginalVipRoomEntryState();
+}
+
+class _OriginalVipRoomEntryState extends State<_OriginalVipRoomEntry> {
+  bool _finished = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_finished) return const SizedBox.shrink();
+    return IgnorePointer(
+      child: Align(
+        alignment: const Alignment(0, -.5),
+        child: SizedBox(
+          width: double.infinity,
+          height: 220,
+          child: CosmeticMediaView(
+            key: ValueKey('original-vip-entry-${widget.tier}'),
+            media: CosmeticMedia(
+              'membership-vip-entry-${widget.tier}',
+              'Room Entry',
+              'Verified VIP ${widget.tier} original room entry',
+              widget.asset,
+              CosmeticMediaKind.svga,
+            ),
+            animate: true,
+            fit: BoxFit.contain,
+            onFinished: () {
+              if (mounted) setState(() => _finished = true);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
