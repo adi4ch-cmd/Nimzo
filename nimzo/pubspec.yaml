@@ -39,6 +39,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/falla_levels/wealth/
+    - assets/falla_levels/charm/
+    - assets/falla_levels/active/
     - assets/events/
     - assets/brand/
     - assets/games/
