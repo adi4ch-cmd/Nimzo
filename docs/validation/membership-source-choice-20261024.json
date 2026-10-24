@@ -30,5 +30,15 @@
     "Falla mSvipBubbleBgColor is the points-tooltip bubble in SVIPPageHeaderFragment, not room chat",
     "Falla mSvipPageBg is consumed by SVIPPageActivity, not a verified profile/room wallpaper",
     "Hafla vip4\u20138.svga is selected by VipBroadCastBean in TempBigGiftHelper.XEffectGift.bindView, not confirmed room joins"
-  ]
+  ],
+  "tested_application_commit": "e36a0b1cb7e3d66301935c1665aa128524dfdbb3",
+  "full_source_backend_ci": {
+    "run": 40052127840,
+    "conclusion": "success",
+    "flutter_tests_passed": 597,
+    "python_checks_passed": 34,
+    "backend_sql_suites": "PASS"
+  },
+  "dynamic_update_regression_tests": "17 passed",
+  "upstream_catalog_evidence": "falla-hafla-public-catalog-20261024.json"
 }

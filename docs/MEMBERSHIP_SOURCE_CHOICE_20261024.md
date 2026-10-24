@@ -38,3 +38,11 @@ Remaining exact-tier originals: high-tier entrances, full SVIP profile cards/bub
 This source revision is newer than published1.0.42. That APK is not overwritten and does not contain these source-choice changes. No additional APK is built by this change. Host rendering, source coverage and Apply/Remove are checked separately from authenticated Android playback.
 
 [Actual Flutter host preview](ui/membership-source-choice-20261024/all20-source-preference-host.png), rendered with test membership state; not an Android capture. [Audit/validation summary](validation/membership-source-choice-20261024.json). The source index contains121 role mappings backed by105 distinct original files;67 source-slot selections were changed. Targeted29 tests and analyzer passed. Full source/backend CI is run on the pushed revision.
+
+## Remaining online asset-data blocker
+
+The APKs reference online membership catalogs. Credential-free GET reads of the observed production catalog URLs returned application errors rather than package data: Falla code4 (“user not exist”), Hafla code300 (account-session message). No account identity or credentials were supplied; the latter is an anonymous-response message, not a diagnosis of the owner’s account. No credentials were extracted or authentication restrictions bypassed. See [the read-only catalog evidence](validation/falla-hafla-public-catalog-20261024.json). Matching originals absent from the APKs therefore remain unverified; a source-authorized asset export/cache or authorized upstream catalog access is needed to recover those remaining components.
+
+Source choice also has a regression ensuring subsequently approved remote hashes continue to update. That final focused suite passed17 tests.
+
+Final application revision`e36a0b1` passed [full source/backend CI40052127840](https://github.com/adi4ch-cmd/Nimzo/actions/runs/40052127840):597 Flutter tests,34 Python checks,121 exact-tier source mappings/105 distinct-original render checks and all existing/new backend suites, including all20 server apply/read/remove and independent-connection persistence. The dedicated membership QA40052127838 also passed. No authenticated Android verification or new APK is implied.

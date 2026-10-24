@@ -1,0 +1,35 @@
+[
+  {
+    "source": "falla",
+    "url": "https://api.apifalla.com/api/svip/list",
+    "http": 200,
+    "bytes": 52,
+    "response_keys": [
+      "count",
+      "code",
+      "msg",
+      "res"
+    ],
+    "method": "GET",
+    "credentials_supplied": false,
+    "application_code": 4,
+    "application_message": "user not exist",
+    "pack_catalog_returned": false
+  },
+  {
+    "source": "hafla",
+    "url": "https://app.hafla.top/Chat/UserInfoApi/getSVIPConfig",
+    "http": 200,
+    "bytes": 81,
+    "response_keys": [
+      "code",
+      "msg",
+      "data"
+    ],
+    "method": "GET",
+    "credentials_supplied": false,
+    "application_code": 300,
+    "application_message": "This account has been logged in other device.",
+    "pack_catalog_returned": false
+  }
+]
