@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "build_authorized": false,
-  "app_source_sha256": "1e81951058e5174520de93af13a2d4d4a95b16f769967e16f8c9fa1d6c9bd315",
+  "app_source_sha256": "8dc42d0694de7c63be54d600674a8d101070e79855bfd0acb37301f5d6bf5829",
   "voice_enabled": false,
   "open_blockers": [
     "Final Vivox integration deferred by owner",
@@ -74,8 +74,8 @@
   "qa_build_authorized": true,
   "qa_open_blockers": [],
   "voice_status": "OWNER_DEFERRED",
-  "qa_scope": "Owner-requested1.0.42 TEST APK: server-backed exact-tier Apply/Remove and inline package contents. Source98ea234 CI40027784232:590 Flutter tests and backend suites pass. Android build/install smoke will run before publication. Full authenticated20-pack Android acceptance and genuine media gaps remain open; Vivox remains deferred.",
-  "owner_authorization": "Apk do (2026-10-23): latest membership implementation TEST APK requested; full production acceptance remains incomplete.",
+  "qa_scope": "Owner-requested1.0.43 TEST APK: source-choice update and profile/room screenshot fixes. Focused widget/voice/layout checks passed; full Flutter suite, compiled original bytes, signatures and Android15 install/startup are mandatory workflow gates before publication. Full original task and authenticated per-tier Android acceptance remain incomplete; Vivox deferred.",
+  "owner_authorization": "New apk build kroo ... baki3 nimzo ke esy ye sab b fix kro sath sath (2026-10-24). TEST APK; previous Vivox deferral remains in effect.",
   "qa_checks": {
     "dynamic_audit": {
       "status": "PASS",
@@ -146,7 +146,9 @@
         "docs/validation/membership-refresh-device-proof-20261023.json",
         "docs/validation/membership-refresh-publication-preservation-20261023.json",
         "docs/validation/membership-refresh-storage-readback-20261023.json",
-        "docs/VIP_SVIP_LIVE_ACTIVATION_REPORT_20261023.md"
+        "docs/VIP_SVIP_LIVE_ACTIVATION_REPORT_20261023.md",
+        "docs/MEMBERSHIP_SOURCE_CHOICE_20261024.md",
+        "docs/validation/membership-source-choice-20261024.json"
       ]
     },
     "progression": {
@@ -181,7 +183,9 @@
         "docs/validation/membership-refresh-device-proof-20261023.json",
         "docs/validation/membership-refresh-publication-preservation-20261023.json",
         "docs/validation/membership-refresh-storage-readback-20261023.json",
-        "docs/VIP_SVIP_LIVE_ACTIVATION_REPORT_20261023.md"
+        "docs/VIP_SVIP_LIVE_ACTIVATION_REPORT_20261023.md",
+        "docs/MEMBERSHIP_SOURCE_CHOICE_20261024.md",
+        "docs/validation/membership-source-choice-20261024.json"
       ]
     },
     "store_backpack": {

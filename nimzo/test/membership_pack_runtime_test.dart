@@ -37,6 +37,33 @@ MembershipStatus _status({int vip = 0, int svip = 0, bool retired = false}) =>
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  testWidgets('mic-seat nameplate stays inside a 54 by 24 slot',
+      (tester) async {
+    await tester.pumpWidget(ProviderScope(
+        overrides: [
+          effectiveMembershipProvider('person')
+              .overrideWith((_) async => _status(vip: 2)),
+        ],
+        child: const MaterialApp(
+            home: Scaffold(
+                body: Center(
+                    child: SizedBox(
+          key: ValueKey('seat-name-bounds'),
+          width: 54,
+          height: 24,
+          child: MembershipPackNameplate(
+              userId: 'person',
+              child:
+                  Text('Victor', maxLines: 1, overflow: TextOverflow.ellipsis)),
+        ))))));
+    await tester.pumpAndSettle();
+    final bounds =
+        tester.getRect(find.byKey(const ValueKey('seat-name-bounds')));
+    final label = tester.getRect(find.text('Victor'));
+    expect(label.bottom, lessThanOrEqualTo(bounds.bottom));
+    expect(label.right, lessThanOrEqualTo(bounds.right));
+    expect(tester.takeException(), isNull);
+  });
   test('every active VIP and SVIP level receives a distinct tier theme', () {
     final vipColors = <Color>{};
     final svipColors = <Color>{};

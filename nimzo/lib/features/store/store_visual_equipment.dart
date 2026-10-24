@@ -194,9 +194,11 @@ class EquippedIdentity extends ConsumerWidget {
     super.key,
     required this.userId,
     required this.child,
+    this.compact = false,
   });
   final String userId;
   final Widget child;
+  final bool compact;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (userId.isEmpty) return child;
@@ -211,15 +213,16 @@ class EquippedIdentity extends ConsumerWidget {
             userId: userId,
             category: 'ID Frame',
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: EdgeInsets.symmetric(
+                  horizontal: compact ? 2 : 8, vertical: compact ? 1 : 3),
               child: child,
             ),
           ),
         ),
         if (badge != null)
           SizedBox(
-            width: 32,
-            height: 32,
+            width: compact ? 12 : 32,
+            height: compact ? 12 : 32,
             child: CosmeticMediaView(
                 key: ValueKey(badge.id),
                 media: badge,

@@ -20,6 +20,7 @@ import 'levels_screen.dart';
 import 'profile_level_scale.dart';
 import 'profile_level_pills.dart';
 import 'profile_collections.dart';
+import 'profile_equipped_collection.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
 
@@ -32,6 +33,22 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   int section = 0;
+  Widget _collectionContent(WidgetRef collectionRef, String id,
+      ProfileCollection kind, List<Map<String, dynamic>> items) {
+    final equipped =
+        collectionRef.watch(profileEquippedCollectionProvider((id, kind)));
+    if (items.isEmpty && equipped == null)
+      return const EmptyContent('No items yet');
+    return Wrap(spacing: 10, runSpacing: 10, children: [
+      if (equipped != null)
+        ProfileEquippedCollectionTile(
+            key: ValueKey(
+                'profile-${equipped.membership ? 'membership' : 'store'}-${kind.name}'),
+            item: equipped),
+      for (final item in items) CollectibleArtwork(item: item),
+    ]);
+  }
+
   Widget _actions(BuildContext context, String id, String? me) => me == id
       ? GradientButton(
           onPressed: () => Navigator.of(context).push(
@@ -281,6 +298,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         Expanded(
                           child: MembershipPackNameplate(
                               userId: id,
+                              showBadge: false,
                               child: EquippedIdentity(
                                   userId: id,
                                   child: Text(
@@ -486,7 +504,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             child: Text(
                               {
                                 'frame': 'Frame',
-                                'car': 'Car',
+                                'car': 'Rides & entrances',
                               }[kind.name]!,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
@@ -506,20 +524,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     onRetry: () => ref.invalidate(
                                       profileCollectionProvider((id, kind)),
                                     ),
-                                    builder: (items) => items.isEmpty
-                                        ? const EmptyContent('No items yet')
-                                        : SingleChildScrollView(
-                                            child: Wrap(
-                                              spacing: 10,
-                                              runSpacing: 10,
-                                              children: [
-                                                for (final item in items)
-                                                  CollectibleArtwork(
-                                                    item: item,
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
+                                    builder: (items) => SingleChildScrollView(
+                                        child: _collectionContent(
+                                            ref, id, kind, items)),
                                   ),
                                 ),
                               ),
@@ -539,17 +546,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         onRetry: () => ref.invalidate(
                           profileCollectionProvider((id, kind)),
                         ),
-                        builder: (items) => items.isEmpty
-                            ? const EmptyContent('No items yet')
-                            : Wrap(
-                                children: [
-                                  for (final item in items)
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 10),
-                                      child: CollectibleArtwork(item: item),
-                                    ),
-                                ],
-                              ),
+                        builder: (items) =>
+                            _collectionContent(ref, id, kind, items),
                       ),
                     ],
                     Wrap(

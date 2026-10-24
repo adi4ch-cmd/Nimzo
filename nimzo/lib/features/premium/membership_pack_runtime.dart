@@ -141,6 +141,7 @@ class MembershipPackAvatar extends ConsumerWidget {
     final medal = status.hasSlot('Royal Badge')
         ? MembershipPackInventory.medal(theme.kind, theme.tier)
         : null;
+    final medalSize = (size * .25).clamp(12.0, 24.0).toDouble();
     return SizedBox(
         key: frame?.available == true
             ? ValueKey('membership-pack-avatar-${theme.kind}-${theme.tier}')
@@ -176,12 +177,12 @@ class MembershipPackAvatar extends ConsumerWidget {
                             animate: true))),
               if (medal?.available == true)
                 Positioned(
-                    bottom: -5,
-                    right: -5,
+                    bottom: -size * .04,
+                    right: -size * .04,
                     child: IgnorePointer(
                         child: SizedBox(
-                            width: 24,
-                            height: 24,
+                            width: medalSize,
+                            height: medalSize,
                             child: MembershipOriginalImage(artwork: medal!)))),
             ]));
   }
@@ -215,60 +216,60 @@ class MembershipPackProfileDecoration extends StatelessWidget {
 }
 
 class MembershipPackNameplate extends StatelessWidget {
-  const MembershipPackNameplate({
-    super.key,
-    required this.userId,
-    required this.child,
-  });
+  const MembershipPackNameplate(
+      {super.key,
+      required this.userId,
+      required this.child,
+      this.compact = false,
+      this.showBadge = true});
   final String? userId;
   final Widget child;
+  final bool compact, showBadge;
 
   @override
   Widget build(BuildContext context) => VerifiedMembershipPack(
         userId: userId,
         slot: 'ID Frame',
         fallback: child,
-        builder: (theme) => Container(
-          key:
-              ValueKey('membership-pack-nameplate-${theme.kind}-${theme.tier}'),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          decoration: BoxDecoration(
-            color: const Color(0xff161b32),
-            borderRadius: BorderRadius.circular(7),
-            border: Border.all(color: theme.light, width: 1),
-            boxShadow: [
-              BoxShadow(color: theme.dark.withValues(alpha: .5), blurRadius: 3)
+        builder: (theme) => LayoutBuilder(builder: (context, constraints) {
+          final small = compact || constraints.maxWidth < 110;
+          final art =
+              MembershipPackInventory.forTier(theme.kind, theme.tier)[2];
+          final parts = <Widget>[
+            if (showBadge && art.available) ...[
+              SizedBox(
+                  width: small ? 18 : 48,
+                  height: small ? 11 : 19,
+                  child: MembershipOriginalImage(artwork: art)),
+              const SizedBox(width: 3),
             ],
-          ),
-          child: DefaultTextStyle.merge(
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w800),
-            child: MembershipPackInventory.forTier(theme.kind, theme.tier)[2]
-                        .path !=
-                    null
-                ? Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 4,
-                    children: [
-                      Image.asset(
-                        MembershipPackInventory.forTier(
-                                theme.kind, theme.tier)[2]
-                            .path!,
-                        height: 19,
-                        width: 62,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Text(theme.label,
-                            style: TextStyle(
-                                color: theme.light,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w900)),
-                      ),
-                      child,
-                    ],
-                  )
-                : child,
-          ),
-        ),
+            if (small && constraints.hasBoundedWidth)
+              Flexible(child: child)
+            else
+              child,
+          ];
+          return Align(
+              alignment: Alignment.centerLeft,
+              widthFactor: 1,
+              child: Container(
+                key: ValueKey(
+                    'membership-pack-nameplate-${theme.kind}-${theme.tier}'),
+                padding: EdgeInsets.symmetric(
+                    horizontal: small ? 3 : 6, vertical: small ? 1 : 2),
+                decoration: BoxDecoration(
+                    color: const Color(0xff161b32),
+                    borderRadius: BorderRadius.circular(7),
+                    border: Border.all(color: theme.light, width: 1)),
+                child: DefaultTextStyle.merge(
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w800),
+                    child: small
+                        ? Row(mainAxisSize: MainAxisSize.min, children: parts)
+                        : Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: parts)),
+              ));
+        }),
       );
 }
 

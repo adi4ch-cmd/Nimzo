@@ -54,6 +54,7 @@ class _State extends ConsumerState<RoomScreen> {
   bool _exitPromptVisible = false;
   bool micBusy = false;
   bool chatBusy = false;
+  bool audioUnavailable = false;
   String? failure;
   late final RoomSession session;
   @override
@@ -90,6 +91,7 @@ class _State extends ConsumerState<RoomScreen> {
     setState(() {
       joining = true;
       failure = null;
+      audioUnavailable = false;
       mic = false;
     });
     try {
@@ -98,6 +100,7 @@ class _State extends ConsumerState<RoomScreen> {
       if (joined) _startActivityTracking();
     } catch (error) {
       joined = session.joined;
+      audioUnavailable = error is VoiceUnavailableFailure;
       failure = joined
           ? error is VoiceConnectionFailure
               ? error.message.toString()
@@ -717,8 +720,16 @@ class _State extends ConsumerState<RoomScreen> {
                                           seatsProvider(widget.roomId)),
                                     ),
                                   if (failure != null)
-                                    DataFailure(
-                                        message: failure!, onRetry: join),
+                                    if (audioUnavailable)
+                                      Padding(
+                                          key: const ValueKey(
+                                              'room-voice-unavailable'),
+                                          padding: const EdgeInsets.all(12),
+                                          child: Text(failure!,
+                                              textAlign: TextAlign.center))
+                                    else
+                                      DataFailure(
+                                          message: failure!, onRetry: join),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 8,
@@ -835,16 +846,26 @@ class _State extends ConsumerState<RoomScreen> {
                                                                         1.5),
                                                             decoration:
                                                                 BoxDecoration(
-                                                              color: const Color(
-                                                                  0x665e337e),
+                                                              color: palette
+                                                                  .text
+                                                                  .withValues(
+                                                                      alpha:
+                                                                          .045),
                                                               border: Border.all(
-                                                                  color: const Color(
-                                                                      0x667c548d),
+                                                                  color: s.userId ==
+                                                                          null
+                                                                      ? palette
+                                                                          .text
+                                                                          .withValues(
+                                                                              alpha:
+                                                                                  .12)
+                                                                      : const Color(
+                                                                          0xffd9b867),
                                                                   width: .8),
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
-                                                                          5),
+                                                                          13),
                                                             ),
                                                             child: Stack(
                                                                 children: [
@@ -860,15 +881,15 @@ class _State extends ConsumerState<RoomScreen> {
                                                                           vertical:
                                                                               1),
                                                                       decoration: BoxDecoration(
-                                                                          color: const Color(
-                                                                              0x666e4e86),
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(6)),
+                                                                          color: palette
+                                                                              .text
+                                                                              .withValues(alpha: .10),
+                                                                          borderRadius: BorderRadius.circular(6)),
                                                                       child: Text(
                                                                           '$n',
-                                                                          style: const TextStyle(
+                                                                          style: TextStyle(
                                                                               fontSize: 10,
-                                                                              color: Color(0xfff0d9ff))),
+                                                                              color: palette.text.withValues(alpha: .75))),
                                                                     ),
                                                                   ),
                                                                   Center(
@@ -894,8 +915,8 @@ class _State extends ConsumerState<RoomScreen> {
                                                                                   errorBuilder: (_, __, ___) => const Icon(Icons.mic),
                                                                                 )
                                                                               : s.locked
-                                                                                  ? const Icon(Icons.lock_outline_rounded, size: 30, color: Color(0xffd8b9e8))
-                                                                                  : const NimzoNavigationArt(index: 5, size: 43, color: Color(0xffd8b9e8)),
+                                                                                  ? Icon(Icons.lock_outline_rounded, size: 30, color: palette.text.withValues(alpha: .55))
+                                                                                  : NimzoNavigationArt(index: 5, size: 43, color: palette.text.withValues(alpha: .55)),
                                                                         )
                                                                       else
                                                                         Stack(
@@ -903,31 +924,30 @@ class _State extends ConsumerState<RoomScreen> {
                                                                               Clip.none,
                                                                           children: [
                                                                             Container(
-                                                                              padding: const EdgeInsets.all(
-                                                                                2,
-                                                                              ),
+                                                                              padding: const EdgeInsets.all(1),
                                                                               decoration: BoxDecoration(
                                                                                 shape: BoxShape.circle,
                                                                                 border: Border.all(
-                                                                                  color: speaking.contains(
-                                                                                    s.userId,
-                                                                                  )
+                                                                                  color: !s.muted &&
+                                                                                          speaking.contains(
+                                                                                            s.userId,
+                                                                                          )
                                                                                       ? NimzoStyle.primary
                                                                                       : Colors.transparent,
-                                                                                  width: 2,
+                                                                                  width: 1,
                                                                                 ),
                                                                               ),
                                                                               child: MembershipPackAvatar(
                                                                                   userId: s.userId,
-                                                                                  size: 48,
+                                                                                  size: 44,
                                                                                   speaking: !s.muted && speaking.contains(s.userId),
                                                                                   child: EquippedAvatar(
                                                                                       userId: s.userId,
-                                                                                      size: 48,
-                                                                                      speaking: speaking.contains(s.userId),
+                                                                                      size: 44,
+                                                                                      speaking: !s.muted && speaking.contains(s.userId),
                                                                                       child: NimzoAvatar(
                                                                                         name: p?.displayName ?? 'N',
-                                                                                        size: 48,
+                                                                                        size: 44,
                                                                                         url: p?.avatarPath == null
                                                                                             ? null
                                                                                             : ref
@@ -943,40 +963,35 @@ class _State extends ConsumerState<RoomScreen> {
                                                                                                 ),
                                                                                       ))),
                                                                             ),
+                                                                            if (s.muted)
+                                                                              Positioned(left: 0, bottom: 0, child: Container(padding: const EdgeInsets.all(2), decoration: BoxDecoration(shape: BoxShape.circle, color: palette.gradient.first), child: Icon(LucideIcons.micOff, size: 10, color: palette.text))),
                                                                           ],
                                                                         ),
                                                                       const SizedBox(
                                                                           height:
                                                                               3),
                                                                       MembershipPackNameplate(
+                                                                          compact:
+                                                                              true,
                                                                           userId:
                                                                               s.userId,
                                                                           child: EquippedIdentity(
+                                                                              compact: true,
                                                                               userId: s.userId ?? '',
                                                                               child: Text(
                                                                                 p?.displayName ?? '$n',
+                                                                                textScaler: MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.2),
                                                                                 maxLines: 1,
                                                                                 overflow: TextOverflow.ellipsis,
                                                                                 style: TextStyle(
-                                                                                  fontSize: 12,
-                                                                                  color: RoomTheme.byId(
-                                                                                    room.valueOrNull?.theme ?? 'nimzo_white',
-                                                                                  ).text.withValues(alpha: .88),
+                                                                                  fontSize: 11,
+                                                                                  color: _hasMembershipSlot(s.userId ?? '', 'ID Frame')
+                                                                                      ? Colors.white
+                                                                                      : RoomTheme.byId(
+                                                                                          room.valueOrNull?.theme ?? 'nimzo_white',
+                                                                                        ).text.withValues(alpha: .88),
                                                                                 ),
                                                                               ))),
-                                                                      if (s
-                                                                          .muted)
-                                                                        Icon(
-                                                                          LucideIcons
-                                                                              .micOff,
-                                                                          size:
-                                                                              12,
-                                                                          color:
-                                                                              RoomTheme.byId(
-                                                                            room.valueOrNull?.theme ??
-                                                                                'nimzo_white',
-                                                                          ).text,
-                                                                        ),
                                                                     ],
                                                                   )),
                                                                 ]),

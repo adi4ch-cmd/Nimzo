@@ -1,3 +1,8 @@
+import 'package:nimzo/features/premium/membership_identity.dart';
+import 'package:nimzo/features/premium/membership_status.dart';
+import 'package:nimzo/features/premium/membership_catalog.dart';
+import 'package:nimzo/features/store/store_visual_equipment.dart';
+import 'package:nimzo/features/store/premium_cosmetics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +24,8 @@ Future<void> render(
   String target = 'guest',
   bool asModal = false,
   bool moderator = false,
+  bool membership = false,
+  bool storeCard = false,
   RoomRepository? repository,
   ValueChanged<String>? onMention,
 }) async {
@@ -35,6 +42,30 @@ Future<void> render(
         if (repository != null)
           roomRepositoryProvider.overrideWithValue(repository),
         currentUserIdProvider.overrideWithValue(me),
+        membershipPresentationsProvider.overrideWith((_) async => []),
+        effectiveMembershipProvider(target).overrideWith((_) async => membership
+            ? MembershipStatus.fromJson({
+                'vip_level': 2,
+                'pack_kind': 'vip',
+                'pack_tier': 2,
+                'pack_slots': [
+                  'Profile Card',
+                  'Avatar Frame',
+                  'ID Frame',
+                  'Royal Badge'
+                ]
+              })
+            : null),
+        storeVisualEquipmentProvider(target).overrideWith((_) async => storeCard
+            ? {
+                'Profile Card': const CosmeticMedia(
+                    'fixture-profile-card',
+                    'Profile Card',
+                    'Card',
+                    'assets/premium_store/willchill/chat_send_id_card_bg.png',
+                    CosmeticMediaKind.image)
+              }
+            : {}),
         roomModerationProvider('room').overrideWith((_) async => moderator),
         giftCatalogProvider.overrideWith((_) async => []),
         walletProvider.overrideWith((_) async => (coins: 0, diamonds: 0)),
@@ -80,6 +111,25 @@ Future<void> render(
 }
 
 void main() {
+  testWidgets('mini profile uses applied original card in a compact header',
+      (tester) async {
+    await render(tester, me: 'member', membership: true);
+    final art = find.byKey(const ValueKey('room-user-membership-profile-card'));
+    expect(art, findsOneWidget);
+    expect(tester.getSize(art).height, lessThanOrEqualTo(110));
+    expect(find.byType(VerifiedMembershipIdentity), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+  testWidgets('mini profile preserves a manually equipped Store card',
+      (tester) async {
+    await render(tester, me: 'member', storeCard: true);
+    expect(find.byKey(const ValueKey('room-user-store-profile-card')),
+        findsOneWidget);
+    expect(find.byKey(const ValueKey('room-user-membership-profile-card')),
+        findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final ban in [false, true]) {
     testWidgets('moderator ${ban ? 'ban' : 'kick'} confirms correct action', (
       tester,
@@ -156,8 +206,8 @@ void main() {
     );
     await tester.tap(find.text('Open seat'));
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('room-mini-profile-card')),
-        findsOneWidget);
+    expect(
+        find.byKey(const ValueKey('room-mini-profile-card')), findsOneWidget);
     await tester.tap(find.text('Mention'));
     await tester.pumpAndSettle();
     expect(mentionName, 'Member');

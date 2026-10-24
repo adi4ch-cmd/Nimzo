@@ -1,3 +1,9 @@
+import 'package:nimzo/features/voice/vivox_voice_service.dart';
+import 'package:nimzo/features/profile/profile.dart';
+import 'package:nimzo/features/profile/profile_repository.dart';
+import 'package:nimzo/features/premium/membership_identity.dart';
+import 'package:nimzo/features/premium/membership_status.dart';
+import 'package:nimzo/features/premium/membership_catalog.dart';
 import 'package:nimzo/core/services/nimzo_content_sync.dart';
 import 'package:nimzo/features/store/store_visual_equipment.dart';
 import 'dart:async';
@@ -20,12 +26,17 @@ import 'tingle_video_ui_test.dart' show capture, loadReviewFonts;
 import 'room_reconnect_test.dart' show ReconnectRepository, room;
 
 class PreviewVoice implements VoiceService {
+  PreviewVoice({this.unavailable = false});
+  final bool unavailable;
   @override
-  Stream<bool> get connected => Stream.value(true);
+  Stream<bool> get connected => Stream.value(!unavailable);
   @override
   Stream<Set<String>> get speaking => const Stream.empty();
   @override
-  Future<void> join(String id, String token) async {}
+  Future<void> join(String id, String token) async {
+    if (unavailable) throw VoiceUnavailableFailure();
+  }
+
   @override
   Future<void> leave() async {}
   @override
@@ -37,8 +48,16 @@ class PreviewVoice implements VoiceService {
 }
 
 void main() {
-  for (final width in [320.0, 360.0, 390.0]) {
-    testWidgets('audio room sheets and fifteen seats fit ${width}dp',
+  for (final mode in [
+    (320.0, false),
+    (360.0, false),
+    (390.0, false),
+    (360.0, true)
+  ]) {
+    final width = mode.$1;
+    final unavailable = mode.$2;
+    testWidgets(
+        'audio room sheets and fifteen seats fit ${width}dp voice deferred=$unavailable',
         (tester) async {
       tester.view.physicalSize = Size(width, width * 2400 / 1080);
       tester.view.devicePixelRatio = 1;
@@ -53,7 +72,8 @@ void main() {
       await tester.pumpWidget(ProviderScope(
           overrides: [
             supabaseProvider.overrideWithValue(db),
-            nimzoContentRevisionsProvider.overrideWith((_) => const Stream.empty()),
+            nimzoContentRevisionsProvider
+                .overrideWith((_) => const Stream.empty()),
             verifiedGiftAnimationProvider
                 .overrideWith((ref, args) => const Stream.empty()),
             roomDiamondStatusProvider('room').overrideWith(
@@ -61,21 +81,52 @@ void main() {
             roomDiamondEventsProvider('room')
                 .overrideWith((_) => const Stream.empty()),
             currentUserIdProvider.overrideWithValue('viewer'),
+            membershipPresentationsProvider.overrideWith((_) async => []),
+            effectiveMembershipProvider
+                .overrideWith((_, id) async => id == 'victor'
+                    ? MembershipStatus.fromJson({
+                        'vip_level': 2,
+                        'pack_kind': 'vip',
+                        'pack_tier': 2,
+                        'pack_slots': [
+                          'Avatar Frame',
+                          'ID Frame',
+                          'Royal Badge',
+                          'Profile Card'
+                        ]
+                      })
+                    : null),
+            profileProvider('victor').overrideWith((_) async => const Profile(
+                id: 'victor',
+                nimzoId: 100005,
+                displayName: 'Victor long member name',
+                bio: 'Test profile')),
             storeVisualEquipmentProvider.overrideWith((_, id) async => {}),
             roomMemberIdsProvider('room')
                 .overrideWith((_) => const Stream.empty()),
             roomRepositoryProvider.overrideWithValue(ReconnectRepository(db)),
             roomProvider('room').overrideWith((_) async => room),
-            seatsProvider('room').overrideWith((_) =>
-                Stream.value(List.generate(15, (i) => MicSeat(seatNo: i + 1)))),
-            roomSeatProfilesProvider('room').overrideWith((_) async => {}),
+            seatsProvider('room').overrideWith((_) => Stream.value(
+                List.generate(
+                    15,
+                    (i) => MicSeat(
+                        seatNo: i + 1,
+                        userId: i == 7 ? 'victor' : null,
+                        muted: i == 7)))),
+            roomSeatProfilesProvider('room').overrideWith((_) async => {
+                  'victor': const Profile(
+                      id: 'victor',
+                      nimzoId: 100005,
+                      displayName: 'Victor long member name')
+                }),
             onlineCountProvider('room')
                 .overrideWith((_) => const Stream.empty()),
             roomChatProvider('room').overrideWith((_) => Stream.value([])),
             giftCatalogProvider.overrideWith((_) async => []),
             walletProvider.overrideWith(
                 (_) async => throw StateError('No balance fixture')),
-            voiceServiceProvider.overrideWithValue(PreviewVoice()),
+            voiceServiceProvider
+                .overrideWithValue(PreviewVoice(unavailable: unavailable)),
           ],
           child: RepaintBoundary(
               key: key,
@@ -90,6 +141,12 @@ void main() {
       expect(tester.widget<Text>(find.text('Room').first).style?.color,
           const Color(0xfff7ebff),
           reason: 'Room title contrasts with Royal Plum');
+      if (unavailable) {
+        final notice = find.byKey(const ValueKey('room-voice-unavailable'));
+        expect(notice, findsOneWidget);
+        expect(find.descendant(of: notice, matching: find.text('Retry')),
+            findsNothing);
+      }
       final toolsContext = tester.element(find.byTooltip('Party Tools'));
       expect(
           IconButtonTheme.of(toolsContext).style?.foregroundColor?.resolve({}),
@@ -99,7 +156,25 @@ void main() {
         expect(find.byKey(ValueKey('room-mic-seat-$n')), findsOneWidget);
       }
       expect(tester.takeException(), isNull);
-      await capture(tester, 'room-${width.toInt()}', key);
+      await capture(tester,
+          'room-${width.toInt()}${unavailable ? '-voice-deferred' : ''}', key);
+      final seat =
+          tester.getRect(find.byKey(const ValueKey('room-mic-seat-8')));
+      final name = tester.getRect(
+          find.byKey(const ValueKey('membership-pack-nameplate-vip-2')));
+      expect(name.bottom, lessThanOrEqualTo(seat.bottom));
+      await tester.tap(find.byKey(const ValueKey('room-mic-seat-8')));
+      await tester.pumpAndSettle();
+      expect(
+          find.byKey(const ValueKey('room-mini-profile-card')), findsOneWidget);
+      for (var i = 0; i < 8; i++) {
+        await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 20)));
+        await tester.pump(const Duration(milliseconds: 20));
+      }
+      await capture(tester, 'room-member-card-${width.toInt()}', key);
+      await tester.tap(find.byTooltip('Close profile'));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('room-mic-seat-1')));
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('room-seat-here')), findsOneWidget);
