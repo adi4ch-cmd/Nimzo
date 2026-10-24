@@ -41,6 +41,37 @@ void main() {
     }
     expect(complete, ['vip6']);
   });
+  test('new approved remote artwork can still update the chosen identity', () {
+    final base = MembershipPresentation.fromJson({
+      'kind': 'vip',
+      'tier': 5,
+      'hero': {
+        'url': 'https://cdn.example/media/${'b' * 64}.png',
+        'sha256': 'b' * 64,
+        'bytes': 100,
+        'format': 'png'
+      },
+      'badge': {
+        'url': 'https://cdn.example/media/${'c' * 64}.png',
+        'sha256': 'c' * 64,
+        'bytes': 100,
+        'format': 'png'
+      },
+    });
+    final chosen = MembershipPresentation.preferred(base);
+    expect(chosen.hero, same(base.hero));
+    expect(chosen.badge, same(base.badge));
+    final replaced = MembershipPresentation.preferred(base,
+        replacedHashes: {'b' * 64, 'c' * 64});
+    expect(
+        replaced.hero!.url,
+        MembershipPackInventory.original('vip', 5, 'membership_hero', 'Hero')
+            .path);
+    expect(
+        replaced.badge!.url,
+        MembershipPackInventory.original('vip', 5, 'membership_badge', 'Badge')
+            .path);
+  });
   test(
       'source identity preference preserves remote entrance and benefit policy',
       () {

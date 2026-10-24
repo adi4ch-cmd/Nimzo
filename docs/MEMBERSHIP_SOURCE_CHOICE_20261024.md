@@ -1,6 +1,6 @@
 # Falla/Hafla source preference and complete-pack priority — 2026-10-24
 
-The owner prefers Falla SVIP and Hafla/Falla VIP, permits mixing sources, and now explicitly prefers fewer complete packs over ten incomplete ones. No membership, purchase, equipment, wallet or room is removed. Existing eligible tiers remain accessible; incomplete media is never promoted as a full package.
+The owner prefers Falla SVIP and Hafla/Falla VIP, permits mixing sources, and now explicitly prefers fewer complete packs over ten incomplete ones. No membership, purchase, equipment, wallet or room is removed. The selected Hafla identity replaces only the previous bundled/known original hashes; subsequently approved new remote artwork still updates through the Dynamic Update System. Existing eligible tiers remain accessible; incomplete media is never promoted as a full package.
 
 ## Source selection
 
