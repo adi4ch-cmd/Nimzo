@@ -724,9 +724,24 @@ class _State extends ConsumerState<RoomScreen> {
                                       Padding(
                                           key: const ValueKey(
                                               'room-voice-unavailable'),
-                                          padding: const EdgeInsets.all(12),
-                                          child: Text(failure!,
-                                              textAlign: TextAlign.center))
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 6),
+                                          child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                  color: palette.gradient.first,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  border: Border.all(
+                                                      color: palette.text
+                                                          .withValues(
+                                                              alpha: .15))),
+                                              child: Text(failure!,
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      color: palette.text,
+                                                      fontSize: 12,
+                                                      height: 1.35))))
                                     else
                                       DataFailure(
                                           message: failure!, onRetry: join),

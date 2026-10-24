@@ -146,6 +146,17 @@ void main() {
         expect(notice, findsOneWidget);
         expect(find.descendant(of: notice, matching: find.text('Retry')),
             findsNothing);
+        final noticeText =
+            find.descendant(of: notice, matching: find.byType(Text));
+        final foreground = DefaultTextStyle.of(tester.element(noticeText))
+            .style
+            .merge(tester.widget<Text>(noticeText).style)
+            .color!;
+        final a = foreground.computeLuminance();
+        final b = const Color(0xff27002e).computeLuminance();
+        final contrast = a > b ? (a + .05) / (b + .05) : (b + .05) / (a + .05);
+        expect(contrast, greaterThanOrEqualTo(4.5),
+            reason: 'Voice status must be readable in the dark room');
       }
       final toolsContext = tester.element(find.byTooltip('Party Tools'));
       expect(
