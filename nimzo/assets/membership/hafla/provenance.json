@@ -1,0 +1,329 @@
+{
+  "source_apk": "Hafla-1.7.2.apks!/base.apk",
+  "items": [
+    {
+      "source": "assets/svga/entry_vip1.svga",
+      "path": "nimzo/assets/membership/hafla/vip1-room-entry.svga",
+      "kind": "vip",
+      "tier": 1,
+      "role": "entrance_animation",
+      "sha256": "1ce1e7d25ba095be6ef7476e3514105eeb9a43bd30a5cb2e5e1067145d245faf",
+      "bytes": 411431
+    },
+    {
+      "source": "assets/svga/entry_vip2.svga",
+      "path": "nimzo/assets/membership/hafla/vip2-room-entry.svga",
+      "kind": "vip",
+      "tier": 2,
+      "role": "entrance_animation",
+      "sha256": "78064504fd40992dfe695fe9a27a0906ee50d2e042398ccbafe5bef933f50589",
+      "bytes": 500971
+    },
+    {
+      "source": "assets/svga/entry_vip3.svga",
+      "path": "nimzo/assets/membership/hafla/vip3-room-entry.svga",
+      "kind": "vip",
+      "tier": 3,
+      "role": "entrance_animation",
+      "sha256": "77254b02681dfbd0540b4d2a8b265b0d878b25424f18806d53fd553ab9f1bfdb",
+      "bytes": 208698
+    },
+    {
+      "source": "assets/svga/entry_vip4.svga",
+      "path": "nimzo/assets/membership/hafla/vip4-room-entry.svga",
+      "kind": "vip",
+      "tier": 4,
+      "role": "entrance_animation",
+      "sha256": "f706ad658c1e2f299b44ab0697ca63744493afa91ac597864590cd5173f03bf8",
+      "bytes": 513571
+    },
+    {
+      "source": "assets/svga/entry_vip5.svga",
+      "path": "nimzo/assets/membership/hafla/vip5-room-entry.svga",
+      "kind": "vip",
+      "tier": 5,
+      "role": "entrance_animation",
+      "sha256": "3cce99f999b64e57aa837e6979777eb26f5a07bdd0619623a4c30124bc59249e",
+      "bytes": 242794
+    },
+    {
+      "source": "assets/svga/entry_vip6.svga",
+      "path": "nimzo/assets/membership/hafla/vip6-room-entry.svga",
+      "kind": "vip",
+      "tier": 6,
+      "role": "entrance_animation",
+      "sha256": "f8e3cbf9a9730f53e02a699fe5497e586cdd535e88fe1fc29fc6eeb66446bc72",
+      "bytes": 648623
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/bg_top_svip1.png",
+      "path": "nimzo/assets/membership/hafla/svip1-tier-background.png",
+      "kind": "svip",
+      "tier": 1,
+      "role": "tier_background",
+      "sha256": "08fdb5b11a1f7a38154790cb38794b78922d057ce53bae095a98db54d33c10a0",
+      "bytes": 203186
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_lv_svip1.png",
+      "path": "nimzo/assets/membership/hafla/svip1-nameplate.png",
+      "kind": "svip",
+      "tier": 1,
+      "role": "tier_nameplate",
+      "sha256": "38dc0612d22935b7a1064da805ff2cb0a6b758ac477b109d5e028510ccedcdc0",
+      "bytes": 22333
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_medal_svip1.png",
+      "path": "nimzo/assets/membership/hafla/svip1-medal.png",
+      "kind": "svip",
+      "tier": 1,
+      "role": "medal",
+      "sha256": "eab0bdecd26cc5c119c9535a372bc9733a593a62915cb14aeb284c8651471ff8",
+      "bytes": 20820
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/bg_top_svip2.png",
+      "path": "nimzo/assets/membership/hafla/svip2-tier-background.png",
+      "kind": "svip",
+      "tier": 2,
+      "role": "tier_background",
+      "sha256": "3c79f31550659f550d9a7e822fd7cdf4190231be11966a75613224e68c65815c",
+      "bytes": 190869
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_lv_svip2.png",
+      "path": "nimzo/assets/membership/hafla/svip2-nameplate.png",
+      "kind": "svip",
+      "tier": 2,
+      "role": "tier_nameplate",
+      "sha256": "5567722a9a066b1c7e4d22d730200d2bacebb315d0bcdafdebf4861e48de9694",
+      "bytes": 20406
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_medal_svip2.png",
+      "path": "nimzo/assets/membership/hafla/svip2-medal.png",
+      "kind": "svip",
+      "tier": 2,
+      "role": "medal",
+      "sha256": "08f40c905d4df63c699799c446bc106c34800408180949b402ce5b3d00739725",
+      "bytes": 18994
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/bg_top_svip3.png",
+      "path": "nimzo/assets/membership/hafla/svip3-tier-background.png",
+      "kind": "svip",
+      "tier": 3,
+      "role": "tier_background",
+      "sha256": "71a643cc96a09503ca2801cd1f084073c65ccfd40dc39467ee6cf0acc2859ff3",
+      "bytes": 187987
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_lv_svip3.png",
+      "path": "nimzo/assets/membership/hafla/svip3-nameplate.png",
+      "kind": "svip",
+      "tier": 3,
+      "role": "tier_nameplate",
+      "sha256": "34d261888e8641273d9d41fa6a6b33bbf4aee569b8041fa430e842cb35f10835",
+      "bytes": 21199
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_medal_svip3.png",
+      "path": "nimzo/assets/membership/hafla/svip3-medal.png",
+      "kind": "svip",
+      "tier": 3,
+      "role": "medal",
+      "sha256": "8978452f3cee94dee79ee2ef0ab876e62a640249be86111b75b08cf2f09a036c",
+      "bytes": 21277
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/bg_top_svip4.png",
+      "path": "nimzo/assets/membership/hafla/svip4-tier-background.png",
+      "kind": "svip",
+      "tier": 4,
+      "role": "tier_background",
+      "sha256": "ecca93f33b39a8953ae79c8c2e76ba624af5a04af69b5c9494bf67cd10c0252f",
+      "bytes": 178582
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_lv_svip4.png",
+      "path": "nimzo/assets/membership/hafla/svip4-nameplate.png",
+      "kind": "svip",
+      "tier": 4,
+      "role": "tier_nameplate",
+      "sha256": "f9ab4f0f2e2d17d88deb682cb91d4d9a7e98ef14eb938a46983d8d70f26fde1f",
+      "bytes": 21539
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_medal_svip4.png",
+      "path": "nimzo/assets/membership/hafla/svip4-medal.png",
+      "kind": "svip",
+      "tier": 4,
+      "role": "medal",
+      "sha256": "ea01afabfb2e498c414fe210911c7ebed91aa72014c1025a0c6c7faa9397db9b",
+      "bytes": 21210
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/bg_top_svip5.png",
+      "path": "nimzo/assets/membership/hafla/svip5-tier-background.png",
+      "kind": "svip",
+      "tier": 5,
+      "role": "tier_background",
+      "sha256": "f05ea7fab75a355052e7ff86c14718341c93879bbca197bc7cf73d8fae78c92b",
+      "bytes": 181786
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_lv_svip5.png",
+      "path": "nimzo/assets/membership/hafla/svip5-nameplate.png",
+      "kind": "svip",
+      "tier": 5,
+      "role": "tier_nameplate",
+      "sha256": "e1f803640a41f06b7ba42b06cc53eca88bcb2e73ed56be1d7ef95b25cf17ea02",
+      "bytes": 20457
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_medal_svip5.png",
+      "path": "nimzo/assets/membership/hafla/svip5-medal.png",
+      "kind": "svip",
+      "tier": 5,
+      "role": "medal",
+      "sha256": "0b5b6909d3fcf4e6fd08a81663232d786c8914a7442745e6c807a60e565a9d94",
+      "bytes": 24620
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/bg_top_svip6.png",
+      "path": "nimzo/assets/membership/hafla/svip6-tier-background.png",
+      "kind": "svip",
+      "tier": 6,
+      "role": "tier_background",
+      "sha256": "5d840053991b8ce1382de36e869ae85286bc88c74c742a2ea25a807a80d8eacf",
+      "bytes": 193140
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_lv_svip6.png",
+      "path": "nimzo/assets/membership/hafla/svip6-nameplate.png",
+      "kind": "svip",
+      "tier": 6,
+      "role": "tier_nameplate",
+      "sha256": "d91d21e91c3291ecc04173cc6e07412bce22386daea35714c1abeb42738fd323",
+      "bytes": 20643
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_medal_svip6.png",
+      "path": "nimzo/assets/membership/hafla/svip6-medal.png",
+      "kind": "svip",
+      "tier": 6,
+      "role": "medal",
+      "sha256": "f703002bfab644339250b2c79c1caedb583f3d6ddc2a9e1e6a5e0b2a56a55dc3",
+      "bytes": 24197
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/bg_top_svip7.png",
+      "path": "nimzo/assets/membership/hafla/svip7-tier-background.png",
+      "kind": "svip",
+      "tier": 7,
+      "role": "tier_background",
+      "sha256": "7f3722b490ca280ddb5586b4cfe5b228ef36737d0ce6fa3809aaa90c8aa64003",
+      "bytes": 203575
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_lv_svip7.png",
+      "path": "nimzo/assets/membership/hafla/svip7-nameplate.png",
+      "kind": "svip",
+      "tier": 7,
+      "role": "tier_nameplate",
+      "sha256": "b8bff82c20c9e9c81f3a9f6032e7e4465dd06cbfa4f4905a1f434a736574dccd",
+      "bytes": 21026
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_medal_svip7.png",
+      "path": "nimzo/assets/membership/hafla/svip7-medal.png",
+      "kind": "svip",
+      "tier": 7,
+      "role": "medal",
+      "sha256": "b675ba77f534cf20629617fa0730587fcd76f74b93e5af2f68932a0a765ccf45",
+      "bytes": 21290
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/bg_top_svip8.png",
+      "path": "nimzo/assets/membership/hafla/svip8-tier-background.png",
+      "kind": "svip",
+      "tier": 8,
+      "role": "tier_background",
+      "sha256": "9866507204d4528580336511f42a7d6d514d27a694017dab1276ec12775f05b7",
+      "bytes": 189762
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_lv_svip8.png",
+      "path": "nimzo/assets/membership/hafla/svip8-nameplate.png",
+      "kind": "svip",
+      "tier": 8,
+      "role": "tier_nameplate",
+      "sha256": "9e4be331f653b52d0c43e2f4383b482ad1681ee08920538dd0d86cbd5aea9c5a",
+      "bytes": 21931
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_medal_svip8.png",
+      "path": "nimzo/assets/membership/hafla/svip8-medal.png",
+      "kind": "svip",
+      "tier": 8,
+      "role": "medal",
+      "sha256": "d0b3a18525b5d1d4fa906a86a25f5cbbd21cd36eeb2c7ed9bc0b591111a91fd8",
+      "bytes": 20896
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/bg_top_svip9.png",
+      "path": "nimzo/assets/membership/hafla/svip9-tier-background.png",
+      "kind": "svip",
+      "tier": 9,
+      "role": "tier_background",
+      "sha256": "1f503eef597bd341d3ef6576837a448fcaeea63dd277354a9539c7fef113cfd1",
+      "bytes": 202310
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_lv_svip9.png",
+      "path": "nimzo/assets/membership/hafla/svip9-nameplate.png",
+      "kind": "svip",
+      "tier": 9,
+      "role": "tier_nameplate",
+      "sha256": "8fb145d725d3d7082be532a44e4f80d63c01ae4eb812c8d990b785231b768ea7",
+      "bytes": 22703
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_medal_svip9.png",
+      "path": "nimzo/assets/membership/hafla/svip9-medal.png",
+      "kind": "svip",
+      "tier": 9,
+      "role": "medal",
+      "sha256": "23d316da6a91901a54c68d4640f4d813ae27239e0d82205cd7904209ed79709b",
+      "bytes": 28290
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/bg_top_svip10.png",
+      "path": "nimzo/assets/membership/hafla/svip10-tier-background.png",
+      "kind": "svip",
+      "tier": 10,
+      "role": "tier_background",
+      "sha256": "d142b3602a8f1816b4f2dd8b0c2073f205167bb5decd6bdee5b1ac65e8a2a262",
+      "bytes": 174290
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_lv_svip10.png",
+      "path": "nimzo/assets/membership/hafla/svip10-nameplate.png",
+      "kind": "svip",
+      "tier": 10,
+      "role": "tier_nameplate",
+      "sha256": "0c798afabaa5936b68aa1b98b339cd545a644982b9b321f141cb7e7f89f07c32",
+      "bytes": 26283
+    },
+    {
+      "source": "res/mipmap-xhdpi-v4/icon_medal_svip10.png",
+      "path": "nimzo/assets/membership/hafla/svip10-medal.png",
+      "kind": "svip",
+      "tier": 10,
+      "role": "medal",
+      "sha256": "97fecb70b57ad9d9c6883545408f0c90b338234d9d51897ace739c858d9a02a4",
+      "bytes": 28855
+    }
+  ]
+}

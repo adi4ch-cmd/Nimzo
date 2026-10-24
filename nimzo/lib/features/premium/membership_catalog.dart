@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'membership_original_assets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +17,7 @@ class MembershipMedia {
   final String url, sha256, format;
   final int bytes;
   bool get isBundled =>
+      url.startsWith('assets/membership/packs/') ||
       url.startsWith('assets/membership/remix/') ||
       url.startsWith('assets/membership/voku/');
 
@@ -71,6 +73,43 @@ class MembershipPresentation {
         card = cardRow == null ? null : _bundledMedia(cardRow),
         entrance = null,
         benefits = const {'badge', 'room_entry'};
+
+  /// Explicit owner-selected original identity; entitlement and remote entrance
+  /// are unchanged. Missing exact-tier choices retain the approved presentation.
+  MembershipPresentation.preferred(MembershipPresentation base,
+      {Set<String> replacedHashes = const {}})
+      : kind = base.kind,
+        tier = base.tier,
+        title = base.title,
+        hero = _choose(
+            base.hero, base.kind, base.tier, 'membership_hero', replacedHashes),
+        badge = _choose(base.badge, base.kind, base.tier, 'membership_badge',
+            replacedHashes),
+        card = base.card,
+        entrance = base.entrance,
+        benefits = base.benefits;
+
+  static MembershipMedia? _choose(MembershipMedia? current, String kind,
+      int tier, String slot, Set<String> replacedHashes) {
+    // Replace only the previous bundled identity. Newly approved remote hashes
+    // keep the Dynamic Update System authoritative for subsequent artwork.
+    if (current != null &&
+        !current.isBundled &&
+        !replacedHashes.contains(current.sha256)) return current;
+    return _preferred(kind, tier, slot) ?? current;
+  }
+
+  static MembershipMedia? _preferred(String kind, int tier, String slot) {
+    final row = membershipOriginalAssets['$kind$tier']?[slot];
+    if (row == null) return null;
+    final path = row['path'] as String;
+    return MembershipMedia(
+        url: path,
+        sha256: row['sha256'] as String,
+        bytes: row['bytes'] as int,
+        format: path.split('.').last);
+  }
+
   static MembershipMedia _bundledMedia(Map row) => MembershipMedia(
       url: row['asset'] as String,
       sha256: row['sha256'] as String,
@@ -110,12 +149,27 @@ final membershipPresentationsProvider =
       .order('kind')
       .order('tier')
       .timeout(const Duration(seconds: 8));
-  return rows.map((row) => MembershipPresentation.fromJson(row)).toList();
+  final manifest = jsonDecode(
+          await rootBundle.loadString('assets/membership/remix/manifest.json'))
+      as Map;
+  final replacedHashes = (manifest['items'] as List)
+      .cast<Map>()
+      .where((row) =>
+          row['kind'] == 'vip' &&
+          (row['tier'] as int) <= 8 &&
+          (row['role'] == 'hero' || row['role'] == 'badge'))
+      .map((row) => row['sha256'] as String)
+      .toSet();
+  return rows
+      .map((row) => MembershipPresentation.preferred(
+          MembershipPresentation.fromJson(row),
+          replacedHashes: replacedHashes))
+      .toList();
 });
 
 /// Bundled equivalent artwork is independent of publication/entitlement status.
-/// It keeps the complete original tier identity available offline, while remote
-/// approved descriptors replace it after updates. Native effects are never seeded.
+/// Owner-selected originals replace the previous bundled identity; newly
+/// approved remote hashes and effects continue to update normally.
 final membershipBundledPresentationsProvider =
     FutureProvider<List<MembershipPresentation>>((ref) async {
   final manifest = jsonDecode(
@@ -134,5 +188,5 @@ final membershipBundledPresentationsProvider =
                 r['kind'] == kind && r['tier'] == tier && r['role'] == 'badge'),
             cardRow: rows.firstWhere((r) =>
                 r['kind'] == kind && r['tier'] == tier && r['role'] == 'card'))
-  ];
+  ].map(MembershipPresentation.preferred).toList();
 });

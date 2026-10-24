@@ -10,6 +10,12 @@ class VoiceConnectionFailure extends StateError {
   VoiceConnectionFailure(super.message);
 }
 
+class VoiceUnavailableFailure extends VoiceConnectionFailure {
+  VoiceUnavailableFailure()
+      : super(
+            'Voice audio is unavailable in this test build. Room chat and profiles remain available.');
+}
+
 /// Owns one Vivox room. A successful join request is not an audio connection.
 class VivoxVoiceService implements VoiceService {
   static const MethodChannel _channel = MethodChannel('nimzo/vivox');
@@ -119,6 +125,7 @@ class VivoxVoiceService implements VoiceService {
     try {
       return await _channel.invokeMethod<T>(method, arguments);
     } on PlatformException catch (error) {
+      if (error.code == 'VOICE_SDK_PENDING') throw VoiceUnavailableFailure();
       // Java exception messages can contain credentials or provider payloads.
       const codes = {'VIVOX_NATIVE', 'PERMISSION_PENDING'};
       const types = {

@@ -1,4 +1,6 @@
 import '../premium/membership_identity.dart';
+import '../premium/membership_pack_runtime.dart';
+import '../premium/membership_pack_inventory.dart';
 import '../store/store_visual_equipment.dart';
 import '../../core/widgets/master_ui.dart';
 
@@ -18,6 +20,7 @@ import 'levels_screen.dart';
 import 'profile_level_scale.dart';
 import 'profile_level_pills.dart';
 import 'profile_collections.dart';
+import 'profile_equipped_collection.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
 
@@ -30,6 +33,22 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   int section = 0;
+  Widget _collectionContent(WidgetRef collectionRef, String id,
+      ProfileCollection kind, List<Map<String, dynamic>> items) {
+    final equipped =
+        collectionRef.watch(profileEquippedCollectionProvider((id, kind)));
+    if (items.isEmpty && equipped == null)
+      return const EmptyContent('No items yet');
+    return Wrap(spacing: 10, runSpacing: 10, children: [
+      if (equipped != null)
+        ProfileEquippedCollectionTile(
+            key: ValueKey(
+                'profile-${equipped.membership ? 'membership' : 'store'}-${kind.name}'),
+            item: equipped),
+      for (final item in items) CollectibleArtwork(item: item),
+    ]);
+  }
+
   Widget _actions(BuildContext context, String id, String? me) => me == id
       ? GradientButton(
           onPressed: () => Navigator.of(context).push(
@@ -119,6 +138,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           String? image(String bucket, String? path) =>
               path == null ? null : db.storage.from(bucket).getPublicUrl(path);
           final cover = image('covers', p.coverPath);
+          final verifiedMembership = ref.watch(effectiveMembershipProvider(id));
+          final packTheme = MembershipPackTheme.fromStatus(
+              verifiedMembership.hasError
+                  ? null
+                  : verifiedMembership.valueOrNull);
+          final packProfileCard = packTheme == null ||
+                  verifiedMembership.valueOrNull?.hasSlot('Profile Card') !=
+                      true
+              ? null
+              : MembershipPackInventory.profileCard(
+                      packTheme.kind, packTheme.tier)
+                  .path;
           final hasProfileCard = ref
                   .watch(storeVisualEquipmentProvider(id))
                   .valueOrNull
@@ -143,12 +174,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 : null,
                             gradient:
                                 hasProfileCard ? null : NimzoStyle.heroGradient,
-                            image: hasProfileCard || cover == null
+                            // Preserve a chosen user cover or an equipped
+                            // Store item. Only the otherwise-default cover
+                            // uses original art of this verified VIP tier.
+                            image: hasProfileCard
                                 ? null
-                                : DecorationImage(
-                                    image: NetworkImage(cover),
-                                    fit: BoxFit.cover,
-                                  ),
+                                : packProfileCard != null
+                                    ? DecorationImage(
+                                        image: AssetImage(packProfileCard),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : cover != null
+                                        ? DecorationImage(
+                                            image: NetworkImage(cover),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : null,
                           ),
                           child: Align(
                             alignment: Alignment.topLeft,
@@ -197,6 +238,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                         Positioned(
+                            top: 55,
+                            left: 80,
+                            right: 24,
+                            height: 65,
+                            child: MembershipPackProfileDecoration(userId: id)),
+                        Positioned(
                           top: 90,
                           left: 16,
                           child: Container(
@@ -206,25 +253,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               color: Colors.white,
                               shape: BoxShape.circle,
                             ),
-                            child: EquippedAvatar(
+                            child: MembershipPackAvatar(
                                 userId: id,
                                 size: 70,
-                                child: NimzoEquippedAvatarFrame(
-                                  mediaId: null,
-                                  variant: id == me &&
-                                          ref.watch(
-                                                  nimzoOwnAvatarMediaProvider) ==
-                                              null
-                                      ? ref.watch(nimzoOwnAvatarFrameProvider)
-                                      : null,
-                                  avatar: NimzoAvatar(
-                                    name: p.displayName ?? p.username ?? 'N',
-                                    url: image('avatars', p.avatarPath),
+                                child: EquippedAvatar(
+                                    userId: id,
                                     size: 70,
-                                    backgroundColor: NimzoStyle.ink,
-                                    online: id == me,
-                                  ),
-                                )),
+                                    child: NimzoEquippedAvatarFrame(
+                                      mediaId: null,
+                                      variant: id == me &&
+                                              ref.watch(
+                                                      nimzoOwnAvatarMediaProvider) ==
+                                                  null
+                                          ? ref.watch(
+                                              nimzoOwnAvatarFrameProvider)
+                                          : null,
+                                      avatar: NimzoAvatar(
+                                        name:
+                                            p.displayName ?? p.username ?? 'N',
+                                        url: image('avatars', p.avatarPath),
+                                        size: 70,
+                                        backgroundColor: NimzoStyle.ink,
+                                        online: id == me,
+                                      ),
+                                    ))),
                           ),
                         ),
                       ],
@@ -244,16 +296,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: EquippedIdentity(
+                          child: MembershipPackNameplate(
                               userId: id,
-                              child: Text(
-                                  p.displayName ?? p.username ?? 'Nimzo user',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.w700,
-                                  ))),
+                              showBadge: false,
+                              child: EquippedIdentity(
+                                  userId: id,
+                                  child: Text(
+                                      p.displayName ??
+                                          p.username ??
+                                          'Nimzo user',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w700,
+                                      )))),
                         ),
                         if (p.dateOfBirth != null)
                           Container(
@@ -447,7 +504,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             child: Text(
                               {
                                 'frame': 'Frame',
-                                'car': 'Car',
+                                'car': 'Rides & entrances',
                               }[kind.name]!,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
@@ -467,20 +524,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     onRetry: () => ref.invalidate(
                                       profileCollectionProvider((id, kind)),
                                     ),
-                                    builder: (items) => items.isEmpty
-                                        ? const EmptyContent('No items yet')
-                                        : SingleChildScrollView(
-                                            child: Wrap(
-                                              spacing: 10,
-                                              runSpacing: 10,
-                                              children: [
-                                                for (final item in items)
-                                                  CollectibleArtwork(
-                                                    item: item,
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
+                                    builder: (items) => SingleChildScrollView(
+                                        child: _collectionContent(
+                                            ref, id, kind, items)),
                                   ),
                                 ),
                               ),
@@ -500,17 +546,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         onRetry: () => ref.invalidate(
                           profileCollectionProvider((id, kind)),
                         ),
-                        builder: (items) => items.isEmpty
-                            ? const EmptyContent('No items yet')
-                            : Wrap(
-                                children: [
-                                  for (final item in items)
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 10),
-                                      child: CollectibleArtwork(item: item),
-                                    ),
-                                ],
-                              ),
+                        builder: (items) =>
+                            _collectionContent(ref, id, kind, items),
                       ),
                     ],
                     Wrap(

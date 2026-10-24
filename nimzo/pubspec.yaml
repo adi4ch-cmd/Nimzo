@@ -1,7 +1,7 @@
 name: nimzo
 description: Nimzo social voice-room app
 publish_to: none
-version: 1.0.41+141
+version: 1.0.43+143
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:
@@ -68,6 +68,11 @@ flutter:
     - assets/room_rocket/
     - assets/membership/voku/
     - assets/membership/remix/
+    - assets/membership/hafla/
+    - assets/membership/packs/
+    - assets/membership/tana-vip6-room-bg.webp
+    - assets/membership/tana-vip6-locked-seat.png
+    - assets/membership/tana-vip6-open-seat.png
     - assets/room_rocket/posters/
     - assets/willchill_premium/store/
     - assets/willchill_premium/room_fx/

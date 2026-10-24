@@ -1,0 +1,32 @@
+{
+  "version": "1.0.43+143",
+  "source_sha": "954c39a634c7c87d5dbe40d594d545141da96f7a",
+  "apk_bytes": 253598463,
+  "sha256": "ed03eca13dc38292efa67c78dfe154396fb5fac215aaa33ca38b6c1442c76fe3",
+  "published_binary_checksum": "PASS",
+  "published_zip_integrity": "PASS",
+  "package_name": "io.nimzo.app",
+  "min_sdk": "24",
+  "target_sdk": "36",
+  "arm64_libraries_present": true,
+  "voice": "OWNER_DEFERRED (no native voice SDK)",
+  "source_slot_records_checked": 121,
+  "distinct_membership_originals_checked": 105,
+  "signing_certificate_sha256": [
+    "40e83dc44871e1771999c306c46436c8b4129c8bd214ee358a7da70a6a1734e7"
+  ],
+  "same_signing_certificate_as_1_0_42": false,
+  "android_install_startup": "PASS: Android15 x86_64 emulator (unauthenticated20-second startup)",
+  "physical_moto_g35_verification": "NOT TESTED",
+  "authenticated_per_tier_acceptance": "NOT TESTED",
+  "workflow_run": 40056246523,
+  "workflow_conclusion": "success",
+  "source_backend_ci": 40056235451,
+  "flutter_tests_passed": 603,
+  "python_checks_passed": 34,
+  "backend_suites": "PASS",
+  "download_url": "https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-v3-dynamic-1.0.43-40056246523/NIMZO_1.0.43_Universal_NO_VIVOX_TEST.apk",
+  "release_url": "https://github.com/adi4ch-cmd/Nimzo/releases/tag/nimzo-v3-dynamic-1.0.43-40056246523",
+  "in_place_update_from_1_0_42": "BLOCKED: signing certificate differs. Original1.0.42 private signing key is required; preserve the existing installed app/data.",
+  "fixes_report": "docs/PROFILE_ROOM_SCREENSHOT_FIXES_20261024.md"
+}

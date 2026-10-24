@@ -1,4 +1,10 @@
+import 'tingle_video_ui_test.dart' show capture, loadReviewFonts;
+import 'package:nimzo/features/premium/membership_catalog.dart';
+import 'package:nimzo/core/services/nimzo_content_sync.dart';
 import 'package:flutter/material.dart';
+import 'package:nimzo/features/premium/membership_identity.dart';
+import 'package:nimzo/features/premium/membership_status.dart';
+import 'package:nimzo/features/premium/membership_pack_runtime.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,6 +23,8 @@ void main() {
     WidgetTester tester, {
     bool linked = false,
     bool profileCard = false,
+    bool membership = false,
+    GlobalKey? captureKey,
   }) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -37,6 +45,23 @@ void main() {
         overrides: [
           supabaseProvider.overrideWithValue(db),
           currentUserIdProvider.overrideWithValue('u'),
+          nimzoContentRevisionsProvider
+              .overrideWith((_) => const Stream.empty()),
+          membershipPresentationsProvider.overrideWith((_) async => []),
+          effectiveMembershipProvider('u').overrideWith((_) async => membership
+              ? MembershipStatus.fromJson({
+                  'vip_level': 2,
+                  'pack_kind': 'vip',
+                  'pack_tier': 2,
+                  'pack_slots': [
+                    'Avatar Frame',
+                    'Rides',
+                    'ID Frame',
+                    'Royal Badge',
+                    'Profile Card'
+                  ]
+                })
+              : null),
           storeVisualEquipmentProvider('u')
               .overrideWith((_) async => profileCard
                   ? {
@@ -86,15 +111,53 @@ void main() {
             profileCollectionProvider(('u', kind))
                 .overrideWith((_) async => []),
         ],
-        child: MaterialApp(
-          theme: AppTheme.light(),
-          home: const ProfileScreen(),
-        ),
+        child: RepaintBoundary(
+            key: captureKey,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.light().copyWith(
+                  textTheme:
+                      AppTheme.light().textTheme.apply(fontFamily: 'Roboto')),
+              home: const ProfileScreen(),
+            )),
       ),
     );
     await tester.pumpAndSettle();
   }
 
+  testWidgets(
+      'applied membership is shown once and included in real profile collections',
+      (tester) async {
+    await loadReviewFonts();
+    final boundary = GlobalKey();
+    await openProfile(tester, membership: true, captureKey: boundary);
+    for (var i = 0; i < 8; i++) {
+      await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 20)));
+      await tester.pump(const Duration(milliseconds: 20));
+    }
+    await capture(tester, 'profile-membership-header', boundary);
+    expect(
+        find.descendant(
+            of: find.byType(MembershipPackNameplate),
+            matching: find.byType(Image)),
+        findsNothing);
+    expect(find.byType(VerifiedMembershipIdentity), findsOneWidget);
+    expect(
+        find.byKey(const ValueKey('profile-membership-frame')), findsOneWidget);
+    expect(
+        find.byKey(const ValueKey('profile-membership-car')), findsOneWidget);
+    await tester
+        .ensureVisible(find.byKey(const ValueKey('profile-membership-car')));
+    await tester.pumpAndSettle();
+    await capture(tester, 'profile-applied-collections', boundary);
+    await tester.tap(find.byKey(const ValueKey('profile-membership-frame')));
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsOneWidget);
+    await tester.tap(find.text('Close'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
       'equipped profile background remains visible behind header controls',
       (tester) async {

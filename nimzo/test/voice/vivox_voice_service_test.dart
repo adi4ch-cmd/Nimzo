@@ -10,6 +10,27 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async => 0);
   });
+  test('deferred SDK does not report permission denial or issue a token',
+      () async {
+    var issued = false;
+    final voice = VivoxVoiceService(tokenIssuer: (_) async {
+      issued = true;
+      return {};
+    });
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'requestMicPermission') {
+        throw PlatformException(code: 'VOICE_SDK_PENDING');
+      }
+      return 0;
+    });
+    await expectLater(
+        voice.join('room', ''),
+        throwsA(isA<VoiceConnectionFailure>()
+            .having((e) => e.message, 'message', contains('unavailable'))));
+    expect(issued, isFalse);
+    await voice.dispose();
+  });
   test('microphone cannot transmit before audio connection', () async {
     final voice = VivoxVoiceService();
     await expectLater(voice.setMicEnabled(true), throwsStateError);
@@ -139,7 +160,8 @@ void main() {
     expect(methods, ['requestMicPermission']);
     await voice.dispose();
   });
-  test('20122 is an invalid token signature, not a retryable network error', () async {
+  test('20122 is an invalid token signature, not a retryable network error',
+      () async {
     final voice = VivoxVoiceService(tokenIssuer: (_) async => credentials);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {

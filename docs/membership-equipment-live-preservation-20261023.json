@@ -1,0 +1,107 @@
+{
+  "migration": "20261023211259_membership_full_pack_equipment",
+  "preservationBefore": {
+    "gifts": {
+      "rows": 58,
+      "digest": "0f84d115bd819f501481a321aa89a6e6"
+    },
+    "rooms": {
+      "rows": 2,
+      "digest": "21cbe7f5e9ff3be22965a7419bbde1ce"
+    },
+    "ledger": {
+      "rows": 848,
+      "digest": "57925176bc306458c3ade73ea2329dbf"
+    },
+    "wallets": {
+      "rows": 4,
+      "digest": "eef426d488a572a57a08be383dc8e974"
+    },
+    "profiles": {
+      "rows": 4,
+      "digest": "fc810e33c089a03f16610bb2f5e7f1ff"
+    },
+    "purchases": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "svip_thresholds": {
+      "rows": 10,
+      "digest": "3ef5f1957d7c59bcc2f202d790474ddf"
+    },
+    "normal_vip_catalog": {
+      "rows": 10,
+      "digest": "dd38c71a686ee5b53ce6bec58407bd5e"
+    },
+    "nimzo_cosmetic_catalog": {
+      "rows": 73,
+      "digest": "04faa1fb8f605e1d8b826ea6b041b99c"
+    },
+    "nimzo_cosmetic_equipped": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "nimzo_cosmetic_ownership": {
+      "rows": 11,
+      "digest": "7600f375d8a496079a3d541285dd1f1d"
+    },
+    "nimzo_membership_presentations": {
+      "rows": 20,
+      "digest": "cc3619198e83b79cbbdfeac1bebff6a8"
+    }
+  },
+  "preservationAfter": {
+    "gifts": {
+      "rows": 58,
+      "digest": "0f84d115bd819f501481a321aa89a6e6"
+    },
+    "rooms": {
+      "rows": 2,
+      "digest": "21cbe7f5e9ff3be22965a7419bbde1ce"
+    },
+    "ledger": {
+      "rows": 848,
+      "digest": "57925176bc306458c3ade73ea2329dbf"
+    },
+    "wallets": {
+      "rows": 4,
+      "digest": "eef426d488a572a57a08be383dc8e974"
+    },
+    "profiles": {
+      "rows": 4,
+      "digest": "fc810e33c089a03f16610bb2f5e7f1ff"
+    },
+    "purchases": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "svip_thresholds": {
+      "rows": 10,
+      "digest": "3ef5f1957d7c59bcc2f202d790474ddf"
+    },
+    "normal_vip_catalog": {
+      "rows": 10,
+      "digest": "dd38c71a686ee5b53ce6bec58407bd5e"
+    },
+    "nimzo_cosmetic_catalog": {
+      "rows": 73,
+      "digest": "04faa1fb8f605e1d8b826ea6b041b99c"
+    },
+    "nimzo_cosmetic_equipped": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "nimzo_cosmetic_ownership": {
+      "rows": 11,
+      "digest": "7600f375d8a496079a3d541285dd1f1d"
+    },
+    "nimzo_membership_presentations": {
+      "rows": 20,
+      "digest": "cc3619198e83b79cbbdfeac1bebff6a8"
+    }
+  },
+  "changedTables": [],
+  "newEquipmentRowsAfterMigration": 0,
+  "newRoomBackgroundRowsAfterMigration": 0,
+  "scope": "DDL activation only; no accounts granted membership or automatically equipped. No APK built. Host and SQL checks are separate from Android acceptance."
+}

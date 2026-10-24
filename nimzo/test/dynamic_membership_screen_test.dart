@@ -6,7 +6,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nimzo/core/providers/supabase_provider.dart';
 import 'package:nimzo/features/premium/membership_catalog.dart';
 import 'package:nimzo/features/premium/membership_status.dart';
-import 'package:nimzo/features/premium/membership_media_view.dart';
 import 'package:nimzo/features/premium/willchill_premium_screen.dart';
 import 'tingle_video_ui_test.dart' show capture, loadReviewFonts;
 
@@ -96,10 +95,18 @@ void main() {
             isTrue);
         expect(find.byKey(const ValueKey('membership-fixed-status')),
             findsOneWidget);
-        expect(find.byType(MembershipMediaView), findsNWidgets(3));
-        expect(find.byType(Image), findsNWidgets(group == 'vip' ? 3 : 2));
+        expect(find.text('${group.toUpperCase()} 10 · Package contents'),
+            findsOneWidget,
+            reason:
+                'Selected tier must show contents inline without opening a gallery');
+        for (var slot = 0; slot < 10; slot++) {
+          expect(find.byKey(ValueKey('pack-$group-10-$slot')), findsOneWidget,
+              reason:
+                  'Every component must be visible in the inline full package');
+        }
         expect(find.byType(CircularProgressIndicator), findsNothing);
-        if (group == 'svip') expect(find.byType(SVGAImage), findsOneWidget);
+        if (group == 'svip')
+          expect(find.byType(SVGAImage), findsAtLeastNWidgets(1));
         expect(
             find.text('Tier artwork is currently unavailable.'), findsNothing);
         if (group == 'vip')
@@ -111,6 +118,11 @@ void main() {
               isNotNull);
         expect(tester.takeException(), isNull);
         await capture(tester, 'v3-$group-${width.toInt()}', boundary);
+        await tester.ensureVisible(
+            find.text('${group.toUpperCase()} 10 · Package contents'));
+        await tester.pump(const Duration(milliseconds: 300));
+        await capture(
+            tester, 'v3-$group-package-inline-${width.toInt()}', boundary);
         await tester.pumpWidget(const SizedBox());
         await tester.pump();
       });

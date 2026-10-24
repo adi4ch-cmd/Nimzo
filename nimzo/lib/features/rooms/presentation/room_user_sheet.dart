@@ -1,4 +1,8 @@
+import '../../store/store_visual_equipment.dart';
+import '../../premium/membership_pack_inventory.dart';
+import '../../profile/profile.dart';
 import '../../premium/membership_identity.dart';
+import '../../premium/membership_pack_runtime.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -135,8 +139,37 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
         if (mounted) Navigator.of(context).pop();
       });
 
+  Widget memberAvatar(Profile p) => InkWell(
+      onTap: openProfile,
+      child: MembershipPackAvatar(
+          userId: p.id,
+          size: 76,
+          child: EquippedAvatar(
+              userId: p.id,
+              size: 66,
+              child: NimzoAvatar(
+                  name: p.displayName ?? 'N',
+                  size: 66,
+                  url: p.avatarPath == null
+                      ? null
+                      : ref
+                          .read(supabaseProvider)
+                          .storage
+                          .from('avatars')
+                          .getPublicUrl(p.avatarPath!)))));
+
   @override
   Widget build(BuildContext context) {
+    final appearance = ref.watch(effectiveMembershipProvider(widget.userId));
+    final membership = appearance.hasError ? null : appearance.valueOrNull;
+    final theme = MembershipPackTheme.fromStatus(membership);
+    final card = theme != null && membership!.hasSlot('Profile Card')
+        ? MembershipPackInventory.profileCard(theme.kind, theme.tier)
+        : null;
+    final hasStoreCard = ref
+            .watch(storeVisualEquipmentProvider(widget.userId))
+            .valueOrNull?['Profile Card'] !=
+        null;
     final me = ref.watch(currentUserIdProvider);
     final self = widget.userId == me;
     final roomOwner =
@@ -161,9 +194,12 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
               margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
               padding: const EdgeInsets.fromLTRB(18, 20, 18, 14),
               decoration: BoxDecoration(
-                color: const Color(0xfffcf8ff),
+                gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xfffffcf4), Color(0xfff8ebc9)]),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xffede4f5)),
+                border: Border.all(color: const Color(0xffd6ad55), width: 1.5),
                 boxShadow: const [
                   BoxShadow(
                     color: Color(0x50000000),
@@ -184,33 +220,49 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Stack(children: [
+                        Stack(clipBehavior: Clip.none, children: [
                           ClipRRect(
                               borderRadius: BorderRadius.circular(16),
                               child: SizedBox(
-                                  height: 180,
+                                  height: 100,
                                   width: double.infinity,
-                                  child: p.coverPath == null
-                                      ? const DecoratedBox(
-                                          decoration: BoxDecoration(
-                                              gradient: LinearGradient(colors: [
-                                            Color(0xff9580b4),
-                                            Color(0xffd4b9eb),
-                                            Color(0xff4d386e)
-                                          ])),
-                                          child: Icon(Icons.person_outline,
-                                              size: 70,
-                                              color: Color(0x66ffffff)))
-                                      : Image.network(
-                                          ref
-                                              .read(supabaseProvider)
-                                              .storage
-                                              .from('covers')
-                                              .getPublicUrl(p.coverPath!),
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) =>
-                                              const ColoredBox(
-                                                  color: Color(0xffd4b9eb))))),
+                                  child: EquippedCosmetic(
+                                      userId: widget.userId,
+                                      category: 'Profile Card',
+                                      key: hasStoreCard
+                                          ? const ValueKey(
+                                              'room-user-store-profile-card')
+                                          : null,
+                                      child: hasStoreCard
+                                          ? const SizedBox.expand()
+                                          : card?.available == true
+                                              ? Image.asset(card!.path!,
+                                                  key: const ValueKey(
+                                                      'room-user-membership-profile-card'),
+                                                  fit: BoxFit.cover)
+                                              : p.coverPath == null
+                                                  ? const DecoratedBox(
+                                                      decoration: BoxDecoration(
+                                                          gradient:
+                                                              LinearGradient(
+                                                                  colors: [
+                                                            Color(0xff9580b4),
+                                                            Color(0xffd4b9eb),
+                                                            Color(0xff4d386e)
+                                                          ])),
+                                                      child: Icon(
+                                                          Icons.person_outline,
+                                                          size: 70,
+                                                          color: Color(
+                                                              0x66ffffff)))
+                                                  : Image.network(
+                                                      ref
+                                                          .read(supabaseProvider)
+                                                          .storage
+                                                          .from('covers')
+                                                          .getPublicUrl(p.coverPath!),
+                                                      fit: BoxFit.cover,
+                                                      errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xffd4b9eb)))))),
                           Positioned(
                               top: 0,
                               right: 0,
@@ -219,55 +271,49 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                   onPressed: () => Navigator.pop(context),
                                   icon: const Icon(Icons.cancel_rounded,
                                       color: Colors.white))),
+                          Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: -28,
+                              child: Center(child: memberAvatar(p))),
                         ]),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 37),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            InkWell(
-                              onTap: openProfile,
-                              child: NimzoAvatar(
-                                name: p.displayName ?? 'N',
-                                size: 66,
-                                url: p.avatarPath == null
-                                    ? null
-                                    : ref
-                                        .read(supabaseProvider)
-                                        .storage
-                                        .from('avatars')
-                                        .getPublicUrl(p.avatarPath!),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
                             Expanded(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   InkWell(
                                     onTap: openProfile,
-                                    child: Text(
-                                        p.displayName ??
-                                            p.username ??
-                                            'Nimzo user',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          color: Color(0xff30213d),
-                                          fontSize: 19,
-                                          fontWeight: FontWeight.w800,
-                                        )),
+                                    child: MembershipPackNameplate(
+                                        userId: p.id,
+                                        showBadge: false,
+                                        child: Text(
+                                            p.displayName ??
+                                                p.username ??
+                                                'Nimzo user',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 19,
+                                              fontWeight: FontWeight.w800,
+                                            ))),
                                   ),
                                   VerifiedMembershipIdentity(userId: p.id),
                                   const SizedBox(height: 3),
                                   Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text(
-                                        'ID:${p.nimzoId}',
+                                      Flexible(
+                                          child: Text(
+                                        'ID:${p.nimzoId}${(p.countryName ?? p.countryCode ?? '').isEmpty ? '' : ' · ${p.countryName ?? p.countryCode}'}',
                                         style: const TextStyle(
                                           color: Color(0xff9684aa),
                                           fontSize: 12,
                                         ),
-                                      ),
+                                      )),
                                       const SizedBox(width: 5),
                                     ],
                                   ),
@@ -313,7 +359,14 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        if ((p.bio ?? '').trim().isNotEmpty)
+                          Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Center(
+                                  child: Text(p.bio!,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis))),
                         const SizedBox(height: 18),
                         Row(
                           children: [
@@ -369,7 +422,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                             Expanded(
                               child: _MiniAction(
                                 icon: Icons.card_giftcard_rounded,
-                                color: const Color(0xffdfd94a),
+                                color: const Color(0xffd95b91),
                                 label: 'Send Gifts',
                                 onTap: busy || me == null ? null : gift,
                               ),
@@ -399,7 +452,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                               : () {
                                   final router = GoRouter.of(context);
                                   Navigator.pop(context);
-                                  router.push('/profile');
+                                  router.push('/edit-profile');
                                 },
                           child: const Text('Edit Profile'),
                         ),
