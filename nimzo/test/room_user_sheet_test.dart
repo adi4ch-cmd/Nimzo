@@ -53,6 +53,9 @@ Future<void> render(
         profileProvider(target).overrideWith(
           (_) async => Profile(id: target, nimzoId: 100, displayName: 'Member'),
         ),
+        profileStatsProvider(target).overrideWith(
+          (_) async => {'following': 3, 'followers': 8},
+        ),
         isFollowingProvider(target).overrideWith((_) async => false),
         friendStateProvider(target).overrideWith((_) async => FriendState.none),
       ],
@@ -162,6 +165,25 @@ void main() {
     await tester.pumpAndSettle();
     expect(mentionName, 'Member');
     expect(find.byKey(const ValueKey('room-mini-profile-card')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('reference mini card is dark and stats come from backend', (
+    tester,
+  ) async {
+    await render(tester, me: 'member');
+    final card = tester.widget<Container>(
+        find.byKey(const ValueKey('room-mini-profile-card')));
+    final decoration = card.decoration! as BoxDecoration;
+    expect(decoration.color, const Color(0xff17121f));
+    expect(find.byKey(const ValueKey('room-mini-profile-stats')),
+        findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
+    expect(find.text('8'), findsOneWidget);
+    expect(find.text('Following'), findsOneWidget);
+    expect(find.text('Followers'), findsOneWidget);
+    expect(find.byKey(const ValueKey('room-user-level-badges')),
+        findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
