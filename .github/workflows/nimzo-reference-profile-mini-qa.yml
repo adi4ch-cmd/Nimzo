@@ -1,0 +1,36 @@
+name: NIMZO Reference Full and Mini Profile QA
+on:
+  push:
+    branches:
+      - fix/profile-mini-reference-20261024
+  pull_request:
+    branches:
+      - feature/falla-levels-v142-20261024
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  flutter-reference-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.7'
+          channel: stable
+          cache: true
+      - name: Restore project lock
+        working-directory: nimzo
+        run: flutter pub get --enforce-lockfile
+      - name: Analyze reference UI and providers
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Room mini profile, action permissions, compact levels and full profile
+        working-directory: nimzo
+        run: |
+          flutter test --reporter expanded \
+            test/room_profile_premium_layout_test.dart \
+            test/room_user_sheet_test.dart \
+            test/profile_content_test.dart \
+            test/membership_pack_runtime_test.dart
