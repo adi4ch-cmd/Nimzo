@@ -1,6 +1,6 @@
 // Generated from source-audited originals; original checksums in bundled provenance.json.
 const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
-  'vip1': {
+  "vip1": {
     "avatar_frame": {
       "path": "assets/willchill_premium/vip/icon_vip1_2.png",
       "source":
@@ -8,6 +8,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 1,
       "format": "image",
+      "bytes": 52543,
       "sha256":
           "2107a61521e18f081f8ec7275e68311881db7b2fe413c2d0312ea5c28f7f0aeb",
       "crop": [27, 35, 190, 178, 244, 244]
@@ -18,6 +19,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 1,
       "format": "svga",
+      "bytes": 411431,
       "sha256":
           "1ce1e7d25ba095be6ef7476e3514105eeb9a43bd30a5cb2e5e1067145d245faf",
       "crop": null
@@ -30,44 +32,49 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 1,
       "format": "image",
+      "bytes": 133431,
       "sha256":
           "8bec7620ab50b287621094e1a34a0cb0fb46c696416542ec2b010ee703987190",
       "crop": null
     },
     "medal": {
       "path":
-          "assets/membership/remix/2836d86129e6a8429e33b341d63b86c3f7311cb856385b69c04086797cf077f8.webp",
+          "assets/membership/packs/32315a04fc12fe25f9f48675c1899a691340fe7f1db2684b6cc556e6de6d85fc.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip1_medal.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/icon_big_vip1.png",
       "kind": "vip",
       "tier": 1,
       "format": "image",
+      "bytes": 222933,
       "sha256":
-          "2836d86129e6a8429e33b341d63b86c3f7311cb856385b69c04086797cf077f8",
+          "32315a04fc12fe25f9f48675c1899a691340fe7f1db2684b6cc556e6de6d85fc",
       "crop": null
     },
     "nameplate": {
       "path":
-          "assets/membership/remix/8e19c99a1e940aed6c1bfb0527fdc57fa9462c617c5f1e7c4d80bf18bf0d3721.webp",
+          "assets/membership/packs/f4079af78a9163f87a1b0dc2ef088272917dfa9fae41706b5d8577cda01762e4.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip1.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/leave_vip1_icon.png",
       "kind": "vip",
       "tier": 1,
       "format": "image",
+      "bytes": 36578,
       "sha256":
-          "8e19c99a1e940aed6c1bfb0527fdc57fa9462c617c5f1e7c4d80bf18bf0d3721",
+          "f4079af78a9163f87a1b0dc2ef088272917dfa9fae41706b5d8577cda01762e4",
       "crop": null
     },
     "chat_bubble": {
-      "path": "assets/willchill_premium/vip/icon_vip1_4.png",
+      "path":
+          "assets/membership/packs/29771b99ce574549535a0f30c4dba08599dbb2dbfa9748ec9488a9d4b09eb3b1.png",
       "source":
-          "previous authorized WillChill/Tana extraction!/prior extraction: /workspace/Nimzo-v3/nimzo/assets/willchill_premium/vip/icon_vip1_4.png",
+          "Hafla-1.7.2.apks!/base.apk!/res/drawable-xhdpi-v4/icon_mess_vip1.9.png",
       "kind": "vip",
       "tier": 1,
       "format": "image",
+      "bytes": 5942,
       "sha256":
-          "0b4c1cd3eec7b5c08f967d711959c54a1e0f745c353e47ab029aaf3fe31a6270",
-      "crop": [43, 71, 167, 107, 244, 244]
+          "29771b99ce574549535a0f30c4dba08599dbb2dbfa9748ec9488a9d4b09eb3b1",
+      "crop": [1, 1, 84, 52, 86, 54]
     },
     "mic_animation": {
       "path":
@@ -76,12 +83,39 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 1,
       "format": "svga",
+      "bytes": 65078,
       "sha256":
           "441148f7a2fae13f8d968d57d9e1247d2dc2255d5a66a232c84b8bb1f062f216",
       "crop": null
     },
+    "membership_hero": {
+      "path":
+          "assets/membership/packs/32315a04fc12fe25f9f48675c1899a691340fe7f1db2684b6cc556e6de6d85fc.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/icon_big_vip1.png",
+      "kind": "vip",
+      "tier": 1,
+      "format": "image",
+      "bytes": 222933,
+      "sha256":
+          "32315a04fc12fe25f9f48675c1899a691340fe7f1db2684b6cc556e6de6d85fc",
+      "crop": null
+    },
+    "membership_badge": {
+      "path":
+          "assets/membership/packs/f4079af78a9163f87a1b0dc2ef088272917dfa9fae41706b5d8577cda01762e4.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/leave_vip1_icon.png",
+      "kind": "vip",
+      "tier": 1,
+      "format": "image",
+      "bytes": 36578,
+      "sha256":
+          "f4079af78a9163f87a1b0dc2ef088272917dfa9fae41706b5d8577cda01762e4",
+      "crop": null
+    }
   },
-  'vip2': {
+  "vip2": {
     "avatar_frame": {
       "path": "assets/willchill_premium/vip/icon_vip2_2.png",
       "source":
@@ -89,6 +123,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 2,
       "format": "image",
+      "bytes": 55094,
       "sha256":
           "ad44aa525d35800942043eb7707c7df3184c26342c24f27517d891e1d6c778dc",
       "crop": [28, 35, 190, 174, 244, 244]
@@ -99,6 +134,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 2,
       "format": "svga",
+      "bytes": 500971,
       "sha256":
           "78064504fd40992dfe695fe9a27a0906ee50d2e042398ccbafe5bef933f50589",
       "crop": null
@@ -111,44 +147,49 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 2,
       "format": "image",
+      "bytes": 125312,
       "sha256":
           "8c8d9e72c40cf2cb2536f8940c21b2b293c8e01c1a9d0f94456670a425ac01b7",
       "crop": null
     },
     "medal": {
       "path":
-          "assets/membership/remix/a6697df0d8090d7be97425c6e17d27480d0d601d9866ac1ccc1ab304667bf808.webp",
+          "assets/membership/packs/d3e2193107a9e878f684c20a01b4e26e416aa29ab4c0ac0457847356f0272df3.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip2_medal.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/icon_big_vip2.png",
       "kind": "vip",
       "tier": 2,
       "format": "image",
+      "bytes": 230448,
       "sha256":
-          "a6697df0d8090d7be97425c6e17d27480d0d601d9866ac1ccc1ab304667bf808",
+          "d3e2193107a9e878f684c20a01b4e26e416aa29ab4c0ac0457847356f0272df3",
       "crop": null
     },
     "nameplate": {
       "path":
-          "assets/membership/remix/191db44d70f3efc48e3a9d615ac93e4fa3ae13cb9ed9f467bfcc1269accbb09e.webp",
+          "assets/membership/packs/cbb8d2c898f975a525c46af8c28ca0fa875c733bb15432c2b63ef73f63cf2c5b.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip2.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/leave_vip2_icon.png",
       "kind": "vip",
       "tier": 2,
       "format": "image",
+      "bytes": 34194,
       "sha256":
-          "191db44d70f3efc48e3a9d615ac93e4fa3ae13cb9ed9f467bfcc1269accbb09e",
+          "cbb8d2c898f975a525c46af8c28ca0fa875c733bb15432c2b63ef73f63cf2c5b",
       "crop": null
     },
     "chat_bubble": {
-      "path": "assets/willchill_premium/vip/icon_vip2_4.png",
+      "path":
+          "assets/membership/packs/1e636654ff3050d9afcc41ab1a9f5ea7fec8999818dd3246e9ec39aa276d2b36.png",
       "source":
-          "previous authorized WillChill/Tana extraction!/prior extraction: /workspace/Nimzo-v3/nimzo/assets/willchill_premium/vip/icon_vip2_4.png",
+          "Hafla-1.7.2.apks!/base.apk!/res/drawable-xhdpi-v4/icon_mess_vip2.9.png",
       "kind": "vip",
       "tier": 2,
       "format": "image",
+      "bytes": 5436,
       "sha256":
-          "abff07e5f82cbd88a843d273ccaa8e4ffed458532bf8ee38c1b893f6badc1320",
-      "crop": [44, 69, 162, 107, 244, 244]
+          "1e636654ff3050d9afcc41ab1a9f5ea7fec8999818dd3246e9ec39aa276d2b36",
+      "crop": [1, 1, 91, 51, 93, 53]
     },
     "mic_animation": {
       "path":
@@ -157,12 +198,39 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 2,
       "format": "svga",
+      "bytes": 64664,
       "sha256":
           "ee41f67513a23f188ef508ffa2f7df90bc6ae5f05727c54e61143ed75769857f",
       "crop": null
     },
+    "membership_hero": {
+      "path":
+          "assets/membership/packs/d3e2193107a9e878f684c20a01b4e26e416aa29ab4c0ac0457847356f0272df3.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/icon_big_vip2.png",
+      "kind": "vip",
+      "tier": 2,
+      "format": "image",
+      "bytes": 230448,
+      "sha256":
+          "d3e2193107a9e878f684c20a01b4e26e416aa29ab4c0ac0457847356f0272df3",
+      "crop": null
+    },
+    "membership_badge": {
+      "path":
+          "assets/membership/packs/cbb8d2c898f975a525c46af8c28ca0fa875c733bb15432c2b63ef73f63cf2c5b.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/leave_vip2_icon.png",
+      "kind": "vip",
+      "tier": 2,
+      "format": "image",
+      "bytes": 34194,
+      "sha256":
+          "cbb8d2c898f975a525c46af8c28ca0fa875c733bb15432c2b63ef73f63cf2c5b",
+      "crop": null
+    }
   },
-  'vip3': {
+  "vip3": {
     "avatar_frame": {
       "path": "assets/willchill_premium/vip/icon_vip3_2.png",
       "source":
@@ -170,6 +238,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 3,
       "format": "image",
+      "bytes": 56435,
       "sha256":
           "bf38cfaf9a13d7d806372e963d0dd475fc56b8a597057e589fbb4864ecdeb195",
       "crop": [27, 33, 189, 182, 243, 244]
@@ -180,6 +249,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 3,
       "format": "svga",
+      "bytes": 208698,
       "sha256":
           "77254b02681dfbd0540b4d2a8b265b0d878b25424f18806d53fd553ab9f1bfdb",
       "crop": null
@@ -192,44 +262,49 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 3,
       "format": "image",
+      "bytes": 121465,
       "sha256":
           "b0be190d0a52adbccdffa213440cfbb6a274b4e4e5d8176b2d172cdeae301392",
       "crop": null
     },
     "medal": {
       "path":
-          "assets/membership/remix/209ec8a915eab25cb54a51bfbbbf14032afb81ffc665ab0a3dc25347534f09ce.webp",
+          "assets/membership/packs/8f1ebff38703a3885bd153174a338673a1b93cd51d7ee5045ee30af39c36c86e.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip3_medal.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/icon_big_vip3.png",
       "kind": "vip",
       "tier": 3,
       "format": "image",
+      "bytes": 251664,
       "sha256":
-          "209ec8a915eab25cb54a51bfbbbf14032afb81ffc665ab0a3dc25347534f09ce",
+          "8f1ebff38703a3885bd153174a338673a1b93cd51d7ee5045ee30af39c36c86e",
       "crop": null
     },
     "nameplate": {
       "path":
-          "assets/membership/remix/bae5c3573e67732d6bed943416b686ba936ee9905dc95b4ae239313e9c9b9c35.webp",
+          "assets/membership/packs/86d6506bf1b6c6a2db4d18da8c377959d7597aea930dbbeeb262be64e4d2d360.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip3.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/leave_vip3_icon.png",
       "kind": "vip",
       "tier": 3,
       "format": "image",
+      "bytes": 35227,
       "sha256":
-          "bae5c3573e67732d6bed943416b686ba936ee9905dc95b4ae239313e9c9b9c35",
+          "86d6506bf1b6c6a2db4d18da8c377959d7597aea930dbbeeb262be64e4d2d360",
       "crop": null
     },
     "chat_bubble": {
-      "path": "assets/willchill_premium/vip/icon_vip3_4.png",
+      "path":
+          "assets/membership/packs/77b731de10e6f8801d33c8c3e7fd4a6a8abaa3d70f7a85e8eb4c73131b0bf13d.png",
       "source":
-          "previous authorized WillChill/Tana extraction!/prior extraction: /workspace/Nimzo-v3/nimzo/assets/willchill_premium/vip/icon_vip3_4.png",
+          "Hafla-1.7.2.apks!/base.apk!/res/drawable-xhdpi-v4/icon_mess_vip3.9.png",
       "kind": "vip",
       "tier": 3,
       "format": "image",
+      "bytes": 7024,
       "sha256":
-          "8281a2cbf6191d1e4391cccc31b4921db55c05fe2d41cb25cd7fdf06ce251d06",
-      "crop": [41, 69, 168, 109, 243, 244]
+          "77b731de10e6f8801d33c8c3e7fd4a6a8abaa3d70f7a85e8eb4c73131b0bf13d",
+      "crop": [1, 1, 91, 57, 93, 59]
     },
     "mic_animation": {
       "path":
@@ -238,12 +313,39 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 3,
       "format": "svga",
+      "bytes": 74452,
       "sha256":
           "77d33047db55bd42506d8c7f8323452927a7a4dc7b447ed39a573b802894f377",
       "crop": null
     },
+    "membership_hero": {
+      "path":
+          "assets/membership/packs/8f1ebff38703a3885bd153174a338673a1b93cd51d7ee5045ee30af39c36c86e.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/icon_big_vip3.png",
+      "kind": "vip",
+      "tier": 3,
+      "format": "image",
+      "bytes": 251664,
+      "sha256":
+          "8f1ebff38703a3885bd153174a338673a1b93cd51d7ee5045ee30af39c36c86e",
+      "crop": null
+    },
+    "membership_badge": {
+      "path":
+          "assets/membership/packs/86d6506bf1b6c6a2db4d18da8c377959d7597aea930dbbeeb262be64e4d2d360.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/leave_vip3_icon.png",
+      "kind": "vip",
+      "tier": 3,
+      "format": "image",
+      "bytes": 35227,
+      "sha256":
+          "86d6506bf1b6c6a2db4d18da8c377959d7597aea930dbbeeb262be64e4d2d360",
+      "crop": null
+    }
   },
-  'vip4': {
+  "vip4": {
     "avatar_frame": {
       "path": "assets/willchill_premium/vip/icon_vip4_2.png",
       "source":
@@ -251,6 +353,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 4,
       "format": "image",
+      "bytes": 57762,
       "sha256":
           "246a3aca2f2f8247e00662fdd796af298cbdb1b928f36f115b3f776f2190c1b5",
       "crop": [28, 32, 190, 180, 244, 244]
@@ -261,6 +364,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 4,
       "format": "svga",
+      "bytes": 513571,
       "sha256":
           "f706ad658c1e2f299b44ab0697ca63744493afa91ac597864590cd5173f03bf8",
       "crop": null
@@ -273,44 +377,49 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 4,
       "format": "image",
+      "bytes": 120079,
       "sha256":
           "089423147c0410da9c26e138bcca5f7f5f676f5889897b45046b81b02e9e1498",
       "crop": null
     },
     "medal": {
       "path":
-          "assets/membership/remix/75dc8649bfc9d277e6a996cea69403afe662d9b1fb765ba1f49fe3c9181d4740.webp",
+          "assets/membership/packs/1261f2e3a9d1d33a48c7f7aaa87ce715916c246b74c1dc3fa9f330fb0e540437.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip4_medal.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/icon_big_vip4.png",
       "kind": "vip",
       "tier": 4,
       "format": "image",
+      "bytes": 254153,
       "sha256":
-          "75dc8649bfc9d277e6a996cea69403afe662d9b1fb765ba1f49fe3c9181d4740",
+          "1261f2e3a9d1d33a48c7f7aaa87ce715916c246b74c1dc3fa9f330fb0e540437",
       "crop": null
     },
     "nameplate": {
       "path":
-          "assets/membership/remix/81b6613a37eb629c2b5e5a4bb1c83d1fbc35e091abee7f4759a3925c9e218738.webp",
+          "assets/membership/packs/7baf79cb4de5766ade33d4cb39c7a35ce1ebd3337b67c946cb706ba7baef3564.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip4.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/leave_vip4_icon.png",
       "kind": "vip",
       "tier": 4,
       "format": "image",
+      "bytes": 33265,
       "sha256":
-          "81b6613a37eb629c2b5e5a4bb1c83d1fbc35e091abee7f4759a3925c9e218738",
+          "7baf79cb4de5766ade33d4cb39c7a35ce1ebd3337b67c946cb706ba7baef3564",
       "crop": null
     },
     "chat_bubble": {
-      "path": "assets/willchill_premium/vip/icon_vip4_4.png",
+      "path":
+          "assets/membership/packs/6ffc9b50f2260185ce2de15b21158711cc01b259614a653ec3b62805dbf680f8.png",
       "source":
-          "previous authorized WillChill/Tana extraction!/prior extraction: /workspace/Nimzo-v3/nimzo/assets/willchill_premium/vip/icon_vip4_4.png",
+          "Hafla-1.7.2.apks!/base.apk!/res/drawable-xhdpi-v4/icon_mess_vip4.9.png",
       "kind": "vip",
       "tier": 4,
       "format": "image",
+      "bytes": 7062,
       "sha256":
-          "2c3240d0d8cb014372a30c624f62ee1dc901c6b6f12953fded737ff1c90093de",
-      "crop": [34, 69, 179, 117, 244, 244]
+          "6ffc9b50f2260185ce2de15b21158711cc01b259614a653ec3b62805dbf680f8",
+      "crop": [1, 1, 88, 67, 90, 69]
     },
     "mic_animation": {
       "path":
@@ -319,12 +428,39 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 4,
       "format": "svga",
+      "bytes": 110087,
       "sha256":
           "53dbf47fe515c76dd7cc10ea0465ced110bd2b33f336e39a5e7160734c9fc0a7",
       "crop": null
     },
+    "membership_hero": {
+      "path":
+          "assets/membership/packs/1261f2e3a9d1d33a48c7f7aaa87ce715916c246b74c1dc3fa9f330fb0e540437.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/icon_big_vip4.png",
+      "kind": "vip",
+      "tier": 4,
+      "format": "image",
+      "bytes": 254153,
+      "sha256":
+          "1261f2e3a9d1d33a48c7f7aaa87ce715916c246b74c1dc3fa9f330fb0e540437",
+      "crop": null
+    },
+    "membership_badge": {
+      "path":
+          "assets/membership/packs/7baf79cb4de5766ade33d4cb39c7a35ce1ebd3337b67c946cb706ba7baef3564.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/leave_vip4_icon.png",
+      "kind": "vip",
+      "tier": 4,
+      "format": "image",
+      "bytes": 33265,
+      "sha256":
+          "7baf79cb4de5766ade33d4cb39c7a35ce1ebd3337b67c946cb706ba7baef3564",
+      "crop": null
+    }
   },
-  'vip5': {
+  "vip5": {
     "avatar_frame": {
       "path": "assets/willchill_premium/vip/icon_vip5_2.png",
       "source":
@@ -332,6 +468,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 5,
       "format": "image",
+      "bytes": 57310,
       "sha256":
           "0c1598f79dbd5e532501fcc2407796cf0a505faa8378181e4ddc3a5101ca70fa",
       "crop": [28, 31, 190, 181, 244, 244]
@@ -342,6 +479,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 5,
       "format": "svga",
+      "bytes": 242794,
       "sha256":
           "3cce99f999b64e57aa837e6979777eb26f5a07bdd0619623a4c30124bc59249e",
       "crop": null
@@ -354,44 +492,49 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 5,
       "format": "image",
+      "bytes": 127411,
       "sha256":
           "90c5a63767f8b76151fdfaa6f533cb486226f4436d052e2a75eea906c3fb0b5b",
       "crop": null
     },
     "medal": {
       "path":
-          "assets/membership/remix/7e377e9f8990993e43ed8d06d665cab94c76ec2fa87e7b83e616fddbf97c621a.webp",
+          "assets/membership/packs/7dbc46fecf2acd8ce9488a9daa21e4a2614aff28fcbeece9757755ec59fd67a7.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip5_medal.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/icon_big_vip5.png",
       "kind": "vip",
       "tier": 5,
       "format": "image",
+      "bytes": 268896,
       "sha256":
-          "7e377e9f8990993e43ed8d06d665cab94c76ec2fa87e7b83e616fddbf97c621a",
+          "7dbc46fecf2acd8ce9488a9daa21e4a2614aff28fcbeece9757755ec59fd67a7",
       "crop": null
     },
     "nameplate": {
       "path":
-          "assets/membership/remix/a0c9be3fcd8d1da204b6611a55152988084b828f471ca6a9428d805519c81994.webp",
+          "assets/membership/packs/af0cc66cc7a182755b37c30678332ebe3ee6bb91e3be1a1a4077a3e2c01e3730.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip5.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/leave_vip5_icon.png",
       "kind": "vip",
       "tier": 5,
       "format": "image",
+      "bytes": 38646,
       "sha256":
-          "a0c9be3fcd8d1da204b6611a55152988084b828f471ca6a9428d805519c81994",
+          "af0cc66cc7a182755b37c30678332ebe3ee6bb91e3be1a1a4077a3e2c01e3730",
       "crop": null
     },
     "chat_bubble": {
-      "path": "assets/willchill_premium/vip/icon_vip5_4.png",
+      "path":
+          "assets/membership/packs/4269db6d5d52b5f9f89e017b1c6efc02596de18179ccea0c76635bbebdc99522.png",
       "source":
-          "previous authorized WillChill/Tana extraction!/prior extraction: /workspace/Nimzo-v3/nimzo/assets/willchill_premium/vip/icon_vip5_4.png",
+          "Hafla-1.7.2.apks!/base.apk!/res/drawable-xhdpi-v4/icon_mess_vip5.9.png",
       "kind": "vip",
       "tier": 5,
       "format": "image",
+      "bytes": 7337,
       "sha256":
-          "2d78e701d9bcd63599f45afd8dda4af7190a756c6304c69136dacd8da22fcbf4",
-      "crop": [32, 70, 179, 115, 243, 244]
+          "4269db6d5d52b5f9f89e017b1c6efc02596de18179ccea0c76635bbebdc99522",
+      "crop": [1, 1, 97, 55, 99, 57]
     },
     "mic_animation": {
       "path":
@@ -400,12 +543,39 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 5,
       "format": "svga",
+      "bytes": 135744,
       "sha256":
           "1afa755e031b1db6e34c1cfbcadc5a0bbdce343016aa16dc5defb477d9b4df07",
       "crop": null
     },
+    "membership_hero": {
+      "path":
+          "assets/membership/packs/7dbc46fecf2acd8ce9488a9daa21e4a2614aff28fcbeece9757755ec59fd67a7.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/icon_big_vip5.png",
+      "kind": "vip",
+      "tier": 5,
+      "format": "image",
+      "bytes": 268896,
+      "sha256":
+          "7dbc46fecf2acd8ce9488a9daa21e4a2614aff28fcbeece9757755ec59fd67a7",
+      "crop": null
+    },
+    "membership_badge": {
+      "path":
+          "assets/membership/packs/af0cc66cc7a182755b37c30678332ebe3ee6bb91e3be1a1a4077a3e2c01e3730.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xxhdpi-v4/leave_vip5_icon.png",
+      "kind": "vip",
+      "tier": 5,
+      "format": "image",
+      "bytes": 38646,
+      "sha256":
+          "af0cc66cc7a182755b37c30678332ebe3ee6bb91e3be1a1a4077a3e2c01e3730",
+      "crop": null
+    }
   },
-  'vip6': {
+  "vip6": {
     "avatar_frame": {
       "path":
           "assets/membership/packs/48f625a65e4f9c16603ea9e288499f8ef184f651deb5432e570f7b050b0b8f6b.webp",
@@ -414,6 +584,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 6,
       "format": "image",
+      "bytes": 28608,
       "sha256":
           "48f625a65e4f9c16603ea9e288499f8ef184f651deb5432e570f7b050b0b8f6b",
       "crop": [270, 6, 246, 246, 792, 255]
@@ -424,6 +595,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 6,
       "format": "svga",
+      "bytes": 648623,
       "sha256":
           "f8e3cbf9a9730f53e02a699fe5497e586cdd535e88fe1fc29fc6eeb66446bc72",
       "crop": null
@@ -436,32 +608,35 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 6,
       "format": "image",
+      "bytes": 168006,
       "sha256":
           "484e4efc94cea12b9e130e2f73576ffc64d5911ea5fe3abc079360d3f97c59ed",
       "crop": null
     },
     "medal": {
       "path":
-          "assets/membership/remix/95d2d2a9d89d4aaa87a48be2af6ef327768982bdbfc7161ae0e51c24add92c7a.webp",
+          "assets/membership/packs/01994de1808594235446e250f04d7e4d5e1040bd4c80764b3b17531272b1afa0.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip6_medal.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_vip6_big.png",
       "kind": "vip",
       "tier": 6,
       "format": "image",
+      "bytes": 22386,
       "sha256":
-          "95d2d2a9d89d4aaa87a48be2af6ef327768982bdbfc7161ae0e51c24add92c7a",
+          "01994de1808594235446e250f04d7e4d5e1040bd4c80764b3b17531272b1afa0",
       "crop": null
     },
     "nameplate": {
       "path":
-          "assets/membership/remix/35d95cf3196610b4de44157e729e978a11e50c69c13e95eb2ca095cd6d949832.webp",
+          "assets/membership/packs/0b953ace3d1e545ec45fd59f1d9e333d69924fdf218725f3e31200851ef26588.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip6.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_vip6_small.png",
       "kind": "vip",
       "tier": 6,
       "format": "image",
+      "bytes": 20788,
       "sha256":
-          "35d95cf3196610b4de44157e729e978a11e50c69c13e95eb2ca095cd6d949832",
+          "0b953ace3d1e545ec45fd59f1d9e333d69924fdf218725f3e31200851ef26588",
       "crop": null
     },
     "chat_bubble": {
@@ -471,6 +646,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 6,
       "format": "image",
+      "bytes": 3962,
       "sha256":
           "590569ed034eaeb7f92aa6fcba87f65356ff8461de46bf0f23814aee802c4d33",
       "crop": [1, 2, 138, 108, 139, 111]
@@ -482,6 +658,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 6,
       "format": "svga",
+      "bytes": 141519,
       "sha256":
           "c671597c235cb9c57bccb1d6f9b1e664a7f0d2904b2d1ae76bbc29167f2c6043",
       "crop": null
@@ -493,12 +670,39 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 6,
       "format": "image",
+      "bytes": 114058,
       "sha256":
           "853fd173261a4f4b5c17156e3eba652dc4a2bbd7534570567c3629286bacc661",
       "crop": null
     },
+    "membership_hero": {
+      "path":
+          "assets/membership/packs/01994de1808594235446e250f04d7e4d5e1040bd4c80764b3b17531272b1afa0.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_vip6_big.png",
+      "kind": "vip",
+      "tier": 6,
+      "format": "image",
+      "bytes": 22386,
+      "sha256":
+          "01994de1808594235446e250f04d7e4d5e1040bd4c80764b3b17531272b1afa0",
+      "crop": null
+    },
+    "membership_badge": {
+      "path":
+          "assets/membership/packs/0b953ace3d1e545ec45fd59f1d9e333d69924fdf218725f3e31200851ef26588.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_vip6_small.png",
+      "kind": "vip",
+      "tier": 6,
+      "format": "image",
+      "bytes": 20788,
+      "sha256":
+          "0b953ace3d1e545ec45fd59f1d9e333d69924fdf218725f3e31200851ef26588",
+      "crop": null
+    }
   },
-  'vip7': {
+  "vip7": {
     "avatar_frame": {
       "path":
           "assets/membership/packs/b844aeb6800a9cbf0bce141315ff13603a89bd69587be8a5cf16baadfc4079a0.webp",
@@ -507,36 +711,65 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 7,
       "format": "image",
+      "bytes": 25552,
       "sha256":
           "b844aeb6800a9cbf0bce141315ff13603a89bd69587be8a5cf16baadfc4079a0",
       "crop": [270, 6, 246, 246, 792, 255]
     },
     "medal": {
       "path":
-          "assets/membership/remix/1128215f8362a1d45e937a19986ff1791ad00b2cf14e3d14cabb0eaf9cfb71a2.webp",
+          "assets/membership/packs/3d98ea5ea473062f211dace197db43b494c006046a7c84e321c3476a220f00e5.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip7_medal.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/bog_medal_vip7.png",
       "kind": "vip",
       "tier": 7,
       "format": "image",
+      "bytes": 91676,
       "sha256":
-          "1128215f8362a1d45e937a19986ff1791ad00b2cf14e3d14cabb0eaf9cfb71a2",
+          "3d98ea5ea473062f211dace197db43b494c006046a7c84e321c3476a220f00e5",
       "crop": null
     },
     "nameplate": {
       "path":
-          "assets/membership/remix/c6e7e1ffda30731cf8001ba245f78bcc8d004a56572aad6bdde6528ce244240d.webp",
+          "assets/membership/packs/6b2754965215626dc56464be1467d94e7f50686f28e0bdb7086568f387fc5183.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip7.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_vip7_long.png",
       "kind": "vip",
       "tier": 7,
       "format": "image",
+      "bytes": 10033,
       "sha256":
-          "c6e7e1ffda30731cf8001ba245f78bcc8d004a56572aad6bdde6528ce244240d",
+          "6b2754965215626dc56464be1467d94e7f50686f28e0bdb7086568f387fc5183",
       "crop": null
     },
+    "membership_hero": {
+      "path":
+          "assets/membership/packs/3d98ea5ea473062f211dace197db43b494c006046a7c84e321c3476a220f00e5.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/bog_medal_vip7.png",
+      "kind": "vip",
+      "tier": 7,
+      "format": "image",
+      "bytes": 91676,
+      "sha256":
+          "3d98ea5ea473062f211dace197db43b494c006046a7c84e321c3476a220f00e5",
+      "crop": null
+    },
+    "membership_badge": {
+      "path":
+          "assets/membership/packs/6b2754965215626dc56464be1467d94e7f50686f28e0bdb7086568f387fc5183.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_vip7_long.png",
+      "kind": "vip",
+      "tier": 7,
+      "format": "image",
+      "bytes": 10033,
+      "sha256":
+          "6b2754965215626dc56464be1467d94e7f50686f28e0bdb7086568f387fc5183",
+      "crop": null
+    }
   },
-  'vip8': {
+  "vip8": {
     "avatar_frame": {
       "path":
           "assets/membership/packs/3af8f10b80a5b40336da880f1ce3c903bce68d1ac398c075f6b4955f4ab18623.webp",
@@ -545,36 +778,65 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 8,
       "format": "image",
+      "bytes": 25290,
       "sha256":
           "3af8f10b80a5b40336da880f1ce3c903bce68d1ac398c075f6b4955f4ab18623",
       "crop": [278, 6, 236, 237, 789, 255]
     },
     "medal": {
       "path":
-          "assets/membership/remix/b83825102b6909bd026b697e7a29cd24dd203df9d2b1cb68823a54e81c7a7df5.webp",
+          "assets/membership/packs/bad3c9699ed0ee25a9b9381b2f0fc60d2a4c4bdc9b9dbf12ff2ae26b6be27cf3.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip8_medal.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_vip8_big.png",
       "kind": "vip",
       "tier": 8,
       "format": "image",
+      "bytes": 92285,
       "sha256":
-          "b83825102b6909bd026b697e7a29cd24dd203df9d2b1cb68823a54e81c7a7df5",
+          "bad3c9699ed0ee25a9b9381b2f0fc60d2a4c4bdc9b9dbf12ff2ae26b6be27cf3",
       "crop": null
     },
     "nameplate": {
       "path":
-          "assets/membership/remix/232a175ba9f0df38b8dbcacf4ebd4f999b03dc697f3295ea70cddacf611297ce.webp",
+          "assets/membership/packs/b64c98ce7c21045a5a75733e182d9d9a41cfa6f70ba5dadb30f0ac80086f504f.png",
       "source":
-          "YoHo-5.48.40.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_vip8.webp",
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_vip8_long.png",
       "kind": "vip",
       "tier": 8,
       "format": "image",
+      "bytes": 32106,
       "sha256":
-          "232a175ba9f0df38b8dbcacf4ebd4f999b03dc697f3295ea70cddacf611297ce",
+          "b64c98ce7c21045a5a75733e182d9d9a41cfa6f70ba5dadb30f0ac80086f504f",
       "crop": null
     },
+    "membership_hero": {
+      "path":
+          "assets/membership/packs/bad3c9699ed0ee25a9b9381b2f0fc60d2a4c4bdc9b9dbf12ff2ae26b6be27cf3.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_vip8_big.png",
+      "kind": "vip",
+      "tier": 8,
+      "format": "image",
+      "bytes": 92285,
+      "sha256":
+          "bad3c9699ed0ee25a9b9381b2f0fc60d2a4c4bdc9b9dbf12ff2ae26b6be27cf3",
+      "crop": null
+    },
+    "membership_badge": {
+      "path":
+          "assets/membership/packs/b64c98ce7c21045a5a75733e182d9d9a41cfa6f70ba5dadb30f0ac80086f504f.png",
+      "source":
+          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_vip8_long.png",
+      "kind": "vip",
+      "tier": 8,
+      "format": "image",
+      "bytes": 32106,
+      "sha256":
+          "b64c98ce7c21045a5a75733e182d9d9a41cfa6f70ba5dadb30f0ac80086f504f",
+      "crop": null
+    }
   },
-  'vip9': {
+  "vip9": {
     "avatar_frame": {
       "path":
           "assets/membership/packs/3a81d627967d15c8a731a0dc4d47f3c797a2d2a285026ef8f930e979939f4b90.webp",
@@ -583,6 +845,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 9,
       "format": "image",
+      "bytes": 28604,
       "sha256":
           "3a81d627967d15c8a731a0dc4d47f3c797a2d2a285026ef8f930e979939f4b90",
       "crop": [268, 2, 253, 253, 789, 255]
@@ -595,6 +858,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 9,
       "format": "image",
+      "bytes": 32200,
       "sha256":
           "b836fd4d1111fb4db5c5683d39da160c83ed168ebf620bb58dff16deccc49a5a",
       "crop": null
@@ -607,12 +871,13 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 9,
       "format": "image",
+      "bytes": 1622,
       "sha256":
           "8eb23271e0ee710f2f02b090502f202faf56ea5b8b42dd708e63746056f89f03",
       "crop": null
-    },
+    }
   },
-  'vip10': {
+  "vip10": {
     "avatar_frame": {
       "path":
           "assets/membership/packs/f993308e07448215f57d3ff10510d670a5163dd7629c9e13ee4dab2104d68eec.webp",
@@ -621,6 +886,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 10,
       "format": "image",
+      "bytes": 28996,
       "sha256":
           "f993308e07448215f57d3ff10510d670a5163dd7629c9e13ee4dab2104d68eec",
       "crop": [267, 1, 255, 254, 789, 255]
@@ -633,6 +899,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 10,
       "format": "image",
+      "bytes": 33276,
       "sha256":
           "5f9e3d5f0460feb5d2bfd61184d57f87fbd1642551cc191525f5ffa1fff63b94",
       "crop": null
@@ -645,23 +912,25 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "vip",
       "tier": 10,
       "format": "image",
+      "bytes": 2006,
       "sha256":
           "36cdc44853727856b2ad410c7c27bde0f9ef97923984f53f5728c152e3977c0c",
       "crop": null
-    },
+    }
   },
-  'svip1': {
+  "svip1": {
     "avatar_frame": {
       "path":
-          "assets/membership/packs/2f4d40a38cd69fcf979a40af925bb87f0181bb09c37e9060ea20d41db4dd9209.png",
+          "assets/membership/packs/8cf5ff13a139ec60e806b01077d4229381d4279ad90710883c68e529a5a39f27.webp",
       "source":
-          "Voku-1.1.7.apks!/base.apk!/assets/flutter_assets/assets/images/svip/svip1/svip_frame_1.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip_level_up_avatar_bg_1.webp",
       "kind": "svip",
       "tier": 1,
       "format": "image",
+      "bytes": 98202,
       "sha256":
-          "2f4d40a38cd69fcf979a40af925bb87f0181bb09c37e9060ea20d41db4dd9209",
-      "crop": [10, 9, 188, 194, 208, 208]
+          "8cf5ff13a139ec60e806b01077d4229381d4279ad90710883c68e529a5a39f27",
+      "crop": [0, 0, 545, 542, 545, 542]
     },
     "entrance_animation": {
       "path":
@@ -670,30 +939,35 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 1,
       "format": "svga",
+      "bytes": 166487,
       "sha256":
           "1ce71049b2fa47feccff074edea470fb666b474dde5a6c477eeceb5f6df94f6c",
       "crop": null
     },
     "medal": {
-      "path": "assets/membership/hafla/svip1-medal.png",
+      "path":
+          "assets/membership/remix/aa69add9b0ce80a624eb1ae5c547dedfcae2248e873624c60b31b5da51936080.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_medal_svip1.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/icon_svip1_medal.webp",
       "kind": "svip",
       "tier": 1,
       "format": "image",
+      "bytes": 11420,
       "sha256":
-          "eab0bdecd26cc5c119c9535a372bc9733a593a62915cb14aeb284c8651471ff8",
+          "aa69add9b0ce80a624eb1ae5c547dedfcae2248e873624c60b31b5da51936080",
       "crop": null
     },
     "nameplate": {
-      "path": "assets/membership/hafla/svip1-nameplate.png",
+      "path":
+          "assets/membership/remix/f4b8c7456ac316d5dfe7dced7629f65373404f2c22aae536bed83bbec9bd4abd.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_lv_svip1.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip1.webp",
       "kind": "svip",
       "tier": 1,
       "format": "image",
+      "bytes": 3782,
       "sha256":
-          "38dc0612d22935b7a1064da805ff2cb0a6b758ac477b109d5e028510ccedcdc0",
+          "f4b8c7456ac316d5dfe7dced7629f65373404f2c22aae536bed83bbec9bd4abd",
       "crop": null
     },
     "profile_decoration_alternative": {
@@ -703,23 +977,25 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 1,
       "format": "svga",
+      "bytes": 199393,
       "sha256":
           "145dd69188cf95bd7511c456068ae0d9f63ce97926eb07b85247aed40e56d88a",
       "crop": null
-    },
+    }
   },
-  'svip2': {
+  "svip2": {
     "avatar_frame": {
       "path":
-          "assets/membership/packs/20bea5848eaa9e6a717a663ef67df7fda8f87a6cadf455f8e95d32ca58a1fa19.png",
+          "assets/membership/packs/0993013bb0ec807caf2758b6dcb06a77d2411bbaae523bb45c6ba801b5db5509.webp",
       "source":
-          "Voku-1.1.7.apks!/base.apk!/assets/flutter_assets/assets/images/svip/svip2/svip_frame_2.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip_level_up_avatar_bg_2.webp",
       "kind": "svip",
       "tier": 2,
       "format": "image",
+      "bytes": 93072,
       "sha256":
-          "20bea5848eaa9e6a717a663ef67df7fda8f87a6cadf455f8e95d32ca58a1fa19",
-      "crop": [10, 9, 188, 194, 208, 208]
+          "0993013bb0ec807caf2758b6dcb06a77d2411bbaae523bb45c6ba801b5db5509",
+      "crop": [0, 0, 545, 542, 545, 542]
     },
     "entrance_animation": {
       "path":
@@ -728,30 +1004,35 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 2,
       "format": "svga",
+      "bytes": 218150,
       "sha256":
           "f0a03ee232ce4e96f9dbc42be16e91c7624894ea5e603208b790c8a8ee97eb36",
       "crop": null
     },
     "medal": {
-      "path": "assets/membership/hafla/svip2-medal.png",
+      "path":
+          "assets/membership/remix/4a6f8475c5e0110af94575bac6c1bcb7116e3067039d94e2635ee231e461ecf8.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_medal_svip2.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/icon_svip2_medal.webp",
       "kind": "svip",
       "tier": 2,
       "format": "image",
+      "bytes": 14758,
       "sha256":
-          "08f40c905d4df63c699799c446bc106c34800408180949b402ce5b3d00739725",
+          "4a6f8475c5e0110af94575bac6c1bcb7116e3067039d94e2635ee231e461ecf8",
       "crop": null
     },
     "nameplate": {
-      "path": "assets/membership/hafla/svip2-nameplate.png",
+      "path":
+          "assets/membership/remix/d8501d97db9124f360d4e2770e609230189128d409dc9be91a5737bb7e472d3f.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_lv_svip2.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip2.webp",
       "kind": "svip",
       "tier": 2,
       "format": "image",
+      "bytes": 3640,
       "sha256":
-          "5567722a9a066b1c7e4d22d730200d2bacebb315d0bcdafdebf4861e48de9694",
+          "d8501d97db9124f360d4e2770e609230189128d409dc9be91a5737bb7e472d3f",
       "crop": null
     },
     "profile_decoration_alternative": {
@@ -761,23 +1042,25 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 2,
       "format": "svga",
+      "bytes": 230663,
       "sha256":
           "63ae03c1ad70d772253230374d1b31090a2bd60597f7563579e38d990d41dd1f",
       "crop": null
-    },
+    }
   },
-  'svip3': {
+  "svip3": {
     "avatar_frame": {
       "path":
-          "assets/membership/packs/d1afb213fee646f4f83e858f83755bbc7509b6b4012f041b605ae4d5c3619a60.png",
+          "assets/membership/packs/21cd1a89ca7621dfb45c943e3324ab3158c335afc80dfde4d98fe06c338959c9.webp",
       "source":
-          "Voku-1.1.7.apks!/base.apk!/assets/flutter_assets/assets/images/svip/svip3/svip_frame_3.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip_level_up_avatar_bg_3.webp",
       "kind": "svip",
       "tier": 3,
       "format": "image",
+      "bytes": 94136,
       "sha256":
-          "d1afb213fee646f4f83e858f83755bbc7509b6b4012f041b605ae4d5c3619a60",
-      "crop": [11, 9, 188, 196, 210, 210]
+          "21cd1a89ca7621dfb45c943e3324ab3158c335afc80dfde4d98fe06c338959c9",
+      "crop": [0, 0, 545, 542, 545, 542]
     },
     "entrance_animation": {
       "path":
@@ -786,30 +1069,35 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 3,
       "format": "svga",
+      "bytes": 575771,
       "sha256":
           "fc745e22041b71b8582650d70d0767f88c6a8e3a5238dc36a3936b3a54f5f129",
       "crop": null
     },
     "medal": {
-      "path": "assets/membership/hafla/svip3-medal.png",
+      "path":
+          "assets/membership/remix/52a6584b412fce0532bc448b3d0c9e8caadcff36bdd7ccb207b02089bb139cbb.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_medal_svip3.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/icon_svip3_medal.webp",
       "kind": "svip",
       "tier": 3,
       "format": "image",
+      "bytes": 18234,
       "sha256":
-          "8978452f3cee94dee79ee2ef0ab876e62a640249be86111b75b08cf2f09a036c",
+          "52a6584b412fce0532bc448b3d0c9e8caadcff36bdd7ccb207b02089bb139cbb",
       "crop": null
     },
     "nameplate": {
-      "path": "assets/membership/hafla/svip3-nameplate.png",
+      "path":
+          "assets/membership/remix/91f183d8c63df821595e95d5549a8f5788f210b5f6c0fdec68fac415f8d477eb.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_lv_svip3.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip3.webp",
       "kind": "svip",
       "tier": 3,
       "format": "image",
+      "bytes": 3632,
       "sha256":
-          "34d261888e8641273d9d41fa6a6b33bbf4aee569b8041fa430e842cb35f10835",
+          "91f183d8c63df821595e95d5549a8f5788f210b5f6c0fdec68fac415f8d477eb",
       "crop": null
     },
     "mic_animation": {
@@ -819,6 +1107,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 3,
       "format": "svga",
+      "bytes": 298988,
       "sha256":
           "096e6ca992bb1ff8761f2b0fc6844375d46b01c0af8295592dd991a1d8d4d80f",
       "crop": null
@@ -830,23 +1119,25 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 3,
       "format": "svga",
+      "bytes": 297421,
       "sha256":
           "2297aee6502c76d9bb77fd786414073308bd62e3b5b1c376f414e2cf2f2a518d",
       "crop": null
-    },
+    }
   },
-  'svip4': {
+  "svip4": {
     "avatar_frame": {
       "path":
-          "assets/membership/packs/3a0babdd58a7d99933dd121f222ef270f1d892645e029ec84fefe6f58fed1ee6.png",
+          "assets/membership/packs/54a9a93e958f07d74742099bf2ca4bcbd1be854c68fd1f9ddfc90201b2913f71.webp",
       "source":
-          "Voku-1.1.7.apks!/base.apk!/assets/flutter_assets/assets/images/svip/svip4/svip_frame_4.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip_level_up_avatar_bg_4.webp",
       "kind": "svip",
       "tier": 4,
       "format": "image",
+      "bytes": 100856,
       "sha256":
-          "3a0babdd58a7d99933dd121f222ef270f1d892645e029ec84fefe6f58fed1ee6",
-      "crop": [10, 7, 190, 198, 210, 208]
+          "54a9a93e958f07d74742099bf2ca4bcbd1be854c68fd1f9ddfc90201b2913f71",
+      "crop": [0, 0, 545, 542, 545, 542]
     },
     "entrance_animation": {
       "path":
@@ -855,30 +1146,35 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 4,
       "format": "svga",
+      "bytes": 629034,
       "sha256":
           "c727f95fa45e9fb45941495ea20c3600afd285a318fc991ac390873bb02e5185",
       "crop": null
     },
     "medal": {
-      "path": "assets/membership/hafla/svip4-medal.png",
+      "path":
+          "assets/membership/remix/e0d7544b55b9f8779306045f205a1f0067c8d7d1a1e65fdb9ad4036dffb02ae5.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_medal_svip4.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/icon_svip4_medal.webp",
       "kind": "svip",
       "tier": 4,
       "format": "image",
+      "bytes": 22944,
       "sha256":
-          "ea01afabfb2e498c414fe210911c7ebed91aa72014c1025a0c6c7faa9397db9b",
+          "e0d7544b55b9f8779306045f205a1f0067c8d7d1a1e65fdb9ad4036dffb02ae5",
       "crop": null
     },
     "nameplate": {
-      "path": "assets/membership/hafla/svip4-nameplate.png",
+      "path":
+          "assets/membership/remix/5d8a8c27b834bd81b7ee132c71a7a94c37bc77dc759993665105d3163d78e9e1.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_lv_svip4.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip4.webp",
       "kind": "svip",
       "tier": 4,
       "format": "image",
+      "bytes": 4250,
       "sha256":
-          "f9ab4f0f2e2d17d88deb682cb91d4d9a7e98ef14eb938a46983d8d70f26fde1f",
+          "5d8a8c27b834bd81b7ee132c71a7a94c37bc77dc759993665105d3163d78e9e1",
       "crop": null
     },
     "mic_animation": {
@@ -888,6 +1184,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 4,
       "format": "svga",
+      "bytes": 410443,
       "sha256":
           "2af1763a40b7510780820cfd2f25e039bf621e46df0f5427fb0caef31ebd6b1d",
       "crop": null
@@ -899,23 +1196,25 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 4,
       "format": "svga",
+      "bytes": 407093,
       "sha256":
           "d5afb0d07229d07623265d4ea9585056913a306ff88892fbb84031ec84d39607",
       "crop": null
-    },
+    }
   },
-  'svip5': {
+  "svip5": {
     "avatar_frame": {
       "path":
-          "assets/membership/packs/75584367b952ccf80e96a78ff1ca2b96121616946dd4d30b5a64014149614413.png",
+          "assets/membership/packs/b736ef2ac792d9f6b46be46ff1ec03a10a899e1afe201f3d7211df1caedd3790.webp",
       "source":
-          "Voku-1.1.7.apks!/base.apk!/assets/flutter_assets/assets/images/svip/svip5/svip_frame_5.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip_level_up_avatar_bg_5.webp",
       "kind": "svip",
       "tier": 5,
       "format": "image",
+      "bytes": 102704,
       "sha256":
-          "75584367b952ccf80e96a78ff1ca2b96121616946dd4d30b5a64014149614413",
-      "crop": [11, 9, 188, 196, 210, 210]
+          "b736ef2ac792d9f6b46be46ff1ec03a10a899e1afe201f3d7211df1caedd3790",
+      "crop": [0, 0, 545, 542, 545, 542]
     },
     "entrance_animation": {
       "path":
@@ -924,30 +1223,35 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 5,
       "format": "svga",
+      "bytes": 765752,
       "sha256":
           "ebf2772bdd04048f6a333eaf8738a066b7e7f53483f84504dce1e2f48965daf1",
       "crop": null
     },
     "medal": {
-      "path": "assets/membership/hafla/svip5-medal.png",
+      "path":
+          "assets/membership/remix/f96c0db47e1b06d41e677e3ddec4b29cb1c92cb95ff063b41c0e43957f183241.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_medal_svip5.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/icon_svip5_medal.webp",
       "kind": "svip",
       "tier": 5,
       "format": "image",
+      "bytes": 23938,
       "sha256":
-          "0b5b6909d3fcf4e6fd08a81663232d786c8914a7442745e6c807a60e565a9d94",
+          "f96c0db47e1b06d41e677e3ddec4b29cb1c92cb95ff063b41c0e43957f183241",
       "crop": null
     },
     "nameplate": {
-      "path": "assets/membership/hafla/svip5-nameplate.png",
+      "path":
+          "assets/membership/remix/0c7ae33de121c0adbd7b505806b02b9188e893965f07638f7321b5ad32fb77f0.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_lv_svip5.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip5.webp",
       "kind": "svip",
       "tier": 5,
       "format": "image",
+      "bytes": 4396,
       "sha256":
-          "e1f803640a41f06b7ba42b06cc53eca88bcb2e73ed56be1d7ef95b25cf17ea02",
+          "0c7ae33de121c0adbd7b505806b02b9188e893965f07638f7321b5ad32fb77f0",
       "crop": null
     },
     "mic_animation": {
@@ -957,6 +1261,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 5,
       "format": "svga",
+      "bytes": 460871,
       "sha256":
           "c1cc37dc26d4f78b5c3626021f95ee12423c5e6494199b124a6194d6f09f7292",
       "crop": null
@@ -968,23 +1273,25 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 5,
       "format": "svga",
+      "bytes": 449315,
       "sha256":
           "946b1b88eccd6dcc987c51d416207dc10a889fcda9bd0f58a674708a7d702ba4",
       "crop": null
-    },
+    }
   },
-  'svip6': {
+  "svip6": {
     "avatar_frame": {
       "path":
-          "assets/membership/packs/68b7380ebdaeee077a8b94eb83e2d5c255d02c4ebfda1f28a5b06c4463258db4.png",
+          "assets/membership/packs/d321311e52db82926fa4cd3e5e0ce5abd3494d67f58beeffc47945a111a778df.webp",
       "source":
-          "Voku-1.1.7.apks!/base.apk!/assets/flutter_assets/assets/images/svip/svip6/svip_frame_6.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip_level_up_avatar_bg_6.webp",
       "kind": "svip",
       "tier": 6,
       "format": "image",
+      "bytes": 97834,
       "sha256":
-          "68b7380ebdaeee077a8b94eb83e2d5c255d02c4ebfda1f28a5b06c4463258db4",
-      "crop": [11, 8, 188, 196, 210, 208]
+          "d321311e52db82926fa4cd3e5e0ce5abd3494d67f58beeffc47945a111a778df",
+      "crop": [0, 0, 545, 542, 545, 542]
     },
     "entrance_animation": {
       "path":
@@ -993,30 +1300,35 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 6,
       "format": "svga",
+      "bytes": 790840,
       "sha256":
           "beef0c278446548307261bbfe16583b9c6fb753d857cb10de9ccb59b63762c4b",
       "crop": null
     },
     "medal": {
-      "path": "assets/membership/hafla/svip6-medal.png",
+      "path":
+          "assets/membership/remix/948f7c1ea988243908d5eb320fcfb74bbea83422af08ddc6d566795fadee23e4.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_medal_svip6.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/icon_svip6_medal.webp",
       "kind": "svip",
       "tier": 6,
       "format": "image",
+      "bytes": 30798,
       "sha256":
-          "f703002bfab644339250b2c79c1caedb583f3d6ddc2a9e1e6a5e0b2a56a55dc3",
+          "948f7c1ea988243908d5eb320fcfb74bbea83422af08ddc6d566795fadee23e4",
       "crop": null
     },
     "nameplate": {
-      "path": "assets/membership/hafla/svip6-nameplate.png",
+      "path":
+          "assets/membership/remix/83976f378c9467ee5044482c505ed8a4179bf833bacc509402579f1e3c660889.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_lv_svip6.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip6.webp",
       "kind": "svip",
       "tier": 6,
       "format": "image",
+      "bytes": 4490,
       "sha256":
-          "d91d21e91c3291ecc04173cc6e07412bce22386daea35714c1abeb42738fd323",
+          "83976f378c9467ee5044482c505ed8a4179bf833bacc509402579f1e3c660889",
       "crop": null
     },
     "mic_animation": {
@@ -1026,6 +1338,7 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 6,
       "format": "svga",
+      "bytes": 522928,
       "sha256":
           "e05d78c6b7ca7c384828c4fd240c2fb5a8e55ddd345c8afc82929030f58ce377",
       "crop": null
@@ -1037,44 +1350,50 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 6,
       "format": "svga",
+      "bytes": 488413,
       "sha256":
           "572cc3b01194eac3e20d414808736a01e4013261e4373834bdce7bc7cac67b5d",
       "crop": null
-    },
+    }
   },
-  'svip7': {
+  "svip7": {
     "avatar_frame": {
       "path":
-          "assets/membership/packs/06eb8ace90305252466646794dd9d72eeefef0ef9ee6666b8bdfdb149dd7a3be.png",
+          "assets/membership/packs/c2df4ac49649f22787b3712f7378b36591abea8196d5f8f661637ec8243fec87.webp",
       "source":
-          "Voku-1.1.7.apks!/base.apk!/assets/flutter_assets/assets/images/svip/svip7/svip_frame_7.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip_level_up_avatar_bg_7.webp",
       "kind": "svip",
       "tier": 7,
       "format": "image",
+      "bytes": 104022,
       "sha256":
-          "06eb8ace90305252466646794dd9d72eeefef0ef9ee6666b8bdfdb149dd7a3be",
-      "crop": [11, 9, 188, 196, 210, 210]
+          "c2df4ac49649f22787b3712f7378b36591abea8196d5f8f661637ec8243fec87",
+      "crop": [0, 0, 545, 542, 545, 542]
     },
     "medal": {
-      "path": "assets/membership/hafla/svip7-medal.png",
+      "path":
+          "assets/membership/remix/cae152b1928a34a7eb51106576c18c6b3e2d61c93ca709bd26c5cbb37173f4ca.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_medal_svip7.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/icon_svip7_medal.webp",
       "kind": "svip",
       "tier": 7,
       "format": "image",
+      "bytes": 29176,
       "sha256":
-          "b675ba77f534cf20629617fa0730587fcd76f74b93e5af2f68932a0a765ccf45",
+          "cae152b1928a34a7eb51106576c18c6b3e2d61c93ca709bd26c5cbb37173f4ca",
       "crop": null
     },
     "nameplate": {
-      "path": "assets/membership/hafla/svip7-nameplate.png",
+      "path":
+          "assets/membership/remix/6a10dfb88a6d8c10dd2149b2bbedafef198cabff1b1e567abcc730b41e7deef8.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_lv_svip7.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip7.webp",
       "kind": "svip",
       "tier": 7,
       "format": "image",
+      "bytes": 4766,
       "sha256":
-          "b8bff82c20c9e9c81f3a9f6032e7e4465dd06cbfa4f4905a1f434a736574dccd",
+          "6a10dfb88a6d8c10dd2149b2bbedafef198cabff1b1e567abcc730b41e7deef8",
       "crop": null
     },
     "mic_animation": {
@@ -1084,44 +1403,50 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 7,
       "format": "svga",
+      "bytes": 64578,
       "sha256":
           "1b78ba447374e93ac61c56cf0c0da97623a6cd657de9d25895bb5de4c4378304",
       "crop": null
-    },
+    }
   },
-  'svip8': {
+  "svip8": {
     "avatar_frame": {
       "path":
-          "assets/membership/packs/bd27d4d9b123be612eb5eee448f16da1dbff8426a27005927122e0f57a47af61.png",
+          "assets/membership/packs/69ff393f24426956995918a7aa6abae344d5878af9ad5c10825e4f0e87aac775.webp",
       "source":
-          "Voku-1.1.7.apks!/base.apk!/assets/flutter_assets/assets/images/svip/svip8/svip_frame_8.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip_level_up_avatar_bg_8.webp",
       "kind": "svip",
       "tier": 8,
       "format": "image",
+      "bytes": 103080,
       "sha256":
-          "bd27d4d9b123be612eb5eee448f16da1dbff8426a27005927122e0f57a47af61",
-      "crop": [11, 9, 188, 196, 210, 210]
+          "69ff393f24426956995918a7aa6abae344d5878af9ad5c10825e4f0e87aac775",
+      "crop": [0, 0, 545, 542, 545, 542]
     },
     "medal": {
-      "path": "assets/membership/hafla/svip8-medal.png",
+      "path":
+          "assets/membership/remix/0de4e16437f78e0558ffcad9f70cba79d52ececba31c55977a452aa446d11817.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_medal_svip8.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/icon_svip8_medal.webp",
       "kind": "svip",
       "tier": 8,
       "format": "image",
+      "bytes": 35942,
       "sha256":
-          "d0b3a18525b5d1d4fa906a86a25f5cbbd21cd36eeb2c7ed9bc0b591111a91fd8",
+          "0de4e16437f78e0558ffcad9f70cba79d52ececba31c55977a452aa446d11817",
       "crop": null
     },
     "nameplate": {
-      "path": "assets/membership/hafla/svip8-nameplate.png",
+      "path":
+          "assets/membership/remix/470bd3fa884d51f593c1a2bc911210b583b97c163ed4faf0b417c0027ac82dfd.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_lv_svip8.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip8.webp",
       "kind": "svip",
       "tier": 8,
       "format": "image",
+      "bytes": 4904,
       "sha256":
-          "9e4be331f653b52d0c43e2f4383b482ad1681ee08920538dd0d86cbd5aea9c5a",
+          "470bd3fa884d51f593c1a2bc911210b583b97c163ed4faf0b417c0027ac82dfd",
       "crop": null
     },
     "mic_animation": {
@@ -1131,44 +1456,50 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 8,
       "format": "svga",
+      "bytes": 102319,
       "sha256":
           "9dc31f2698af72e2cb807ce62501205e4941ecb3d1a3decb6c9ed0bbc36fd3a8",
       "crop": null
-    },
+    }
   },
-  'svip9': {
+  "svip9": {
     "avatar_frame": {
       "path":
-          "assets/membership/packs/2a1437078c8af3dca195b922ced028d005a984c2579bb5333adfad2131463a31.png",
+          "assets/membership/packs/410d238299ca5f22bb67fe67b1baa5ea6c3ed13a379ee7bb970df47fe4dfab7a.webp",
       "source":
-          "Voku-1.1.7.apks!/base.apk!/assets/flutter_assets/assets/images/svip/svip9/svip_frame_9.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip_level_up_avatar_bg_9.webp",
       "kind": "svip",
       "tier": 9,
       "format": "image",
+      "bytes": 105892,
       "sha256":
-          "2a1437078c8af3dca195b922ced028d005a984c2579bb5333adfad2131463a31",
-      "crop": [11, 9, 188, 196, 210, 210]
+          "410d238299ca5f22bb67fe67b1baa5ea6c3ed13a379ee7bb970df47fe4dfab7a",
+      "crop": [0, 0, 545, 542, 545, 542]
     },
     "medal": {
-      "path": "assets/membership/hafla/svip9-medal.png",
+      "path":
+          "assets/membership/remix/04281c80d36c7bb40100e1a3e663d26f00c6be983197aa9494595cd4fbc84715.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_medal_svip9.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/icon_svip9_medal.webp",
       "kind": "svip",
       "tier": 9,
       "format": "image",
+      "bytes": 32406,
       "sha256":
-          "23d316da6a91901a54c68d4640f4d813ae27239e0d82205cd7904209ed79709b",
+          "04281c80d36c7bb40100e1a3e663d26f00c6be983197aa9494595cd4fbc84715",
       "crop": null
     },
     "nameplate": {
-      "path": "assets/membership/hafla/svip9-nameplate.png",
+      "path":
+          "assets/membership/remix/dd41e4abcfcb39b545b3534a8a502b50f170b87bf5c277358acd214179981ddf.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_lv_svip9.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip9.webp",
       "kind": "svip",
       "tier": 9,
       "format": "image",
+      "bytes": 5080,
       "sha256":
-          "8fb145d725d3d7082be532a44e4f80d63c01ae4eb812c8d990b785231b768ea7",
+          "dd41e4abcfcb39b545b3534a8a502b50f170b87bf5c277358acd214179981ddf",
       "crop": null
     },
     "mic_animation": {
@@ -1178,44 +1509,50 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 9,
       "format": "svga",
+      "bytes": 84822,
       "sha256":
           "8ce39b06700a0ab72074d64448208f54335fc67a39f5491fcb41be7ee465ad0a",
       "crop": null
-    },
+    }
   },
-  'svip10': {
+  "svip10": {
     "avatar_frame": {
       "path":
-          "assets/membership/packs/84e2e4df688626005de6b0532e4daccff5172351be22c44a76deb920d161b8a1.png",
+          "assets/membership/packs/2b74ffb1fe0d000439605326060fc9de33f84eb2d70c4717ba994132cf97a827.webp",
       "source":
-          "Voku-1.1.7.apks!/base.apk!/assets/flutter_assets/assets/images/svip/svip10/svip_frame_10.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip_level_up_avatar_bg_10.webp",
       "kind": "svip",
       "tier": 10,
       "format": "image",
+      "bytes": 99318,
       "sha256":
-          "84e2e4df688626005de6b0532e4daccff5172351be22c44a76deb920d161b8a1",
-      "crop": [10, 8, 190, 197, 210, 210]
+          "2b74ffb1fe0d000439605326060fc9de33f84eb2d70c4717ba994132cf97a827",
+      "crop": [0, 0, 545, 542, 545, 542]
     },
     "medal": {
-      "path": "assets/membership/hafla/svip10-medal.png",
+      "path":
+          "assets/membership/remix/2e59b136d13e0ad23a7063e69c6acb655ef0c67d31049709942924b7ac923de7.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_medal_svip10.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/icon_svip10_medal.webp",
       "kind": "svip",
       "tier": 10,
       "format": "image",
+      "bytes": 33394,
       "sha256":
-          "97fecb70b57ad9d9c6883545408f0c90b338234d9d51897ace739c858d9a02a4",
+          "2e59b136d13e0ad23a7063e69c6acb655ef0c67d31049709942924b7ac923de7",
       "crop": null
     },
     "nameplate": {
-      "path": "assets/membership/hafla/svip10-nameplate.png",
+      "path":
+          "assets/membership/remix/1d71ef3af3993c5aa9d99a556bac0b5735be2795cfd569d3d21a25e9ea0ec225.webp",
       "source":
-          "Hafla-1.7.2.apks!/base.apk!/res/mipmap-xhdpi-v4/icon_lv_svip10.png",
+          "Falla-V9.23.0.apks!/base.apk!/res/drawable-xxhdpi-v4/ic_svip10.webp",
       "kind": "svip",
       "tier": 10,
       "format": "image",
+      "bytes": 4842,
       "sha256":
-          "0c798afabaa5936b68aa1b98b339cd545a644982b9b321f141cb7e7f89f07c32",
+          "1d71ef3af3993c5aa9d99a556bac0b5735be2795cfd569d3d21a25e9ea0ec225",
       "crop": null
     },
     "mic_animation": {
@@ -1225,9 +1562,10 @@ const membershipOriginalAssets = <String, Map<String, Map<String, Object?>>>{
       "kind": "svip",
       "tier": 10,
       "format": "svga",
+      "bytes": 127343,
       "sha256":
           "78d887a318ff37308e55db0232daf4f0a25f52d6dbbbf77ad05713441a570387",
       "crop": null
-    },
-  },
+    }
+  }
 };

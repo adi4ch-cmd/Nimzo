@@ -95,7 +95,7 @@ void main() {
             isTrue);
         expect(find.byKey(const ValueKey('membership-fixed-status')),
             findsOneWidget);
-        expect(find.text('${group.toUpperCase()} 10 · Full package'),
+        expect(find.text('${group.toUpperCase()} 10 · Package contents'),
             findsOneWidget,
             reason:
                 'Selected tier must show contents inline without opening a gallery');
@@ -119,7 +119,7 @@ void main() {
         expect(tester.takeException(), isNull);
         await capture(tester, 'v3-$group-${width.toInt()}', boundary);
         await tester.ensureVisible(
-            find.text('${group.toUpperCase()} 10 · Full package'));
+            find.text('${group.toUpperCase()} 10 · Package contents'));
         await tester.pump(const Duration(milliseconds: 300));
         await capture(
             tester, 'v3-$group-package-inline-${width.toInt()}', boundary);

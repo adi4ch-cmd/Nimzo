@@ -5,6 +5,7 @@ import '../../core/providers/supabase_provider.dart';
 import '../store/store_live_catalog.dart';
 import '../store/store_visual_equipment.dart';
 import 'membership_identity.dart';
+import 'membership_pack_inventory.dart';
 import 'membership_room_background.dart';
 
 /// A server-confirmed selection, independent of purchasing membership.
@@ -75,6 +76,8 @@ class _MembershipPackControlsState
     final applied =
         status?.packKind == widget.kind && status?.packTier == widget.tier;
     final full = applied && status!.packSlots.length == 9;
+    final completeMedia =
+        MembershipPackInventory.hasCompleteCoreMedia(widget.kind, widget.tier);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(
           full
@@ -103,14 +106,23 @@ class _MembershipPackControlsState
             ? 'Saving…'
             : full
                 ? 'Applied'
-                : 'Apply Full ${widget.kind.toUpperCase()} Set'),
+                : completeMedia
+                    ? 'Apply Full ${widget.kind.toUpperCase()} Set'
+                    : 'Apply available ${widget.kind.toUpperCase()} items'),
       ),
       if (applied)
         TextButton(
           key: const ValueKey('remove-full-membership-set'),
           onPressed: _busy ? null : () => _change(false),
-          child: Text('Remove Full ${widget.kind.toUpperCase()} Set'),
+          child: Text(completeMedia
+              ? 'Remove Full ${widget.kind.toUpperCase()} Set'
+              : 'Remove applied items'),
         ),
+      if (!completeMedia)
+        const Text(
+            'Original pack incomplete: only available items will be applied.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12, color: Color(0xffd1b475))),
       const Text(
           'Applies the available profile and room cosmetics. You can change individual items in Store afterward. Room wallpaper is selected separately by its owner.',
           textAlign: TextAlign.center,

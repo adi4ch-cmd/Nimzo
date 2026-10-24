@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-24",
+  "owner_priority": "Fewer complete packs; prefer Falla/Hafla, mixing permitted",
+  "source_slot_mappings": 121,
+  "distinct_originals": 105,
+  "selected_source_slot_counts": {
+    "previous authorized WillChill/Tana extraction": 5,
+    "Hafla-1.7.2.apks": 43,
+    "Orii-1.0.15.apks": 28,
+    "YoHo-5.48.40.apks": 9,
+    "BGChat-3.0.6.apks": 1,
+    "previous authorized Tana extraction": 1,
+    "Falla-V9.23.0.apks": 34
+  },
+  "complete_core_media_candidates": [
+    "vip6"
+  ],
+  "falla_hafla_only_complete_core_media_candidates": [],
+  "android_verification_of_this_source_choice": "NOT TESTED",
+  "new_apk_built": false,
+  "previous_apk": "1.0.42 does not include these choices",
+  "live_data_mutations": false,
+  "focused_flutter_tests": "29 passed",
+  "analyzer": "0 errors / 0 warnings /64 informational notices",
+  "archive_checksums": {
+    "Falla-V9.23.0.apks": "c40ca76f3c738c987f1c51962a553640d0af640386ca7312d2874678280ff4a2",
+    "Hafla-1.7.2.apks": "5e0e78a8d788ec468e51db0fb963d883a1dac4806af039629c77ade9e47a5c43"
+  },
+  "role_exclusions": [
+    "Falla mSvipBubbleBgColor is the points-tooltip bubble in SVIPPageHeaderFragment, not room chat",
+    "Falla mSvipPageBg is consumed by SVIPPageActivity, not a verified profile/room wallpaper",
+    "Hafla vip4\u20138.svga is selected by VipBroadCastBean in TempBigGiftHelper.XEffectGift.bindView, not confirmed room joins"
+  ]
+}

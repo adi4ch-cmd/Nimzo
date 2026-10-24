@@ -169,7 +169,9 @@ void main() {
     expect(
         imagePaths, contains('assets/willchill_premium/vip/icon_vip1_2.png'));
     expect(
-        imagePaths, contains('assets/willchill_premium/vip/icon_vip1_4.png'));
+        imagePaths,
+        contains(
+            'assets/membership/packs/29771b99ce574549535a0f30c4dba08599dbb2dbfa9748ec9488a9d4b09eb3b1.png'));
     expect(tester.takeException(), isNull);
   });
 

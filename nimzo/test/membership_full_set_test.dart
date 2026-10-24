@@ -82,6 +82,11 @@ void main() {
                   userId: 'member', child: Text('Real message')),
             ])))));
         await tester.pumpAndSettle();
+        expect(
+            find.text(kind == 'vip' && tier == 6
+                ? 'Apply Full VIP Set'
+                : 'Apply available ${kind.toUpperCase()} items'),
+            findsOneWidget);
         await tester.tap(find.byKey(ValueKey('apply-full-$kind-$tier')));
         await tester.pumpAndSettle();
         expect(find.widgetWithText(FilledButton, 'Applied'), findsOneWidget);

@@ -149,7 +149,8 @@ class MembershipPackGallery extends ConsumerWidget {
     final selected = status?.packKind == presentation.kind &&
         status?.packTier == presentation.tier;
     final contents = <Widget>[
-      Text('$label ${presentation.tier} · Full package',
+      Text(
+          '$label ${presentation.tier} · ${MembershipPackInventory.hasCompleteCoreMedia(presentation.kind, presentation.tier) ? 'Full package' : 'Package contents'}',
           textAlign: TextAlign.center,
           style: const TextStyle(
               fontWeight: FontWeight.w800, fontSize: 21, color: _gold)),

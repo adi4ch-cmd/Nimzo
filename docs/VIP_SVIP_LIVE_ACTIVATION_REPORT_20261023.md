@@ -1,5 +1,7 @@
 # VIP/SVIP live equipment report — 2026-10-23
 
+> Source choices and completeness wording were updated on2026-10-24 after owner feedback. See [the latest Falla/Hafla audit](MEMBERSHIP_SOURCE_CHOICE_20261024.md). The older source lists and host previews below describe the1.0.42 delivery.
+
 PR #44 continues the existing integration branch; existing purchases, membership state, accounts, Store ownership, rooms, gifts and wallets are preserved. **The full20-pack Android acceptance is NOT complete. After the owner explicitly requested “Apk do”,1.0.42 was built and published as a TEST prerelease; this is not the completed20-pack release.**
 
 [Download1.0.42 membership TEST APK](https://github.com/adi4ch-cmd/Nimzo/releases/download/nimzo-v3-dynamic-1.0.42-40028859212/NIMZO_1.0.42_Universal_NO_VIVOX_TEST.apk). [Build and published-binary evidence](validation/membership-pack-test-apk-1.0.42.json). Android15 emulator install/startup passed; authenticated membership/profile/room playback remains unverified.

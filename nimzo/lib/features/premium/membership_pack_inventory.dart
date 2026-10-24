@@ -60,6 +60,20 @@ class MembershipPackArtwork {
 }
 
 class MembershipPackInventory {
+  /// Media coverage, not membership entitlement or Android acceptance.
+  static const coreMediaSlots = [
+    'avatar_frame',
+    'entrance_animation',
+    'profile_card',
+    'medal',
+    'nameplate',
+    'chat_bubble',
+    'mic_animation',
+    'room_background'
+  ];
+  static bool hasCompleteCoreMedia(String kind, int tier) => coreMediaSlots
+      .every((slot) => membershipOriginalAssets['$kind$tier']?[slot] != null);
+
   static MembershipPackArtwork original(
       String kind, int tier, String slot, String title) {
     final row = membershipOriginalAssets['$kind$tier']?[slot];
