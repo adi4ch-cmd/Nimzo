@@ -270,7 +270,7 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                   Row(
                                     children: [
                                       Text(
-                                        'ID:${p.nimzoId} · ${p.countryName ?? p.countryCode ?? ''}',
+                                        'ID:${p.nimzoId}${(p.countryName ?? p.countryCode ?? '').isEmpty ? '' : ' · ${p.countryName ?? p.countryCode}'}',
                                         style: const TextStyle(
                                           color: Color(0xffc3b8d2),
                                           fontSize: 12,
