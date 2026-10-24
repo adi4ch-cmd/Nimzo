@@ -1,7 +1,7 @@
 name: nimzo
 description: Nimzo social voice-room app
 publish_to: none
-version: 1.0.42+142
+version: 1.0.43+143
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:
@@ -39,6 +39,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/falla_levels/wealth/
+    - assets/falla_levels/charm/
+    - assets/falla_levels/active/
+    - assets/falla_levels/level_up/
     - assets/events/
     - assets/brand/
     - assets/games/

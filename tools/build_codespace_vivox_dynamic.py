@@ -22,7 +22,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 
-REPO_BRANCH = "integration/nimzo-v3-dynamic-20261021"
+REPO_BRANCH = "feature/falla-levels-v142-20261024"
 A = "{http://schemas.android.com/apk/res/android}"
 TOOLS = "{http://schemas.android.com/tools}"
 ET.register_namespace("android", A[1:-1])
@@ -39,35 +39,39 @@ def output(*args: str, cwd: Path | None = None) -> str:
 
 
 def sdk_files(root: Path) -> tuple[Path, Path, Path] | None:
+    """Select ONE consistent Vivox 5.28.0 release, never a random .so.
+
+    The real vendor ZIP contains Debug, Release, Stripped/Debug and
+    Stripped/Release libraries with the same filename, plus four ABIs.
+    sdk-release.aar embeds ONLY Stripped/Release binaries.
+    """
     if not root.is_dir():
         return None
-    header = aar = native = None
-    visited = 0
-    # Intentionally ignore generated build trees and Git history.
+    candidates: list[Path] = []
+    for base in (root, root / "SDK"):
+        if (base / "include/Vxc.h").is_file():
+            candidates.append(base)
+    # Search by header directory rather than whichever native library
+    # happens to appear first in os.walk().
     for directory, dirs, names in os.walk(root):
         dirs[:] = [d for d in dirs if d not in {
             ".git", ".gradle", ".dart_tool", "build", "node_modules",
             ".next", ".pub-cache", "Pods"
         }]
-        for name in names:
-            visited += 1
-            p = Path(directory) / name
-            if name == "Vxc.h":
-                header = p
-            elif name == "sdk-release.aar" or (
-                    "vivox" in name.lower() and name.endswith(".aar")):
-                aar = p
-            elif name in ("libvivox-sdk.so", "libvivoxsdk.so"):
-                # Prefer the ARM64 object for Android phones.
-                if native is None or "arm64-v8a" in p.parts:
-                    native = p
-            if header and aar and native:
-                return (header, aar, native)
-            if visited > 250000:
-                print("SDK scan cap reached:", root, flush=True)
-                return None
-    return None
+        if "Vxc.h" in names and Path(directory).name == "include":
+            base = Path(directory).parent
+            if base not in candidates:
+                candidates.append(base)
+        if len(candidates) > 100:
+            raise RuntimeError("Too many possible Vivox SDK roots; use --sdk-root")
 
+    for base in candidates:
+        header = base / "include/Vxc.h"
+        aar = base / "aar/sdk-release.aar"
+        native = base / "Libraries/Stripped/Release/arm64-v8a/libvivox-sdk.so"
+        if all(p.is_file() for p in (header, aar, native)):
+            return header, aar, native
+    return None
 
 def sdk_location(explicit: str | None, tmp: Path) -> tuple[Path, Path, Path, Path]:
     candidates: list[Path] = []
@@ -83,6 +87,13 @@ def sdk_location(explicit: str | None, tmp: Path) -> tuple[Path, Path, Path, Pat
             p = Path(candidate)
             if p.exists() and p not in candidates:
                 candidates.append(p)
+        # The original 5.28.0 delivery often remains a Codespace-local ZIP,
+        # not an extracted SDK. Inspect the known filename before failing.
+        for folder in (Path("/workspaces/Nimzo"), Path("/workspaces/nimzo"),
+                       Path("/workspaces/nimzo-premium-qa"), Path.home()):
+            zip_path = folder / "com.custom.android.vivox.vivoxCoreAndroidSdk-5.28.0.zip"
+            if zip_path.is_file() and zip_path not in candidates:
+                candidates.append(zip_path)
 
     for candidate in candidates:
         folder = candidate
@@ -90,20 +101,41 @@ def sdk_location(explicit: str | None, tmp: Path) -> tuple[Path, Path, Path, Pat
             folder = tmp / "unpacked-vivox-sdk"
             folder.mkdir(parents=True, exist_ok=True)
             with zipfile.ZipFile(candidate) as archive:
+                selected = []
                 for member in archive.infolist():
+                    # Only extract the 5.28.0 release inputs (~58 MB).
+                    # Do not extract 600+ MB of Debug libs, sample APKs
+                    # or media; ZIP entries may not escape the temp dir.
                     name = Path(member.filename)
-                    if name.is_absolute() or ".." in name.parts:
-                        raise ValueError("Unsafe SDK archive path")
-                archive.extractall(folder)
+                    if name.is_absolute() or ".." in name.parts or member.is_dir():
+                        if name.is_absolute() or ".." in name.parts:
+                            raise ValueError("Unsafe SDK archive path")
+                        continue
+                    parts = name.parts
+                    if "SDK" not in parts:
+                        continue
+                    sdk_index = parts.index("SDK")
+                    tail = parts[sdk_index + 1:]
+                    is_header = len(tail) == 2 and tail[0] == "include"
+                    is_aar = tail == ("aar", "sdk-release.aar")
+                    is_arm64 = tail == (
+                        "Libraries", "Stripped", "Release", "arm64-v8a",
+                        "libvivox-sdk.so"
+                    )
+                    if is_header or is_aar or is_arm64:
+                        selected.append(member)
+                if not selected:
+                    raise RuntimeError("ZIP contains no Vivox 5.28.0 release inputs")
+                for member in selected:
+                    archive.extract(member, folder)
         located = sdk_files(folder)
         if located:
             header, aar, native = located
             # Narrow the CMake search root to the shared SDK subtree. In
             # particular, do not aim CMake GLOB_RECURSE at all /workspaces.
-            sdk_tree = Path(os.path.commonpath(
-                (str(header), str(aar), str(native))))
-            if sdk_tree.is_file():
-                sdk_tree = sdk_tree.parent
+            sdk_tree = header.parent.parent
+            if aar.parent.parent != sdk_tree or native.parents[4] != sdk_tree:
+                raise RuntimeError("Vivox SDK files are from inconsistent trees")
             print("Vivox SDK found under:", sdk_tree)
             print("Header:", header.relative_to(sdk_tree))
             print("Android archive:", aar.relative_to(sdk_tree))
@@ -339,7 +371,11 @@ def main() -> None:
         "test/store_paid_purchase_test.dart",
         "test/verified_gift_broadcast_test.dart",
         "test/room_reconnect_test.dart",
-        "test/voice/vivox_voice_service_test.dart", cwd=app)
+        "test/voice/vivox_voice_service_test.dart",
+        "test/room_seat_repository_test.dart",
+        "test/room_profile_premium_layout_test.dart",
+        "test/room_user_sheet_test.dart",
+        "test/profile_content_test.dart", cwd=app)
     run("flutter", "build", "apk", "--release",
         "--target-platform=android-arm64", cwd=app)
     apk = app / "build/app/outputs/flutter-apk/app-release.apk"
@@ -348,7 +384,11 @@ def main() -> None:
     result = verify_apk(apk)
     out = Path(args.output_dir).expanduser().resolve()
     out.mkdir(parents=True, exist_ok=True)
-    target = out / f"NIMZO_1.0.37_DYNAMIC_VIVOX_QA_{commit[:10]}.apk"
+    pubspec = (app / "pubspec.yaml").read_text()
+    match = re.search(r"(?m)^version:\s*(\d+\.\d+\.\d+)\+\d+\s*$", pubspec)
+    if match is None:
+        raise RuntimeError("Cannot determine NIMZO app version from pubspec.yaml")
+    target = out / f"NIMZO_{match.group(1)}_VIVOX528_ARM64_QA_{commit[:10]}.apk"
     shutil.copy2(apk, target)
     (out / "SHA256SUMS.txt").write_text(
         f"{result['sha256']}  {target.name}\n")

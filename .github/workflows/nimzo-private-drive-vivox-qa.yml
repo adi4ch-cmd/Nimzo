@@ -1,0 +1,31 @@
+name: NIMZO Private Drive Vivox QA Builder Source Tests
+on:
+  push:
+    branches:
+      - feature/drive-vivox528-private-qa-build-20261024
+  pull_request:
+    branches:
+      - feature/falla-levels-v142-20261024
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  voice-qa-builder-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Python syntax, private SDK assembly and QA restrictions
+        run: |
+          python3 -m py_compile tools/build_drive_vivox_qa.py
+          python3 -m py_compile tools/build_codespace_vivox_dynamic.py
+          python3 -m unittest discover -s tools/tests -p test_drive_vivox_qa.py -v
+          python3 -m unittest discover -s tools/tests -p test_vivox528_sdk_archive.py -v
+      - name: Ensure proprietary SDK artifacts are NOT committed
+        run: |
+          python3 - <<'PY'
+          from subprocess import check_output
+          entries=check_output(['git','ls-files'],text=True).splitlines()
+          forbidden=[p for p in entries if ('vivox' in p.lower() or 'sdk-release' in p.lower()) and p.lower().endswith(('.aar','.so','.zip'))]
+          assert not forbidden,forbidden
+          print('PASS: GitHub public repository contains no Vivox proprietary binaries')
+          PY

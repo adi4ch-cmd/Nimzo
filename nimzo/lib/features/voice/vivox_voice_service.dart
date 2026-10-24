@@ -119,6 +119,12 @@ class VivoxVoiceService implements VoiceService {
     try {
       return await _channel.invokeMethod<T>(method, arguments);
     } on PlatformException catch (error) {
+      if (error.code == 'VOICE_SDK_PENDING') {
+        throw VoiceConnectionFailure(
+          'Voice is unavailable in this TEST APK because the Vivox SDK is not bundled. '
+          'A full voice-enabled build is required.',
+        );
+      }
       // Java exception messages can contain credentials or provider payloads.
       const codes = {'VIVOX_NATIVE', 'PERMISSION_PENDING'};
       const types = {
@@ -174,7 +180,7 @@ class VivoxVoiceService implements VoiceService {
     // Vivox requires capture access before joining even when initially muted.
     if (await _invokeNative<bool>('requestMicPermission') != true) {
       throw VoiceConnectionFailure(
-        'Microphone permission is required for room audio.',
+        'Microphone access is denied. Allow Microphone in Android Settings > Apps > NIMZO > Permissions, then retry.',
       );
     }
     final Map<String, dynamic> data;

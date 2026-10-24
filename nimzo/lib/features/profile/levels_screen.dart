@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,7 @@ import '../../core/theme/app_theme.dart';
 import 'profile_repository.dart';
 import 'profile_screen.dart';
 import 'profile_level_scale.dart';
+import 'verified_level_up_tracker.dart';
 
 /// Tingle-reference wealth/charm/activity presentation with NIMZO data.
 /// Level, earned progress and the next threshold remain server-derived.
@@ -24,10 +27,109 @@ class LevelsScreen extends ConsumerStatefulWidget {
 
 class _LevelState extends ConsumerState<LevelsScreen> {
   late int selected;
+  Timer? _refreshTimer;
+  final _verifiedUpdates = VerifiedLevelUpTracker();
+
   @override
   void initState() {
     super.initState();
     selected = widget.initialKind;
+    // The existing profile provider is a FutureProvider, not a live stream.
+    // Poll only while this screen is visible; every response is read from
+    // authoritative Supabase counters and never grants XP from the client.
+    _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (!mounted || ModalRoute.of(context)?.isCurrent == false) return;
+      final id = widget.userId ?? ref.read(currentUserIdProvider);
+      if (id != null) ref.invalidate(profileProvider(id));
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  void _showVerifiedIncrease(VerifiedLevelIncrease upgrade) {
+    if (!mounted) return;
+    final title = tabs[upgrade.kind];
+    final folder = const ['wealth', 'charm', 'active'][upgrade.kind];
+    showDialog<void>(
+      context: context,
+      barrierColor: const Color(0xc900061c),
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: AspectRatio(
+            aspectRatio: 867 / 1016,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/falla_levels/level_up/$folder.webp',
+                    fit: BoxFit.fill,
+                    errorBuilder: (_, __, ___) => Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xff152143),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 32,
+                  child: Text('LEVEL UP!',
+                    style: const TextStyle(color: Color(0xffffdc73),
+                      fontSize: 27, fontWeight: FontWeight.w900)),
+                ),
+                Positioned(
+                  top: 104,
+                  child: SizedBox(
+                    width: 160, height: 145,
+                    child: Image.asset(
+                      'assets/falla_levels/level_up/${folder}_icon_bg.webp',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 171,
+                  child: LevelBadge(kind: upgrade.kind, level: upgrade.to),
+                ),
+                Positioned(
+                  bottom: 86,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('$title Level ${upgrade.to}',
+                        style: const TextStyle(color: Colors.white,
+                          fontSize: 20, fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 4),
+                      Text('Level ${upgrade.from} → ${upgrade.to}',
+                        style: const TextStyle(color: Color(0xffffe1b3),
+                          fontSize: 12, fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  bottom: 20,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    child: const Text('Continue',
+                      style: TextStyle(color: Colors.white,
+                        fontWeight: FontWeight.w800)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   static const bands = <({int from, int to, String label, Color color})>[
@@ -36,7 +138,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
     (from: 40, to: 59, label: 'Blue', color: Color(0xff2563eb)),
     (from: 60, to: 79, label: 'Pink', color: Color(0xffdb2777)),
     (from: 80, to: 99, label: 'Red', color: Color(0xffdc2626)),
-    (from: 100, to: 120, label: 'Gold', color: Color(0xffd4a017)),
+    (from: 100, to: 270, label: 'Gold', color: Color(0xffd4a017)),
   ];
   static const tabs = <String>['Wealth', 'Charm', 'Active'];
   static const icons = <IconData>[
@@ -112,6 +214,18 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                 value: ref.watch(profileProvider(id)),
                 onRetry: () => ref.invalidate(profileProvider(id)),
                 builder: (p) {
+                  final verifiedLevels = [
+                    p.wealthLevel, p.charmLevel, p.activeLevel,
+                  ];
+                  final verifiedIncreases = _verifiedUpdates.observe(
+                    id, verifiedLevels,
+                  );
+                  if (id == ref.read(currentUserIdProvider) &&
+                      verifiedIncreases.isNotEmpty) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _showVerifiedIncrease(verifiedIncreases.first);
+                    });
+                  }
                   final level = [
                     p.wealthLevel,
                     p.charmLevel,
@@ -125,7 +239,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                   final progress = earned == null || level <= 0
                       ? null
                       : ProfileLevelScale.fraction(selected, level, earned);
-                  final next = earned == null || level <= 0 || level >= 120
+                  final next = earned == null || level < 0 || level >= ProfileLevelScale.maxLevels[selected]
                       ? null
                       : (ProfileLevelScale.nextRequirement(selected, level) -
                               earned)
@@ -239,6 +353,43 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                     fontSize: 15,
                     color: Color(0xff2b243c),
                     fontWeight: FontWeight.w900)),
+            const SizedBox(height: 8),
+            const Text(
+              'Original Falla level tags: Wealth/Charm 0–270, Active 0–140. Unlocked from verified progress.',
+              style: TextStyle(color: Color(0xff84798e), fontSize: 12),
+            ),
+            const SizedBox(height: 12),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: selected == 2 ? 141 : 271,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 1.18,
+                crossAxisSpacing: 7,
+                mainAxisSpacing: 7,
+              ),
+              itemBuilder: (context, index) => Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 7),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FittedBox(child: LevelBadge(kind: selected, level: index)),
+                      const SizedBox(height: 5),
+                      Text('Lv. $index',
+                        style: const TextStyle(fontSize: 10,
+                            fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text('Level color bands',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
             const SizedBox(height: 12),
             for (final band in bands)
               Container(
@@ -266,7 +417,7 @@ class _LevelState extends ConsumerState<LevelsScreen> {
                               color: Color(0xff433850),
                               fontWeight: FontWeight.w800,
                               fontSize: 14))),
-                  Text('Lv. ${band.from}–${band.to}',
+                  Text('Lv. ${band.from}–${band.to > ProfileLevelScale.maxLevels[selected] ? ProfileLevelScale.maxLevels[selected] : band.to}',
                       style: const TextStyle(
                           color: Color(0xff83798e),
                           fontSize: 12,

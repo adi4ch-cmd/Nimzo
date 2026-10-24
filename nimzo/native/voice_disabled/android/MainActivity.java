@@ -82,12 +82,8 @@ public final class MainActivity extends FlutterActivity {
     // No JNI or native voice code is included in this test build.
     new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "nimzo/vivox")
       .setMethodCallHandler((call, result) -> {
-        if ("requestMicPermission".equals(call.method)) {
-          result.success(false);
-        } else {
-          result.error("VOICE_SDK_PENDING",
-              "Vivox SDK is disabled in this temporary test build.", null);
-        }
+        result.error("VOICE_SDK_PENDING",
+            "Voice audio is unavailable in this TEST build; Vivox SDK is not bundled.", null);
       });
   }
   @Override

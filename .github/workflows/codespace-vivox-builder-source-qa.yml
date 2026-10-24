@@ -1,0 +1,29 @@
+name: NIMZO Codespace Vivox SDK Builder Source QA
+on:
+  push:
+    branches:
+      - fix/codespace-vivox-528-latest-source-20261024
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  sdk-builder-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Python syntax and Codespace SDK build contract
+        run: |
+          python3 -m py_compile tools/build_codespace_vivox_dynamic.py
+          python3 -m unittest discover -s tools/tests -p test_codespace_vivox_latest.py -v
+          python3 -m unittest discover -s tools -p test_validate_vivox_sdk.py -v
+      - name: Confirm no bundled Vivox SDK is committed
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          paths = subprocess.check_output(['git','ls-files'], text=True).splitlines()
+          banned = ('.aar','.so')
+          suspects = [name for name in paths if ('vivox' in name.lower() or 'sdk-release' in name.lower()) and name.lower().endswith(banned)]
+          assert not suspects, f'Proprietary binary unexpectedly tracked: {suspects}'
+          print('SDK remains private; source-only QA PASS')
+          PY

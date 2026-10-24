@@ -1,0 +1,44 @@
+name: NIMZO Ten Mic Seats and Voice Diagnostics QA
+on:
+  push:
+    branches:
+      - fix/ten-mics-and-voice-diagnostics-20261024
+  workflow_dispatch: {}
+permissions:
+  contents: read
+
+jobs:
+  flutter-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Restore locked Flutter dependencies
+        working-directory: nimzo
+        run: flutter pub get --enforce-lockfile
+      - name: Static analysis
+        working-directory: nimzo
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Room seat, voice and profile regression
+        working-directory: nimzo
+        run: |
+          flutter test --reporter expanded \
+            test/room_seat_repository_test.dart \
+            test/voice/vivox_voice_service_test.dart \
+            test/room_user_sheet_test.dart \
+            test/room_profile_premium_layout_test.dart \
+            test/profile_content_test.dart
+      - name: Verify disabled Android TEST stub does not fake permission denial
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('nimzo/native/voice_disabled/android/MainActivity.java').read_text()
+          assert 'VOICE_SDK_PENDING' in p
+          assert 'result.success(false)' not in p
+          assert 'Vivox SDK is not bundled' in p
+          PY

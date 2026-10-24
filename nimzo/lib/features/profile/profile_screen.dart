@@ -18,10 +18,12 @@ import '../social/friend_button.dart';
 import 'profile_repository.dart';
 import 'levels_screen.dart';
 import 'profile_level_scale.dart';
+import 'falla_level_badge.dart';
 import 'profile_level_pills.dart';
 import 'profile_collections.dart';
 import 'profile_setup_screen.dart';
 import 'profile_presentation.dart';
+import 'profile_equipped_props.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -87,9 +89,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.directions_car_rounded, size: 16),
+                    Icon(Icons.card_giftcard_rounded, size: 16),
                     SizedBox(width: 4),
-                    Text('Car'),
+                    Text('Gift'),
                   ],
                 ),
               ),
@@ -315,7 +317,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                       ],
                     ),
-                    VerifiedMembershipIdentity(userId: id),
+                    // The original applied ID frame already labels this tier.
+                    // Avoid showing a duplicate VIP/SVIP badge below the name.
+                    if (packTheme == null ||
+                        verifiedMembership.valueOrNull?.hasSlot('ID Frame') !=
+                            true)
+                      VerifiedMembershipIdentity(userId: id),
                     Text(
                       'ID:${p.nimzoId} · ${p.countryName ?? p.countryCode ?? ''}',
                       style: const TextStyle(color: NimzoStyle.muted),
@@ -352,6 +359,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
+                    ProfileEquippedProps(userId: id),
                     Text(p.bio?.isNotEmpty == true ? p.bio! : 'No bio yet'),
                     AsyncContent(
                       value: ref.watch(profileStatsProvider(id)),
@@ -359,7 +367,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       builder: (stats) => Wrap(
                         spacing: 10,
                         children: [
-                          for (final key in ['following', 'followers'])
+                          for (final key in ['following', 'followers', 'visitors'])
+                            if (key != 'visitors' || stats.containsKey(key))
                             InkWell(
                               onTap: () => context.push('/social/$key/$id'),
                               child: Padding(
@@ -702,7 +711,11 @@ class LevelBadge extends StatelessWidget {
       ProfileLevelScale.color(kind, level);
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => FallaLevelBadge(
+        kind: kind,
+        level: level,
+        height: showLabel ? 28 : 34,
+        fallback: Container(
         padding:
             EdgeInsets.symmetric(horizontal: showLabel ? 5 : 10, vertical: 4),
         decoration: BoxDecoration(
@@ -737,6 +750,7 @@ class LevelBadge extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       );
 }
