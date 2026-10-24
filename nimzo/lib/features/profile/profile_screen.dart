@@ -89,9 +89,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.directions_car_rounded, size: 16),
+                    Icon(Icons.card_giftcard_rounded, size: 16),
                     SizedBox(width: 4),
-                    Text('Car'),
+                    Text('Gift'),
                   ],
                 ),
               ),
@@ -367,7 +367,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       builder: (stats) => Wrap(
                         spacing: 10,
                         children: [
-                          for (final key in ['following', 'followers'])
+                          for (final key in ['following', 'followers', 'visitors'])
+                            if (key != 'visitors' || stats.containsKey(key))
                             InkWell(
                               onTap: () => context.push('/social/$key/$id'),
                               child: Padding(
