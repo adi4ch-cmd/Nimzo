@@ -269,11 +269,15 @@ class _RoomUserSheetState extends ConsumerState<RoomUserSheet> {
                                   const SizedBox(height: 3),
                                   Row(
                                     children: [
-                                      Text(
-                                        'ID:${p.nimzoId}${(p.countryName ?? p.countryCode ?? '').isEmpty ? '' : ' · ${p.countryName ?? p.countryCode}'}',
-                                        style: const TextStyle(
-                                          color: Color(0xffc3b8d2),
-                                          fontSize: 12,
+                                      Flexible(
+                                        child: Text(
+                                          'ID:${p.nimzoId}${(p.countryName ?? p.countryCode ?? '').isEmpty ? '' : ' · ${p.countryName ?? p.countryCode}'}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: Color(0xffc3b8d2),
+                                            fontSize: 12,
+                                          ),
                                         ),
                                       ),
                                       const SizedBox(width: 5),
@@ -567,7 +571,7 @@ class _MiniAction extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Color(0xff30213d),
+                    color: Colors.white,
                     fontSize: 11,
                     height: 1.1,
                     fontWeight: FontWeight.w500,
