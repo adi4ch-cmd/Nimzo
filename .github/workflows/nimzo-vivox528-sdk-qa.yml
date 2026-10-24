@@ -1,0 +1,33 @@
+name: NIMZO Vivox 5.28.0 Deterministic SDK QA
+on:
+  push:
+    branches:
+      - fix/vivox528-real-sdk-archive-selection-20261024
+  pull_request:
+    branches:
+      - feature/falla-levels-v142-20261024
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  sdk-archive-source-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python syntax and deterministic SDK source tests
+        run: |
+          python3 -m py_compile tools/build_codespace_vivox_dynamic.py
+          python3 -m unittest discover -s tools/tests -p test_vivox528_sdk_archive.py -v
+          python3 -m unittest discover -s tools/tests -p test_codespace_vivox_latest.py -v
+      - name: Verify no proprietary Vivox binaries are committed
+        run: |
+          python3 - <<'PY'
+          import subprocess
+          paths = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
+          disallowed = [p for p in paths if
+              ("vivox" in p.lower() or "sdk-release" in p.lower())
+              and p.lower().endswith((".aar", ".so", ".zip"))
+          ]
+          assert not disallowed, f"SDK binary must remain private: {disallowed}"
+          print("PASS: SDK binaries remain outside Git source")
+          PY
