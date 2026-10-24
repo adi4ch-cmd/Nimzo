@@ -154,7 +154,9 @@ def sdk_location(explicit: str | None, tmp: Path) -> tuple[Path, Path, Path, Pat
             # One ARM64 .so only, preventing ambiguous CMake globs.
             print("Selected Vivox SDK ZIP/folder:", candidate, flush=True)
             print("SDK staging root (temporary, private):", sdk_tree, flush=True)
-            print("AAR SHA256:", hashlib.file_digest(aar.open("rb"), "sha256").hexdigest(), flush=True)
+            with aar.open("rb") as sdk_archive:
+                aar_digest = hashlib.file_digest(sdk_archive, "sha256").hexdigest()
+            print("AAR SHA256:", aar_digest, flush=True)
             return sdk_tree, header, aar, native
 
     raise RuntimeError(
